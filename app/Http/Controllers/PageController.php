@@ -13,5 +13,11 @@ class PageController extends Controller
     {
         return view('pages.stub', ['page' => $page]);
     }
+
+    public function showAdmin(Request $request, string $page)
+    {
+        return view('pages.admin_stub', ['page' => $page]);
+    }
 }
+
 

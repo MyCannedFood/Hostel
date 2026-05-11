@@ -19,6 +19,16 @@ Route::get('/experience', fn () => view('pages.experience'));
 
 Route::get('/profile', fn () => view('pages.profile'));
 
-Route::get('/Hostel/Admin', [PageController::class, 'show'])->defaults('page', 'Hostel/Admin');
+// Admin Routes
+Route::get('/Admin/Dashboard', [PageController::class, 'showAdmin'])->defaults('page', 'Admin/Dashboard');
+
+Route::get('/Admin/Rooms-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Rooms Management');
+
+Route::get('/Admin/Manage-Bookings', [PageController::class, 'showAdmin'])->defaults('page', 'Manage Bookings');
+
+Route::get('/Admin/Price-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Price Management');
+
+Route::get('/Admin/Finance', [PageController::class, 'showAdmin'])->defaults('page', 'Finance');
+
 
 
