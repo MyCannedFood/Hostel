@@ -15,7 +15,10 @@
 
     <div style="margin-top: auto; display:flex; flex-direction:column; gap: 10px;">
         <a href="/" style="text-decoration:none; color:#111; font-weight:600; padding: 10px 12px; border-radius: 12px; background: #f7f7f7; text-align:center;">Back</a>
-        <a href="/" style="text-decoration:none; color:#111; font-weight:600; padding: 10px 12px; border-radius: 12px; background: transparent; border:1px solid #eee; text-align:center;">Logout</a>
+        <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">
+            @csrf
+            <button type="submit" style="width: 100%; text-decoration:none; color:#111; font-weight:600; padding: 10px 12px; border-radius: 12px; background: transparent; border:1px solid #eee; text-align:center; cursor: pointer;">Logout</button>
+        </form>
     </div>
 </aside>
 
