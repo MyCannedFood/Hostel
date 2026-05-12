@@ -11,13 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('facilities', function (Blueprint $table) {
+        Schema::create('bed_prices', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('category')->nullable();
-            $table->text('description')->nullable();
-            $table->decimal('add_on_price', 15, 2)->default(0);
+            $table->foreignId('bed_id')->constrained('beds')->onDelete('cascade');
+            $table->decimal('level_surcharge', 15, 2)->default(0);
+            $table->decimal('position_surcharge', 15, 2)->default(0);
+            $table->decimal('total_price', 15, 2);
             $table->boolean('is_active')->default(true);
+            $table->date('valid_from');
+            $table->date('valid_until')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('facilities');
+        Schema::dropIfExists('bed_prices');
     }
 };

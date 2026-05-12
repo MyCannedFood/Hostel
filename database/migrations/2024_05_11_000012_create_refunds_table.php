@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('refunds', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('payment_id')->constrained('payments')->onDelete('cascade');
             $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->decimal('rating', 3, 2);
-            $table->text('comment')->nullable();
-            $table->boolean('is_approved')->default(false);
+            $table->decimal('amount', 15, 2);
+            $table->text('reason')->nullable();
+            $table->string('status')->default('Pending');
+            $table->string('midtrans_refund_id')->nullable();
+            $table->timestamp('processed_at')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('refunds');
     }
 };

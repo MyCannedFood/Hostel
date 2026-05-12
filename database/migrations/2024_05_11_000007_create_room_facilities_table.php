@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('room_facilities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('booking_id')->constrained('bookings')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->decimal('rating', 3, 2);
-            $table->text('comment')->nullable();
-            $table->boolean('is_approved')->default(false);
-            $table->timestamps();
+            $table->foreignId('facility_id')->constrained('facilities')->onDelete('cascade');
+            $table->timestamp('assigned_at')->useCurrent();
         });
     }
 
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('reviews');
+        Schema::dropIfExists('room_facilities');
     }
 };
