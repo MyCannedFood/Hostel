@@ -10,7 +10,11 @@
 @include('components.navbar')
 
 <main style="padding: 24px;">
-    <h1 style="margin: 0;">{{ $page }}</h1>
+    @if ($page === 'Home' || $page === 'home')
+        @include('home.home_section')
+    @else
+        <h1 style="margin: 0;">{{ $page }}</h1>
+    @endif
 </main>
 
 </body>
