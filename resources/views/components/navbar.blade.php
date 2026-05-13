@@ -1,5 +1,3 @@
-<!doctype html>
-<!-- Komponen navbar (embedded untuk dipakai di stub pages) -->
 <nav style="width: 100%; background: #fff; padding: 12px 24px; box-sizing: border-box;">
     <div style="display:flex; align-items:center; justify-content:space-between; gap: 16px;">
         <div style="display:flex; align-items:center; gap:12px;">
