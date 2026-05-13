@@ -9,7 +9,7 @@
 
 @include('components.navbar')
 
-<main style="padding: 0; margin: 0;">
+<main style="padding: 24px;">
     @if ($page === 'Home' || $page === 'home')
         @include('home.home_section')
     @else
