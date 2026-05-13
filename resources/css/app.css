@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap');
 @import "./home-map.css";
 @import "./main-footer.css";
+@import "./rooms-sanctuaries.css";
 
 :root {
     --color-primary: #2D4635;
