@@ -1,116 +1,278 @@
-<!doctype html>
-<!-- Komponen navbar (embedded untuk dipakai di stub pages) -->
-<nav style="width: 100%; background: #fff; padding: 12px 24px; box-sizing: border-box;">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap: 16px;">
-        <div style="display:flex; align-items:center; gap:12px;">
-            <div style="width:32px; height:32px; border-radius: 8px; background:#111; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700;">L</div>
-        </div>
+{{-- resources/views/components/navbar.blade.php --}}
 
-        <div style="display:flex; align-items:center; gap: 22px;">
-            <a href="/" style="text-decoration:none; color:#111; font-size:14px;">Home</a>
-            <a href="/rooms" style="text-decoration:none; color:#111; font-size:14px;">Rooms</a>
-            <a href="/gallery" style="text-decoration:none; color:#111; font-size:14px;">Gallery</a>
-            <a href="/experience" style="text-decoration:none; color:#111; font-size:14px;">Experience</a>
-        </div>
+<style>
+    /* ── Desktop nav links ── */
+    .alas-nav-links { display: flex; align-items: center; gap: 28px; }
 
-        <div style="display:flex; align-items:center; gap: 12px;">
-            <!-- State: belum login -->
-            <button id="navbarLoginBtn" type="button" style="border:0; background:transparent; cursor:pointer; padding: 6px 10px; font-size:14px; color:#111;">
-                Login
-            </button>
+    /* ── Mobile hamburger (hidden on desktop) ── */
+    .alas-hamburger { display: none; }
 
-            <!-- State: sudah login (disembunyikan dulu) -->
-            <div id="navbarLoggedIn" style="display:none; align-items:center; gap: 8px;">
-                <!-- Tombol lonceng: buka popup notifikasi -->
-                <button id="navbarBellBtn" type="button" title="Notifications" style="border:0; background:transparent; cursor:pointer; padding: 6px; display:flex; align-items:center;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        <path d="M13.73 21a2 2 0 01-3.46 0" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
-                <!-- Link profile: navigasi langsung -->
-                <a href="/profile" style="text-decoration:none; color:#111; font-size:14px;">Profile</a>
+    /* ── Mobile drawer ── */
+    .alas-drawer {
+        display: none;
+        flex-direction: column;
+        background: #f6f6f1;
+        border-top: 1px solid rgba(26,61,10,0.10);
+        padding: 20px 20px 24px;
+        gap: 0;
+    }
+    .alas-drawer a {
+        text-decoration: none;
+        font-family: 'Georgia', serif;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.10em;
+        text-transform: uppercase;
+        color: #1a3d0a;
+        padding: 13px 0;
+        border-bottom: 1px solid rgba(26,61,10,0.08);
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+    .alas-drawer a.active-link { font-weight: 700; opacity: 1; }
+    .alas-drawer .drawer-lang {
+        display: flex; align-items: center; gap: 8px;
+        padding: 13px 0;
+        border-bottom: 1px solid rgba(26,61,10,0.08);
+    }
+    .alas-drawer .drawer-lang a {
+        border: none; padding: 0; font-size: 13px; opacity: 0.55; text-transform: none; letter-spacing: 0.08em;
+    }
+    .alas-drawer .drawer-lang a.active-lang { font-weight: 700; opacity: 1; }
+    .alas-drawer .drawer-lang span { color: #1a3d0a; opacity: 0.3; font-size: 13px; }
+    .alas-drawer .drawer-book {
+        margin-top: 16px;
+        text-decoration: none;
+        background: #d9864a;
+        color: #fff !important;
+        font-family: 'Georgia', serif;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 13px 0;
+        border-radius: 4px;
+        text-align: center;
+        opacity: 1 !important;
+        border: none !important;
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .alas-nav-links { display: none !important; }
+        .alas-lang-btn  { display: none !important; }
+        .alas-book-btn  { display: none !important; }
+        .alas-hamburger { display: flex !important; }
+        .alas-drawer.open { display: flex; }
+    }
+</style>
+
+<nav style="
+    width: 100%;
+    background: #f6f6f1;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(26,61,10,0.08);
+    position: relative;
+    z-index: 100;
+">
+    {{-- ── Main bar ── --}}
+    <div style="
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        padding: 0 32px;
+        max-width: 1280px;
+        margin: 0 auto;
+        box-sizing: border-box;
+    ">
+
+        {{-- Left: Logo + Nav Links --}}
+        <div style="display:flex; align-items:center; gap:36px;">
+
+            {{-- Logo --}}
+            <a href="/" style="text-decoration:none; display:flex; align-items:center; gap:10px; flex-shrink:0;">
+                <img src="{{ asset('images/logo.jpg') }}" alt="AlaSare Logo"
+                     style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                <span style="
+                    font-family: 'Georgia', 'Times New Roman', serif;
+                    font-size: 22px;
+                    font-weight: 700;
+                    color: #1a3d0a;
+                    letter-spacing: 0.01em;
+                ">AlaSare</span>
+            </a>
+
+            {{-- Desktop Nav Links --}}
+            <div class="alas-nav-links">
+                <a href="/" style="
+                    text-decoration: none;
+                    font-family: 'Georgia', serif;
+                    font-size: 13px;
+                    font-weight: 700;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    color: #1a3d0a;
+                    padding-bottom: 3px;
+                    border-bottom: 2px solid #1a3d0a;
+                ">Home</a>
+
+                <a href="/rooms" style="
+                    text-decoration: none;
+                    font-family: 'Georgia', serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    color: #1a3d0a;
+                    opacity: 0.65;
+                    transition: opacity 0.2s;
+                "
+                onmouseover="this.style.opacity='1'"
+                onmouseout="this.style.opacity='0.65'">Villas</a>
+
+                <a href="/gallery" style="
+                    text-decoration: none;
+                    font-family: 'Georgia', serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    color: #1a3d0a;
+                    opacity: 0.65;
+                    transition: opacity 0.2s;
+                "
+                onmouseover="this.style.opacity='1'"
+                onmouseout="this.style.opacity='0.65'">Gallery</a>
+
+                <a href="/experience" style="
+                    text-decoration: none;
+                    font-family: 'Georgia', serif;
+                    font-size: 13px;
+                    font-weight: 500;
+                    letter-spacing: 0.12em;
+                    text-transform: uppercase;
+                    color: #1a3d0a;
+                    opacity: 0.65;
+                    transition: opacity 0.2s;
+                "
+                onmouseover="this.style.opacity='1'"
+                onmouseout="this.style.opacity='0.65'">Experiences</a>
             </div>
+        </div>
+
+        {{-- Right: Language + Book Now (desktop) + Hamburger (mobile) --}}
+        <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
+
+            {{-- Language switcher --}}
+            <div class="alas-lang-btn" style="display:flex; align-items:center; gap:6px;">
+                <a href="?lang=id" style="
+                    text-decoration: none;
+                    font-family: 'Georgia', serif;
+                    font-size: 13px;
+                    letter-spacing: 0.08em;
+                    color: #1a3d0a;
+                    opacity: 0.55;
+                    transition: opacity 0.2s;
+                "
+                onmouseover="this.style.opacity='1'"
+                onmouseout="this.style.opacity='0.55'">ID</a>
+                <span style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">|</span>
+                <a href="?lang=en" style="
+                    text-decoration: none;
+                    font-family: 'Georgia', serif;
+                    font-size: 13px;
+                    font-weight: 700;
+                    letter-spacing: 0.08em;
+                    color: #1a3d0a;
+                ">EN</a>
+            </div>
+
+            {{-- Book Now --}}
+            <a href="/rooms" class="alas-book-btn" style="
+                text-decoration: none;
+                background: #d9864a;
+                color: #fff;
+                font-family: 'Georgia', serif;
+                font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 0.12em;
+                text-transform: uppercase;
+                padding: 10px 22px;
+                border-radius: 4px;
+                transition: background 0.2s, transform 0.15s;
+                display: inline-block;
+                white-space: nowrap;
+            "
+            onmouseover="this.style.background='#c4733a'; this.style.transform='translateY(-1px)'"
+            onmouseout="this.style.background='#d9864a'; this.style.transform='translateY(0)'">
+                Book Now
+            </a>
+
+            {{-- Hamburger button (mobile only) --}}
+            <button class="alas-hamburger" id="alasHamburger" type="button"
+                aria-label="Open menu"
+                style="
+                    border: none;
+                    background: transparent;
+                    cursor: pointer;
+                    padding: 6px;
+                    flex-direction: column;
+                    gap: 5px;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                <span id="alasBar1" style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;"></span>
+                <span id="alasBar2" style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;"></span>
+                <span id="alasBar3" style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;"></span>
+            </button>
         </div>
     </div>
 
-    <script>
-        (function () {
-            const loginBtn       = document.getElementById('navbarLoginBtn');
-            const loggedInGroup  = document.getElementById('navbarLoggedIn');
-            const bellBtn        = document.getElementById('navbarBellBtn');
+    {{-- ── Mobile Drawer ── --}}
+    <div class="alas-drawer" id="alasDrawer">
+        <a href="/" class="active-link">Home</a>
+        <a href="/rooms">Villas</a>
+        <a href="/gallery">Gallery</a>
+        <a href="/experience">Experiences</a>
 
-            if (!loginBtn || !loggedInGroup || !bellBtn) return;
+        <div class="drawer-lang">
+            <a href="?lang=id">ID</a>
+            <span>|</span>
+            <a href="?lang=en" class="active-lang">EN</a>
+        </div>
 
-            // Fungsi untuk set tampilan navbar sesuai state login
-            function setLoggedIn(val) {
-                if (val) {
-                    localStorage.setItem('navbar_loggedin', '1');
-                    loginBtn.style.display      = 'none';
-                    loggedInGroup.style.display = 'flex';
-                } else {
-                    localStorage.removeItem('navbar_loggedin');
-                    loginBtn.style.display      = '';
-                    loggedInGroup.style.display = 'none';
-                }
-            }
-
-            // Cek localStorage saat halaman dimuat → restore state login
-            if (localStorage.getItem('navbar_loggedin') === '1') {
-                setLoggedIn(true);
-            }
-
-            // Klik Login → simpan state & tampilkan grup lonceng + profile
-            loginBtn.addEventListener('click', function () {
-                setLoggedIn(true);
-            });
-
-            // Klik lonceng → buka popup notifikasi
-            bellBtn.addEventListener('click', openPopup);
-
-            /* ── Popup notifikasi ── */
-            let popupEl  = null;
-            let popupOpen = false;
-
-            function closePopup() {
-                if (popupEl) popupEl.style.display = 'none';
-                popupOpen = false;
-            }
-
-            function openPopup() {
-                if (popupOpen) return;
-                popupOpen = true;
-
-                if (!popupEl) {
-                    popupEl = document.createElement('div');
-                    popupEl.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.35);display:flex;align-items:center;justify-content:center;z-index:9999;';
-
-                    popupEl.innerHTML = `
-                        <div style="background:#fff; width:min(520px,92vw); border-radius:14px; padding:18px; box-sizing:border-box;">
-                            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
-                                <div style="font-weight:700;">Notification</div>
-                                <button type="button" id="navbarPopupCloseBtn" style="border:1px solid #ddd; background:#fff; cursor:pointer; padding:6px 10px; border-radius:10px;">✕</button>
-                            </div>
-                            <div style="margin-top:14px; padding:12px; border:1px solid #eee; border-radius:12px; color:#111;">
-                                Notification
-                            </div>
-                        </div>
-                    `;
-
-                    document.body.appendChild(popupEl);
-
-                    popupEl.querySelector('#navbarPopupCloseBtn')
-                           .addEventListener('click', closePopup);
-
-                    // Klik backdrop → tutup popup
-                    popupEl.addEventListener('click', function (e) {
-                        if (e.target === popupEl) closePopup();
-                    });
-                }
-
-                popupEl.style.display = 'flex';
-            }
-
-        })();
-    </script>
+        <a href="/rooms" class="drawer-book">Book Now</a>
+    </div>
 </nav>
+
+<script>
+(function () {
+    const hamburger = document.getElementById('alasHamburger');
+    const drawer    = document.getElementById('alasDrawer');
+    const bar1      = document.getElementById('alasBar1');
+    const bar2      = document.getElementById('alasBar2');
+    const bar3      = document.getElementById('alasBar3');
+
+    if (!hamburger || !drawer) return;
+
+    let open = false;
+
+    hamburger.addEventListener('click', function () {
+        open = !open;
+        drawer.classList.toggle('open', open);
+
+        if (open) {
+            bar1.style.transform = 'translateY(7px) rotate(45deg)';
+            bar2.style.opacity   = '0';
+            bar3.style.transform = 'translateY(-7px) rotate(-45deg)';
+            hamburger.setAttribute('aria-label', 'Close menu');
+        } else {
+            bar1.style.transform = '';
+            bar2.style.opacity   = '1';
+            bar3.style.transform = '';
+            hamburger.setAttribute('aria-label', 'Open menu');
+        }
+    });
+})();
+</script>
