@@ -11,14 +11,14 @@ use App\Http\Controllers\AdminAuthController;
 */
 
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
-
 Route::get('/rooms', fn () => view('pages.rooms'));
-
 Route::get('/gallery', fn () => view('pages.gallery'));
-
 Route::get('/experience', fn () => view('pages.experience'));
-
 Route::get('/profile', fn () => view('pages.profile'));
+
+// Book now routes
+Route::get('/calendar', fn () => view('pages.calendar'));
+Route::get('/room-selection', fn () => view('pages.room-selection'));
 
 // Admin Auth Routes
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
