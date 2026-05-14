@@ -88,14 +88,14 @@
     {{-- Room Selection Container --}}
     <div class="selection-container">
         
-        {{-- Arunika --}}
+        {{-- Serene Heaven --}}
         <div class="room-selection-card">
             <div class="room-sel-image">
                 <img src="{{ asset('images/rooms/room_1.png') }}" alt="Arunika"> 
                 <span class="room-sel-tag">Male Only</span>
             </div>
             <div class="room-sel-content">
-                <h2>Arunika</h2>
+                <h2>Serene Heaven</h2>
                 <p class="room-sel-desc">A functional and minimalist space designed for maximum comfort and simplicity.</p>
                 
                 <div class="room-sel-features">
@@ -139,14 +139,14 @@
             </div>
         </div>
 
-        {{-- The Teak Nest --}}
+        {{-- Botanice --}}
         <div class="room-selection-card">
             <div class="room-sel-image">
                 <img src="{{ asset('images/rooms/room_2.png') }}" alt="The Teak Nest">
                 <span class="room-sel-tag">Male only</span>
             </div>
             <div class="room-sel-content">
-                <h2>The Teak Nest</h2>
+                <h2>Botanice</h2>
                 <p class="room-sel-desc">A refreshing tropical theme adorned with beautiful Brazilian Fern and bamboo interior decorations.</p>
                 
                 <div class="room-sel-features">
