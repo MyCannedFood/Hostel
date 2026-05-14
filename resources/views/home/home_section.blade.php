@@ -6,4 +6,5 @@
     @include('home.sections.living_ecosystem')
     @include('home.sections.map')
     @include('home.sections.guest_stories')
+    @include('components.footer')
 </div>

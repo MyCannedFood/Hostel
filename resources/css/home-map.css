@@ -59,7 +59,6 @@
     cursor: pointer;
     border-radius: 4px;
     transition: all 0.3s ease;
-    /* border: 1px solid rgba(255, 0, 0, 0.5); /* Uncomment for debugging positions */
 }
 
 .hotspot:hover {
