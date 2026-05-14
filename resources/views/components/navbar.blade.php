@@ -31,6 +31,8 @@
                 <!-- Link profile: navigasi langsung -->
                 <a href="/profile" style="text-decoration:none; color:#111; font-size:14px;">Profile</a>
             </div>
+
+            <a href="/calendar" style="text-decoration:none; background:#C07C4D; color:#fff; padding: 10px 24px; border-radius: 8px; font-size:14px; font-weight:600; transition: background 0.3s; white-space: nowrap;">Book Now</a>
         </div>
     </div>
 
