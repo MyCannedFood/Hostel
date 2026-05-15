@@ -268,7 +268,7 @@
             </div>
 
             {{-- Book Now --}}
-            <a href="/rooms"
+            <a href="/calendar"
                class="alas-book-btn"
                style="
                     text-decoration: none;
