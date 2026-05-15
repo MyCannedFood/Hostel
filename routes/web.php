@@ -19,6 +19,8 @@ Route::get('/profile', fn () => view('pages.profile'));
 // Book now routes
 Route::get('/calendar', fn () => view('pages.calendar'));
 Route::get('/room-selection', fn () => view('pages.room-selection'));
+Route::get('/bed-shared-room', fn () => view('pages.bed-shared-room'));
+
 
 // Admin Auth Routes
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');

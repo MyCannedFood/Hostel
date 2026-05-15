@@ -135,7 +135,7 @@
                     </div>
                 </div>
 
-                <button class="btn-select-room">SELECT</button>
+                <a class="btn-select-room" href="/bed-shared-room" style="text-decoration: none; display: inline-block;">SELECT</a>
             </div>
         </div>
 
@@ -184,7 +184,7 @@
                     </div>
                 </div>
 
-                <button class="btn-select-room">SELECT</button>
+                <a class="btn-select-room" href="/bed-shared-room" style="text-decoration: none; display: inline-block;">SELECT</a>
             </div>
         </div>
 
@@ -235,7 +235,8 @@
                     </div>
                 </div>
 
-                <button class="btn-select-room">SELECT</button>
+                <a class="btn-select-room" href="/bed-shared-room" style="text-decoration: none; display: inline-block;">SELECT</a>
+
             </div>
         </div>
 
@@ -248,7 +249,7 @@
                 <span>Selected: <strong>Arunika Bed</strong></span>
                 <span>Total: <strong>IDR 0</strong></span>
             </div>
-            <button class="btn-continue">CONTINUE TO DETAILS</button>
+            <a class="btn-continue" href="/bed-shared-room" style="text-decoration: none; display: inline-block;">CONTINUE TO DETAILS</a>
         </div>
     </div>
 

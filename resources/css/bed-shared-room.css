@@ -1,0 +1,129 @@
+@import "./room-selection.css";
+
+/* Reuse room-selection design tokens & components.
+   Only add page-specific classes below. */
+
+/* Make checkboxes look like the wizard calendar selection (green when checked)
+   Note: accent-color support can vary by browser. We also set background/border via appearance reset.
+*/
+.wizard-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #4B9960;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 1px solid #B8D9A0;
+    border-radius: 4px;
+    background: #FCFCFA;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.wizard-checkbox input[type="checkbox"]:checked {
+    background: #4B9960;
+    border-color: #4B9960;
+}
+
+.wizard-checkbox input[type="checkbox"]:checked::after {
+    content: "";
+    display: block;
+    width: 6px;
+    height: 10px;
+    margin: 2px 0 0 5px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+} 
+
+
+.wizard-step-container {
+    padding-bottom: 120px;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.wizard-card {
+    background: #FFF;
+    border-radius: 12px;
+    border: 1px solid #EAEAEA;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.wizard-card-title {
+    font-family: var(--font-serif);
+    color: var(--color-primary);
+    font-size: 18px;
+    margin: 0 0 14px;
+}
+
+.wizard-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.wizard-checkbox {
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background: #FCFCFA;
+}
+
+.wizard-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-accent);
+}
+
+.wizard-checkbox span {
+    font-size: 13px;
+    color: #333;
+    font-weight: 600;
+}
+
+.wizard-dates-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.wizard-date-field label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.wizard-input-box {
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    background: #FCFCFA;
+    padding: 12px;
+}
+
+.wizard-input-box input[type="date"] {
+    width: 100%;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: #333;
+}
+
+@media (max-width: 850px) {
+    .wizard-checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+    .wizard-dates-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
