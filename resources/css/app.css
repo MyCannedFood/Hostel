@@ -7,6 +7,7 @@
 @import "./booking-header.css";
 @import "./booking-summary-bar.css";
 @import "./room-selection.css";
+@import "./bed-shared-room.css";
 @import "./booking-bottom-bar.css";
 
 :root {

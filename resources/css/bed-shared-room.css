@@ -1,586 +1,261 @@
-/* ============================================================
-   bed-shared-room.css  –  AlaSare Bed & Shared Room Step
-   Matches the Group_1.png design exactly
-   ============================================================ */
-
-/* ── Page wrapper ── */
-.selection-page {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 0 20px 120px;
+/* Bed Shared Room Styles */
+.bed-room-page {
     background-color: var(--color-bg-light);
+    min-height: 100vh;
+    padding-top: 40px;
+    padding-bottom: 120px; /* Space for bottom bar */
 }
 
-/* ── Booking Stepper ── */
-.booking-stepper {
+.bed-room-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Room Detail Card */
+.room-detail-card {
+    background: #FFF;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    padding: 24px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    padding: 18px 0 14px;
-    border-bottom: 1px solid #e8e4dc;
-    margin-bottom: 0;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    background: var(--color-bg-light);
+    gap: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    position: relative;
 }
 
-.step {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-sans);
-    font-size: 12px;
-    color: #aaa;
-    white-space: nowrap;
-    font-weight: 400;
-}
-
-.step.completed .step-icon {
-    background-color: var(--color-primary);
-    color: #fff;
-    border-color: var(--color-primary);
-}
-
-.step.completed {
-    color: var(--color-primary);
-}
-
-.step.active {
-    color: var(--color-accent);
-}
-
-.step.active .step-icon {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-    font-weight: 600;
-}
-
-.step-icon {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 1.5px solid #ccc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-weight: 500;
-    flex-shrink: 0;
-}
-
-.step-divider {
-    width: 32px;
-    height: 1px;
-    background: #d4cfc4;
-    margin: 0 4px;
-    flex-shrink: 0;
-}
-
-/* ── Page Header ── */
-.selection-header {
-    text-align: center;
-    padding: 36px 0 28px;
-}
-
-.selection-header h1 {
-    font-family: var(--font-serif);
-    font-size: 38px;
-    font-weight: 400;
-    color: #1a1a1a;
-    margin: 0 0 8px;
-    letter-spacing: -0.3px;
-}
-
-.selection-header p {
-    font-family: var(--font-body);
-    font-size: 13.5px;
-    color: #666;
-    margin: 0;
-}
-
-/* ── Summary Bar ── */
-.calendar-summary-bar {
-    background: #fff;
-    border: 1px solid #e5e1d8;
-    border-radius: 10px;
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
-.summary-inputs {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.summary-item {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 13px;
-    color: #444;
-    font-family: var(--font-body);
-}
-
-.summary-item svg {
-    width: 15px;
-    height: 15px;
-    color: #888;
-    flex-shrink: 0;
-}
-
-.summary-item strong {
-    font-weight: 600;
-    color: #222;
-}
-
-.summary-inputs .divider {
-    width: 1px;
-    height: 18px;
-    background: #ddd;
-}
-
-.promo-section {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.promo-input-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    border: 1px solid #e0dbd2;
+.room-type-tag {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: #F9F9F9;
+    border: 1px solid #EAEAEA;
+    padding: 6px 12px;
     border-radius: 6px;
-    padding: 7px 12px;
-    background: #faf9f5;
-}
-
-.promo-input-wrapper input {
-    border: none;
-    background: transparent;
-    font-size: 12.5px;
+    font-size: 12px;
+    color: #666;
     font-family: var(--font-body);
-    color: #555;
-    outline: none;
-    width: 130px;
 }
 
-.promo-input-wrapper input::placeholder {
-    color: #aaa;
+.room-detail-image {
+    width: 200px;
+    height: 150px;
+    border-radius: 8px;
+    object-fit: cover;
 }
 
-.apply-btn {
-    font-size: 12.5px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    color: var(--color-accent);
-    text-decoration: none;
-    letter-spacing: 0.3px;
+.room-detail-info {
+    flex: 1;
 }
 
-/* ── Filter Tabs + Nights Indicator ── */
-.calendar-controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.room-detail-title {
+    font-size: 24px;
+    color: var(--color-primary);
+    font-family: var(--font-serif);
+    margin-bottom: 8px;
+    margin-top: 0;
+}
+
+.room-detail-desc {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.5;
+    margin-bottom: 16px;
+}
+
+.room-detail-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
 
-.filter-tabs {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-}
-
-.filter-tab {
-    font-family: var(--font-body);
-    font-size: 12.5px;
-    font-weight: 500;
-    padding: 7px 14px;
-    border-radius: 20px;
-    border: 1px solid #d8d3c9;
-    background: transparent;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.18s ease;
-}
-
-.filter-tab.active,
-.filter-tab:hover {
-    background: var(--color-primary);
-    color: #fff;
-    border-color: var(--color-primary);
-}
-
-.nights-indicator {
+.feature-item {
     display: flex;
     align-items: center;
-    gap: 5px;
-    font-size: 12.5px;
-    color: #666;
-    font-family: var(--font-body);
-    white-space: nowrap;
+    gap: 8px;
+    font-size: 13px;
+    color: #333;
 }
 
-.nights-indicator svg {
-    width: 14px;
-    height: 14px;
+.feature-item svg {
+    width: 16px;
+    height: 16px;
+    stroke: #8AA482; /* Muted green */
 }
 
-/* ── Selection Container ── */
-.selection-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+/* Floor Plan Area */
+.floor-plan-section {
+    background: #FFF;
+    border: 1px solid #EAEAEA;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    text-align: center;
+    position: relative;
 }
 
-/* ── Room Selection Card ── */
-.room-selection-card {
+.floor-plan-image {
+    max-width: 100%;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Room Rules */
+.room-rules-section {
     background: #fff;
     border: 1px solid #e5e1d8;
     border-radius: 12px;
     overflow: hidden;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
-/* Card header row: room info */
-.room-card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid #f0ece4;
-}
-
-.room-card-header h2,
-.room-sel-content h2 {
-    font-family: var(--font-serif);
-    font-size: 20px;
-    font-weight: 500;
-    color: #1a1a1a;
-    margin: 0;
-}
-
-.room-type-badge {
-    font-size: 11.5px;
-    font-family: var(--font-body);
-    color: #555;
-    border: 1px solid #d8d3c9;
-    border-radius: 20px;
-    padding: 4px 12px;
-    background: #faf9f5;
-}
-
-/* Room info row: image + details */
-.room-sel-image {
+.rules-banner-wrap {
     position: relative;
-    width: 160px;
-    flex-shrink: 0;
 }
 
-.room-sel-image img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    display: block;
-    border-radius: 8px;
-}
-
-.room-sel-tag {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    background: var(--color-primary);
-    color: #fff;
-    font-size: 10px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    padding: 3px 9px;
-    border-radius: 4px;
-    text-transform: uppercase;
-}
-
-.room-sel-content {
-    flex: 1;
-    padding: 0;
-}
-
-.room-sel-desc {
-    font-size: 13px;
-    color: #666;
-    font-family: var(--font-body);
-    margin: 4px 0 14px;
-    line-height: 1.5;
-}
-
-/* Features grid */
-.room-sel-features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px 18px;
-    margin-bottom: 16px;
-}
-
-.sel-feature {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: #555;
-    font-family: var(--font-body);
-}
-
-.sel-feature svg {
-    width: 14px;
-    height: 14px;
-    stroke: #888;
-    fill: none;
-    stroke-width: 2;
-    flex-shrink: 0;
-}
-
-/* --- Rewrite layout to match design exactly --- */
-/* The card is structured as:
-   1. Header row (room title + badge)
-   2. Body row (image left, info right)
-   3. Dashed floor plan box
-   4. Locker image + room rules
-   5. Roommate section
-*/
-
-.room-selection-card .room-card-header {
-    padding: 16px 20px 14px;
-}
-
-.room-card-body {
-    display: flex;
-    gap: 16px;
-    padding: 16px 20px 20px;
-    align-items: flex-start;
-}
-
-/* Bed availability */
-.bed-availability-section {
-    margin-top: 4px;
-}
-
-.bed-availability-section h4 {
-    font-family: var(--font-body);
-    font-size: 12px;
-    font-weight: 600;
-    color: #444;
-    margin: 0 0 8px;
-    letter-spacing: 0.2px;
-}
-
-.bed-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-.bed-badge {
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
-    border: 1.5px solid #d8d3c9;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    color: #555;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    background: #faf9f5;
-}
-
-.bed-badge.available {
-    border-color: #c4bfb4;
-    color: #444;
-}
-
-.bed-badge.selected {
-    background: var(--color-primary);
-    border-color: var(--color-primary);
-    color: #fff;
-}
-
-.bed-badge.occupied {
-    background: #f0ece4;
-    border-color: #e0dbd2;
-    color: #bbb;
-    cursor: not-allowed;
-    text-decoration: line-through;
-}
-
-.bed-badge.available:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
-}
-
-/* Floor plan area */
-.floor-plan-area {
-    border: 1.5px dashed #d4cfc4;
-    border-radius: 8px;
-    margin: 0 20px 20px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #faf9f5;
-    min-height: 280px;
-}
-
-.floor-plan-area img {
-    width: auto;
-    max-width: 100%;
-    max-height: 340px;
-    display: block;
-    object-fit: contain;
-}
-
-/* Locker / amenity image */
-.locker-image-wrapper {
-    position: relative;
-    margin: 0 20px 0;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.locker-image-wrapper img {
+.rules-banner {
     width: 100%;
     height: 110px;
     object-fit: cover;
     display: block;
-    border-radius: 10px;
 }
 
-.locker-badge {
+.rules-secure-badge {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: rgba(0,0,0,0.55);
-    color: #fff;
-    font-size: 10px;
+    background: #fff;
+    color: var(--color-primary);
     font-family: var(--font-body);
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.8px;
-    padding: 4px 10px;
+    letter-spacing: 0.7px;
+    padding: 5px 10px;
     border-radius: 4px;
     text-transform: uppercase;
 }
 
-/* Room Rules */
-.room-rules {
-    padding: 16px 20px 20px;
+.rules-content {
+    padding: 18px 20px 22px;
 }
 
-.room-rules h4 {
+.rules-title {
     font-family: var(--font-body);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    color: #222;
-    margin: 0 0 10px;
+    color: var(--color-primary);
+    margin: 0 0 14px;
 }
 
-.room-rules ul {
+.rules-list {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 10px;
 }
 
-.room-rules li {
+.rule-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12.5px;
-    color: #555;
+    gap: 10px;
     font-family: var(--font-body);
+    font-size: 12.5px;
+    color: #4a4a4a;
 }
 
-.room-rules li .rule-icon {
-    font-size: 14px;
+.rule-item svg {
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
+    stroke: var(--color-accent);
 }
 
-/* Roommates section */
+/* Roommates Section */
 .roommates-section {
-    padding: 0 0 8px;
+    margin-bottom: 40px;
 }
 
-.roommates-section h3 {
+.section-title {
     font-family: var(--font-serif);
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 500;
-    color: #1a1a1a;
-    margin: 0 0 16px;
-    padding: 0 0 0 0;
+    color: var(--color-primary);
+    margin: 0 0 18px;
 }
 
 .roommate-card {
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    padding: 18px 20px;
-    border-top: 1px solid #f0ece4;
     background: #fff;
-    position: relative;
-}
-
-.roommate-card:first-of-type {
-    border-top: none;
+    border: 1px solid #e5e1d8;
+    border-radius: 12px;
+    display: flex;
+    align-items: stretch;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
 }
 
 .roommate-photo {
-    width: 90px;
-    height: 90px;
-    border-radius: 8px;
+    width: 118px;
+    min-height: 100%;
     object-fit: cover;
     flex-shrink: 0;
+    border-radius: 0;
 }
 
 .roommate-info {
     flex: 1;
+    padding: 18px 20px 20px 18px;
+    min-width: 0;
 }
 
-.roommate-info h4 {
+.roommate-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.roommate-name {
     font-family: var(--font-serif);
     font-size: 17px;
     font-weight: 500;
-    color: #1a1a1a;
-    margin: 0 0 3px;
+    color: var(--color-primary);
+    margin: 0;
+    line-height: 1.3;
 }
 
-.roommate-meta {
+.roommate-bed-tag {
+    flex-shrink: 0;
+    background: #faf9f5;
+    border: 1px solid #e0dbd2;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    color: var(--color-primary);
+    white-space: nowrap;
+}
+
+.roommate-role {
+    font-family: var(--font-body);
     font-size: 12px;
-    color: #888;
-    font-family: var(--font-body);
-    margin: 0 0 8px;
-}
-
-.roommate-meta strong {
-    color: var(--color-accent);
-    font-weight: 500;
-}
-
-.roommate-bio {
-    font-size: 12.5px;
-    color: #555;
-    font-family: var(--font-body);
-    line-height: 1.5;
+    color: #6b8f71;
     margin: 0 0 10px;
+}
+
+.roommate-desc {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    color: #4a4a4a;
+    line-height: 1.55;
+    margin: 0 0 12px;
 }
 
 .roommate-tags {
@@ -590,127 +265,45 @@
 }
 
 .roommate-tag {
-    font-size: 11px;
-    font-family: var(--font-body);
-    color: #666;
-    background: #f2ede6;
+    background: #e8f0ea;
+    color: var(--color-primary);
+    padding: 4px 10px;
     border-radius: 20px;
-    padding: 3px 10px;
+    font-family: var(--font-body);
+    font-size: 11px;
     font-weight: 500;
 }
 
-.roommate-bed-badge {
-    position: absolute;
-    top: 18px;
-    right: 20px;
-    font-size: 11px;
-    font-family: var(--font-body);
-    color: #555;
-    background: #faf9f5;
-    border: 1px solid #e0dbd2;
-    border-radius: 20px;
-    padding: 4px 10px;
-    white-space: nowrap;
-}
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .room-detail-card {
+        flex-direction: column;
+    }
 
-/* ── SELECT button ── */
-.btn-select-room {
-    display: inline-block;
-    margin-top: 16px;
-    padding: 10px 28px;
-    background: var(--color-primary);
-    color: #fff;
-    font-family: var(--font-body);
-    font-size: 12.5px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.18s ease;
-}
+    .room-detail-image {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+    }
 
-.btn-select-room:hover {
-    background: #254d12;
-}
+    .room-type-tag {
+        position: static;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
 
-/* ── Bottom sticky bar ── */
-.selection-bottom-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border-top: 1px solid #e5e1d8;
-    z-index: 100;
-    padding: 12px 20px;
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.07);
-}
+    .roommate-card {
+        flex-direction: column;
+    }
 
-.bottom-bar-content {
-    max-width: 700px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
+    .roommate-photo {
+        width: 100%;
+        height: 180px;
+    }
 
-.selection-info {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
-
-.selection-info span {
-    font-family: var(--font-body);
-    font-size: 12.5px;
-    color: #555;
-}
-
-.selection-info strong {
-    color: #1a1a1a;
-    font-weight: 600;
-}
-
-.selection-bottom-bar .bottom-actions {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-back {
-    padding: 10px 20px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 0.4px;
-    border: 1.5px solid var(--color-primary);
-    background: transparent;
-    color: var(--color-primary);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.18s ease;
-}
-
-.btn-back:hover {
-    background: var(--color-primary);
-    color: #fff;
-}
-
-.btn-continue {
-    padding: 10px 22px;
-    font-family: var(--font-body);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    background: var(--color-accent);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.18s ease;
-}
-
-.btn-continue:hover {
-    background: #c06830;
+    .roommate-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
 }
