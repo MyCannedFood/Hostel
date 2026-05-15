@@ -366,10 +366,15 @@
             Book Now
         </a>
     </div>
+
+
+    {{-- Global WhatsApp floating button --}}
+    @include('components.whatsapp_floating')
 </nav>
 
 <script>
 (function () {
+
 
     const hamburger = document.getElementById('alasHamburger');
     const drawer = document.getElementById('alasDrawer');
