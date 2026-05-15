@@ -4,6 +4,7 @@
 @import "./rooms-sanctuaries.css";
 @import "./calendar.css";
 @import "./room-selection.css";
+@import "./journal.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);

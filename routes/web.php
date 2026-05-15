@@ -15,6 +15,8 @@ Route::get('/rooms', fn () => view('pages.rooms'));
 Route::get('/gallery', fn () => view('pages.gallery'));
 Route::get('/experience', fn () => view('pages.experience'));
 Route::get('/profile', fn () => view('pages.profile'));
+Route::get('/journal', fn () => view('pages.journal'));
+Route::get('/journal/detail', fn () => view('pages.journal-detail'));
 
 // Book now routes
 Route::get('/calendar', fn () => view('pages.calendar'));
