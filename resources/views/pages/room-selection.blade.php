@@ -12,65 +12,18 @@
 
 <main class="selection-page">
     
-    {{-- Booking Stepper --}}
-    <nav class="booking-stepper">
-        <div class="step completed">
-            <span class="step-icon">✓</span>
-            <span>Calendar</span>
-        </div>
-        <div class="step-divider"></div>
-        <div class="step active">
-            <span class="step-icon">2</span>
-            <span>Room Selection</span>
-        </div>
-        <div class="step-divider"></div>
-        <div class="step">
-            <span class="step-icon">3</span>
-            <span>Bed & Shared Room</span>
-        </div>
-        <div class="step-divider"></div>
-        <div class="step">
-            <span class="step-icon">4</span>
-            <span>Guest Details</span>
-        </div>
-        <div class="step-divider"></div>
-        <div class="step">
-            <span class="step-icon">5</span>
-            <span>Confirm & Payment</span>
-        </div>
-    </nav>
+    <x-booking-stepper :currentStep="2" />
 
-    <header class="selection-header">
-        <h1>Select Your Bed</h1>
-        <p>Setiap ruang peristirahatan dirancang unik untuk kenyamanan Anda.</p>
-    </header>
+    <x-booking-header 
+        title="Select Your Bed" 
+        subtitle="Setiap ruang peristirahatan dirancang unik untuk kenyamanan Anda." 
+    />
 
-    {{-- Summary Bar (Reused from calendar style but in this page context) --}}
-    <div class="calendar-summary-bar" style="margin-bottom: 40px;">
-        <div class="summary-inputs">
-            <div class="summary-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>Check-in: <strong>15/05/2026</strong></span>
-            </div>
-            <div class="divider"></div>
-            <div class="summary-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>Check-out: <strong>20/05/2026</strong></span>
-            </div>
-            <div class="divider"></div>
-            <div class="summary-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span><strong>1 Male Guest</strong></span>
-            </div>
-        </div>
-        <div class="promo-section">
-            <div class="promo-input-wrapper">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D37D4F" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                <input type="text" placeholder="Apply Promo Code">
-            </div>
-            <a href="#" class="apply-btn">Apply</a>
-        </div>
-    </div>
+    <x-booking-summary-bar 
+        checkIn="15/05/2026"
+        checkOut="20/05/2026"
+        guests="1 Male Guest"
+    />
 
     {{-- Filter Tabs --}}
     <div class="calendar-controls" style="margin-bottom: 24px;">
@@ -242,16 +195,16 @@
 
     </div>
 
-    {{-- Bottom Bar --}}
-    <div class="selection-bottom-bar">
-        <div class="bottom-bar-content">
-            <div class="selection-info">
-                <span>Selected: <strong>Arunika Bed</strong></span>
-                <span>Total: <strong>IDR 0</strong></span>
-            </div>
-            <a class="btn-continue" href="/bed-shared-room" style="text-decoration: none; display: inline-block;">CONTINUE TO DETAILS</a>
-        </div>
-    </div>
+    {{-- Reusable Bottom Bar Component --}}
+    <x-booking-bottom-bar 
+        title="Select Your Room"
+        label="EST.Total"
+        value="IDR 625.000"
+        backUrl="/calendar"
+        backText="Back To Calender"
+        continueUrl="/bed-shared-room"
+        continueText="Continue To Bed"
+    />
 
 </main>
 

@@ -1,0 +1,17 @@
+.booking-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.booking-header h1 {
+    font-family: var(--font-serif);
+    font-size: 36px;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.booking-header p {
+    font-size: 14px;
+    color: #666;
+    font-family: var(--font-body);
+}
