@@ -3,7 +3,11 @@
 @import "./main-footer.css";
 @import "./rooms-sanctuaries.css";
 @import "./calendar.css";
+@import "./booking-stepper.css";
+@import "./booking-header.css";
+@import "./booking-summary-bar.css";
 @import "./room-selection.css";
+@import "./booking-bottom-bar.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);
