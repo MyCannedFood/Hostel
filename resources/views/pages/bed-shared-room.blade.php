@@ -73,7 +73,7 @@
             <div class="floor-plan-interactive-wrapper">
                 <img src="{{ asset('images/sharedroom/serene-haven-floorplan.png') }}" alt="Floor Plan" class="floor-plan-image" onerror="this.src='https://images.unsplash.com/photo-1593696140826-c58b021acf8b?auto=format&fit=crop&q=80&w=800'">
                 
-                {{-- Ranjang Kiri Atas (Julian) --}}
+                {{-- Ranjang Kiri Atas (Julian) - SUDAH PAS --}}
                 <div class="bed-hotspot" style="top: 7%; left: 30%; width: 34%; height: 20%;">
                     <div class="hotspot-indicator"></div>
                     <div class="hotspot-popup-container popup-right">
@@ -84,14 +84,12 @@
                             guestRole="Senior Architect"
                             guestImage="{{ asset('images/sharedroom/julian.png') }}"
                             bedPrice="IDR 125.000"
-                            :addons="[
-                                ['name' => 'Dinner Feast AlaSare', 'price' => 'IDR 35.000']
-                            ]"
+                            :addons="[['name' => 'Dinner Feast AlaSare', 'price' => 'IDR 35.000']]"
                         />
                     </div>
                 </div>
 
-                {{-- Ranjang Kanan (Liam) --}}
+                {{-- Ranjang Kanan (Liam) - SUDAH PAS --}}
                 <div class="bed-hotspot" style="top: 8%; left: 68%; width: 21%; height: 36%;">
                     <div class="hotspot-indicator"></div>
                     <div class="hotspot-popup-container popup-left">
@@ -106,6 +104,34 @@
                                 ['name' => 'Breakfast AlaSare', 'note' => '(for free)', 'price' => 'IDR 35.000', 'discount' => '- IDR 35.000'],
                                 ['name' => 'Dinner Feast AlaSare', 'price' => 'IDR 35.000']
                             ]"
+                        />
+                    </div>
+                </div>
+                
+                {{-- PERBAIKAN PAS: Ranjang Kiri Tengah (Bed Unit 3) --}}
+                {{-- Kosong Total & Kedua tingkat berstatus SELECTED --}}
+                <div class="bed-hotspot" style="top: 36%; left: 29.5%; width: 20%; height: 35%;">
+                    <div class="hotspot-indicator"></div>
+                    <div class="hotspot-popup-container popup-right">
+                        <x-bed-popup 
+                            unitName="BED UNIT 3"
+                            bedPrice="IDR 125.000"
+                            isTotalAvailable="true"
+                            :addons="[]"
+                        />
+                    </div>
+                </div>
+
+                {{-- PERBAIKAN PAS: Ranjang Kiri Bawah (Bed Unit 4) --}}
+                {{-- Kosong Total & Kedua tingkat berstatus SELECTED --}}
+                <div class="bed-hotspot" style="top: 73%; left: 30%; width: 34%; height: 19%;">
+                    <div class="hotspot-indicator"></div>
+                    <div class="hotspot-popup-container popup-right">
+                        <x-bed-popup 
+                            unitName="BED UNIT 4"
+                            bedPrice="IDR 125.000"
+                            isTotalAvailable="true"
+                            :addons="[]"
                         />
                     </div>
                 </div>
