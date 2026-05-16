@@ -355,3 +355,251 @@
         gap: 8px;
     }
 }
+
+
+/* ==========================================================================
+   KODE BARU TAMBAHAN: KHUSUS UTK POP-UP & INTERAKTIF DENAH (TERISOLASI)
+   ========================================================================== */
+
+.floor-plan-interactive-wrapper {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+
+.bed-hotspot {
+    position: absolute;
+    cursor: pointer;
+    border: 2px dashed rgba(255, 255, 255, 0.6);
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 10;
+    box-sizing: border-box;
+}
+
+.bed-hotspot:hover {
+    border-color: #3a5c42;
+    background-color: rgba(58, 92, 66, 0.25);
+}
+
+.hotspot-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background-color: #3a5c42;
+    border-radius: 50%;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.hotspot-indicator::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: #fff;
+    border-radius: 50%;
+}
+
+.hotspot-popup-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 330px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 100;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+
+.bed-hotspot:hover .hotspot-popup-container {
+    visibility: visible;
+    opacity: 1;
+}
+
+.popup-right { left: 115%; }
+.popup-left { right: 115%; }
+
+/* Styling Komponen Custom Pop-up */
+.custom-bed-popup {
+    background-color: #f9f8f3;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    border: 2px solid #e0dbd2;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+/* Membatasi box-sizing hanya dalam scope pop-up ini saja */
+.custom-bed-popup * {
+    box-sizing: border-box;
+}
+
+.custom-bed-popup .popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.custom-bed-popup .unit-title {
+    color: #1b3d22;
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.custom-bed-popup .badge-available, 
+.custom-bed-popup .badge-occupied, 
+.custom-bed-popup .badge-selected {
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.custom-bed-popup .badge-available { background-color: #1b3d22; color: white; }
+.custom-bed-popup .badge-occupied { background-color: #d1e2c9; color: #6a885e; }
+.custom-bed-popup .badge-selected { background-color: #c67139; color: white; }
+
+.custom-bed-popup .bed-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.custom-bed-popup .icon-circle {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #e8ecd7;
+    color: #556041;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.custom-bed-popup .icon-selected {
+    background-color: #fae6d1;
+    color: #c46830;
+}
+
+.custom-bed-popup .bed-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.custom-bed-popup .bed-name {
+    color: #1b3d22;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.custom-bed-popup .bed-price {
+    font-size: 12px;
+    color: #444;
+    margin-top: 2px;
+}
+
+.custom-bed-popup .guest-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 40px;
+    margin-bottom: 16px;
+}
+
+.custom-bed-popup .guest-img {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.custom-bed-popup .guest-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-bed-popup .guest-name {
+    color: #1b3d22;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 2px 0;
+}
+
+.custom-bed-popup .guest-role {
+    color: #5db075;
+    font-size: 11px;
+    margin: 0;
+}
+
+.custom-bed-popup .popup-divider {
+    border: 0;
+    height: 1px;
+    background-color: #e5e1d8;
+    margin: 14px 0;
+}
+
+.custom-bed-popup .addons-container {
+    margin-left: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.custom-bed-popup .addon-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.custom-bed-popup .checkbox-checked {
+    width: 16px;
+    height: 16px;
+    background-color: #c67139;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.custom-bed-popup .checkbox-checked svg {
+    width: 10px;
+    height: 10px;
+}
+
+.custom-bed-popup .addon-info { display: flex; flex-direction: column; }
+.custom-bed-popup .addon-name { color: #1b3d22; font-weight: 700; font-size: 13.5px; }
+.custom-bed-popup .addon-note { color: #8fb193; font-weight: normal; font-size: 11.5px; }
+.custom-bed-popup .addon-price { font-size: 11.5px; color: #444; margin-top: 2px; }
+.custom-bed-popup .addon-price.has-discount { text-decoration: line-through; color: #1b3d22; }
+.custom-bed-popup .addon-discount { font-size: 11.5px; color: #c46830; margin-top: 2px; }
+
+@media (max-width: 768px) {
+    .hotspot-popup-container {
+        position: fixed;
+        top: 50%;
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%);
+        z-index: 999;
+    }
+}

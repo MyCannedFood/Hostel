@@ -26,6 +26,7 @@
                 guests="1 Male Guest"
             />
         </div>
+
         {{-- Room Detail Card --}}
         <div class="room-section-header">
             <h2 class="room-section-title">Room &nbsp;Serene Haven</h2>
@@ -56,7 +57,7 @@
                         <span>Wi-Fi</span>
                     </div>
                     <div class="feature-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="0" ry="0"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         <span>Personal Locker</span>
                     </div>
                     <div class="feature-item">
@@ -69,8 +70,46 @@
 
         {{-- Floor Plan Section --}}
         <div class="floor-plan-section">
-            <img src="{{ asset('images/sharedroom/serene-haven-floorplan.png') }}" alt="Floor Plan" class="floor-plan-image" onerror="this.src='https://images.unsplash.com/photo-1593696140826-c58b021acf8b?auto=format&fit=crop&q=80&w=800'">
-            {{-- Interactive points would go here, maybe handled by JS later --}}
+            <div class="floor-plan-interactive-wrapper">
+                <img src="{{ asset('images/sharedroom/serene-haven-floorplan.png') }}" alt="Floor Plan" class="floor-plan-image" onerror="this.src='https://images.unsplash.com/photo-1593696140826-c58b021acf8b?auto=format&fit=crop&q=80&w=800'">
+                
+                {{-- Ranjang Kiri Atas (Julian) --}}
+                <div class="bed-hotspot" style="top: 7%; left: 30%; width: 34%; height: 20%;">
+                    <div class="hotspot-indicator"></div>
+                    <div class="hotspot-popup-container popup-right">
+                        <x-bed-popup 
+                            unitName="BED UNIT 1"
+                            guestName="Julian Harrison"
+                            guestAge="29"
+                            guestRole="Senior Architect"
+                            guestImage="{{ asset('images/sharedroom/julian.png') }}"
+                            bedPrice="IDR 125.000"
+                            :addons="[
+                                ['name' => 'Dinner Feast AlaSare', 'price' => 'IDR 35.000']
+                            ]"
+                        />
+                    </div>
+                </div>
+
+                {{-- Ranjang Kanan (Liam) --}}
+                <div class="bed-hotspot" style="top: 8%; left: 68%; width: 21%; height: 36%;">
+                    <div class="hotspot-indicator"></div>
+                    <div class="hotspot-popup-container popup-left">
+                        <x-bed-popup 
+                            unitName="BED UNIT 2"
+                            guestName="Liam Smith"
+                            guestAge="25"
+                            guestRole="Full-stack Developer"
+                            guestImage="{{ asset('images/sharedroom/liam.png') }}"
+                            bedPrice="IDR 125.000"
+                            :addons="[
+                                ['name' => 'Breakfast AlaSare', 'note' => '(for free)', 'price' => 'IDR 35.000', 'discount' => '- IDR 35.000'],
+                                ['name' => 'Dinner Feast AlaSare', 'price' => 'IDR 35.000']
+                            ]"
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
 
         {{-- Room Rules Section --}}
@@ -106,36 +145,38 @@
         <div class="roommates-section">
             <h3 class="section-title">Kenali Calon Teman Sekamar</h3>
             
-            <div class="roommate-card">
-                <img src="{{ asset('images/sharedroom/julian.png') }}" alt="Julian Harrison" class="roommate-photo">
-                <div class="roommate-info">
-                    <div class="roommate-header-row">
-                        <h4 class="roommate-name">Julian Harrison</h4>
-                        <span class="roommate-bed-tag">Bed: 1 Top Bed</span>
-                    </div>
-                    <p class="roommate-role">29 years old &bull; Senior Architect</p>
-                    <p class="roommate-desc">Focusing on sustainable urban spaces during my stay. Love to start the day with a jog and find the best local espresso. Looking forward to sharing the space!</p>
-                    <div class="roommate-tags">
-                        <span class="roommate-tag">Sustainability</span>
-                        <span class="roommate-tag">Urban Design</span>
-                        <span class="roommate-tag">Coffee Connoisseur</span>
+            <div class="roommates-row-container">
+                <div class="roommate-card">
+                    <img src="{{ asset('images/sharedroom/julian.png') }}" alt="Julian Harrison" class="roommate-photo">
+                    <div class="roommate-info">
+                        <div class="roommate-header-row">
+                            <h4 class="roommate-name">Julian Harrison</h4>
+                            <span class="roommate-bed-tag">Bed: 1 Top Bed</span>
+                        </div>
+                        <p class="roommate-role">29 years old &bull; Senior Architect</p>
+                        <p class="roommate-desc">Focusing on sustainable urban spaces during my stay. Love to start the day with a jog and find the best local espresso. Looking forward to sharing the space!</p>
+                        <div class="roommate-tags">
+                            <span class="roommate-tag">Sustainability</span>
+                            <span class="roommate-tag">Urban Design</span>
+                            <span class="roommate-tag">Coffee Connoisseur</span>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="roommate-card">
-                <img src="{{ asset('images/sharedroom/liam.png') }}" alt="Liam Smith" class="roommate-photo">
-                <div class="roommate-info">
-                    <div class="roommate-header-row">
-                        <h4 class="roommate-name">Liam Smith</h4>
-                        <span class="roommate-bed-tag">Bed: 2 Bottom Bed</span>
-                    </div>
-                    <p class="roommate-role">25 years old &bull; Full-stack Developer</p>
-                    <p class="roommate-desc">Working remotely while exploring Southeast Asia. Usually quiet when working, but always up for a sunset drink or exploring the night markets.</p>
-                    <div class="roommate-tags">
-                        <span class="roommate-tag">Code & Coffee</span>
-                        <span class="roommate-tag">Digital Nomad</span>
-                        <span class="roommate-tag">Hiking</span>
+                <div class="roommate-card">
+                    <img src="{{ asset('images/sharedroom/liam.png') }}" alt="Liam Smith" class="roommate-photo">
+                    <div class="roommate-info">
+                        <div class="roommate-header-row">
+                            <h4 class="roommate-name">Liam Smith</h4>
+                            <span class="roommate-bed-tag">Bed: 2 Bottom Bed</span>
+                        </div>
+                        <p class="roommate-role">25 years old &bull; Full-stack Developer</p>
+                        <p class="roommate-desc">Working remotely while exploring Southeast Asia. Usually quiet when working, but always up for a sunset drink or exploring the night markets.</p>
+                        <div class="roommate-tags">
+                            <span class="roommate-tag">Code & Coffee</span>
+                            <span class="roommate-tag">Digital Nomad</span>
+                            <span class="roommate-tag">Hiking</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -143,7 +184,6 @@
 
     </div>
 
-    {{-- Bottom Bar Component --}}
     <x-booking-bottom-bar 
         title="Serene Haven - 1 × Bottom Bed"
         label="EST.Total"
@@ -153,7 +193,6 @@
         continueUrl="/guest-details"
         continueText="Continue To Details"
     />
-
 </main>
 
 </body>
