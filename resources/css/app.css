@@ -10,7 +10,39 @@
 @import "./bed-shared-room.css";
 @import "./booking-bottom-bar.css";
 
+/* ---------- Global floating WhatsApp button ---------- */
+.whatsapp-float {
+    position: fixed;
+    right: 30px;
+    bottom: 30px; /* default when no fixed bottom bar collision */
+    width: 60px;
+    height: 60px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1001; /* ensure above bottom bar */
+    text-decoration: none;
+}
+
+
+.whatsapp-float svg {
+    display: block;
+}
+
+@media (max-width: 640px) {
+    .whatsapp-float {
+        right: 16px;
+        bottom: 90px;
+        width: 54px;
+        height: 54px;
+    }
+}
+
 :root {
+
     --color-primary: rgb(26, 61, 10);
     --color-accent: rgb(217, 134, 74);
     --color-bg-light: #FDFCF7;
