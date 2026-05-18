@@ -242,6 +242,11 @@
                     Experiences
                 </a>
 
+                <a href="/journal"
+                   class="{{ request()->is('journal') ? 'active-nav' : 'inactive-nav' }}">
+                    Journal
+                </a>
+
             </div>
         </div>
 
@@ -343,6 +348,11 @@
         <a href="/experience"
            class="{{ request()->is('experience') ? 'active-link' : '' }}">
             Experiences
+        </a>
+
+        <a href="/journal"
+           class="{{ request()->is('journal') ? 'active-link' : '' }}">
+            Journal
         </a>
 
         {{-- Mobile Language --}}
