@@ -6,6 +6,7 @@
 @import "./room-selection.css";
 @import "./journal.css";
 @import "./guest-details.css";
+@import "./confirm-payment.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);
