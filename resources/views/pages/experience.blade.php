@@ -37,7 +37,7 @@
             <div class="experience-card">
                 <div class="card-image-wrapper">
                     <span class="card-tag">WELLNESS</span>
-                    <img src="{{ asset('images/experience-jamu.jpg') }}" alt="Traditional Jamu Ritual" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800'">
+                    <img src="{{ asset('images/experience/Traditional Jamu Ritual.png') }}" alt="Traditional Jamu Ritual" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800'">
                 </div>
                 <div class="card-content">
                     <div class="card-meta">IDR 250.000 | 1 PERSON</div>
@@ -51,7 +51,7 @@
             <div class="experience-card">
                 <div class="card-image-wrapper">
                     <span class="card-tag">CULTURAL</span>
-                    <img src="{{ asset('images/experience-batik.jpg') }}" alt="Batik Canting Ritual" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80&w=800'">
+                    <img src="{{ asset('images/experience/Batik Canting Ritual.png') }}" alt="Batik Canting Ritual" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80&w=800'">
                 </div>
                 <div class="card-content">
                     <div class="card-meta">IDR 350.000 | 1 PERSON</div>
@@ -65,7 +65,7 @@
             <div class="experience-card">
                 <div class="card-image-wrapper">
                     <span class="card-tag">NATURE</span>
-                    <img src="{{ asset('images/experience-nature.jpg') }}" alt="Nurture the Earth" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1611080911579-2cd1ab8b50e4?auto=format&fit=crop&q=80&w=800'">
+                    <img src="{{ asset('images/experience/Nurture the Earth - Tree Planting.png') }}" alt="Nurture the Earth" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1611080911579-2cd1ab8b50e4?auto=format&fit=crop&q=80&w=800'">
                 </div>
                 <div class="card-content">
                     <div class="card-meta">IDR 200.000 | 1 PERSON</div>
