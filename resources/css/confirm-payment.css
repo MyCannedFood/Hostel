@@ -469,3 +469,244 @@
         height: 180px;
     }
 }
+
+/* ==========================================================================
+   Payment Success Modal Overlay & Styling
+   ========================================================================== */
+
+.payment-success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    padding: 20px;
+}
+
+.payment-success-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Modal Box Container */
+.payment-success-modal {
+    width: 100%;
+    max-width: 440px;
+    background: #FFF;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.payment-success-overlay.is-active .payment-success-modal {
+    transform: scale(1);
+}
+
+/* Dark Forest Green Header */
+.success-modal-header {
+    background-color: var(--color-primary);
+    /* Forest Green rgb(26, 61, 10) */
+    padding: 36px 24px 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #FFF;
+}
+
+/* Checkmark Animated Circle */
+.success-modal-header .checkmark-circle {
+    width: 52px;
+    height: 52px;
+    background-color: #FFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: success-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.success-modal-header .checkmark-circle svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--color-primary);
+}
+
+/* Success Header Text */
+.success-modal-header h2 {
+    font-family: var(--font-sans);
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0 0 14px 0;
+    color: #FFF;
+    letter-spacing: -0.5px;
+    text-transform: lowercase;
+}
+
+/* Booking ID Badge */
+.success-modal-header .booking-id-badge {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+}
+
+/* Modal Body Content */
+.success-modal-body {
+    padding: 30px 36px 24px; /* Increased horizontal padding to 36px */
+}
+
+/* Success Details List */
+.success-details-list {
+    list-style: none;
+    margin: 0 0 24px 0;
+    padding: 0;
+}
+
+.success-details-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 10px; /* Added 10px horizontal padding to make rows look a bit thicker/inset */
+    border-bottom: 1px solid #E6E6E6;
+}
+
+.success-details-list li:last-child {
+    border-bottom: none;
+}
+
+/* Detail Label with Icon */
+.success-details-list .detail-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #111;
+    font-weight: 600;
+    font-size: 13.5px;
+    font-family: var(--font-body);
+}
+
+.success-details-list .detail-label svg.icon-svg {
+    width: 17px;
+    height: 17px;
+    color: #4B9960;
+    stroke-width: 1.8;
+}
+
+/* Detail Value */
+.success-details-list .detail-value {
+    color: #4B9960;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: var(--font-sans);
+}
+
+/* Terracotta Price Badge Box */
+.total-price-box {
+    background-color: var(--color-accent);
+    /* Terracotta */
+    padding: 15px 18px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(217, 134, 74, 0.15);
+}
+
+.total-price-box .price-label {
+    color: var(--color-primary);
+    /* Dark Forest Green for nice premium contrast */
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.total-price-box .price-value {
+    color: var(--color-primary);
+    /* Dark Forest Green */
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+/* Outlined Action Buttons Group */
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-modal-outline {
+    background: transparent;
+    border: 1px solid #CCCCCC;
+    color: #4B9960;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 13.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-modal-outline:hover {
+    border-color: #4B9960;
+    background-color: #F8FBF8;
+}
+
+.btn-modal-outline svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+/* Email sent notification */
+.confirmation-sent-text {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    margin-top: 14px;
+}
+
+/* Animations */
+@keyframes success-pop {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
