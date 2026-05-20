@@ -575,17 +575,17 @@
             </div>
 
             <div class="gi reveal" data-category="people">
-                <img src="{{ asset('images/gallery/gardening.png') }}" alt="">
+                <img src="{{ asset('images/gallery/gardening-together.png') }}" alt="">
                 <span class="gi-label">Garden Together</span>
             </div>
 
             <div class="gi reveal" data-category="dining">
-                <img src="{{ asset('images/gallery/eating.png') }}" alt="">
+                <img src="{{ asset('images/gallery/eat-at-backyard.png') }}" alt="">
                 <span class="gi-label">Eat Tradisional Food</span>
             </div>
 
             <div class="gi reveal" data-category="people">
-                <img src="{{ asset('images\gallery\Learing-culture.jpg') }}" alt="">
+                <img src="{{ asset('images\gallery\blankon-hd.png') }}" alt="">
                 <span class="gi-label">Outdoor Gathering</span>
             </div>
             
