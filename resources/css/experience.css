@@ -1,0 +1,249 @@
+.experience-page {
+    background-color: var(--color-bg-light);
+    font-family: var(--font-body);
+}
+
+.experience-hero {
+    position: relative;
+    height: 50vh;
+    min-height: 650px;
+    background-image: url('../images/experience-hero.jpg');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #FFF;
+}
+
+.experience-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.experience-hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 800px;
+    padding: 0 24px;
+}
+
+.experience-hero-title {
+    font-family: var(--font-serif);
+    font-size: 48px;
+    font-weight: 500;
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+}
+
+.experience-hero-subtitle {
+    font-size: 16px;
+    font-weight: 400;
+    opacity: 0.9;
+    letter-spacing: 0.02em;
+}
+
+.experience-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+}
+
+.experience-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 60px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: none;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 8px 24px;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+}
+
+.filter-btn.active {
+    background: #D9864A;
+    color: #FFF;
+}
+
+.filter-btn:not(.active):hover {
+    background: rgba(217, 134, 74, 0.1);
+}
+
+.experience-grid {
+    display: grid;
+    justify-items: center;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    margin-bottom: 160px;
+}
+
+.experience-card {
+    background: #FFF;
+    border: 1px solid #EAEAEA;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.experience-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.card-image-wrapper {
+    position: relative;
+    height: 400px;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.experience-card:hover .card-image {
+    transform: scale(1.05);
+}
+
+.card-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: #FFF;
+    color: var(--color-primary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 6px 12px;
+    text-transform: uppercase;
+    border-radius: 2px;
+}
+
+.card-content {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.card-meta {
+    font-size: 11px;
+    color: #888;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.card-title {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+    line-height: 1.2;
+}
+
+.card-desc {
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 32px;
+    flex: 1;
+}
+
+.card-btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: #D9864A;
+    color: #FFF;
+    text-decoration: none;
+    padding: 12px 0;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.card-btn:hover {
+    background: #c4733a;
+}
+
+.discover-more {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.discover-more::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #EAEAEA;
+    z-index: 1;
+}
+
+.discover-btn {
+    position: relative;
+    z-index: 2;
+    background: #FDFCF7;
+    border: 1px solid #EAEAEA;
+    color: var(--color-primary);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 12px 32px;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s ease;
+}
+
+.discover-btn:hover {
+    background: var(--color-primary);
+    color: #FFF;
+    border-color: var(--color-primary);
+}
+
+@media (max-width: 900px) {
+    .experience-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .experience-hero-title {
+        font-size: 36px;
+    }
+    .experience-grid {
+        grid-template-columns: 1fr;
+    }
+    .experience-filters {
+        gap: 16px;
+    }
+}

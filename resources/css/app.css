@@ -11,6 +11,7 @@
 @import "./booking-summary-bar.css";
 @import "./bed-shared-room.css";
 @import "./booking-bottom-bar.css";
+@import "./experience.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);
