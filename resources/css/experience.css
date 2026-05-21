@@ -194,17 +194,6 @@
     justify-content: center;
 }
 
-.discover-more::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #EAEAEA;
-    z-index: 1;
-}
-
 .discover-btn {
     position: relative;
     z-index: 2;
