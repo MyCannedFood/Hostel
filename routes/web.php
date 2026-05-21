@@ -33,11 +33,21 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 
 // Admin Routes (Protected)
 Route::middleware(['is_admin'])->group(function () {
-    Route::get('/Admin/Dashboard', [PageController::class, 'showAdmin'])->defaults('page', 'Admin/Dashboard');
+   
+    Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
     Route::get('/Admin/Rooms-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Rooms Management');
     Route::get('/Admin/Manage-Bookings', [PageController::class, 'showAdmin'])->defaults('page', 'Manage Bookings');
     Route::get('/Admin/Price-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Price Management');
     Route::get('/Admin/Finance', [PageController::class, 'showAdmin'])->defaults('page', 'Finance');
+});
+
+// Serve dashboard CSS directly from resources during development
+Route::get('/css/dashboard.css', function () {
+    $path = resource_path('css/dashboard.css');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, ['Content-Type' => 'text/css']);
 });
 
 
