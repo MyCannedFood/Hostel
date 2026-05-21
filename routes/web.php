@@ -23,6 +23,7 @@ Route::get('/calendar', fn () => view('pages.calendar'));
 Route::get('/room-selection', fn () => view('pages.room-selection'));
 Route::get('/bed-shared-room', fn () => view('pages.bed-shared-room'));
 Route::get('/guest-details', fn () => view('pages.guest-details'));
+Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 
 
 // Admin Auth Routes
