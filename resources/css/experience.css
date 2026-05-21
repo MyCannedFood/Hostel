@@ -4,7 +4,6 @@
 }
 
 .experience-hero {
-    position: relative;
     height: 50vh;
     min-height: 700px;
     background-image: url('../images/experience-hero.jpg');
@@ -109,7 +108,6 @@
 }
 
 .card-image-wrapper {
-    position: relative;
     height: 400px;
     overflow: hidden;
 }
@@ -194,19 +192,7 @@
     justify-content: center;
 }
 
-.discover-more::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #EAEAEA;
-    z-index: 1;
-}
-
 .discover-btn {
-    position: relative;
     z-index: 2;
     background: #FDFCF7;
     border: 1px solid #EAEAEA;
