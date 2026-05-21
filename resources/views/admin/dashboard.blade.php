@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -51,7 +51,7 @@
                     <!-- Stats cards -->
                     <div class="stats-grid">
                         <!-- Guest card -->
-                        <article class="stat-card">
+                        <article class="stat-card clickable" onclick="window.location.href='/admin/manage-guests'" role="button" tabindex="0">
                             <div class="stat-header">
                                 <h3 class="stat-title">Guest</h3>
                                 <div class="stat-icon">
@@ -68,7 +68,7 @@
                         </article>
             
                         <!-- Occupation card -->
-                        <article class="stat-card">
+                        <article class="stat-card clickable" onclick="window.location.href='/admin/manage-occupation'" role="button" tabindex="0">
                             <div class="stat-header">
                                 <h3 class="stat-title">Occupation</h3>
                                 <div class="stat-icon">

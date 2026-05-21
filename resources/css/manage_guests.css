@@ -1,0 +1,286 @@
+.guest-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.guest-page-title {
+    font-size: 30px;
+    font-weight: 500;
+    color: #1a3d0a;
+}
+
+.btn-add-guest {
+    background-color: #1a3d0a;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-family: inherit;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.btn-add-guest span {
+    font-size: 20px;
+    line-height: 1;
+}
+
+/* Top Stats Cards */
+.guest-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.guest-stat-card {
+    background: #fff;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+}
+
+.guest-stat-title {
+    font-size: 18.75px;
+    font-weight: bold;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.guest-stat-value {
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.guest-stat-sub {
+    font-size: 18.75px;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.guest-breakdown {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.guest-breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.guest-stat-card-split {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+    background: #fff;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.split-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.split-value {
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+.split-label {
+    font-size: 30px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+/* Middle Section */
+.guest-middle-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    gap: 32px;
+}
+
+/* Guest List */
+.guest-list-card {
+    background: #fff;
+    height: 781px;
+    width: 100%;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+    grid-row: span 2;
+    box-sizing: border-box;
+    min-width: 0;
+}
+
+.guest-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.guest-list-title {
+    font-size: 30px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.guest-search {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(26, 61, 10, 0.3);
+    border-radius: 4px;
+    padding: 6px 12px;
+    gap: 8px;
+}
+
+.guest-search input {
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 18.75px;
+}
+
+.guest-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.guest-table th {
+    text-align: left;
+    font-size: 18.75px;
+    padding: 24px 16px;
+    border-bottom: 2px solid rgba(26, 61, 10, 0.1);
+    color: var(--color-primary);
+    font-weight: bold;
+}
+
+.guest-table td {
+    padding: 16px 8px;
+    font-size: 18.75px;
+    color: var(--color-primary);
+    border-bottom: 1px solid rgba(26, 61, 10, 0.05);
+}
+
+/* Guests per Room */
+.guests-room-card {
+    background: #fff;
+    height: 315px;
+    width: 100%;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 32px;
+    box-sizing: border-box;
+}
+
+.guests-room-title {
+    font-size: 30px;
+    color: var(--color-primary);
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.room-info-name {
+    font-size: 18.75px;
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.room-info-details {
+    font-size: 12px;
+    color: var(--color-primary);
+}
+
+.room-count {
+    background: #1a3d0a;
+    color: #fff;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 30px;
+}
+
+/* Guest Trend Chart */
+.guest-trend-card {
+    background: #fff;
+    height: 434px;
+    width: 100%;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.guest-trend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 64px;
+}
+
+.guest-trend-title {
+    font-size: 30px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+.trend-dropdown {
+    padding: 4px 8px;
+    border: 1px solid #1a3d0a;
+    border-radius: 4px;
+    background: #f6f6f1;
+    color: #1a3d0a;
+    font-size: 12px;
+    outline: none;
+}
+
+.guest-trend-chart {
+    width: 100%;
+    height: 250px;
+}
+
+@media (max-width: 1200px) {
+    .guest-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .guest-middle-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .guest-list-card {
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .guest-stats-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

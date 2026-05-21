@@ -35,13 +35,15 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::middleware(['is_admin'])->group(function () {
    
     Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
+    Route::get('/admin/manage-guests', fn () => view('admin.manage_guests'))->name('admin.manage_guests');
+    Route::get('/admin/manage-occupation', fn () => view('admin.manage_occupation'))->name('admin.manage_occupation');
     Route::get('/Admin/Rooms-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Rooms Management');
     Route::get('/Admin/Manage-Bookings', [PageController::class, 'showAdmin'])->defaults('page', 'Manage Bookings');
     Route::get('/Admin/Price-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Price Management');
     Route::get('/Admin/Finance', [PageController::class, 'showAdmin'])->defaults('page', 'Finance');
 });
 
-// Serve dashboard CSS directly from resources during development
+// Serve dashboard CSS directly
 Route::get('/css/dashboard.css', function () {
     $path = resource_path('css/dashboard.css');
     if (!file_exists($path)) {
@@ -50,5 +52,18 @@ Route::get('/css/dashboard.css', function () {
     return response()->file($path, ['Content-Type' => 'text/css']);
 });
 
+Route::get('/css/manage_guests.css', function () {
+    $path = resource_path('css/manage_guests.css');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, ['Content-Type' => 'text/css']);
+});
 
-
+Route::get('/css/manage_occupation.css', function () {
+    $path = resource_path('css/manage_occupation.css');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, ['Content-Type' => 'text/css']);
+});
