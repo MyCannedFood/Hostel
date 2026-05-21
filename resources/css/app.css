@@ -6,12 +6,17 @@
 @import "./room-selection.css";
 @import "./journal.css";
 @import "./guest-details.css";
+
+/* Booking flow */
 @import "./booking-stepper.css";
 @import "./booking-header.css";
 @import "./booking-summary-bar.css";
 @import "./bed-shared-room.css";
 @import "./booking-bottom-bar.css";
 @import "./experience.css";
+
+/* Payment */
+@import "./confirm-payment.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);
