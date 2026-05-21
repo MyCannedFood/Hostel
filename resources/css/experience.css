@@ -4,7 +4,6 @@
 }
 
 .experience-hero {
-    position: relative;
     height: 50vh;
     min-height: 700px;
     background-image: url('../images/experience-hero.jpg');
@@ -109,7 +108,6 @@
 }
 
 .card-image-wrapper {
-    position: relative;
     height: 400px;
     overflow: hidden;
 }
@@ -195,7 +193,6 @@
 }
 
 .discover-btn {
-    position: relative;
     z-index: 2;
     background: #FDFCF7;
     border: 1px solid #EAEAEA;
