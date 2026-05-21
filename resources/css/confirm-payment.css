@@ -1,0 +1,712 @@
+.confirm-payment-page {
+    padding: 40px 24px 80px;
+    max-width: 1100px;
+    margin: 0 auto;
+    font-family: var(--font-sans);
+    background-color: var(--color-bg-light);
+}
+
+.confirm-header {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.confirm-header h1 {
+    font-family: var(--font-serif);
+    font-size: 40px;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.confirm-header p {
+    color: var(--color-primary);
+    font-size: 15px;
+    opacity: 0.85;
+}
+
+/* Stepper customization for Step 5 */
+.booking-stepper .step-number {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px solid currentColor;
+}
+
+/* Two column grid layout */
+.confirm-payment-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 32px;
+    align-items: start;
+    margin-bottom: 40px;
+}
+
+/* Base card styling */
+.confirm-card {
+    background: #FFF;
+    border-radius: 8px;
+    border: 1px solid #EAEAEA;
+    padding: 24px;
+    margin-bottom: 4px;
+}
+
+.confirm-card h2 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    color: var(--color-primary);
+    margin: 0 0 16px;
+    font-weight: 500;
+}
+
+.confirm-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.confirm-card-header h2 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    color: var(--color-primary);
+    margin: 0;
+    font-weight: 500;
+}
+
+
+
+
+.confirm-link {
+    color: var(--color-accent);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+    transition: opacity 0.2s;
+}
+
+.confirm-link:hover {
+    opacity: 0.8;
+}
+
+/* Room review card */
+.room-review-card {
+    display: flex;
+    gap: 20px;
+    border: 1px solid #F0F0F0;
+    border-radius: 6px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.room-review-image-wrapper {
+    position: relative;
+    width: 260px;
+    flex-shrink: 0;
+}
+
+.room-review-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.room-review-tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--color-primary);
+    color: #FFF;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.room-review-details {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.room-review-details h3 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    color: var(--color-primary);
+    margin: 0 0 4px;
+    font-weight: 500;
+}
+
+.room-review-bed {
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.room-review-desc {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.5;
+    margin: 0 0 16px;
+}
+
+.room-review-features {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 8px;
+}
+
+.review-feature {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9px;
+    color: #444;
+    font-weight: 500;
+}
+
+.review-feature svg {
+    width: 12px;
+    height: 12px;
+    stroke: #666;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Your Stay */
+.stay-duration-box {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.stay-duration-box svg {
+    width: 18px;
+    height: 18px;
+    stroke: #4B9960;
+    stroke-width: 2;
+    fill: none;
+}
+
+/* Guest Details styling */
+.guest-info-display {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: #555;
+}
+
+.guest-info-display strong {
+    color: #222;
+    font-size: 15px;
+}
+
+/* Promotion Badge */
+.promo-badge-card {
+    background-color: #F3F7F2;
+    border: 1px solid #D5E3D2;
+    border-radius: 4px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.promo-badge-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.promo-badge-left svg {
+    width: 18px;
+    height: 18px;
+    stroke: #4B9960;
+    stroke-width: 2;
+    fill: none;
+}
+
+.promo-badge-info h4 {
+    font-size: 14px;
+    color: #1A3D0A;
+    margin: 0;
+    font-weight: 700;
+}
+
+.promo-badge-info p {
+    font-size: 11px;
+    color: #4B9960;
+    margin: 2px 0 0;
+}
+
+.promo-badge-remove {
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+}
+
+/* Payment Method display box */
+.payment-method-box {
+    border: 1px solid #EAEAEA;
+    border-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+.payment-method-box svg {
+    stroke-width: 2;
+}
+
+/* Payment Summary Sidebar */
+.payment-summary-card {
+    background: #FFF;
+    border-radius: 8px;
+    border: 1px solid #EAEAEA;
+    padding: 32px 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+}
+
+.payment-summary-card h3 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    color: var(--color-primary);
+    margin: 0 0 24px;
+    font-weight: 500;
+}
+
+.summary-details-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.summary-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 13.5px;
+    color: #222;
+}
+
+.summary-item-label {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-item-sublabel {
+    font-size: 11px;
+    color: #666;
+    margin-top: 2px;
+}
+
+.summary-item-value {
+    font-weight: 500;
+    text-align: right;
+}
+
+.summary-item-value.discount {
+    color: #4B9960;
+}
+
+.summary-divider {
+    height: 1px;
+    background: #F0F0F0;
+    margin: 16px 0;
+}
+
+.summary-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.summary-total-label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+}
+
+.summary-total-value {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* Pay Now Button */
+.btn-pay-now {
+    background: var(--color-accent);
+    color: #FFF;
+    border: none;
+    border-radius: 4px;
+    padding: 14px;
+    width: 100%;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background-color 0.2s;
+    text-decoration: none;
+}
+
+.btn-pay-now:hover {
+    background: rgb(194, 116, 60);
+}
+
+.btn-pay-now svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+/* Checkbox confirmation */
+.agreement-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    align-items: flex-start;
+}
+
+.agreement-checkbox {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent);
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+.agreement-text {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.4;
+}
+
+.agreement-subtext {
+    font-size: 10px;
+    color: #777;
+    margin-top: 8px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.agreement-subtext a {
+    color: #555;
+    text-decoration: underline;
+}
+
+/* Footer bottom action button */
+.confirm-footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 32px;
+    border-top: 1px solid #EAEAEA;
+    padding-top: 24px;
+}
+
+.btn-back-details {
+    background: #4B9960;
+    color: #FFF;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-back-details:hover {
+    background: rgb(63, 130, 81);
+}
+
+/* Responsive adjustment */
+@media (max-width: 991px) {
+    .confirm-payment-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .room-review-card {
+        flex-direction: column;
+    }
+
+    .room-review-image-wrapper {
+        width: 100%;
+        height: 180px;
+    }
+}
+
+/* ==========================================================================
+   Payment Success Modal Overlay & Styling
+   ========================================================================== */
+
+.payment-success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    padding: 20px;
+}
+
+.payment-success-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Modal Box Container */
+.payment-success-modal {
+    width: 100%;
+    max-width: 440px;
+    background: #FFF;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.payment-success-overlay.is-active .payment-success-modal {
+    transform: scale(1);
+}
+
+/* Dark Forest Green Header */
+.success-modal-header {
+    background-color: var(--color-primary);
+    /* Forest Green rgb(26, 61, 10) */
+    padding: 36px 24px 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #FFF;
+}
+
+/* Checkmark Animated Circle */
+.success-modal-header .checkmark-circle {
+    width: 52px;
+    height: 52px;
+    background-color: #FFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: success-pop 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.success-modal-header .checkmark-circle svg {
+    width: 24px;
+    height: 24px;
+    stroke: var(--color-primary);
+}
+
+/* Success Header Text */
+.success-modal-header h2 {
+    font-family: var(--font-sans);
+    font-size: 26px;
+    font-weight: 500;
+    margin: 0 0 14px 0;
+    color: #FFF;
+    letter-spacing: -0.5px;
+    text-transform: lowercase;
+}
+
+/* Booking ID Badge */
+.success-modal-header .booking-id-badge {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, 0.95);
+    text-transform: uppercase;
+}
+
+/* Modal Body Content */
+.success-modal-body {
+    padding: 30px 36px 24px; /* Increased horizontal padding to 36px */
+}
+
+/* Success Details List */
+.success-details-list {
+    list-style: none;
+    margin: 0 0 24px 0;
+    padding: 0;
+}
+
+.success-details-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 10px; /* Added 10px horizontal padding to make rows look a bit thicker/inset */
+    border-bottom: 1px solid #E6E6E6;
+}
+
+.success-details-list li:last-child {
+    border-bottom: none;
+}
+
+/* Detail Label with Icon */
+.success-details-list .detail-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #111;
+    font-weight: 600;
+    font-size: 13.5px;
+    font-family: var(--font-body);
+}
+
+.success-details-list .detail-label svg.icon-svg {
+    width: 17px;
+    height: 17px;
+    color: #4B9960;
+    stroke-width: 1.8;
+}
+
+/* Detail Value */
+.success-details-list .detail-value {
+    color: #4B9960;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: var(--font-sans);
+}
+
+/* Terracotta Price Badge Box */
+.total-price-box {
+    background-color: var(--color-accent);
+    /* Terracotta */
+    padding: 15px 18px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(217, 134, 74, 0.15);
+}
+
+.total-price-box .price-label {
+    color: var(--color-primary);
+    /* Dark Forest Green for nice premium contrast */
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.total-price-box .price-value {
+    color: var(--color-primary);
+    /* Dark Forest Green */
+    font-size: 15.5px;
+    font-weight: 700;
+}
+
+/* Outlined Action Buttons Group */
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn-modal-outline {
+    background: transparent;
+    border: 1px solid #CCCCCC;
+    color: #4B9960;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 13.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-modal-outline:hover {
+    border-color: #4B9960;
+    background-color: #F8FBF8;
+}
+
+.btn-modal-outline svg {
+    width: 15px;
+    height: 15px;
+    stroke: currentColor;
+    stroke-width: 2;
+}
+
+/* Email sent notification */
+.confirmation-sent-text {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    margin-top: 14px;
+}
+
+/* Animations */
+@keyframes success-pop {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
