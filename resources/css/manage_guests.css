@@ -109,6 +109,722 @@
     font-weight: 500;
 }
 
+.split-label-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    cursor: pointer;
+    text-align: left;
+    transition: opacity 0.2s ease;
+}
+
+.split-label-btn:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+/* Guest Check-in / Check-out Modal */
+body.guest-action-open {
+    overflow: hidden;
+}
+
+.guest-action-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(8, 38, 0, 0.55);
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.guest-action-overlay[hidden] {
+    display: none;
+}
+
+.guest-action-modal {
+    width: 100%;
+    max-width: 641px;
+    max-height: calc(100vh - 48px);
+    margin: auto;
+    flex-shrink: 0;
+    background: #1a3d0a;
+    border-radius: 8px;
+    padding: 32px 40px 40px;
+    box-sizing: border-box;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.guest-action-modal.is-form-step {
+    max-width: 900px;
+    padding: 32px 32px 24px;
+}
+
+.guest-action-modal.is-checkout-step {
+    max-width: 1072px;
+    background: #fff;
+    color: #1a3d0a;
+    border: 1px solid rgba(26, 61, 10, 0.25);
+    padding: 32px;
+}
+
+.guest-action-modal.is-checkout-step .guest-action-modal-title {
+    color: #1a3d0a;
+    font-size: 32px;
+}
+
+.guest-action-modal.is-checkout-step .guest-action-close {
+    border-color: #1a3d0a;
+    color: #1a3d0a;
+}
+
+.guest-action-modal.is-checkout-step .guest-action-close:hover {
+    background: rgba(26, 61, 10, 0.06);
+}
+
+.guest-action-modal.is-checkout-step .guest-action-btn-back {
+    background: #b8d9a0;
+    color: #1a3d0a;
+}
+
+.guest-action-modal.is-checkout-step .guest-action-btn-done {
+    background: #D9864A;
+    color: #1a3d0a;
+}
+
+.guest-action-modal-header {
+    display: flex;
+    font-size: 30px;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    flex-shrink: 0;
+}
+
+.guest-action-step:not([hidden]) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.guest-action-modal-title {
+    font-family: 'EB Garamond', serif;
+    font-size: 36px;
+    font-weight: 400;
+    margin: 0;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.guest-action-close {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s ease;
+}
+
+.guest-action-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.guest-action-label {
+    display: block;
+    font-size: 18.75px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.guest-action-search-row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.guest-action-input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 2px;
+    background: #fff;
+    font-family: inherit;
+    font-size: 16px;
+    color: #333;
+    outline: none;
+}
+
+.guest-action-input:focus {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.guest-action-search-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 48px;
+    padding: 0 20px;
+    border: none;
+    border-radius: 2px;
+    background: #fff;
+    color: #888;
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+.guest-action-search-btn:hover {
+    opacity: 0.9;
+}
+
+.guest-action-search-btn svg {
+    stroke: #888;
+    flex-shrink: 0;
+}
+
+/* Step 2: Check-in form */
+.guest-action-booking-ref {
+    font-family: 'EB Garamond', serif;
+    font-size: 24px;
+    margin: 0 0 20px;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.guest-action-form-scroll {
+    max-height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
+.guest-action-form-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.guest-action-form-scroll::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 3px;
+}
+
+.guest-action-form-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.guest-action-btn-back,
+.guest-action-btn-done {
+    border: none;
+    border-radius: 4px;
+    padding: 12px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+
+.guest-action-btn-back {
+    background: #529461;
+    color: #fff;
+}
+
+.guest-action-btn-done {
+    background: #D9864A;
+    color: #fff;
+}
+
+.guest-action-btn-back:hover,
+.guest-action-btn-done:hover {
+    opacity: 0.9;
+}
+
+/* Admin guest form (reused from guest-details structure) */
+.admin-guest-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.admin-guest-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.admin-guest-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-guest-form-full {
+    grid-column: span 2;
+}
+
+.admin-guest-form-group label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
+
+.admin-guest-form-group input,
+.admin-guest-form-group select,
+.admin-guest-form-group textarea {
+    background: #fff;
+    border: none;
+    border-radius: 2px;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-guest-form-group input::placeholder,
+.admin-guest-form-group textarea::placeholder {
+    color: #bbb;
+}
+
+.admin-guest-form-group textarea {
+    resize: vertical;
+    min-height: 72px;
+}
+
+.admin-guest-phone-group {
+    display: flex;
+    gap: 8px;
+}
+
+.admin-guest-phone-group select {
+    width: 80px;
+    flex-shrink: 0;
+}
+
+.admin-guest-phone-group input {
+    flex: 1;
+}
+
+.admin-guest-id-deposit-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-guest-tab-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+}
+
+.admin-guest-tab {
+    background: rgba(217, 134, 74, 0.45);
+    color: #1a3d0a;
+    font-family: 'EB Garamond', serif;
+    font-size: 18px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 2px 2px 0 0;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    text-align: center;
+}
+
+.admin-guest-tab:hover {
+    background: rgba(217, 134, 74, 0.65);
+}
+
+.admin-guest-tab.active {
+    background: #D9864A;
+    color: #1a3d0a;
+}
+
+.admin-guest-tab-panel {
+    display: none;
+}
+
+.admin-guest-tab-panel.active {
+    display: block;
+}
+
+.admin-guest-tab-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.admin-guest-upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.admin-guest-upload-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+    margin-bottom: 8px;
+}
+
+.admin-guest-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 140px;
+    background: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.admin-guest-upload-area:hover {
+    background: #f8f8f5;
+}
+
+.admin-guest-upload-hint {
+    font-size: 12px;
+    color: #888;
+}
+
+/* Check-out form */
+.admin-checkout-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.admin-checkout-section {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.admin-checkout-section-title {
+    font-size: 18.75px;
+    font-weight: bold;
+    color: #1a3d0a;
+    margin: 0 0 12px;
+}
+
+.admin-checkout-charges {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-checkout-charges:empty {
+    display: none;
+}
+
+.admin-checkout-charge-item {
+    width: 1008px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 32px;
+    color: #1a3d0a;
+}
+
+.admin-checkout-charge-main {
+    width: 804px;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e8e8e3;
+    padding: 8px;
+    border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.admin-checkout-charge-main:hover {
+    background: #deded8;
+}
+
+.admin-checkout-charge-desc {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-checkout-charge-amount {
+    flex-shrink: 0;
+    font-weight: 600;
+}
+
+.admin-checkout-charge-remove {
+    flex-shrink: 0;
+    width: 170px;
+    height: 60px;
+    border: 1px solid var(--color-primary);
+    border-radius: 2px;
+    background: #4B9960;
+    color: #1a3d0a;
+    padding: 8px;
+    font-family: inherit;
+    font-size: 30px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.admin-checkout-charge-remove:hover {
+    opacity: 0.9;
+}
+
+.admin-checkout-add-row {
+    width: 1008px;
+    display: flex;
+    gap: 32px;
+    align-items: stretch;
+}
+
+.admin-checkout-add-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+}
+
+.admin-checkout-input {
+    flex: 1;
+    height: 60px;
+    width: 386px;
+    background: #e8e8e3;
+    border: none;
+    border-radius: 2px;
+    padding: 10px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: #1a3d0a;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.admin-checkout-input-nominal {
+    flex: 0 0 120px;
+    max-width: 386px;
+    height: 60px;
+}
+
+.admin-checkout-input::placeholder {
+    color: #888;
+}
+
+.admin-checkout-add-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.admin-checkout-btn-add {
+    display: flex;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 88px;
+}
+
+.admin-checkout-btn-add {
+    font-size: 30px;
+    width: 170px;
+    background: #D9864A;
+    color: #1a3d0a;
+}
+
+.admin-checkout-btn-add:hover {
+    opacity: 0.9;
+}
+
+.admin-checkout-summary {
+    background: #e8e8e3;
+    border-radius: 4px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.admin-checkout-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 30px;
+    color: #1a3d0a;
+}
+
+.admin-checkout-summary-label {
+    font-family: 'EB Garamond', serif;
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.admin-checkout-summary-row strong {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1a3d0a;
+}
+
+.admin-checkout-summary-row.deposit strong {
+    color: #D9864A;
+}
+
+.admin-checkout-summary-row.refunded strong {
+    color: #196c38;
+}
+
+.admin-checkout-status-row {
+    display: flex;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.admin-checkout-notes {
+    min-height: 60px;
+    width: 804px;
+    resize: vertical;
+}
+
+.admin-checkout-status-select {
+    flex: 0 0 120px;
+    max-width: 140px;
+    background: #e8e8e3;
+    border: none;
+    border-radius: 2px;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    color: #196c38;
+    outline: none;
+    cursor: pointer;
+    align-self: stretch;
+}
+
+.admin-checkout-status-select.is-blacklist {
+    color: #8b1a1a;
+}
+
+.admin-checkout-status-select option {
+    color: #333;
+    font-weight: 500;
+}
+
+@media (max-width: 600px) {
+    .guest-action-modal,
+    .guest-action-modal.is-form-step {
+        padding: 24px;
+        max-width: 100%;
+    }
+
+    .guest-action-modal-title {
+        font-size: 28px;
+    }
+
+    .guest-action-search-row {
+        flex-direction: column;
+    }
+
+    .guest-action-search-btn {
+        justify-content: center;
+    }
+
+    .admin-guest-form-grid,
+    .admin-guest-tab-fields,
+    .admin-guest-upload-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-guest-form-full {
+        grid-column: span 1;
+    }
+
+    .guest-action-form-footer {
+        flex-direction: column;
+    }
+
+    .guest-action-btn-back,
+    .guest-action-btn-done {
+        width: 100%;
+        text-align: center;
+    }
+
+    .admin-checkout-add-row {
+        flex-direction: column;
+    }
+
+    .admin-checkout-add-fields {
+        flex-direction: column;
+    }
+
+    .admin-checkout-input-nominal {
+        flex: 1;
+        max-width: none;
+    }
+
+    .admin-checkout-add-actions {
+        flex-direction: row;
+    }
+
+    .admin-checkout-btn-add {
+        flex: 1;
+    }
+
+    .admin-checkout-status-row {
+        flex-direction: column;
+    }
+
+    .admin-checkout-status-select {
+        flex: 1;
+        max-width: none;
+    }
+}
+
 /* Middle Section */
 .guest-middle-grid {
     display: grid;
