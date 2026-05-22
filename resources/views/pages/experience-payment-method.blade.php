@@ -82,7 +82,7 @@
                 <div class="summary-decor"></div>
                 <h2>Summary</h2>
                 <div class="summary-item">
-                    <img src="{{ asset('images/experience/Lush Experience Sanctuary.png') }}" alt="Nature the earth">
+                    <img src="{{ asset('images/experience/baju_kutu.png') }}" alt="Nature the earth">
                     <div class="item-info">
                         <h3 class="item-title">Nature the earth</h3>
                         <div class="item-meta">Date: 24/11/2024</div>
