@@ -1,0 +1,316 @@
+/* experience-booking-detail.css */
+.experience-booking-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 20px 100px 20px;
+    font-family: var(--font-sans);
+    color: #333;
+}
+
+/* Stepper */
+.exp-stepper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 50px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #999;
+    text-transform: uppercase;
+}
+.exp-step {
+    text-transform: uppercase;
+}
+.exp-step.active {
+    color: var(--color-accent);
+    position: relative;
+}
+.exp-step.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--color-accent);
+}
+.exp-step-divider {
+    color: #CCC;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+/* Hero Image Area */
+.exp-hero {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 50px;
+}
+.exp-hero img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    display: block;
+}
+.exp-hero .badge {
+    position: absolute;
+    bottom: 24px;
+    left: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 18px;
+    border-radius: 24px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--color-primary);
+}
+
+/* Header */
+.exp-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+.exp-header-tag {
+    color: var(--color-primary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: block;
+}
+.exp-header h1 {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 400;
+    color: #111;
+    margin: 0 0 24px 0;
+}
+.exp-header-line {
+    width: 40px;
+    height: 1px;
+    background: var(--color-accent);
+    margin: 0 auto 24px auto;
+}
+.exp-header p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 18px;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Form Grid */
+.exp-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+.exp-form-row {
+    display: flex;
+    gap: 24px;
+}
+@media (max-width: 600px) {
+    .exp-form-row {
+        flex-direction: column;
+    }
+}
+.exp-form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.exp-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #88A982;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.exp-input {
+    border: 1px solid #A5B8A2;
+    padding: 14px 16px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+    background: #FFF;
+    width: 100%;
+    box-sizing: border-box;
+    color: #333;
+}
+.exp-input:focus {
+    border-color: var(--color-primary);
+}
+.exp-input::placeholder {
+    color: #AAA;
+}
+
+/* Session Buttons */
+.session-buttons {
+    display: flex;
+    gap: 12px;
+    height: 47px;
+}
+.session-btn {
+    flex: 1;
+    padding: 0;
+    border: 1px solid var(--color-primary);
+    border-radius: 2px;
+    background: #F8FAF7;
+    color: var(--color-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+.session-btn.active {
+    background: var(--color-primary);
+    color: #FFF;
+}
+
+/* Counter */
+.guest-counter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #A5B8A2;
+    padding: 0 16px;
+    border-radius: 2px;
+    height: 47px;
+    box-sizing: border-box;
+    background: #FFF;
+}
+.counter-btn {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+    padding: 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.counter-value {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+}
+
+/* Includes */
+.includes-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+.include-badge {
+    background: #E8F0E5;
+    color: var(--color-primary);
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.include-badge svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 1.5;
+}
+
+/* Rules */
+.rules-box {
+    border: 1px solid #E0E0E0;
+    border-radius: 4px;
+    padding: 24px 24px 24px 40px;
+    background: #FFF;
+    margin-top: 4px;
+}
+.rules-box ol {
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    color: #555;
+    line-height: 2;
+}
+
+/* Checkbox */
+.exp-checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: #555;
+    margin-top: 8px;
+}
+.exp-checkbox-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primary);
+    cursor: pointer;
+}
+.exp-checkbox-group label {
+    cursor: pointer;
+}
+.exp-checkbox-group a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* Footer Section */
+.exp-footer {
+    margin-top: 50px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+.exp-footer p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: #444;
+    font-size: 16px;
+    margin: 0;
+}
+.btn-proceed {
+    background: var(--color-accent);
+    color: #FFF;
+    border: none;
+    padding: 18px 48px;
+    font-size: 18px;
+    font-family: var(--font-serif);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+    display: inline-block;
+    border-radius: 4px;
+}
+.btn-proceed:hover {
+    opacity: 0.9;
+}
+.secure-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #888;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-top: 4px;
+}
