@@ -12,7 +12,7 @@
 @include('components.navbar')
 
 <main class="experience-booking-page">
-    
+
     {{-- Stepper --}}
     <nav class="exp-stepper">
         <div class="exp-step active">
@@ -34,7 +34,7 @@
 
     {{-- Hero --}}
     <div class="exp-hero">
-        <img src="{{ asset('images/experience/Lush Experience Sanctuary.png') }}" alt="Nature Experience">
+        <img src="{{ asset('images/experience/baju_kutu.png') }}" alt="Nature Experience">
         <div class="badge">NATURE EXPERIENCE</div>
     </div>
 
@@ -48,7 +48,7 @@
 
     {{-- Form --}}
     <form class="exp-form" action="/confirm-payment" method="GET">
-        
+
         <div class="exp-form-row">
             <div class="exp-form-group">
                 <label class="exp-label">SELECT DATE</label>
