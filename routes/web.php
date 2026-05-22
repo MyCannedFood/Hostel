@@ -35,10 +35,11 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 
 // Admin Routes (Protected)
 Route::middleware(['is_admin'])->group(function () {
-   
-    Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
 
-    // Halaman polos untuk menu admin
+    Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
+    Route::get('/admin/manage-guests', fn () => view('admin.manage_guests'))->name('admin.manage_guests');
+    Route::get('/admin/manage-occupation', fn () => view('admin.manage_occupation'))->name('admin.manage_occupation');
+
     Route::get('/Admin/Rooms-Management', function () {
         return view('admin.dashboard-layout', ['page' => 'Room & Bed']);
     })->name('admin.rooms');
@@ -63,7 +64,6 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.dashboard-layout', ['page' => 'Finance Accounting']);
     })->name('admin.finance-accounting');
 
-
 });
 
 
@@ -76,5 +76,18 @@ Route::get('/css/dashboard.css', function () {
     return response()->file($path, ['Content-Type' => 'text/css']);
 });
 
+Route::get('/css/manage_guests.css', function () {
+    $path = resource_path('css/manage_guests.css');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, ['Content-Type' => 'text/css']);
+});
 
-
+Route::get('/css/manage_occupation.css', function () {
+    $path = resource_path('css/manage_occupation.css');
+    if (!file_exists($path)) {
+        abort(404);
+    }
+    return response()->file($path, ['Content-Type' => 'text/css']);
+});
