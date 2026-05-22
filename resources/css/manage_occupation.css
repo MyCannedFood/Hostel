@@ -228,7 +228,7 @@
 }
 
 .occ-bed-badge.empty {
-    background: transparent;
+    background: white;
     color: #43493e;
     border: 1px solid rgba(26, 61, 10, 0.2);
 }

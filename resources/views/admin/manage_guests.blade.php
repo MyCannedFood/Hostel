@@ -97,7 +97,7 @@
                 </div>
 
                 <!-- Middle Section -->
-                <div class="guest-middle-grid" style="gap:32px;">
+                <div class="guest-middle-grid">
                     
                     <!-- Guest List -->
                     <div class="guest-list-card">
@@ -138,52 +138,47 @@
                         </div>
                     </div>
 
-                    <!-- Right Column Wrapper -->
-                    <div style="display:flex; flex-direction:column; gap:32px;">
+                    <!-- Guests per Room -->
+                    <div class="guests-room-card">
+                        <div class="guests-room-title">Guests per Room</div>
                         
-                        <!-- Guests per Room -->
-                        <div class="guests-room-card">
-                            <div class="guests-room-title">Guests per Room</div>
-                            
-                            <div class="room-item">
-                                <div>
-                                    <div class="room-info-name">Serene Heaven</div>
-                                    <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
-                                </div>
-                                <div class="room-count">7</div>
+                        <div class="room-item">
+                            <div>
+                                <div class="room-info-name">Serene Heaven</div>
+                                <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
                             </div>
-
-                            <div class="room-item">
-                                <div>
-                                    <div class="room-info-name">Botanice</div>
-                                    <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
-                                </div>
-                                <div class="room-count">7</div>
-                            </div>
-
-                            <div class="room-item">
-                                <div>
-                                    <div class="room-info-name">The Heritage</div>
-                                    <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
-                                </div>
-                                <div class="room-count">7</div>
-                            </div>
+                            <div class="room-count">7</div>
                         </div>
 
-                        <!-- Guest Trend -->
-                        <div class="guest-trend-card">
-                            <div class="guest-trend-header">
-                                <div class="guest-trend-title">Guest Trend</div>
-                                <select class="trend-dropdown">
-                                    <option>Days</option>
-                                    <option>Weeks</option>
-                                </select>
+                        <div class="room-item">
+                            <div>
+                                <div class="room-info-name">Botanice</div>
+                                <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
                             </div>
-                            <div class="guest-trend-chart">
-                                <canvas id="guestTrendChart"></canvas>
-                            </div>
+                            <div class="room-count">7</div>
                         </div>
 
+                        <div class="room-item">
+                            <div>
+                                <div class="room-info-name">The Heritage</div>
+                                <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
+                            </div>
+                            <div class="room-count">7</div>
+                        </div>
+                    </div>
+
+                    <!-- Guest Trend -->
+                    <div class="guest-trend-card">
+                        <div class="guest-trend-header">
+                            <div class="guest-trend-title">Guest Trend</div>
+                            <select class="trend-dropdown">
+                                <option>Days</option>
+                                <option>Weeks</option>
+                            </select>
+                        </div>
+                        <div class="guest-trend-chart">
+                            <canvas id="guestTrendChart"></canvas>
+                        </div>
                     </div>
 
                 </div>

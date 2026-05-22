@@ -64,8 +64,8 @@
                         <div class="occ-avg-room">
                             <div class="occ-avg-room-name">Serene Haven</div>
                             <div class="occ-avg-room-header">
-                                <span class="occ-avg-room-label">Room occupation</span>
-                                <span class="occ-avg-room-pct">87.5 %</span>
+                                <span class="occ-avg-room-label" style="font-weight:bold">Room occupation</span>
+                                <span class="occ-avg-room-pct" style="font-weight:bold">90 %</span>
                             </div>
                             <div class="occ-avg-bars">
                                 <div class="occ-avg-bar occupied"></div>
@@ -76,6 +76,18 @@
                                 <div class="occ-avg-bar occupied"></div>
                                 <div class="occ-avg-bar occupied"></div>
                                 <div class="occ-avg-bar available"></div>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">Web</span>
+                                <span class="occ-avg-room-pct">50 %</span>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">App</span>
+                                <span class="occ-avg-room-pct">25 %</span>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">Walk in</span>
+                                <span class="occ-avg-room-pct">25 %</span>
                             </div>
                         </div>
 
@@ -83,8 +95,8 @@
                         <div class="occ-avg-room">
                             <div class="occ-avg-room-name">Botanika</div>
                             <div class="occ-avg-room-header">
-                                <span class="occ-avg-room-label">Room occupation</span>
-                                <span class="occ-avg-room-pct">50 %</span>
+                                <span class="occ-avg-room-label" style="font-weight:bold">Room occupation</span>
+                                <span class="occ-avg-room-pct" style="font-weight:bold">50 %</span>
                             </div>
                             <div class="occ-avg-bars">
                                 <div class="occ-avg-bar warning"></div>
@@ -93,6 +105,18 @@
                                 <div class="occ-avg-bar warning"></div>
                                 <div class="occ-avg-bar available"></div>
                                 <div class="occ-avg-bar available"></div>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">Web</span>
+                                <span class="occ-avg-room-pct">50 %</span>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">App</span>
+                                <span class="occ-avg-room-pct">25 %</span>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">Walk in</span>
+                                <span class="occ-avg-room-pct">25 %</span>
                             </div>
                         </div>
 
@@ -100,8 +124,8 @@
                         <div class="occ-avg-room">
                             <div class="occ-avg-room-name">Heritage</div>
                             <div class="occ-avg-room-header">
-                                <span class="occ-avg-room-label">Room occupation</span>
-                                <span class="occ-avg-room-pct">37.5 %</span>
+                                <span class="occ-avg-room-label" style="font-weight:bold">Room occupation</span>
+                                <span class="occ-avg-room-pct" style="font-weight:bold">20 %</span>
                             </div>
                             <div class="occ-avg-bars">
                                 <div class="occ-avg-bar warning"></div>
@@ -112,6 +136,18 @@
                                 <div class="occ-avg-bar available"></div>
                                 <div class="occ-avg-bar available"></div>
                                 <div class="occ-avg-bar available"></div>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">Web</span>
+                                <span class="occ-avg-room-pct">50 %</span>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">App</span>
+                                <span class="occ-avg-room-pct">25 %</span>
+                            </div>
+                            <div class="occ-avg-room-header">
+                                <span class="occ-avg-room-label">Walk in</span>
+                                <span class="occ-avg-room-pct">25 %</span>
                             </div>
                         </div>
 
@@ -143,11 +179,11 @@
                                 <div><div class="occ-bed-name">Bed 2 Bottom</div><div class="occ-bed-guest">joan doe</div></div>
                                 <span class="occ-bed-badge occupied">Occupied</span>
                             </div>
-                            <div class="occ-bed-item">
+                            <div class="occ-bed-item occupied-bg">
                                 <div><div class="occ-bed-name">Bed 3 Top</div></div>
                                 <span class="occ-bed-badge empty">Empty</span>
                             </div>
-                            <div class="occ-bed-item">
+                            <div class="occ-bed-item occupied-bg">
                                 <div><div class="occ-bed-name">Bed 3 Bottom</div></div>
                                 <span class="occ-bed-badge empty">Empty</span>
                             </div>
@@ -183,11 +219,11 @@
                                 <div><div class="occ-bed-name">Bed 2 Bottom</div><div class="occ-bed-guest">joan doe</div></div>
                                 <span class="occ-bed-badge occupied">Occupied</span>
                             </div>
-                            <div class="occ-bed-item">
+                            <div class="occ-bed-item occupied-bg">
                                 <div><div class="occ-bed-name">Bed 3 Top</div></div>
                                 <span class="occ-bed-badge empty">Empty</span>
                             </div>
-                            <div class="occ-bed-item">
+                            <div class="occ-bed-item occupied-bg">
                                 <div><div class="occ-bed-name">Bed 3 Bottom</div></div>
                                 <span class="occ-bed-badge empty">Empty</span>
                             </div>
@@ -223,11 +259,11 @@
                                 <div><div class="occ-bed-name">Bed 2 Bottom</div><div class="occ-bed-guest">joan doe</div></div>
                                 <span class="occ-bed-badge occupied">Occupied</span>
                             </div>
-                            <div class="occ-bed-item">
+                            <div class="occ-bed-item occupied-bg">
                                 <div><div class="occ-bed-name">Bed 3 Top</div></div>
                                 <span class="occ-bed-badge empty">Empty</span>
                             </div>
-                            <div class="occ-bed-item">
+                            <div class="occ-bed-item occupied-bg">
                                 <div><div class="occ-bed-name">Bed 3 Bottom</div></div>
                                 <span class="occ-bed-badge empty">Empty</span>
                             </div>

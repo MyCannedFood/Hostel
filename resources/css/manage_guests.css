@@ -113,20 +113,23 @@
 .guest-middle-grid {
     display: grid;
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    grid-template-rows: 1fr 1fr;
     gap: 32px;
+    min-height: 781px;
 }
 
 /* Guest List */
 .guest-list-card {
     background: #fff;
-    height: 781px;
+    height: 100%;
     width: 100%;
     border: 1px solid rgba(26, 61, 10, 0.2);
     border-radius: 8px;
     padding: 24px;
-    grid-row: span 2;
+    grid-row: 1 / -1;
     box-sizing: border-box;
     min-width: 0;
+    min-height: 781px;
 }
 
 .guest-list-header {
@@ -182,12 +185,13 @@
 /* Guests per Room */
 .guests-room-card {
     background: #fff;
-    height: 315px;
+    height: 100%;
     width: 100%;
     border: 1px solid rgba(26, 61, 10, 0.2);
     border-radius: 8px;
     padding: 32px;
     box-sizing: border-box;
+    min-height: 0;
 }
 
 .guests-room-title {
@@ -231,12 +235,15 @@
 /* Guest Trend Chart */
 .guest-trend-card {
     background: #fff;
-    height: 434px;
+    height: 100%;
     width: 100%;
     border: 1px solid rgba(26, 61, 10, 0.2);
     border-radius: 8px;
     padding: 24px;
     box-sizing: border-box;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .guest-trend-header {
@@ -264,7 +271,8 @@
 
 .guest-trend-chart {
     width: 100%;
-    height: 250px;
+    flex: 1;
+    min-height: 0;
 }
 
 @media (max-width: 1200px) {
@@ -273,9 +281,22 @@
     }
     .guest-middle-grid {
         grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        min-height: 0;
     }
     .guest-list-card {
         grid-row: auto;
+        min-height: 400px;
+    }
+    .guests-room-card,
+    .guest-trend-card {
+        height: auto;
+    }
+    .guests-room-card {
+        min-height: 315px;
+    }
+    .guest-trend-card {
+        min-height: 434px;
     }
 }
 
