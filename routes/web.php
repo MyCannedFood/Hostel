@@ -37,11 +37,35 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::middleware(['is_admin'])->group(function () {
    
     Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
-    Route::get('/Admin/Rooms-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Rooms Management');
-    Route::get('/Admin/Manage-Bookings', [PageController::class, 'showAdmin'])->defaults('page', 'Manage Bookings');
-    Route::get('/Admin/Price-Management', [PageController::class, 'showAdmin'])->defaults('page', 'Price Management');
-    Route::get('/Admin/Finance', [PageController::class, 'showAdmin'])->defaults('page', 'Finance');
+
+    // Halaman polos untuk menu admin
+    Route::get('/Admin/Rooms-Management', function () {
+        return view('admin.dashboard-layout', ['page' => 'Room & Bed']);
+    })->name('admin.rooms');
+
+    Route::get('/Admin/Manage-Bookings', function () {
+        return view('admin.dashboard-layout', ['page' => 'Booking']);
+    })->name('admin.bookings');
+
+    Route::get('/Admin/Price-Management', function () {
+        return view('admin.dashboard-layout', ['page' => 'Article']);
+    })->name('admin.article');
+
+    Route::get('/Admin/Finance', function () {
+        return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
+    })->name('admin.finance');
+
+    Route::get('/Admin/Settings', function () {
+        return view('admin.dashboard-layout', ['page' => 'Settings']);
+    })->name('admin.settings');
+
+    Route::get('/Admin/Finance-Accounting', function () {
+        return view('admin.dashboard-layout', ['page' => 'Finance Accounting']);
+    })->name('admin.finance-accounting');
+
+
 });
+
 
 // Serve dashboard CSS directly from resources during development
 Route::get('/css/dashboard.css', function () {
