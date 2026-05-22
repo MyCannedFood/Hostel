@@ -210,26 +210,55 @@
         </div>
 
         <nav class="sidebar-menu" role="navigation" aria-label="Main navigation">
-            <div class="menu-item active" role="menuitem">
+@php
+    $isDashboard = request()->is('admin/dashboard');
+    $isRooms = request()->is('Admin/Rooms-Management');
+    $isBookings = request()->is('Admin/Manage-Bookings');
+    $isArticle = request()->is('Admin/Price-Management');
+    $isBudget = request()->is('Admin/Finance');
+    $isSettings = request()->is('Admin/Settings');
+    $isFinance = request()->is('Admin/Finance-Accounting');
+@endphp
+
+            <a class="menu-item {{ $isDashboard ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/dashboard') }}">
+
                 <img src="{{ asset('images/admin/img_icon.svg') }}" alt="" width="16" height="16">
                 <span class="menu-text">Dashboard</span>
-            </div>
-            <div class="menu-item" role="menuitem">
+            </a>
+
+            <a class="menu-item {{ $isRooms ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Rooms-Management') }}">
                 <img src="{{ asset('images/admin/img_icon_gray_900.svg') }}" alt="" width="22" height="14">
                 <span class="menu-text">Room & Bed</span>
-            </div>
-            <div class="menu-item" role="menuitem">
+            </a>
+
+            <a class="menu-item {{ $isBookings ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Manage-Bookings') }}">
                 <img src="{{ asset('images/admin/img_icon_gray_900_20x18.svg') }}" alt="" width="18" height="20">
                 <span class="menu-text">Booking</span>
-            </div>
-            <div class="menu-item" role="menuitem">
+            </a>
+
+            <a class="menu-item {{ $isArticle ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Price-Management') }}">
                 <img src="{{ asset('images/admin/img_icon_gray_900_16x18.svg') }}" alt="" width="18" height="16">
                 <span class="menu-text">Article</span>
-            </div>
-            <div class="menu-item" role="menuitem">
+            </a>
+
+            <a class="menu-item {{ $isBudget ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Finance') }}">
+                <img src="{{ asset('images/admin/img_icon_green_800_22x14.svg') }}" alt="" width="18" height="16">
+                <span class="menu-text">Budgetin &amp; Report</span>
+            </a>
+
+
+            <a class="menu-item {{ $isSettings ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Settings') }}">
+
                 <img src="{{ asset('images/admin/img_icon_gray_900_20x20.svg') }}" alt="" width="20" height="20">
                 <span class="menu-text">Settings</span>
-            </div>
+            </a>
+
+            <a class="menu-item {{ $isFinance ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Finance-Accounting') }}">
+
+                <img src="{{ asset('images/admin/img_icon_green_800_16x22.svg') }}" alt="" width="20" height="20">
+                <span class="menu-text">Finance Accounting</span>
+            </a>
+
         </nav>
     </div>
 
@@ -239,10 +268,13 @@
                 <img src="{{ asset('images/admin/profile.png') }}" alt="AlaSare Admin profile picture">
                 <span class="admin-name">AlaSare Admin</span>
             </div>
-            <div class="logout-btn" role="button" tabindex="0">
-                <img src="{{ asset('images/admin/img_icon_deep_orange_400.svg') }}" alt="" width="18" height="18">
-                <span class="logout-text" style="padding: 0 5px;">  Logout</span>
-            </div>
+            <form class="logout-btn" method="POST" action="{{ route('admin.logout') }}">
+                @csrf
+                <button type="submit" style="all: unset; cursor: pointer; display: flex; align-items: center; width: 100%; justify-content: flex-start;">
+                    <img src="{{ asset('images/admin/img_icon_deep_orange_400.svg') }}" alt="" width="18" height="18">
+                    <span class="logout-text" style="padding: 0 5px;">  Logout</span>
+                </button>
+            </form>
         </div>
     </div>
 </aside>

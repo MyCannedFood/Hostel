@@ -5,7 +5,7 @@
 @import "./calendar.css";
 @import "./room-selection.css";
 @import "./journal.css";
-@import "./guest-details.css";
+@import "./experience.css";
 
 /* Booking flow */
 @import "./booking-stepper.css";
@@ -13,10 +13,12 @@
 @import "./booking-summary-bar.css";
 @import "./bed-shared-room.css";
 @import "./booking-bottom-bar.css";
-@import "./experience.css";
+@import "./guest-details.css";
 
 /* Payment */
 @import "./confirm-payment.css";
+@import "./experience-payment-method.css";
+@import "./experience-booking-detail.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);
