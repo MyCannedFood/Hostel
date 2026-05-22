@@ -17,6 +17,8 @@
 
 /* Payment */
 @import "./confirm-payment.css";
+@import "./experience-payment-method.css";
+@import "./experience-booking-detail.css";
 
 :root {
     --color-primary: rgb(26, 61, 10);
