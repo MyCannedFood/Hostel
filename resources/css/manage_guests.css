@@ -112,7 +112,7 @@
 /* Middle Section */
 .guest-middle-grid {
     display: grid;
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: 1fr 1fr;
     gap: 32px;
     min-height: 781px;
