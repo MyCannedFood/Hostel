@@ -45,8 +45,7 @@
         <p>Please complete your profile for a seamless check-in experience.</p>
     </header>
 
-    <form action="#" method="POST">
-        @csrf
+    <form action="/confirm-payment" method="GET">
         
         {{-- Section 1: Who is checking in? --}}
         <section class="form-section">

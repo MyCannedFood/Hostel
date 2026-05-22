@@ -1,0 +1,261 @@
+.occ-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.occ-page-title {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--color-primary, #1a3d0a);
+}
+
+/* Top Stats */
+.occ-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 32px;
+    margin-bottom: 32px;
+}
+
+.occ-stat-card {
+    background: #fff;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.occ-stat-title {
+    font-size: 18.75px;
+    font-weight: bold;
+    color: var(--color-primary, #1a3d0a);
+    margin-bottom: 16px;
+}
+
+.occ-stat-value {
+    font-size: 48px;
+    font-weight: 500;
+    color: var(--color-primary, #1a3d0a);
+    margin-bottom: 16px;
+}
+
+.occ-progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #e8e8e3;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.occ-progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.occ-progress-fill.green {
+    background: #1a3d0a;
+}
+
+/* Avg Room Occupation Section */
+.occ-avg-section {
+    background: #fff;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-sizing: border-box;
+}
+
+.occ-avg-title {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--color-primary, #1a3d0a);
+    margin-bottom: 32px;
+}
+
+.occ-avg-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.occ-avg-room {
+    display: flex;
+    padding: 24px;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.occ-avg-room-name {
+    font-size: 18.75px;
+    font-weight: bold;
+    color: var(--color-primary, #1a3d0a);
+}
+
+.occ-avg-room-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.occ-avg-room-label {
+    font-size: 12px;
+    color: var(--color-primary);
+}
+
+.occ-avg-room-pct {
+    font-size: 12px;
+    color: var(--color-primary);
+}
+
+.occ-avg-bars {
+    display: flex;
+    gap: 3px;
+}
+
+.occ-avg-bar {
+    flex: 1;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.occ-avg-bar.occupied {
+    background: #196c38;
+}
+
+.occ-avg-bar.available {
+    background: #b8d9a0;
+}
+
+.occ-avg-bar.warning {
+    background: #D9864A;
+}
+
+/* Bed Occupation Section */
+.occ-bed-section-title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--color-primary, #1a3d0a);
+    margin-bottom: 24px;
+}
+
+.occ-bed-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+}
+
+.occ-bed-card {
+    background: #fff;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+    border-radius: 8px;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.occ-bed-card-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--color-primary, #1a3d0a);
+    margin-bottom: 8px;
+}
+
+.occ-bed-divider {
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+}
+
+.occ-bed-divider.green {
+    background: #196c38;
+}
+
+.occ-bed-divider.orange {
+    background: #D9864A;
+}
+
+.occ-bed-divider.teal {
+    background: #29A4A1;
+}
+
+.occ-bed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.occ-bed-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background: #fafaf5;
+}
+
+.occ-bed-item.occupied-bg {
+    background: rgb(184, 217, 160, 0.3);
+}
+
+.occ-bed-item.upcoming-bg {
+    background: rgb(217, 134, 74, 0.3);
+}
+
+.occ-bed-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-primary, #1a3d0a);
+}
+
+.occ-bed-guest {
+    font-size: 11px;
+    color: #43493e;
+}
+
+.occ-bed-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 4px;
+    white-space: nowrap;
+}
+
+.occ-bed-badge.occupied {
+    background: rgba(25, 108, 56, 0.12);
+    color: #196c38;
+}
+
+.occ-bed-badge.empty {
+    background: white;
+    color: #43493e;
+    border: 1px solid rgba(26, 61, 10, 0.2);
+}
+
+.occ-bed-badge.upcoming {
+    background: rgba(217, 134, 74, 0.12);
+    color: #D9864A;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .occ-stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .occ-avg-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .occ-bed-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .occ-stats-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .occ-bed-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
