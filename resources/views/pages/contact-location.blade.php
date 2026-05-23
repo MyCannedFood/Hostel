@@ -106,6 +106,7 @@
                             </span>
                             <span>Online Taxi</span>
                         </summary>
+                        <p class="direction-description">Approximately 20 minutes from Bandung city center.</p>
                         <div class="direction-subitems">
                             <div class="direction-subitem">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -127,8 +128,8 @@
                             </div>
                         </div>
                     </details>
-                    <details>
-                        <summary>
+                    <div class="direction-static-row">
+                        <div class="direction-static-heading">
                             <span class="direction-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="6" cy="16" r="3"></circle>
@@ -139,11 +140,12 @@
                                 </svg>
                             </span>
                             <span>Motorcycle</span>
-                        </summary>
-                        <p>Approximately 20 minutes from Bandung city center.</p>
-                    </details>
-                    <details>
-                        <summary>
+                            <span class="direction-chevron" aria-hidden="true"></span>
+                        </div>
+                        <p class="direction-description">Approximately 20 minutes from Bandung city center.</p>
+                    </div>
+                    <div class="direction-static-row">
+                        <div class="direction-static-heading">
                             <span class="direction-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="5" r="2"></circle>
@@ -153,11 +155,12 @@
                                 </svg>
                             </span>
                             <span>Walking</span>
-                        </summary>
-                        <p>Approximately 20 minutes from Bandung city center.</p>
-                    </details>
-                    <details>
-                        <summary>
+                            <span class="direction-chevron" aria-hidden="true"></span>
+                        </div>
+                        <p class="direction-description">ApproximatWalkinely 20 minutes from Bandung city center.</p>
+                    </div>
+                    <div class="direction-static-row">
+                        <div class="direction-static-heading">
                             <span class="direction-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="5" y="4" width="14" height="14" rx="2"></rect>
@@ -169,9 +172,10 @@
                                 </svg>
                             </span>
                             <span>Bus / Trans</span>
-                        </summary>
-                        <p>Approximately 20 minutes from Bandung city center.</p>
-                    </details>
+                            <span class="direction-chevron" aria-hidden="true"></span>
+                        </div>
+                        <p class="direction-description">Approximately 20 minutes from Bandung city center.</p>
+                    </div>
                 </div>
             </article>
         </section>
