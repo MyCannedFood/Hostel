@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AlaSare Management Dashboard</title>
-    <link rel="stylesheet" href="{{ asset('css/dashboard.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fhostelman8354back.builtwithrocket.new&_be=https%3A%2F%2Fappanalytics.rocket.new&_v=0.1.18"></script>
     <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2"></script>

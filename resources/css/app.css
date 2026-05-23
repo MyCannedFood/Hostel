@@ -20,6 +20,11 @@
 @import "./experience-payment-method.css";
 @import "./experience-booking-detail.css";
 
+/* Admin */
+@import "./dashboard.css";
+@import "./manage_guests.css";
+@import "./manage_occupation.css";
+
 :root {
     --color-primary: rgb(26, 61, 10);
     --color-accent: rgb(217, 134, 74);
