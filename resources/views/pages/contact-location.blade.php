@@ -92,8 +92,8 @@
                 <p class="section-kicker">Getting Here</p>
                 <h2>How to reach us</h2>
                 <div class="direction-list">
-                    <details open>
-                        <summary>
+                    <div class="direction-dropdown-row is-open">
+                        <button type="button" class="direction-dropdown-toggle" aria-expanded="true" aria-controls="onlineTaxiOptions">
                             <span class="direction-icon" aria-hidden="true">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="4" y="9" width="16" height="8" rx="2"></rect>
@@ -105,9 +105,10 @@
                                 </svg>
                             </span>
                             <span>Online Taxi</span>
-                        </summary>
+                            <span class="direction-chevron" aria-hidden="true"></span>
+                        </button>
                         <p class="direction-description">Approximately 20 minutes from Bandung city center.</p>
-                        <div class="direction-subitems">
+                        <div class="direction-subitems" id="onlineTaxiOptions">
                             <div class="direction-subitem">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                     <rect x="4" y="9" width="16" height="8" rx="2"></rect>
@@ -127,7 +128,7 @@
                                 <span>Trans Studio Bandung</span>
                             </div>
                         </div>
-                    </details>
+                    </div>
                     <div class="direction-static-row">
                         <div class="direction-static-heading">
                             <span class="direction-icon" aria-hidden="true">
@@ -157,7 +158,7 @@
                             <span>Walking</span>
                             <span class="direction-chevron" aria-hidden="true"></span>
                         </div>
-                        <p class="direction-description">ApproximatWalkinely 20 minutes from Bandung city center.</p>
+                        <p class="direction-description">Approximately 20 minutes from Bandung city center.</p>
                     </div>
                     <div class="direction-static-row">
                         <div class="direction-static-heading">
@@ -183,5 +184,15 @@
 
     @include('components.footer')
     <x-whatsapp_floating />
+
+    <script>
+        document.querySelectorAll('.direction-dropdown-toggle').forEach(function (toggle) {
+            toggle.addEventListener('click', function () {
+                const row = toggle.closest('.direction-dropdown-row');
+                const isOpen = row?.classList.toggle('is-open');
+                toggle.setAttribute('aria-expanded', String(Boolean(isOpen)));
+            });
+        });
+    </script>
 </body>
 </html>
