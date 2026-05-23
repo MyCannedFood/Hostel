@@ -7,28 +7,26 @@
 
 .guest-page-title {
     font-size: 30px;
-    font-weight: 500;
     color: #1a3d0a;
+    font-family: var(--font-serif);
 }
 
 .btn-add-guest {
     background-color: #1a3d0a;
     color: #fff;
     border: none;
-    padding: 10px 20px;
-    font-size: 16px;
-    font-family: inherit;
-    border-radius: 4px;
+    padding: 16px;
+    font-size: 18.75px;
+    font-family: var(--font-serif);
+    border-radius: 2px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 8px;
-    font-weight: 500;
 }
 
 .btn-add-guest span {
-    font-size: 20px;
-    line-height: 1;
+    font-size: 18.75px;
 }
 
 /* Top Stats Cards */
@@ -41,7 +39,7 @@
 
 .guest-stat-card {
     background: #fff;
-    border: 1px solid rgba(26, 61, 10, 0.2);
+    border: 1px solid rgb(26, 61, 10, 0.3);
     border-radius: 8px;
     padding: 24px;
 }
@@ -49,19 +47,19 @@
 .guest-stat-title {
     font-size: 18.75px;
     font-weight: bold;
+    font-family: var(--font-serif);
     color: var(--color-primary);
-    margin-bottom: 8px;
 }
 
 .guest-stat-value {
     font-size: 48px;
-    font-weight: 500;
+    font-family: var(--font-serif);
     color: var(--color-primary);
-    margin-bottom: 8px;
 }
 
 .guest-stat-sub {
     font-size: 18.75px;
+    font-family: var(--font-serif);
     color: var(--color-primary);
     margin-bottom: 8px;
 }
@@ -69,12 +67,12 @@
 .guest-breakdown {
     display: flex;
     flex-direction: column;
-    gap: 6px;
 }
 
 .guest-breakdown-item {
     display: flex;
     justify-content: space-between;
+    font-family: var(--font-serif);
     font-size: 12px;
     color: var(--color-primary);
     font-weight: 500;
@@ -84,11 +82,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 24px;
+    gap: 64px;
     background: #fff;
-    border: 1px solid rgba(26, 61, 10, 0.2);
+    border: 1px solid rgba(26, 61, 10, 0.3);
     border-radius: 8px;
-    padding: 20px;
+    padding: 24px;
 }
 
 .split-item {
@@ -98,22 +96,21 @@
 }
 
 .split-value {
+    font-family: var(--font-serif);
     font-size: 48px;
-    font-weight: 500;
+    text-align: end;
+    width: 72px;
     color: var(--color-primary);
 }
 
 .split-label {
     font-size: 30px;
     color: var(--color-primary);
-    font-weight: 500;
 }
 
 .split-label-btn {
-    background: none;
     border: none;
-    padding: 0;
-    font-family: inherit;
+    font-family: var(--font-serif);
     cursor: pointer;
     text-align: left;
     transition: opacity 0.2s ease;

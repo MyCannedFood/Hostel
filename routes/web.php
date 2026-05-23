@@ -67,27 +67,3 @@ Route::middleware(['is_admin'])->group(function () {
 });
 
 
-// Serve dashboard CSS directly from resources during development
-Route::get('/css/dashboard.css', function () {
-    $path = resource_path('css/dashboard.css');
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    return response()->file($path, ['Content-Type' => 'text/css']);
-});
-
-Route::get('/css/manage_guests.css', function () {
-    $path = resource_path('css/manage_guests.css');
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    return response()->file($path, ['Content-Type' => 'text/css']);
-});
-
-Route::get('/css/manage_occupation.css', function () {
-    $path = resource_path('css/manage_occupation.css');
-    if (!file_exists($path)) {
-        abort(404);
-    }
-    return response()->file($path, ['Content-Type' => 'text/css']);
-});
