@@ -107,7 +107,7 @@
                                 <input type="text" placeholder="Search Guest">
                             </div>
                         </div>
-                        <div style="overflow-x: auto;">
+                        <div class="guest-table-container">
                             <table class="guest-table">
                                 <thead>
                                     <tr>
@@ -117,6 +117,21 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr>
+                                        <td>BK-2026-1042</td>
+                                        <td>Aria Kusuma Rio</td>
+                                        <td>Indonesia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>BK-2026-1042</td>
+                                        <td>Aria Kusuma</td>
+                                        <td>Indonesia</td>
+                                    </tr>
+                                    <tr>
+                                        <td>BK-2026-1042</td>
+                                        <td>Aria Kusuma</td>
+                                        <td>Indonesia</td>
+                                    </tr>
                                     <tr>
                                         <td>BK-2026-1042</td>
                                         <td>Aria Kusuma</td>

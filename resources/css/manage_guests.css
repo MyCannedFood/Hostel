@@ -330,6 +330,7 @@ body.guest-action-open {
 }
 
 .guest-action-form-footer {
+    padding-top: 25px;
     display: flex;
     justify-content: space-between;
     gap: 16px;
@@ -349,13 +350,19 @@ body.guest-action-open {
 }
 
 .guest-action-btn-back {
-    background: #529461;
+    background: #4ca761;
     color: #fff;
+    font-family: 'EB Garamond', serif;
+    font-weight: 700;
+    border: none;
 }
 
 .guest-action-btn-done {
     background: #D9864A;
     color: #fff;
+    font-family: 'EB Garamond', serif;
+    font-weight: 700;
+    border: none;
 }
 
 .guest-action-btn-back:hover,
@@ -388,22 +395,23 @@ body.guest-action-open {
 
 .admin-guest-form-group label {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #fff;
+    color: #f7f7f2;
+    font-family: 'EB Garamond', serif;
 }
 
 .admin-guest-form-group input,
 .admin-guest-form-group select,
 .admin-guest-form-group textarea {
-    background: #fff;
+    background: #f7f7f2;
     border: none;
     border-radius: 2px;
     padding: 10px 14px;
-    font-family: inherit;
+    font-family: 'EB Garamond', serif;
     font-size: 14px;
-    color: #333;
+    color: #1a3d0a;
     outline: none;
     width: 100%;
     box-sizing: border-box;
@@ -411,7 +419,7 @@ body.guest-action-open {
 
 .admin-guest-form-group input::placeholder,
 .admin-guest-form-group textarea::placeholder {
-    color: #bbb;
+    color: rgba(26, 61, 10, 0.4);
 }
 
 .admin-guest-form-group textarea {
@@ -442,30 +450,30 @@ body.guest-action-open {
 .admin-guest-tab-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0;
+    gap: 15px;
 }
 
 .admin-guest-tab {
-    background: rgba(217, 134, 74, 0.45);
-    color: #1a3d0a;
+    background: #D9864A;
+    color: #fff;
     font-family: 'EB Garamond', serif;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: 700;
     padding: 10px 16px;
     border: none;
-    border-radius: 2px 2px 0 0;
+    border-radius: 2px;
     cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: opacity 0.2s ease;
     text-align: center;
 }
 
 .admin-guest-tab:hover {
-    background: rgba(217, 134, 74, 0.65);
+    opacity: 0.9;
 }
 
 .admin-guest-tab.active {
     background: #D9864A;
-    color: #1a3d0a;
+    color: #fff;
 }
 
 .admin-guest-tab-panel {
@@ -491,11 +499,12 @@ body.guest-action-open {
 .admin-guest-upload-label {
     display: block;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    color: #fff;
+    color: #f7f7f2;
     margin-bottom: 8px;
+    font-family: 'EB Garamond', serif;
 }
 
 .admin-guest-upload-area {
@@ -516,8 +525,7 @@ body.guest-action-open {
 }
 
 .admin-guest-upload-hint {
-    font-size: 12px;
-    color: #888;
+    display: none;
 }
 
 /* Check-out form */
@@ -753,6 +761,7 @@ body.guest-action-open {
 }
 
 @media (max-width: 600px) {
+
     .guest-action-modal,
     .guest-action-modal.is-form-step {
         padding: 24px;
@@ -843,6 +852,15 @@ body.guest-action-open {
     box-sizing: border-box;
     min-width: 0;
     min-height: 781px;
+    display: flex;
+    flex-direction: column;
+}
+
+.guest-table-container {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: auto;
+    min-height: 0;
 }
 
 .guest-list-header {
@@ -875,24 +893,52 @@ body.guest-action-open {
 }
 
 .guest-table {
-    width: 100%;
+    width: auto;
+    min-width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.guest-table th,
+.guest-table td {
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .guest-table th {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 10;
     text-align: left;
     font-size: 18.75px;
-    padding: 24px 16px;
-    border-bottom: 2px solid rgba(26, 61, 10, 0.1);
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(26, 61, 10, 0.1);
     color: var(--color-primary);
     font-weight: bold;
+    white-space: nowrap;
+}
+
+.guest-table th:nth-child(1) {
+    width: 28%;
+}
+
+.guest-table th:nth-child(2) {
+    width: 32%;
+}
+
+.guest-table th:nth-child(3) {
+    width: 20%;
 }
 
 .guest-table td {
-    padding: 16px 8px;
+    padding: 10px 16px;
     font-size: 18.75px;
     color: var(--color-primary);
     border-bottom: 1px solid rgba(26, 61, 10, 0.05);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Guests per Room */
@@ -918,7 +964,13 @@ body.guest-action-open {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    min-height: 88px;
+}
+
+.room-item:last-child {
+    border-bottom: none;
 }
 
 .room-info-name {
@@ -992,22 +1044,27 @@ body.guest-action-open {
     .guest-stats-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
     .guest-middle-grid {
         grid-template-columns: minmax(0, 1fr);
         grid-template-rows: auto;
         min-height: 0;
     }
+
     .guest-list-card {
         grid-row: auto;
         min-height: 400px;
     }
+
     .guests-room-card,
     .guest-trend-card {
         height: auto;
     }
+
     .guests-room-card {
         min-height: 315px;
     }
+
     .guest-trend-card {
         min-height: 434px;
     }
@@ -1017,4 +1074,102 @@ body.guest-action-open {
     .guest-stats-grid {
         grid-template-columns: minmax(0, 1fr);
     }
+}
+
+/* =========================
+   Section Titles
+========================= */
+
+.guest-list-title,
+.guests-room-title,
+.guest-trend-title {
+    font-family: 'EB Garamond', serif;
+    font-weight: 500;
+    color: #1a3d0a;
+    letter-spacing: -0.3px;
+    line-height: 1.1;
+}
+
+/* =========================
+   Table Header
+========================= */
+
+.guest-table th {
+    font-weight: 700;
+    color: #1a3d0a;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid rgba(26, 61, 10, 0.12);
+    background: transparent;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+/* =========================
+   Table Content
+========================= */
+
+.guest-table td {
+    font-family: 'EB Garamond', serif;
+    font-weight: 500;
+    color: #1a3d0a;
+    line-height: 1.2;
+    border-bottom: 1px solid rgba(26, 61, 10, 0.06);
+    padding-top: 24px;
+    padding-bottom: 24px;
+    vertical-align: middle;
+}
+
+/* =========================
+   Search Input
+========================= */
+
+.guest-search input {
+    font-family: 'EB Garamond', serif;
+    color: #1a3d0a;
+}
+
+.guest-search input::placeholder {
+    color: rgba(26, 61, 10, 0.5);
+}
+
+/* =========================
+   Room Section
+========================= */
+
+.room-info-name {
+    font-weight: 700;
+    color: #1a3d0a;
+    line-height: 1.1;
+}
+
+.room-info-details {
+    font-weight: 500;
+    color: #1a3d0a;
+    line-height: 1.2;
+}
+
+/* =========================
+   Circle Number
+========================= */
+
+.room-count {
+    font-weight: 700;
+}
+
+/* =========================
+   Dropdown
+========================= */
+
+.trend-dropdown {
+    font-family: 'EB Garamond', serif;
+    color: #1a3d0a;
+    background: #f7f7f2;
+}
+
+/* =========================
+   Hover Table
+========================= */
+
+.guest-table tbody tr:hover {
+    background: rgba(26, 61, 10, 0.02);
 }
