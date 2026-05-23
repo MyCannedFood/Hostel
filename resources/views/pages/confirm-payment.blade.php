@@ -222,7 +222,9 @@
 {{-- Footer Actions - DI LUAR main agar full width --}}
 <div class="confirm-footer-wrapper">
     <div class="confirm-footer-actions">
-        <a href="/guest-details" class="btn-back-details">Back To Guest Details</a>
+        <a href="/guest-details" class="btn-back-details" style="background-color: #4B9960; color: white;">
+            Back To Guest Details
+        </a>
     </div>
 </div>
 
