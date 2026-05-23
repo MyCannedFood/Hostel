@@ -7,7 +7,7 @@
     position: relative;
     height: 50vh;
     min-height: 700px;
-    background-image: url('../images/experience-hero.jpg');
+    background-image: url('../images/experience/hero.png');
     background-size: cover;
     background-position: center;
     display: flex;

@@ -1,0 +1,293 @@
+.success-page {
+    background-color: var(--color-bg-light);
+    font-family: var(--font-body);
+}
+
+/* ---- Steps (sama seperti payment) ---- */
+.success-steps {
+    border-bottom: 1px solid #E5E0D5;
+    padding: 20px 0;
+}
+
+.success-steps .steps-container {
+    max-width: 620px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 0 24px;
+}
+
+.success-steps .step {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(26, 61, 10, 0.4);
+    padding: 0 12px;
+}
+
+.success-steps .step--done {
+    color: rgba(26, 61, 10, 0.5);
+}
+
+.success-steps .step--active {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.success-steps .step-arrow {
+    color: rgba(26, 61, 10, 0.3);
+    margin-left: 8px;
+    font-weight: 400;
+}
+
+/* ---- Success header ---- */
+.success-header {
+    text-align: center;
+    padding: 56px 24px 40px;
+}
+
+.success-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border: 2px solid #D9864A;
+    border-radius: 50%;
+    margin: 0 auto 24px;
+}
+
+.success-title {
+    font-family: var(--font-serif);
+    font-size: 42px;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-bottom: 12px;
+    letter-spacing: 0.01em;
+}
+
+.success-subtitle {
+    font-size: 16px;
+    color: var(--color-primary);
+    margin-bottom: 6px;
+}
+
+.success-note {
+    font-size: 13px;
+    color: rgba(26, 61, 10, 0.55);
+}
+
+/* ---- Ticket wrapper ---- */
+.ticket-wrapper {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+}
+
+/* ---- Ticket card ---- */
+.ticket-card {
+    background: #FFF;
+    border: 1px solid #D9D0C0;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 28px;
+}
+
+/* ---- Ticket top row ---- */
+.ticket-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.ticket-id-block,
+.ticket-status-block {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ticket-status-block {
+    text-align: right;
+}
+
+.ticket-meta-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(26, 61, 10, 0.45);
+}
+
+.ticket-id {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 0.02em;
+}
+
+.ticket-status {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+/* ---- Dividers ---- */
+.ticket-divider {
+    border: none;
+    border-top: 1px solid #E5E0D5;
+    margin: 20px 0;
+}
+
+.ticket-divider--dashed {
+    border-top: 1px dashed #C8C0B0;
+}
+
+/* ---- Experience info ---- */
+.ticket-experience {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.ticket-exp-name {
+    font-family: var(--font-serif);
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-bottom: 6px;
+}
+
+.ticket-exp-subtitle {
+    font-size: 13px;
+    color: rgba(26, 61, 10, 0.55);
+}
+
+/* ---- Detail grid ---- */
+.ticket-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 16px;
+    margin-bottom: 16px;
+}
+
+.ticket-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ticket-field-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(26, 61, 10, 0.45);
+}
+
+.ticket-field-value {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+/* ---- Address ---- */
+.ticket-address {
+    font-size: 14px;
+    color: var(--color-primary);
+    line-height: 1.5;
+    margin-bottom: 0;
+}
+
+/* ---- QR section ---- */
+.ticket-qr {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0 4px;
+}
+
+.ticket-qr-frame {
+    background: #F5F2EA;
+    border: 1px solid #E0D8C8;
+    border-radius: 8px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ticket-qr-img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    display: block;
+}
+
+.ticket-qr-note {
+    font-size: 12px;
+    color: rgba(26, 61, 10, 0.5);
+    text-align: center;
+}
+
+/* ---- Action buttons ---- */
+.ticket-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-download {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: #D9864A;
+    color: #FFF;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 14px 0;
+    transition: background 0.2s ease;
+}
+
+.btn-download:hover {
+    background: #c4733a;
+}
+
+.btn-home {
+    font-size: 14px;
+    color: #D9864A;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.btn-home:hover {
+    opacity: 0.7;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+    .success-title {
+        font-size: 30px;
+    }
+
+    .ticket-card {
+        padding: 22px 20px;
+    }
+
+    .ticket-grid {
+        gap: 16px 12px;
+    }
+}

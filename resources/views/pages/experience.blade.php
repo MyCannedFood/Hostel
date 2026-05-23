@@ -12,11 +12,14 @@
 
 <main>
     {{-- Hero Section --}}
-    <section class="experience-hero">
-        <div class="experience-hero-content">
-            <h1 class="experience-hero-title">Find Meaning at AlaSare</h1>
-            <p class="experience-hero-subtitle">Absorb the essence of the place, discover new passions, grow step by step.</p>
-        </div>
+    <section class="experience-hero"
+        style="background-image: url('{{ asset('images/experience/hero.png') }}');">
+            <div class="experience-hero-content">
+                <h1 class="experience-hero-title">Find Meaning at AlaSare</h1>
+                <p class="experience-hero-subtitle">
+                    Absorb the essence of the place, discover new passions, grow step by step.
+                </p>
+            </div>
     </section>
 
     {{-- Content Container --}}
