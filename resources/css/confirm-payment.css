@@ -426,13 +426,25 @@
 }
 
 /* Footer bottom action button */
+.confirm-footer-wrapper {
+    width: 100%;
+    background: #FFFFFF;
+    border-top: 1px solid #EAEAEA;
+    margin-top: 40px;
+}
+
 .confirm-footer-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 32px;
-    border-top: 1px solid #EAEAEA;
-    padding-top: 24px;
+    align-items: center;
+    padding: 20px 40px;
+
+    /* posisi ideal (tanpa merusak layout desktop), tapi tetap bisa di-override di mobile */
+    transform: translateX(-200px);
 }
+
+
+
 
 .btn-back-details {
     background: #4B9960;
@@ -460,9 +472,17 @@
 }
 
 @media (max-width: 600px) {
+    .confirm-footer-actions {
+        /* mobile: geser kiri secukupnya agar tidak "nabrak" area lain */
+        transform: translateX(-60px);
+    }
+
     .room-review-card {
         flex-direction: column;
     }
+
+
+
 
     .room-review-image-wrapper {
         width: 100%;
