@@ -14,23 +14,24 @@
 <main class="experience-booking-page">
 
     {{-- Stepper --}}
-    <nav class="exp-stepper">
-        <div class="exp-step active">
-            <span>1. DETAIL</span>
-        </div>
-        <div class="exp-step-divider">></div>
-        <div class="exp-step">
-            <span>PAYMENT METHOD</span>
-        </div>
-        <div class="exp-step-divider">></div>
-        <div class="exp-step">
-            <span>PAYMENT</span>
-        </div>
-        <div class="exp-step-divider">></div>
-        <div class="exp-step">
-            <span>SUCCESS</span>
-        </div>
-    </nav>
+<nav class="exp-stepper">
+    <div class="exp-step exp-step--active">
+        <span class="exp-step-number">1.</span>
+        <span class="exp-step-label">Detail</span>
+        <span class="exp-step-arrow">›</span>
+    </div>
+    <div class="exp-step exp-step--pending">
+        <span class="exp-step-label">Payment Method</span>
+        <span class="exp-step-arrow">›</span>
+    </div>
+    <div class="exp-step exp-step--pending">
+        <span class="exp-step-label">Payment</span>
+        <span class="exp-step-arrow">›</span>
+    </div>
+    <div class="exp-step exp-step--pending">
+        <span class="exp-step-label">Success</span>
+    </div>
+</nav>
 
     {{-- Hero --}}
     <div class="exp-hero">
@@ -47,7 +48,7 @@
     </div>
 
     {{-- Form --}}
-    <form class="exp-form" action="/confirm-payment" method="GET">
+    <form class="exp-form" action="/experience/payment-method" method="GET">
 
         <div class="exp-form-row">
             <div class="exp-form-group">
@@ -132,7 +133,9 @@
 
         <div class="exp-footer">
             <p>A brief digital detox begins with your intention.</p>
-            <button type="submit" class="btn-proceed">PROCEED TO PAYMENT</button>
+            <form action="/experience/payment-method" method="GET">
+                <button type="submit" class="btn-proceed">PROCEED TO PAYMENT</button>
+            </form>
             <div class="secure-badge">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                 SECURE ECOLOGICAL TRANSACTION

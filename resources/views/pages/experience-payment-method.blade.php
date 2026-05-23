@@ -14,24 +14,24 @@
 <main class="payment-method-page">
 
     {{-- Stepper --}}
-    <nav class="pm-stepper">
-        <div class="pm-step completed">
-            <span>DETAIL</span>
+    <nav class="exp-stepper">
+        <div class="exp-step exp-step--done">
+            <a href="/experience/booking-detail" class="step-link">Detail</a>
+            <span class="exp-step-arrow">›</span>
         </div>
-        <div class="pm-step-divider">></div>
-        <div class="pm-step active">
-            <span>2. PAYMENT METHOD</span>
+        <div class="exp-step exp-step--active">
+            <span class="exp-step-number">2.</span>
+            <span class="exp-step-label">Payment Method</span>
+            <span class="exp-step-arrow">›</span>
         </div>
-        <div class="pm-step-divider">></div>
-        <div class="pm-step">
-            <span>PAYMENT</span>
+        <div class="exp-step exp-step--pending">
+            <span class="exp-step-label">Payment</span>
+            <span class="exp-step-arrow">›</span>
         </div>
-        <div class="pm-step-divider">></div>
-        <div class="pm-step">
-            <span>SUCCESS</span>
+        <div class="exp-step exp-step--pending">
+            <span class="exp-step-label">Success</span>
         </div>
     </nav>
-
     <h1 class="page-title">Payment Method</h1>
 
     <div class="payment-grid">
