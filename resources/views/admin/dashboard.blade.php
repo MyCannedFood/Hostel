@@ -103,7 +103,7 @@
                         </article>
             
                         <!-- Revenue card -->
-                        <article class="stat-card">
+                        <article class="stat-card clickable" onclick="window.location.href='/admin/manage-revenue'" role="button" tabindex="0">
                             <div class="stat-header">
                                 <h3 class="stat-title">Revenue</h3>
                                 <div class="stat-icon">
