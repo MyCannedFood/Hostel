@@ -1,0 +1,471 @@
+/* =================================================================
+   manage-revenue.css  —  AlaSare Revenue Overview
+   CATATAN: dashboard.css punya class bentrok (.dropdown, .stat-card,
+   .stat-label, .stat-value, .stat-icon). Semua di-override di sini
+   dengan spesifisitas lebih tinggi via .page-revenue prefix.
+================================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Libre+Caslon+Text:wght@400;700&display=swap');
+
+/* ===== TOKENS ===== */
+:root {
+    --rv-green-dark:  #1A3D0A;
+    --rv-green:       #4F8F67;
+    --rv-green-mid:   #4F9C68;
+    --rv-green-light: #EDF5F0;
+    --rv-orange:      #D88447;
+    --rv-white:       #FFFFFF;
+    --rv-bg:          #F7F7F4;
+    --rv-text:        #24322D;
+    --rv-text-muted:  #7A857F;
+    --rv-border:      #E5E9E6;
+    --rv-shadow:      0 4px 14px rgba(0,0,0,0.04);
+    --rv-r:           8px;
+    --rv-rs:          4px;
+}
+
+/* =================================================================
+   PAGE WRAPPER — semua selector diawali .page-revenue
+   supaya tidak bentrok dengan dashboard.css
+================================================================= */
+
+.page-revenue {
+    font-family: 'Be Vietnam Pro', sans-serif;
+}
+
+.page-revenue .page-title {
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--rv-green-dark);
+    margin-bottom: 28px;
+    line-height: 1.2;
+}
+
+/* =================================================================
+   STAT CARDS — override dashboard.css .stat-card (height:280px, gap:16px)
+================================================================= */
+
+.page-revenue .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+    align-items: start; /* FIX: tidak dipaksa sama tinggi */
+}
+@media (max-width: 1200px) { .page-revenue .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px)  { .page-revenue .stats-grid { grid-template-columns: 1fr; } }
+
+/* Override dashboard.css: height:280px & gap:16px & display:flex */
+.page-revenue .stat-card.growth-card {
+    gap: 2px !important;  /* gap lebih kecil khusus growth */
+}
+
+.page-revenue .growth-row {
+    padding: 7px 0 !important;  /* kurangi padding atas bawah tiap row */
+}
+
+.page-revenue .stat-card {
+    background: var(--rv-white);
+    border: 1px solid #ECEEEB;
+    border-radius: var(--rv-r);
+    padding: 20px;
+    box-shadow: var(--rv-shadow);
+    height: 266px !important;      /* samakan tinggi semua card */
+    display: flex !important;
+    flex-direction: column !important;   /* FIX: hapus display:flex dari dashboard.css */
+    gap: 8px !important;  
+    animation: none;
+    transition: none;
+    transform: none !important;
+}
+.page-revenue .stat-card:hover {
+    transform: none !important;
+    box-shadow: var(--rv-shadow) !important;
+}
+
+/* Override dashboard.css .stat-label (font-size:16-18px, font-family DM Sans) */
+.page-revenue .stat-label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin-bottom: 18px !important;
+    font-family: 'Work Sans', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    color: #7E9F84 !important;
+    line-height: 1.2 !important;
+    border-top: none !important;
+    padding-top: 0 !important;
+}
+
+.page-revenue .stat-label-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative; /* anchor untuk dropdown */
+}
+
+/* Override dashboard.css .stat-icon */
+.page-revenue .stat-icon {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--rv-rs) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: white !important;
+    font-size: 14px !important;
+    flex-shrink: 0 !important;
+    padding: 0 !important;
+    background-color: unset !important;
+}
+.page-revenue .stat-icon.green  { background: var(--rv-green-mid) !important; }
+.page-revenue .stat-icon.orange { background: #DA8747 !important; }
+.page-revenue .stat-icon img    { display: none; } /* hide dashboard.css icon img */
+
+/* Override dashboard.css .stat-value (font-size:24-30px, font-family DM Sans) */
+.page-revenue .stat-value {
+    font-family: 'Libre Caslon Text', serif !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #1D3C34 !important;
+    line-height: 1.2 !important;
+    margin-bottom: 14px !important;
+}
+
+.page-revenue .stat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.page-revenue .stat-badge.up      { background: #EAF4ED; color: #2C8B50; }
+.page-revenue .stat-badge.healthy { background: #DDF5E5; color: #33935B; }
+
+.page-revenue .stat-sub {
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #646B67;
+}
+
+.page-revenue .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #EFEFEF;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 14px 0 10px;
+}
+.page-revenue .progress-fill {
+    height: 100%;
+    width: 35%;
+    background: var(--rv-orange);
+    border-radius: 999px;
+}
+
+/* Growth rows */
+.page-revenue .growth-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 0;
+    border-top: 1px solid #F0F0F0;
+    font-size: 12.5px;
+    color: #6A706C;
+}
+.page-revenue .growth-val {
+    color: #2F8E59;
+    font-weight: 600;
+}
+
+/* =================================================================
+   THREE DOTS + DROPDOWN
+   FIX UTAMA: .dots-wrapper position:relative jadi anchor,
+   bukan .stat-card — supaya dropdown tepat di bawah titik 3
+   Override dashboard.css .dropdown (position:relative; display:inline-flex)
+================================================================= */
+
+.page-revenue .dots-wrapper {
+    position: relative;
+}
+
+.page-revenue .three-dots {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--rv-rs);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #7E9F84;
+    transition: background 0.15s;
+}
+.page-revenue .three-dots:hover { background: #F3F6F3; }
+
+/* Override dashboard.css .dropdown sepenuhnya */
+.page-revenue .dots-wrapper .dropdown {
+    position: absolute !important;
+    top: calc(100% + 6px) !important; /* tepat di bawah titik 3 */
+    right: 0 !important;
+    left: auto !important;
+    display: block !important;        /* override inline-flex */
+    width: 190px !important;
+    background: var(--rv-white) !important;
+    border: 1px solid #E8E8E8 !important;
+    border-radius: var(--rv-r) !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12) !important;
+    overflow: hidden !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-6px) !important;
+    transition: opacity 0.18s, transform 0.18s, visibility 0s 0.18s !important;
+    z-index: 100 !important;
+    padding: 0 !important;
+}
+.page-revenue .dots-wrapper .dropdown.open {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+    transition: opacity 0.18s, transform 0.18s, visibility 0s 0s !important;
+}
+
+.page-revenue .dropdown-item {
+    padding: 13px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #444 !important;
+    transition: background 0.15s !important;
+    white-space: nowrap !important;
+    text-align: left !important;
+    background: transparent !important;
+    border: none !important;
+    width: 100% !important;
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+}
+.page-revenue .dropdown-item:hover { background: #F7F8F7 !important; }
+.page-revenue .dropdown-item i { font-size: 14px; color: var(--rv-green-mid); }
+
+/* =================================================================
+   CHARTS
+================================================================= */
+
+.page-revenue .charts-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 24px;
+}
+@media (max-width: 992px) { .page-revenue .charts-row { grid-template-columns: 1fr; } }
+
+/* Override dashboard.css .chart-card */
+.page-revenue .chart-card {
+    background: var(--rv-white);
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-r);
+    padding: 24px;
+    box-shadow: var(--rv-shadow);
+    animation: none;
+}
+
+/* Override dashboard.css .chart-header */
+.page-revenue .chart-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: nowrap;
+    gap: 12px;
+}
+
+/* Override dashboard.css .chart-title */
+.page-revenue .chart-title {
+    font-family: 'Work Sans', sans-serif;
+    font-size: 15px !important;
+    font-weight: 600;
+    color: var(--rv-green-dark);
+    line-height: 1.3 !important;
+}
+
+.page-revenue .chart-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid var(--rv-border);
+    border-radius: var(--rv-rs);
+    font-size: 12px;
+    color: var(--rv-text-muted);
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.page-revenue .chart-body {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.page-revenue .y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 180px;
+    flex-shrink: 0;
+}
+.page-revenue .y-label {
+    font-size: 10px;
+    color: var(--rv-text-muted);
+    line-height: 1;
+}
+
+.page-revenue .bar-chart {
+    flex: 1;
+    height: 200px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    min-width: 0;
+}
+.page-revenue .bar-wrap {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.page-revenue .bar {
+    width: 100%;
+    min-height: 8px;
+    background: #26A7A9;
+    border-radius: var(--rv-rs) var(--rv-rs) 0 0;
+    transition: opacity 0.2s;
+}
+.page-revenue .bar:hover { opacity: 0.75; }
+.page-revenue .bar-label { font-size: 11px; font-weight: 500; color: #7A857F; }
+
+.page-revenue .area-chart-wrap { width: 100%; height: 160px; }
+.page-revenue .area-legend { display: flex; gap: 18px; margin-top: 12px; }
+.page-revenue .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--rv-text-muted); }
+.page-revenue .legend-dot  { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.page-revenue .orange-dot  { background: var(--rv-orange); }
+.page-revenue .green-dot   { background: var(--rv-green); }
+
+/* =================================================================
+   TABLE — override dashboard.css table styles
+================================================================= */
+
+.page-revenue .table-card {
+    background: var(--rv-white);
+    border: 1px solid #DDE2DE;
+    border-radius: var(--rv-r);
+    overflow-x: auto;
+    box-shadow: var(--rv-shadow);
+}
+
+.page-revenue .table-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--rv-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.page-revenue .table-title {
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--rv-green-dark);
+}
+.page-revenue .view-all-link {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--rv-green-mid);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+}
+
+.page-revenue table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 560px;
+}
+
+/* Override dashboard.css th */
+.page-revenue table th {
+    background: #FAFBFA !important;
+    padding: 12px 20px !important;
+    text-align: left !important;
+    border-bottom: 1px solid var(--rv-border) !important;
+    font-family: 'Work Sans', sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    color: #6F7671 !important;
+    white-space: nowrap !important;
+    line-height: 1.4 !important;
+    border-top: none !important;
+}
+
+/* Override dashboard.css td */
+.page-revenue table td {
+    padding: 18px 20px !important;
+    border-bottom: 1px solid #EEF1EE !important;
+    font-size: 13px !important;
+    color: #2D2D2D !important;
+    vertical-align: middle !important;
+    font-family: 'Be Vietnam Pro', sans-serif !important;
+    font-weight: 400 !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+}
+.page-revenue table tbody tr { border-top: none !important; }
+.page-revenue table tr:last-child td { border-bottom: none !important; }
+.page-revenue table tbody tr:hover td { background: #FAFBFA; }
+
+.page-revenue .type-income  { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; font-size: 13px; color: #417549; }
+.page-revenue .type-expense { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; font-size: 13px; color: #C86A36; }
+
+.page-revenue .category-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--rv-rs);
+    font-family: 'Work Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #F0F3EF;
+    color: #4E6654;
+    letter-spacing: 0.5px;
+}
+
+.page-revenue .action-dots {
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border-radius: var(--rv-rs);
+    color: #9AA49E;
+    transition: background 0.15s;
+}
+.page-revenue .action-dots:hover { background: #F4F4F4; color: var(--rv-text); }
+
+/* =================================================================
+   MODAL STATE
+================================================================= */
+body.modal-open { overflow: hidden; }
