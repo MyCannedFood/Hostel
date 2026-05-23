@@ -247,6 +247,11 @@
                     Journal
                 </a>
 
+                <a href="/contact"
+                   class="{{ request()->is('contact') ? 'active-nav' : 'inactive-nav' }}">
+                    Contact
+                </a>
+
             </div>
         </div>
 
@@ -353,6 +358,11 @@
         <a href="/journal"
            class="{{ request()->is('journal') ? 'active-link' : '' }}">
             Journal
+        </a>
+
+        <a href="/contact"
+           class="{{ request()->is('contact') ? 'active-link' : '' }}">
+            Contact
         </a>
 
         {{-- Mobile Language --}}

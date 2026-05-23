@@ -6,6 +6,7 @@
 @import "./room-selection.css";
 @import "./journal.css";
 @import "./experience.css";
+@import "./contact-location.css";
 
 /* Booking flow */
 @import "./booking-stepper.css";

@@ -14,6 +14,9 @@ Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
 Route::get('/rooms', fn () => view('pages.rooms'));
 Route::get('/gallery', fn () => view('pages.gallery'));
 Route::get('/experience', fn () => view('pages.experience'));
+Route::get('/contact', fn () => view('pages.contact-location'));
+Route::get('/location', fn () => view('pages.contact-location'));
+Route::get('/contact-location', fn () => view('pages.contact-location'));
 Route::get('/experience/booking-detail', fn () => view('pages.experience-booking-detail'));
 Route::get('/experience/payment-method', fn () => view('pages.experience-payment-method'));
 Route::get('/profile', fn () => view('pages.profile'));
@@ -65,5 +68,3 @@ Route::middleware(['is_admin'])->group(function () {
     })->name('admin.finance-accounting');
 
 });
-
-
