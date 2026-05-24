@@ -2,7 +2,7 @@
     <div class="modal">
 
         <div class="modal-header">
-            <h3>Budgetin and Request</h3>
+            <h3>Budgeting</h3>
         </div>
 
         <div class="modal-body">
