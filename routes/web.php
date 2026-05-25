@@ -74,4 +74,8 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.finance-accounting');
     })->name('admin.finance-accounting');
 
+     Route::get('/admin/budgeting', function () {
+        return view('admin.budgeting');
+    })->name('admin.budgeting');
+
 });

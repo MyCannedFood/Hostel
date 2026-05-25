@@ -241,7 +241,7 @@
                 <span class="menu-text">Article</span>
             </a>
 
-            <a class="menu-item {{ $isBudget ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Finance') }}">
+            <a class="menu-item {{ $isBudget ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/budgeting') }}">
                 <img src="{{ asset('images/admin/img_icon_green_800_22x14.svg') }}" alt="" width="18" height="16">
                 <span class="menu-text">Budgeting</span>
             </a>
