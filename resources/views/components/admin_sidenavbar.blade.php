@@ -217,7 +217,7 @@
     $isArticle = request()->is('Admin/Price-Management');
     $isBudget = request()->is('Admin/Finance');
     $isSettings = request()->is('Admin/Settings');
-    $isFinance = request()->is('Admin/Finance-Accounting');
+    $isFinance = request()->is('admin/finance-accounting');
 @endphp
 
             <a class="menu-item {{ $isDashboard ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/dashboard') }}">
@@ -253,7 +253,7 @@
                 <span class="menu-text">Settings</span>
             </a>
 
-            <a class="menu-item {{ $isFinance ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Finance-Accounting') }}">
+            <a class="menu-item {{ $isFinance ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/finance-accounting') }}">
 
                 <img src="{{ asset('images/admin/img_icon_green_800_16x22.svg') }}" alt="" width="20" height="20">
                 <span class="menu-text">Finance Accounting</span>

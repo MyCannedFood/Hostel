@@ -69,8 +69,8 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.dashboard-layout', ['page' => 'Settings']);
     })->name('admin.settings');
 
-    Route::get('/Admin/Finance-Accounting', function () {
-        return view('admin.dashboard-layout', ['page' => 'Finance Accounting']);
+    Route::get('/admin/finance-accounting', function () {
+        return view('admin.finance-accounting');
     })->name('admin.finance-accounting');
 
 });
