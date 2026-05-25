@@ -17,6 +17,7 @@
 @import "./bed-shared-room.css";
 @import "./booking-bottom-bar.css";
 @import "./guest-details.css";
+@import "./confirm-payment.css";
 
 /* Experience */
 @import "./experience-payment-method.css";

@@ -506,6 +506,113 @@ body.sidebar-open {
   margin-bottom: 30px;
 }
 
+/* Confirmation wait list controls */
+.waitlist-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 10px 14px;
+}
+
+.waitlist-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #b8d9a0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #ffffff;
+  min-width: 280px;
+}
+
+.waitlist-search input {
+  border: none;
+  outline: none;
+  font-family: 'EB Garamond', serif;
+  font-size: 14px;
+  color: #1a3d0a;
+  width: 100%;
+  background: transparent;
+}
+
+.waitlist-search input::placeholder {
+  color: rgba(26, 61, 10, 0.5);
+}
+
+.waitlist-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.waitlist-filters input {
+  border: 1px solid #b8d9a0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-family: 'EB Garamond', serif;
+  font-size: 14px;
+  color: #1a3d0a;
+  background: #ffffff;
+  min-width: 240px;
+}
+
+.waitlist-filters input::placeholder {
+  color: rgba(26, 61, 10, 0.5);
+}
+
+.waitlist-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 14px 18px 14px;
+}
+
+.waitlist-page-btn {
+  font-size: 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: #1a3d0a;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.waitlist-page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.waitlist-page-numbers {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.waitlist-page-num-btn {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  border: 1px solid #b8d9a0;
+  background: #ffffff;
+  color: #1a3d0a;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.waitlist-page-num-btn.is-active {
+  background: #1a3d0a;
+  color: #ffffff;
+  border-color: #1a3d0a;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
