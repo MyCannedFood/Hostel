@@ -45,7 +45,8 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::middleware(['is_admin'])->group(function () {
 
     Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
-    Route::get('/admin/manage-guests', fn () => view('admin.manage_guests'))->name('admin.manage_guests');
+    Route::get('/admin/manage-guests', [\App\Http\Controllers\AdminGuestController::class, 'index'])->name('admin.manage_guests');
+    Route::post('/admin/manage-guests', [\App\Http\Controllers\AdminGuestController::class, 'store'])->name('admin.manage_guests.store');
     Route::get('/admin/manage-occupation', fn () => view('admin.manage_occupation'))->name('admin.manage_occupation');
     Route::get('/admin/manage-revenue', fn () => view('admin.manage_revenue')) ->name('admin.manage_revenue');
 
