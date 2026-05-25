@@ -17,8 +17,13 @@ Route::get('/experience', fn () => view('pages.experience'));
 Route::get('/contact', fn () => view('pages.contact-location'));
 Route::get('/location', fn () => view('pages.contact-location'));
 Route::get('/contact-location', fn () => view('pages.contact-location'));
+
+// Experience
 Route::get('/experience/booking-detail', fn () => view('pages.experience-booking-detail'));
 Route::get('/experience/payment-method', fn () => view('pages.experience-payment-method'));
+Route::get('/experience/payment', fn () => view('pages.experience-payment'));
+Route::get('/experience/success', fn () => view('pages.experience-success'));
+
 Route::get('/profile', fn () => view('pages.profile'));
 Route::get('/journal', fn () => view('pages.journal'));
 Route::get('/journal/detail', fn () => view('pages.journal-detail'));
@@ -45,7 +50,7 @@ Route::middleware(['is_admin'])->group(function () {
     Route::get('/admin/manage-revenue', fn () => view('admin.manage_revenue')) ->name('admin.manage_revenue');
 
     Route::get('/Admin/Rooms-Management', function () {
-        return view('admin.dashboard-layout', ['page' => 'Room & Bed']);
+        return view('admin.room-bed');
     })->name('admin.rooms');
 
     Route::get('/Admin/Manage-Bookings', function () {

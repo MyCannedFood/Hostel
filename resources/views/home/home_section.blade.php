@@ -5,6 +5,7 @@
     @include('home.sections.our_philosophy')
     @include('home.sections.living_ecosystem')
     @include('home.sections.map')
+    @include('home.sections.journal_preview')
     @include('home.sections.guest_stories')
     @include('components.footer')
 </div>

@@ -243,7 +243,7 @@
 
             <a class="menu-item {{ $isBudget ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Finance') }}">
                 <img src="{{ asset('images/admin/img_icon_green_800_22x14.svg') }}" alt="" width="18" height="16">
-                <span class="menu-text">Budgetin &amp; Report</span>
+                <span class="menu-text">Budgeting</span>
             </a>
 
 
