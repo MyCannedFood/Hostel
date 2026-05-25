@@ -57,7 +57,7 @@
 }
 
 .contact-hero p {
-    width: 446px;
+    width: 500px;
     font-size: 18.75px;
     line-height: 1.35;
     color: #203d16;
@@ -72,7 +72,7 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 54px;
+    gap: 64px;
     align-items: start;
 }
 
@@ -216,9 +216,10 @@
 }
 
 .location-map-section iframe {
-    width: min(100%, 1200px);
+    width: 1243px;
     height: 260px;
     margin: 0 auto;
+    padding: 32px;
     display: block;
     border: 0;
     filter: saturate(0.78) contrast(0.98);
@@ -229,7 +230,7 @@
     margin: 0 auto;
     padding: 32px;
     display: grid;
-    grid-template-columns: minmax(260px, 0.9fr) minmax(300px, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 64px;
 }
 
