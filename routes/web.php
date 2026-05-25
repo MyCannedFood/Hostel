@@ -50,7 +50,7 @@ Route::middleware(['is_admin'])->group(function () {
     Route::get('/admin/manage-revenue', fn () => view('admin.manage_revenue')) ->name('admin.manage_revenue');
 
     Route::get('/Admin/Rooms-Management', function () {
-        return view('admin.dashboard-layout', ['page' => 'Room & Bed']);
+        return view('admin.room-bed');
     })->name('admin.rooms');
 
     Route::get('/Admin/Manage-Bookings', function () {
