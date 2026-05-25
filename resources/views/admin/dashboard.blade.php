@@ -243,13 +243,24 @@
                 <section>
                     <div class="section-header">
                         <h2 class="section-title">Confirmation wait list</h2>
-                            <div class="view-all">
-                            <span class="view-all-text">View All</span>
-                            <img src="{{ asset('images/admin/img_arrow_right.svg') }}" alt="" width="20" height="10">
-                        </div>
                     </div>
           
                     <div class="table-container">
+                        <div class="waitlist-controls">
+                            <div class="waitlist-search">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#43493e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                                <input id="waitlistSearchBookingId" type="text" placeholder="Search Booking ID" autocomplete="off" />
+                            </div>
+
+                            <div class="waitlist-filters">
+                                <input id="waitlistFilterName" type="text" placeholder="Filter by name" autocomplete="off" />
+                                <input id="waitlistFilterDate" type="text" placeholder="Filter by check-in (e.g. 24 Okt 2023)" autocomplete="off" />
+                            </div>
+                        </div>
+
                         <table role="table">
                             <thead>
                                 <tr>
@@ -263,8 +274,9 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
+
+                            <tbody id="waitlistTableBody">
+                                <tr data-waitlist-id="#BK-2023-1042">
                                     <td>#BK-2023-1042</td>
                                     <td>Aria Kusuma</td>
                                     <td>Serene Haven</td>
@@ -274,7 +286,7 @@
                                     <td><span class="status-badge">Pending</span></td>
                                     <td><button class="btn-confirm">Confirm</button></td>
                                 </tr>
-                                <tr>
+                                <tr data-waitlist-id="#BK-2023-1043">
                                     <td>#BK-2023-1043</td>
                                     <td>Budi Santoso</td>
                                     <td>Botanika</td>
@@ -284,7 +296,7 @@
                                     <td><span class="status-badge">Pending</span></td>
                                     <td><button class="btn-confirm">Confirm</button></td>
                                 </tr>
-                                <tr>
+                                <tr data-waitlist-id="#BK-2023-1044">
                                     <td>#BK-2023-1044</td>
                                     <td>Citra Lestari</td>
                                     <td>Heritage</td>
@@ -296,6 +308,12 @@
                                 </tr>
                             </tbody>
                         </table>
+
+                        <div class="waitlist-pagination" aria-label="Wait list pagination">
+                            <button type="button" class="waitlist-page-btn" id="waitlistPrevBtn" disabled>Prev</button>
+                            <div class="waitlist-page-numbers" id="waitlistPageNumbers"></div>
+                            <button type="button" class="waitlist-page-btn" id="waitlistNextBtn">Next</button>
+                        </div>
                     </div>
                 </section>
         
@@ -306,6 +324,115 @@
     </div>
   
     <script>
+        // Confirmation wait list (front-end) : search + filter + pagination (max 5 rows/page)
+        (function () {
+            const tableBody = document.getElementById('waitlistTableBody');
+            if (!tableBody) return;
+
+            const rows = Array.from(tableBody.querySelectorAll('tr'));
+
+            const searchBookingId = document.getElementById('waitlistSearchBookingId');
+            const filterName = document.getElementById('waitlistFilterName');
+            const filterDate = document.getElementById('waitlistFilterDate');
+
+            const prevBtn = document.getElementById('waitlistPrevBtn');
+            const nextBtn = document.getElementById('waitlistNextBtn');
+            const pageNumbersEl = document.getElementById('waitlistPageNumbers');
+
+            const PAGE_SIZE = 5;
+            let currentPage = 1;
+
+            function getRowText(row) {
+                const bookingId = (row.querySelector('td:nth-child(1)')?.textContent || '').trim();
+                const name = (row.querySelector('td:nth-child(2)')?.textContent || '').trim();
+                const date = (row.querySelector('td:nth-child(5)')?.textContent || '').trim();
+                return { bookingId, name, date };
+            }
+
+            function normalize(str) {
+                return String(str || '').toLowerCase().trim();
+            }
+
+            function applyFilters() {
+                const qBookingId = normalize(searchBookingId?.value);
+                const qName = normalize(filterName?.value);
+                const qDate = normalize(filterDate?.value);
+
+                return rows.filter(row => {
+                    const { bookingId, name, date } = getRowText(row);
+
+                    const matchBookingId = !qBookingId || normalize(bookingId).includes(qBookingId);
+                    const matchName = !qName || normalize(name).includes(qName);
+                    const matchDate = !qDate || normalize(date).includes(qDate);
+
+                    return matchBookingId && matchName && matchDate;
+                });
+            }
+
+            function renderPagination(filteredRows) {
+                const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+                currentPage = Math.min(currentPage, totalPages);
+
+                prevBtn && (prevBtn.disabled = currentPage <= 1);
+                nextBtn && (nextBtn.disabled = currentPage >= totalPages);
+
+                if (!pageNumbersEl) return;
+                pageNumbersEl.innerHTML = '';
+
+                for (let p = 1; p <= totalPages; p++) {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'waitlist-page-num-btn' + (p === currentPage ? ' is-active' : '');
+                    btn.textContent = String(p);
+                    btn.setAttribute('aria-label', 'Page ' + p);
+                    btn.addEventListener('click', function () {
+                        currentPage = p;
+                        refresh();
+                    });
+                    pageNumbersEl.appendChild(btn);
+                }
+            }
+
+            function renderPage(filteredRows) {
+                const start = (currentPage - 1) * PAGE_SIZE;
+                const end = start + PAGE_SIZE;
+                const pageRows = filteredRows.slice(start, end);
+
+                rows.forEach(r => (r.style.display = 'none'));
+                pageRows.forEach(r => (r.style.display = 'table-row'));
+            }
+
+            function refresh() {
+                const filtered = applyFilters();
+                renderPagination(filtered);
+                renderPage(filtered);
+            }
+
+            // Events
+            [searchBookingId, filterName, filterDate].forEach(el => {
+                if (!el) return;
+                el.addEventListener('input', function () {
+                    currentPage = 1;
+                    refresh();
+                });
+            });
+
+            prevBtn && prevBtn.addEventListener('click', function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    refresh();
+                }
+            });
+
+            nextBtn && nextBtn.addEventListener('click', function () {
+                currentPage++;
+                refresh();
+            });
+
+            // initial render
+            refresh();
+        })();
+
         const sidebar = document.getElementById('adminSidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
