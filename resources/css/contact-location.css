@@ -212,23 +212,20 @@
 }
 
 .location-map-section {
-    padding: 32px;
+    padding: 0 64px;
 }
 
 .location-map-section iframe {
-    width: 1243px;
-    height: 260px;
+    width: 100%;
+    height: 100%;
     margin: 0 auto;
-    padding: 32px;
     display: block;
     border: 0;
     filter: saturate(0.78) contrast(0.98);
 }
 
 .location-info-section {
-    max-width: 1243px;
-    margin: 0 auto;
-    padding: 32px;
+    padding: 64px;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 64px;
