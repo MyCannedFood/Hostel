@@ -12,7 +12,7 @@
     $experience = (object)[
         'name'              => 'Nature the Earth',
         'short_description' => 'A soulful journey to the heart of our teak forest. Plant a sapling to leave a legacy of growth and renewal.',
-        'image'             => 'Nurture the Earth - Tree Planting.png',
+        'image'             => 'baju_kutu.png',
         'inclusions'        => ['Sapling Included', 'Tools & Gear', 'Local Guide', 'Refreshments'],
     ];
 
@@ -35,11 +35,11 @@
     <section class="payment-steps">
         <div class="steps-container">
             <div class="step step--done">
-                <span class="step-label">Detail</span>
+                <a href="/experience/booking-detail" class="step-link">Detail</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <span class="step-label">Payment Method</span>
+                <a href="/experience/payment-method" class="step-link">Payment Method</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--active">
@@ -140,8 +140,8 @@
                     <p class="scan-label">Scan to Pay</p>
                     <div class="qr-wrapper">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=ALS-2026-NTE-01"
-                        alt="QR Code" 
-                        class="ticket-qr-img">                   
+                        alt="QR Code"
+                        class="ticket-qr-img">
                     </div>
                 @endif
 
@@ -150,8 +150,7 @@
                     Awaiting Payment... <span id="countdown">14:59</span>
                 </div>
 
-                <form action="{{ route('experiences.payment.confirm', $booking->id) }}" method="POST">
-                    @csrf
+                <form action="/experience/success" method="GET">
                     <button type="submit" class="confirm-btn">I Have Completed Payment</button>
                 </form>
 
@@ -174,9 +173,8 @@
 
 {{-- Back to Payment Method --}}
 <div class="back-bar">
-    <a href="{{ route('experiences.payment-method', $booking->id) }}" class="back-btn">Back To Payment Method</a>
+    <a href="/experience/payment-method" class="back-btn">Back To Payment Method</a>
 </div>
-
 
 <x-whatsapp_floating />
 

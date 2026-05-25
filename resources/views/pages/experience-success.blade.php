@@ -32,19 +32,19 @@
     <section class="success-steps">
         <div class="steps-container">
             <div class="step step--done">
-                <span class="step-label">Detail</span>
+                <a href="/experience/booking-detail" class="step-link">Detail</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <span class="step-label">Payment Method</span>
+                <a href="/experience/payment-method" class="step-link">Payment Method</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <span class="step-label">Payment</span>
+                <a href="/experience/payment" class="step-link">Payment</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--active">
-                <span class="step-label">Success</span>
+                <span class="step-label">4.Success</span>
             </div>
         </div>
     </section>
@@ -52,9 +52,8 @@
     {{-- Success Header --}}
     <div class="success-header">
         <div class="success-icon">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="9 12 11 14 15 10"/>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
             </svg>
         </div>
         <h1 class="success-title">Payment Successful</h1>
@@ -115,8 +114,8 @@
             <div class="ticket-qr">
                 <div class="ticket-qr-frame">
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=ALS-2026-NTE-01"
-     alt="QR Code"
-     class="ticket-qr-img">
+                         alt="QR Code"
+                         class="ticket-qr-img">
                 </div>
                 <p class="ticket-qr-note">Present at the {{ $experience->name }} entrance</p>
             </div>
@@ -125,10 +124,10 @@
 
         {{-- Actions --}}
         <div class="ticket-actions">
-            <a href="{{ route('experiences.ticket.download', $booking->id) }}" class="btn-download">
+            <a href="#" class="btn-download">
                 Download E-Ticket (PDF)
             </a>
-            <a href="{{ route('home') }}" class="btn-home">
+            <a href="/" class="btn-home">
                 ← Back to Home
             </a>
         </div>

@@ -14,24 +14,24 @@
 <main class="payment-method-page">
 
     {{-- Stepper --}}
-    <nav class="pm-stepper">
-        <div class="pm-step completed">
-            <span>DETAIL</span>
+    <nav class="exp-stepper">
+        <div class="exp-step exp-step--done">
+            <a href="/experience/booking-detail" class="step-link">Detail</a>
+            <span class="exp-step-arrow">›</span>
         </div>
-        <div class="pm-step-divider">></div>
-        <div class="pm-step active">
-            <span>2. PAYMENT METHOD</span>
+        <div class="exp-step exp-step--active">
+            <span class="exp-step-number">2.</span>
+            <span class="exp-step-label">Payment Method</span>
+            <span class="exp-step-arrow">›</span>
         </div>
-        <div class="pm-step-divider">></div>
-        <div class="pm-step">
-            <span>PAYMENT</span>
+        <div class="exp-step exp-step--pending">
+            <span class="exp-step-label">Payment</span>
+            <span class="exp-step-arrow">›</span>
         </div>
-        <div class="pm-step-divider">></div>
-        <div class="pm-step">
-            <span>SUCCESS</span>
+        <div class="exp-step exp-step--pending">
+            <span class="exp-step-label">Success</span>
         </div>
     </nav>
-
     <h1 class="page-title">Payment Method</h1>
 
     <div class="payment-grid">
@@ -110,10 +110,12 @@
                     <span class="val">IDR 300.000</span>
                 </div>
 
-                <form action="/confirm-payment" method="GET">
+                <form action="/experience/payment" method="GET">
                     <button type="submit" class="btn-pay-now">
                         PAY NOW
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
+                        </svg>
                     </button>
                 </form>
             </div>

@@ -1,7 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Be+Vietnam+Pro:wght@400;500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap');
 
 .payment-page {
     background-color: var(--color-bg-light);
-    font-family: var(--font-body);
+    font-family: 'Work Sans', sans-serif;
 }
 
 /* ---- Steps breadcrumb ---- */
@@ -28,16 +29,17 @@
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(26, 61, 10, 0.4);
+    color: rgba(26, 61, 10, 0.35);
     padding: 0 12px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .step--done {
-    color: rgba(26, 61, 10, 0.5);
+    color: #4b9960;
 }
 
 .step--active {
-    color: var(--color-primary);
+    color: #D9864A;
 }
 
 .step--active .step-label {
@@ -45,14 +47,33 @@
     text-underline-offset: 3px;
 }
 
+.step--active .step-number {
+    color: #D9864A;
+}
+
 .step-arrow {
-    color: rgba(26, 61, 10, 0.3);
+    color: rgba(26, 61, 10, 0.25);
     margin-left: 8px;
     font-weight: 400;
 }
 
 .step--pending {
     color: rgba(26, 61, 10, 0.3);
+}
+
+.step-link {
+    color: inherit;
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+}
+
+.step-link:hover {
+    color: #4b9960;
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 /* ---- Page header ---- */
@@ -62,9 +83,9 @@
 }
 
 .payment-title {
-    font-family: var(--font-serif);
-    font-size: 42px;
-    font-weight: 500;
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 48px;
+    font-weight: 400;
     color: var(--color-primary);
     margin-bottom: 10px;
     letter-spacing: 0.01em;
@@ -74,6 +95,7 @@
     font-size: 16px;
     color: rgba(26, 61, 10, 0.65);
     letter-spacing: 0.02em;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 /* ---- Main two-column layout ---- */
@@ -93,6 +115,7 @@
     border: 1px solid #EAEAEA;
     border-radius: 8px;
     overflow: hidden;
+    font-family: 'Work Sans', sans-serif;
 }
 
 .detail-image-wrapper {
@@ -111,9 +134,9 @@
 }
 
 .detail-title {
-    font-family: var(--font-serif);
-    font-size: 28px;
-    font-weight: 500;
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 30px;
+    font-weight: 400;
     color: var(--color-primary);
     margin-bottom: 10px;
     line-height: 1.2;
@@ -124,6 +147,7 @@
     color: rgba(26, 61, 10, 0.7);
     line-height: 1.6;
     margin-bottom: 20px;
+    font-family: 'Work Sans', sans-serif;
 }
 
 .detail-inclusions {
@@ -138,10 +162,12 @@
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: var(--color-primary);
-    border: 1px solid rgba(26, 61, 10, 0.25);
-    border-radius: 20px;
+    color: #1A3D0A;
+    background: rgba(184, 217, 160, 0.5);
+    border: 1px solid rgba(75, 153, 96, 0.3);
+    border-radius: 2px;
     padding: 5px 12px;
+    font-family: 'Work Sans', sans-serif;
 }
 
 .detail-divider {
@@ -167,6 +193,7 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: rgba(26, 61, 10, 0.45);
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .meta-value {
@@ -174,6 +201,7 @@
     font-weight: 600;
     color: var(--color-primary);
     letter-spacing: 0.01em;
+    font-family: 'Work Sans', sans-serif;
 }
 
 /* ---- Right: summary card ---- */
@@ -182,12 +210,13 @@
     border: 1px solid #EAEAEA;
     border-radius: 8px;
     padding: 32px 28px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .summary-title {
-    font-family: var(--font-serif);
-    font-size: 26px;
-    font-weight: 500;
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 30px;
+    font-weight: 400;
     color: var(--color-primary);
     margin-bottom: 24px;
 }
@@ -218,7 +247,7 @@
 }
 
 .summary-val--discount {
-    color: #D9864A;
+    color: #4b9960;
     font-weight: 600;
 }
 
@@ -232,12 +261,13 @@
 .total-label {
     font-size: 14px;
     color: rgba(26, 61, 10, 0.7);
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .total-amount {
-    font-family: var(--font-serif);
-    font-size: 28px;
-    font-weight: 500;
+    font-family: 'Libre Caslon Text', serif;
+    font-size: 30px;
+    font-weight: 400;
     color: var(--color-primary);
     letter-spacing: -0.01em;
 }
@@ -253,6 +283,7 @@
     font-size: 13px;
     color: rgba(26, 61, 10, 0.6);
     margin-bottom: 16px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .scan-label {
@@ -262,6 +293,7 @@
     text-transform: uppercase;
     color: rgba(26, 61, 10, 0.4);
     margin-bottom: 16px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .qr-wrapper {
@@ -287,6 +319,7 @@
     border-radius: 20px;
     padding: 6px 16px;
     margin-bottom: 20px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .confirm-btn {
@@ -304,6 +337,7 @@
     cursor: pointer;
     transition: background 0.2s ease;
     margin-bottom: 12px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .confirm-btn:hover {
@@ -319,6 +353,7 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: rgba(26, 61, 10, 0.4);
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 /* ---- Footer encryption note ---- */
@@ -332,6 +367,7 @@
     text-transform: uppercase;
     color: rgba(26, 61, 10, 0.35);
     padding-bottom: 40px;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 /* ---- Sticky back bar ---- */
@@ -349,19 +385,19 @@
 .back-btn {
     font-size: 13px;
     font-weight: 600;
-    color: var(--color-primary);
-    background: #FFF;
-    border: 1px solid #EAEAEA;
-    border-radius: 4px;
+    color: #FFF;
+    background: #1A3D0A;
+    border: 1px solid rgba(75, 153, 96, 0.3);
+    border-radius: 2px;
     padding: 10px 24px;
     text-decoration: none;
     transition: all 0.2s ease;
+    font-family: 'Be Vietnam Pro', sans-serif;
 }
 
 .back-btn:hover {
-    background: var(--color-primary);
-    color: #FFF;
-    border-color: var(--color-primary);
+    background: rgba(184, 217, 160, 0.8);
+    border-color: #4b9960;
 }
 
 /* ---- Responsive ---- */
@@ -371,13 +407,13 @@
     }
 
     .payment-title {
-        font-size: 32px;
+        font-size: 36px;
     }
 }
 
 @media (max-width: 600px) {
     .payment-title {
-        font-size: 26px;
+        font-size: 28px;
     }
 
     .step {
@@ -390,6 +426,6 @@
     }
 
     .total-amount {
-        font-size: 22px;
+        font-size: 24px;
     }
 }

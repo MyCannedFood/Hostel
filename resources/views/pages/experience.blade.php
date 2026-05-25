@@ -12,14 +12,11 @@
 
 <main>
     {{-- Hero Section --}}
-    <section class="experience-hero"
-        style="background-image: url('{{ asset('images/experience/hero.png') }}');">
-            <div class="experience-hero-content">
-                <h1 class="experience-hero-title">Find Meaning at AlaSare</h1>
-                <p class="experience-hero-subtitle">
-                    Absorb the essence of the place, discover new passions, grow step by step.
-                </p>
-            </div>
+    <section class="experience-hero">
+        <div class="experience-hero-content">
+            <h1 class="experience-hero-title">Find Meaning at AlaSare</h1>
+            <p class="experience-hero-subtitle">Absorb the essence of the place, discover new passions, grow step by step.</p>
+        </div>
     </section>
 
     {{-- Content Container --}}
@@ -74,7 +71,7 @@
                     <div class="card-meta">IDR 200.000 / PERSON</div>
                     <h3 class="card-title">Nurture the Earth</h3>
                     <p class="card-desc">Join our earthling journey. Plant a native tree sapling in the AlaSare forest, leaving a living legacy of growth and renewal for the Javanese soil.</p>
-                    <a href="#" class="card-btn">Book Now</a>
+                    <a href="/experience/booking-detail" class="card-btn">Book Now</a>
                 </div>
             </div>
 
