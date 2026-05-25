@@ -29,8 +29,14 @@
                 <div class="finance-page-head">
                     <h1>Finance Accounting</h1>
                     <div class="finance-head-actions">
-                        <button type="button">+ New Budgeting</button>
-                        <button type="button" class="primary">Accountability Report</button>
+                        <button type="button">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                            New Budgeting
+                        </button>
+                        <button type="button" class="primary">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l4 4v14H8z"/><path d="M15 3v5h4"/><path d="M11 13h5M11 17h5"/></svg>
+                            Accountability Report
+                        </button>
                     </div>
                 </div>
 
@@ -38,10 +44,19 @@
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Total Cash In</span>
-                            <span class="finance-kpi-icon green">CI</span>
+                            <span class="finance-kpi-icon green">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <rect x="4" y="6" width="16" height="12" rx="2"></rect>
+                                    <path d="M8 10h8M8 14h5"></path>
+                                    <path d="M17 9v6M14 12h6"></path>
+                                </svg>
+                            </span>
                         </div>
                         <strong>IDR 25,000,000</strong>
-                        <p class="positive">+12% from target</p>
+                        <p class="positive">
+                            <i class="fa-solid fa-arrow-up"></i>
+                            +12% from target
+                        </p>
                         <small>+9% from booking</small>
                         <small>+3% from experience</small>
                     </article>
@@ -49,7 +64,13 @@
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Total Cash Out</span>
-                            <span class="finance-kpi-icon orange">CO</span>
+                            <span class="finance-kpi-icon orange">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <rect x="4" y="6" width="16" height="12" rx="2"></rect>
+                                    <path d="M8 10h8M8 14h5"></path>
+                                    <path d="M14 12h6"></path>
+                                </svg>
+                            </span>
                         </div>
                         <strong>IDR 12,000,000</strong>
                         <p class="warning">-5% from budget</p>
@@ -60,7 +81,15 @@
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Net Profit</span>
-                            <span class="finance-kpi-icon green">NP</span>
+                            <span class="finance-kpi-icon green">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M4 19h16"></path>
+                                    <path d="M7 16V9"></path>
+                                    <path d="M12 16V5"></path>
+                                    <path d="M17 16v-4"></path>
+                                    <path d="m15 7-3-3-3 3"></path>
+                                </svg>
+                            </span>
                         </div>
                         <strong>IDR 2,700,000</strong>
                         <p><span class="healthy-badge">Healthy</span></p>
@@ -70,7 +99,14 @@
                     <article class="finance-kpi-card pending">
                         <div class="finance-kpi-top">
                             <span>Pending Actions</span>
-                            <span class="finance-kpi-icon orange">PA</span>
+                            <span class="finance-kpi-icon orange">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M12 3a7 7 0 0 0-7 7v3l-2 3h18l-2-3v-3a7 7 0 0 0-7-7Z"></path>
+                                    <path d="M10 20h4"></path>
+                                    <path d="M12 7v5"></path>
+                                    <path d="M12 15h.01"></path>
+                                </svg>
+                            </span>
                         </div>
                         <strong>4 Request</strong>
                         <small>2 Maintenance request</small>

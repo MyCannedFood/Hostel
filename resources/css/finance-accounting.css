@@ -41,6 +41,19 @@
     font-size: 14px;
     font-weight: 700;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.finance-head-actions svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .finance-head-actions button.primary {
@@ -51,8 +64,8 @@
 .finance-kpi-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 32px;
+    margin-bottom: 32px;
 }
 
 .finance-kpi-card,
@@ -79,9 +92,7 @@
 .finance-kpi-top > span:first-child {
     font-size: 14px;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
     color: #9aa294;
-    font-weight: 700;
 }
 
 .finance-kpi-icon {
@@ -92,8 +103,16 @@
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 9px;
-    font-weight: 700;
+}
+
+.finance-kpi-icon svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 .finance-kpi-icon.green {
@@ -133,8 +152,8 @@
     display: inline-flex;
     padding: 4px 9px;
     border-radius: 2px;
-    background: #4b9960;
-    color: #fff;
+    background: rgb(75, 153, 96, 0.4);
+    color: var(--fa-green);
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -143,16 +162,15 @@
 .finance-chart-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 24px;
-    margin-bottom: 24px;
+    gap: 32px;
+    margin-bottom: 32px;
 }
 
 .finance-panel {
     padding: 20px;
 }
 
-.finance-panel-head,
-.finance-table-title {
+.finance-panel-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -199,7 +217,7 @@
 }
 
 .finance-bars div {
-    min-height: 235px;
+    height: 235px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -210,8 +228,10 @@
 .finance-bars span {
     width: 100%;
     max-width: 48px;
+    min-height: 8px;
     border-radius: 4px 4px 0 0;
     background: var(--fa-teal);
+    display: block;
 }
 
 .finance-bars small {
@@ -276,9 +296,15 @@
 }
 
 .finance-approval-panel {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
+    border: none;
     padding: 0;
     overflow: hidden;
+}
+
+.finance-table-title {
+    display: flex;
+    gap: 16px;
 }
 
 .finance-table-title {
@@ -327,6 +353,7 @@
 .finance-table th,
 .finance-table td {
     padding: 11px 14px;
+    align-items: center;
     text-align: left;
     white-space: nowrap;
 }
@@ -365,7 +392,7 @@
 
 .finance-table button {
     border: 0;
-    border-radius: 999px;
+    border-radius: 2px;
     padding: 7px 10px;
     margin-right: 6px;
     background: #4b9960;
@@ -383,7 +410,12 @@
 
 .finance-ledger-panel {
     padding: 0 0 12px;
+    border: none;
     overflow: hidden;
+}
+
+.finance-table-wrap {
+    border-radius: 8px;
 }
 
 .finance-table-title.ledger {
