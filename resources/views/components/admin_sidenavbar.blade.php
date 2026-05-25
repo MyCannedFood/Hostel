@@ -215,7 +215,7 @@
     $isRooms = request()->is('Admin/Rooms-Management');
     $isBookings = request()->is('Admin/Manage-Bookings');
     $isArticle = request()->is('Admin/Price-Management');
-    $isBudget = request()->is('Admin/Finance');
+    $isBudget = request()->is('admin/budgeting');
     $isSettings = request()->is('Admin/Settings');
     $isFinance = request()->is('admin/finance-accounting');
 @endphp
