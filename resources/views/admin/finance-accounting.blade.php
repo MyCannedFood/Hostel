@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Accounting - AlaSare</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/dashboard.css', 'resources/css/finance-accounting.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
 </head>
 <body>
     <div class="dashboard-container">
@@ -14,9 +16,7 @@
         <main class="main-content">
             <header class="header">
                 <button type="button" class="hamburger mobile-only" id="sidebarToggle" aria-label="Open sidebar" aria-controls="adminSidebar" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
                 <div class="header-actions">
                     <img src="{{ asset('images/admin/img_button_trailing.svg') }}" alt="Menu" width="34" height="28">
@@ -30,7 +30,9 @@
                     <h1>Finance Accounting</h1>
                 </div>
 
+                {{-- ===== KPI CARDS ===== --}}
                 <section class="finance-kpi-grid" aria-label="Finance summary">
+
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Total Cash In</span>
@@ -43,10 +45,7 @@
                             </span>
                         </div>
                         <strong>IDR 25,000,000</strong>
-                        <p class="positive">
-                            <i class="fa-solid fa-arrow-up"></i>
-                            +12% from target
-                        </p>
+                        <p class="positive"><i class="fa-solid fa-arrow-up"></i> +12% from target</p>
                         <small>+9% from booking</small>
                         <small>+3% from experience</small>
                     </article>
@@ -62,10 +61,8 @@
                                 </svg>
                             </span>
                         </div>
-                        <strong>IDR 12,000,000</strong>
-                        <p class="warning">-5% from budget</p>
-                        <small>-2% for maintenance</small>
-                        <small>-3% for operational</small>
+                        <strong>IDR {{ number_format($ledgerEntries->where('type', 'Out')->sum('amount'), 0, ',', '.') }}</strong>
+                        <p class="warning">From accountability reports</p>
                     </article>
 
                     <article class="finance-kpi-card">
@@ -86,6 +83,7 @@
                         <small>64% margin achieved this period</small>
                     </article>
 
+                    {{-- Pending Actions — dari database --}}
                     <article class="finance-kpi-card pending">
                         <div class="finance-kpi-top">
                             <span>Pending Actions</span>
@@ -98,12 +96,19 @@
                                 </svg>
                             </span>
                         </div>
-                        <strong>4 Request</strong>
-                        <small>2 Maintenance request</small>
-                        <small>2 Operational request</small>
+                        <strong id="pendingCount">{{ $pendingRequests->count() }} Request</strong>
+                        @php $pendingByType = $pendingRequests->groupBy('type'); @endphp
+                        @foreach($pendingByType as $type => $items)
+                            <small>{{ $items->count() }} {{ $type }} request</small>
+                        @endforeach
+                        @if($pendingRequests->isEmpty())
+                            <small>No pending requests</small>
+                        @endif
                     </article>
+
                 </section>
 
+                {{-- ===== CHARTS ===== --}}
                 <section class="finance-chart-grid">
                     <article class="finance-panel">
                         <div class="finance-panel-head">
@@ -112,12 +117,8 @@
                         </div>
                         <div class="finance-bar-chart" aria-label="Revenue statistics bar chart">
                             <div class="finance-y-axis">
-                                <span>50M</span>
-                                <span>40M</span>
-                                <span>30M</span>
-                                <span>20M</span>
-                                <span>10M</span>
-                                <span>0</span>
+                                <span>50M</span><span>40M</span><span>30M</span>
+                                <span>20M</span><span>10M</span><span>0</span>
                             </div>
                             <div class="finance-bars">
                                 <div><span style="height: 42%"></span><small>Mon</small></div>
@@ -149,10 +150,8 @@
                                 <path class="line" d="M0 135 C38 126 70 139 104 134 C148 128 170 146 214 132 C252 120 276 104 318 99 C362 94 392 102 426 106 C458 110 472 82 498 80 C508 80 516 84 520 88"/>
                             </svg>
                             <div class="finance-week-labels">
-                                <span>Week 1</span>
-                                <span>Week 2</span>
-                                <span>Week 3</span>
-                                <span>Week 4</span>
+                                <span>Week 1</span><span>Week 2</span>
+                                <span>Week 3</span><span>Week 4</span>
                             </div>
                             <div class="finance-legend">
                                 <span><i class="target"></i> Revenue Target</span>
@@ -162,6 +161,7 @@
                     </article>
                 </section>
 
+                {{-- ===== PENDING APPROVALS ===== --}}
                 <section class="finance-panel finance-approval-panel">
                     <div class="finance-table-title">
                         <h2>Pending Approvals</h2>
@@ -172,39 +172,57 @@
                             <thead>
                                 <tr>
                                     <th>Date</th>
-                                    <th>Staff Name</th>
+                                    <th>Requested By</th>
                                     <th>Type</th>
                                     <th>Title</th>
                                     <th>Amount</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>12 Oct 2023</td>
-                                    <td>Aris K.</td>
-                                    <td><span class="tag green">Reimbursement</span></td>
-                                    <td>Maintenance Spare Parts</td>
-                                    <td>IDR 1,250,000</td>
-                                    <td><button>Approve</button><button class="reject">Reject</button></td>
+                            <tbody id="pendingApprovalsBody">
+                                @forelse($pendingRequests as $req)
+                                <tr id="pending-row-{{ $req->id }}" class="pending-approval-row">
+                                    <td>{{ $req->created_at->format('d M Y') }}</td>
+                                    <td>{{ $req->requested_by ?? '—' }}</td>
+                                    <td><span class="tag {{ $req->type === 'Operational' ? 'green' : 'muted' }}">{{ $req->type }}</span></td>
+                                    <td>{{ $req->title }}</td>
+                                    <td>IDR {{ number_format($req->estimated_total_amount, 0, ',', '.') }}</td>
+                                    <td>
+                                        <button class="btn-approve-action" onclick="handleApproveReject({{ $req->id }}, 'approve')">Approve</button>
+                                        <button class="btn-approve-action reject" onclick="handleApproveReject({{ $req->id }}, 'reject')">Reject</button>
+                                    </td>
                                 </tr>
-                                <tr>
-                                    <td>12 Oct 2023</td>
-                                    <td>Dewi S.</td>
-                                    <td><span class="tag muted">Supplies</span></td>
-                                    <td>Kitchen Inventory - Herbs</td>
-                                    <td>IDR 450,000</td>
-                                    <td><button>Approve</button><button class="reject">Reject</button></td>
+                                @empty
+                                <tr id="pending-empty-row">
+                                    <td colspan="6" style="text-align:center; padding:24px; color:#7a857f;">No pending requests</td>
                                 </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
+
+                    {{-- Pagination Pending Approvals --}}
+                    <div class="finance-ledger-foot" id="pendingPaginationWrap" style="{{ $pendingRequests->count() <= 5 ? 'display:none;' : '' }}">
+                        <span id="pendingMeta"></span>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <button type="button" class="finance-page-btn" id="pendingPrevBtn">Prev</button>
+                            <div id="pendingPageNumbers" style="display:flex; gap:6px;"></div>
+                            <button type="button" class="finance-page-btn" id="pendingNextBtn">Next</button>
+                        </div>
+                    </div>
                 </section>
 
+                {{-- ===== MASTER GENERAL LEDGER ===== --}}
                 <section class="finance-panel finance-ledger-panel">
                     <div class="finance-table-title ledger">
                         <h2>Master General Ledger</h2>
-                        <small>Last updated: 5 minutes ago</small>
+                        <small id="ledgerLastUpdated">
+                            @if($ledgerEntries->count() > 0)
+                                Last updated: {{ $ledgerEntries->first()->created_at->diffForHumans() }}
+                            @else
+                                No entries yet
+                            @endif
+                        </small>
                     </div>
                     <div class="finance-table-wrap">
                         <table class="finance-table ledger-table">
@@ -216,64 +234,68 @@
                                     <th>Category</th>
                                     <th>Type</th>
                                     <th>Amount</th>
-                                    <th>Balance</th>
-                                    <th>Doc</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>TR-9961</td>
-                                    <td>10-10-23</td>
-                                    <td>Room 302 Booking - 3 Nights</td>
-                                    <td>Accommodation</td>
-                                    <td><span class="type in">In</span></td>
-                                    <td>3,500,000</td>
-                                    <td>13,500,000</td>
-                                    <td>View</td>
+                            <tbody id="ledgerBody">
+                                @forelse($ledgerEntries as $entry)
+                                <tr class="ledger-row">
+                                    <td>{{ $entry->trans_code }}</td>
+                                    <td>{{ $entry->created_at->format('d-m-y') }}</td>
+                                    <td>{{ $entry->description }}</td>
+                                    <td>{{ $entry->category }}</td>
+                                    <td><span class="type {{ strtolower($entry->type) }}">{{ $entry->type }}</span></td>
+                                    <td>{{ number_format($entry->amount, 0, ',', '.') }}</td>
                                 </tr>
-                                <tr>
-                                    <td>TR-9965</td>
-                                    <td>09-10-23</td>
-                                    <td>Electricity Bill - Oct</td>
-                                    <td>Utilities</td>
-                                    <td><span class="type out">Out</span></td>
-                                    <td>1,200,000</td>
-                                    <td>9,500,000</td>
-                                    <td>View</td>
+                                @empty
+                                <tr id="ledger-empty-row">
+                                    <td colspan="6" style="text-align:center; padding:24px; color:#7a857f;">No ledger entries yet</td>
                                 </tr>
-                                <tr>
-                                    <td>TR-9962</td>
-                                    <td>08-10-23</td>
-                                    <td>Spa & Massage Services</td>
-                                    <td>Amenity</td>
-                                    <td><span class="type in">In</span></td>
-                                    <td>750,000</td>
-                                    <td>10,700,000</td>
-                                    <td>View</td>
-                                </tr>
-                                <tr>
-                                    <td>TR-9671</td>
-                                    <td>07-10-23</td>
-                                    <td>Kitchen Equipment Repair</td>
-                                    <td>Maintenance</td>
-                                    <td><span class="type out">Out</span></td>
-                                    <td>2,100,000</td>
-                                    <td>9,950,000</td>
-                                    <td>View</td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
+
+                    {{-- Pagination General Ledger --}}
                     <div class="finance-ledger-foot">
-                        <span>Showing 4 of 288 Transactions</span>
-                        <span>Previous&nbsp;&nbsp; Next</span>
+                        <span id="ledgerMeta"></span>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <button type="button" class="finance-page-btn" id="ledgerPrevBtn">Prev</button>
+                            <div id="ledgerPageNumbers" style="display:flex; gap:6px;"></div>
+                            <button type="button" class="finance-page-btn" id="ledgerNextBtn">Next</button>
+                        </div>
                     </div>
                 </section>
+
             </div>
         </main>
     </div>
 
+    <style>
+        .finance-page-btn {
+            padding: 4px 12px;
+            border: 1px solid #dde3de;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 12px;
+            color: #3a5a40;
+            transition: background 0.18s;
+        }
+        .finance-page-btn:hover { background: #edf1ed; }
+        .finance-page-btn:disabled { opacity: 0.4; cursor: default; }
+        .finance-page-num {
+            width: 28px; height: 28px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #dde3de; border-radius: 4px;
+            cursor: pointer; font-size: 12px; color: #3a5a40;
+            transition: background 0.18s;
+        }
+        .finance-page-num.active { background: #3a5a40; color: #fff; border-color: #3a5a40; }
+        .finance-page-num:hover:not(.active) { background: #edf1ed; }
+    </style>
+
     <script>
+        /* ── Sidebar ── */
         const sidebar = document.getElementById('adminSidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
@@ -288,18 +310,152 @@
         }
 
         if (sidebarToggle && sidebarBackdrop && sidebar) {
-            sidebarToggle.addEventListener('click', function () {
-                setSidebarOpen(!sidebar.classList.contains('open'));
-            });
-            sidebarBackdrop.addEventListener('click', function () {
-                setSidebarOpen(false);
-            });
-            window.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape') setSidebarOpen(false);
-            });
-            window.addEventListener('resize', function () {
-                if (window.innerWidth >= 1024) setSidebarOpen(false);
-            });
+            sidebarToggle.addEventListener('click', () => setSidebarOpen(!sidebar.classList.contains('open')));
+            sidebarBackdrop.addEventListener('click', () => setSidebarOpen(false));
+            window.addEventListener('keydown', e => { if (e.key === 'Escape') setSidebarOpen(false); });
+            window.addEventListener('resize', () => { if (window.innerWidth >= 1024) setSidebarOpen(false); });
+        }
+
+        /* ── Generic Pagination ── */
+        function initTablePagination({ rowSelector, prevBtnId, nextBtnId, pageNumbersId, metaId, pageSize = 5, wrapId = null }) {
+            const allRows  = Array.from(document.querySelectorAll(rowSelector));
+            const prevBtn  = document.getElementById(prevBtnId);
+            const nextBtn  = document.getElementById(nextBtnId);
+            const pageNums = document.getElementById(pageNumbersId);
+            const metaEl   = document.getElementById(metaId);
+            const wrapEl   = wrapId ? document.getElementById(wrapId) : null;
+
+            let currentPage = 1;
+            const totalPages = Math.ceil(allRows.length / pageSize);
+
+            // Sembunyikan wrap pagination kalau data <= pageSize
+            if (wrapEl && allRows.length <= pageSize) {
+                wrapEl.style.display = 'none';
+            }
+
+            function render() {
+                const start = (currentPage - 1) * pageSize;
+                const end   = start + pageSize;
+
+                allRows.forEach((row, idx) => {
+                    row.style.display = idx >= start && idx < end ? '' : 'none';
+                });
+
+                // Meta
+                const from = allRows.length === 0 ? 0 : start + 1;
+                const to   = Math.min(end, allRows.length);
+                if (metaEl) metaEl.textContent = `Showing ${from}–${to} of ${allRows.length}`;
+
+                // Buttons
+                if (prevBtn) prevBtn.disabled = currentPage <= 1;
+                if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+                // Page numbers
+                if (pageNums) {
+                    pageNums.innerHTML = '';
+                    const startP = Math.max(1, currentPage - 2);
+                    const endP   = Math.min(totalPages, currentPage + 2);
+                    for (let p = startP; p <= endP; p++) {
+                        const el = document.createElement('div');
+                        el.className   = 'finance-page-num' + (p === currentPage ? ' active' : '');
+                        el.textContent = p;
+                        el.addEventListener('click', () => { currentPage = p; render(); });
+                        pageNums.appendChild(el);
+                    }
+                }
+            }
+
+            prevBtn?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
+            nextBtn?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; render(); } });
+
+            if (allRows.length > 0) render();
+        }
+
+        // Init pagination Pending Approvals
+        initTablePagination({
+            rowSelector:  '#pendingApprovalsBody .pending-approval-row',
+            prevBtnId:    'pendingPrevBtn',
+            nextBtnId:    'pendingNextBtn',
+            pageNumbersId:'pendingPageNumbers',
+            metaId:       'pendingMeta',
+            wrapId:       'pendingPaginationWrap',
+            pageSize:     5,
+        });
+
+        // Init pagination General Ledger
+        initTablePagination({
+            rowSelector:  '#ledgerBody .ledger-row',
+            prevBtnId:    'ledgerPrevBtn',
+            nextBtnId:    'ledgerNextBtn',
+            pageNumbersId:'ledgerPageNumbers',
+            metaId:       'ledgerMeta',
+            pageSize:     5,
+        });
+
+        /* ── Approve / Reject ── */
+        async function handleApproveReject(id, action) {
+            if (!confirm(action === 'approve' ? 'Approve budget request ini?' : 'Reject budget request ini?')) return;
+
+            let notes = '';
+            if (action === 'reject') {
+                notes = prompt('Alasan penolakan (opsional):') || '';
+            }
+
+            try {
+                const res = await fetch('{{ route("admin.finance.approve-reject") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':     'application/json',
+                        'X-CSRF-TOKEN':     document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: JSON.stringify({ id, action, notes }),
+                });
+
+                if (!res.ok) throw new Error('Request failed');
+                const json = await res.json();
+
+                if (json.success) {
+                    // Hapus row
+                    const row = document.getElementById('pending-row-' + id);
+                    if (row) row.remove();
+
+                    // Cek kalau kosong
+                    const tbody = document.getElementById('pendingApprovalsBody');
+                    if (tbody && tbody.querySelectorAll('.pending-approval-row').length === 0) {
+                        tbody.innerHTML = `
+                            <tr id="pending-empty-row">
+                                <td colspan="6" style="text-align:center; padding:24px; color:#7a857f;">
+                                    No pending requests
+                                </td>
+                            </tr>`;
+                        // Sembunyikan pagination
+                        const wrap = document.getElementById('pendingPaginationWrap');
+                        if (wrap) wrap.style.display = 'none';
+                    }
+
+                    // Update counter
+                    const pendingCount = document.getElementById('pendingCount');
+                    if (pendingCount) {
+                        const current = parseInt(pendingCount.textContent) || 0;
+                        pendingCount.textContent = Math.max(0, current - 1) + ' Request';
+                    }
+
+                    // Re-init pagination pending setelah row dihapus
+                    initTablePagination({
+                        rowSelector:   '#pendingApprovalsBody .pending-approval-row',
+                        prevBtnId:     'pendingPrevBtn',
+                        nextBtnId:     'pendingNextBtn',
+                        pageNumbersId: 'pendingPageNumbers',
+                        metaId:        'pendingMeta',
+                        wrapId:        'pendingPaginationWrap',
+                        pageSize:      5,
+                    });
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Terjadi kesalahan, silakan coba lagi.');
+            }
         }
     </script>
 </body>

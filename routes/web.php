@@ -82,4 +82,15 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.budgeting');
     })->name('admin.budgeting');
 
+    // Finance Accounting
+    Route::get('/admin/finance-accounting', [\App\Http\Controllers\AdminFinanceController::class, 'index'])->name('admin.finance-accounting');
+    Route::post('/admin/finance-accounting/approve-reject', [\App\Http\Controllers\AdminFinanceController::class, 'approveReject'])->name('admin.finance.approve-reject');
+
+    // Budgeting
+    Route::get('/admin/budgeting', [\App\Http\Controllers\AdminBudgetingController::class, 'index'])->name('admin.budgeting');
+    Route::get('/admin/budgeting/requests', [\App\Http\Controllers\AdminBudgetingController::class, 'requests'])->name('admin.budgeting.requests');
+    Route::get('/admin/budgeting/stats', [\App\Http\Controllers\AdminBudgetingController::class, 'stats'])->name('admin.budgeting.stats');
+    Route::post('/admin/budgeting/requests', [\App\Http\Controllers\AdminBudgetRequestController::class, 'store'])->name('admin.budgeting.requests.store');
+    Route::post('/admin/budgeting/lpj', [\App\Http\Controllers\AdminLpjController::class, 'store'])->name('admin.budgeting.lpj.store');
+
 });
