@@ -58,8 +58,8 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.dashboard-layout', ['page' => 'Booking']);
     })->name('admin.bookings');
 
-    Route::get('/Admin/Price-Management', function () {
-        return view('admin.dashboard-layout', ['page' => 'Article']);
+    Route::get('/admin/management-article', function () {
+        return view('admin.article');
     })->name('admin.article');
 
     Route::get('/Admin/Finance', function () {

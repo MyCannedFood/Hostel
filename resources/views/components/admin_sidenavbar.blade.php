@@ -214,7 +214,7 @@
     $isDashboard = request()->is('admin/dashboard');
     $isRooms = request()->is('Admin/Rooms-Management');
     $isBookings = request()->is('Admin/Manage-Bookings');
-    $isArticle = request()->is('Admin/Price-Management');
+    $isArticle = request()->is('admin/management-article');
     $isBudget = request()->is('admin/budgeting');
     $isSettings = request()->is('Admin/Settings');
     $isFinance = request()->is('admin/finance-accounting');
@@ -236,7 +236,7 @@
                 <span class="menu-text">Booking</span>
             </a>
 
-            <a class="menu-item {{ $isArticle ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Price-Management') }}">
+            <a class="menu-item {{ $isArticle ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/management-article') }}">
                 <img src="{{ asset('images/admin/img_icon_gray_900_16x18.svg') }}" alt="" width="18" height="16">
                 <span class="menu-text">Article</span>
             </a>
