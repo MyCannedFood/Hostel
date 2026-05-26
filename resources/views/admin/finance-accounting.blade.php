@@ -28,16 +28,6 @@
             <div class="content-area finance-accounting-page">
                 <div class="finance-page-head">
                     <h1>Finance Accounting</h1>
-                    <div class="finance-head-actions">
-                        <button type="button">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                            New Budgeting
-                        </button>
-                        <button type="button" class="primary">
-                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3h7l4 4v14H8z"/><path d="M15 3v5h4"/><path d="M11 13h5M11 17h5"/></svg>
-                            Accountability Report
-                        </button>
-                    </div>
                 </div>
 
                 <section class="finance-kpi-grid" aria-label="Finance summary">
