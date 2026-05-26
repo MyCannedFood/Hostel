@@ -35,7 +35,6 @@ Route::get('/bed-shared-room', fn () => view('pages.bed-shared-room'));
 Route::get('/guest-details', fn () => view('pages.guest-details'));
 Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 
-
 // Admin Auth Routes
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login']);
@@ -44,38 +43,28 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // Admin Routes (Protected)
 Route::middleware(['is_admin'])->group(function () {
 
-    Route::get('/admin/dashboard', fn () => view('admin.dashboard'))->name('admin.dashboard');
+    Route::get('/admin/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
     Route::get('/admin/manage-guests', [\App\Http\Controllers\AdminGuestController::class, 'index'])->name('admin.manage_guests');
     Route::post('/admin/manage-guests', [\App\Http\Controllers\AdminGuestController::class, 'store'])->name('admin.manage_guests.store');
+    Route::post('/admin/manage-guests/checkout', [\App\Http\Controllers\AdminGuestController::class, 'checkout'])->name('admin.manage_guests.checkout');
+
     Route::get('/admin/manage-occupation', fn () => view('admin.manage_occupation'))->name('admin.manage_occupation');
-    Route::get('/admin/manage-revenue', fn () => view('admin.manage_revenue')) ->name('admin.manage_revenue');
+    Route::get('/admin/manage-revenue', fn () => view('admin.manage_revenue'))->name('admin.manage_revenue');
 
-    Route::get('/Admin/Rooms-Management', function () {
-        return view('admin.room-bed');
-    })->name('admin.rooms');
+    Route::get('/Admin/Rooms-Management', fn () => view('admin.room-bed'))->name('admin.rooms');
+    Route::get('/Admin/Manage-Bookings', fn () => view('admin.dashboard-layout', ['page' => 'Booking']))->name('admin.bookings');
+    Route::get('/Admin/Price-Management', fn () => view('admin.dashboard-layout', ['page' => 'Article']))->name('admin.article');
+    Route::get('/Admin/Finance', fn () => view('admin.dashboard-layout', ['page' => 'Budgetin & Report']))->name('admin.finance');
+    Route::get('/Admin/Settings', fn () => view('admin.dashboard-layout', ['page' => 'Settings']))->name('admin.settings');
 
-    Route::get('/Admin/Manage-Bookings', function () {
-        return view('admin.dashboard-layout', ['page' => 'Booking']);
-    })->name('admin.bookings');
+    Route::get('/admin/finance-accounting', fn () => view('admin.finance-accounting'))->name('admin.finance-accounting');
 
-    Route::get('/Admin/Price-Management', function () {
-        return view('admin.dashboard-layout', ['page' => 'Article']);
-    })->name('admin.article');
-
-    Route::get('/Admin/Finance', function () {
-        return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
-    })->name('admin.finance');
-
-    Route::get('/Admin/Settings', function () {
-        return view('admin.dashboard-layout', ['page' => 'Settings']);
-    })->name('admin.settings');
-
-    Route::get('/admin/finance-accounting', function () {
-        return view('admin.finance-accounting');
-    })->name('admin.finance-accounting');
-
-     Route::get('/admin/budgeting', function () {
-        return view('admin.budgeting');
-    })->name('admin.budgeting');
+    Route::get('/admin/budgeting', [\App\Http\Controllers\AdminBudgetingController::class, 'index'])->name('admin.budgeting');
+    Route::get('/admin/budgeting/requests', [\App\Http\Controllers\AdminBudgetingController::class, 'requests'])->name('admin.budgeting.requests');
+    Route::get('/admin/budgeting/stats', [\App\Http\Controllers\AdminBudgetingController::class, 'stats'])->name('admin.budgeting.stats');
+    Route::post('/admin/budgeting/approve-reject', [\App\Http\Controllers\AdminBudgetingController::class, 'approveReject'])->name('admin.budgeting.approve-reject');
+    Route::post('/admin/budgeting/requests', [\App\Http\Controllers\AdminBudgetRequestController::class, 'store'])->name('admin.budgeting.requests.store');
+    Route::post('/admin/budgeting/lpj', [\App\Http\Controllers\AdminLpjController::class, 'store'])->name('admin.budgeting.lpj.store');
 
 });

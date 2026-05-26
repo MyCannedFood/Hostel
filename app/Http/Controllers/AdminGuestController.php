@@ -13,53 +13,54 @@ class AdminGuestController extends Controller
     {
         $guests = Guest::query()
             ->orderByDesc('id')
-            ->get(['id', 'booking_code', 'first_name', 'last_name', 'country']);
+            ->get(['id', 'booking_code', 'first_name', 'last_name', 'country',
+                   'check_in_date', 'check_out_date']);
 
-        // --- Stats ---
         $now   = Carbon::now();
         $today = Carbon::today();
 
+        // --- Stats berdasarkan check_in_date ---
         $guestStats = [
-            'today' => Guest::whereDate('created_at', $today)->count(),
-            'week'  => Guest::whereBetween('created_at', [
+            'today' => Guest::whereDate('check_in_date', $today)->count(),
+            'week'  => Guest::whereBetween('check_in_date', [
                 $now->copy()->startOfWeek(Carbon::MONDAY),
                 $now->copy()->endOfWeek(Carbon::SUNDAY),
             ])->count(),
-            'month' => Guest::whereYear('created_at', $now->year)
-                ->whereMonth('created_at', $now->month)
+            'month' => Guest::whereYear('check_in_date', $now->year)
+                ->whereMonth('check_in_date', $now->month)
                 ->count(),
         ];
 
-        // --- Breakdown per period (Foreigner vs Local) ---
-        // "Local" = Indonesia, "Foreigner" = everything else
-        // Today
+        // --- Breakdown per period ---
         $guestStats['today_breakdown'] = $this->getBreakdown(
-            Guest::whereDate('created_at', $today)->get(['country'])
+            Guest::whereDate('check_in_date', $today)->get(['country'])
         );
 
-        // This week
         $guestStats['week_breakdown'] = $this->getBreakdown(
-            Guest::whereBetween('created_at', [
+            Guest::whereBetween('check_in_date', [
                 $now->copy()->startOfWeek(Carbon::MONDAY),
                 $now->copy()->endOfWeek(Carbon::SUNDAY),
             ])->get(['country'])
         );
 
-        // This month
         $guestStats['month_breakdown'] = $this->getBreakdown(
-            Guest::whereYear('created_at', $now->year)
-                ->whereMonth('created_at', $now->month)
+            Guest::whereYear('check_in_date', $now->year)
+                ->whereMonth('check_in_date', $now->month)
                 ->get(['country'])
         );
 
-        // --- Guest Trend (rolling 7 days) ---
+        // --- Check-in / Check-out hari ini (untuk card split) ---
+        $guestStats['checkin_today']  = Guest::whereDate('check_in_date', $today)->count();
+        $guestStats['checkout_today'] = Guest::whereDate('check_out_date', $today)->count();
+
+        // --- Guest Trend (rolling 7 hari berdasarkan check_in_date) ---
         $trendLabels = [];
         $trendData   = [];
 
         for ($i = 6; $i >= 0; $i--) {
             $day = $today->copy()->subDays($i);
-            $trendLabels[] = $day->format('D'); // Mon, Tue, ...
-            $trendData[]   = Guest::whereDate('created_at', $day)->count();
+            $trendLabels[] = $day->format('D');
+            $trendData[]   = Guest::whereDate('check_in_date', $day)->count();
         }
 
         return view('admin.manage_guests', compact(
@@ -84,32 +85,50 @@ class AdminGuestController extends Controller
         }
 
         Guest::create([
-            'booking_code' => $request->input('booking_code'),
-            'first_name'   => $request->input('first_name'),
-            'last_name'    => $request->input('last_name'),
-            'country'      => $request->input('country'),
+            'booking_code'   => $request->input('booking_code'),
+            'first_name'     => $request->input('first_name'),
+            'last_name'      => $request->input('last_name'),
+            'country'        => $request->input('country'),
+            'check_in_date'  => Carbon::today(), // ← otomatis hari ini
+            'check_out_date' => null,             // ← diisi nanti saat checkout
         ]);
 
         return redirect()->route('admin.manage_guests')
             ->with('success', 'Guest added successfully.');
     }
 
+    public function checkout(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'booking_code' => ['required', 'string', 'exists:guests,booking_code'],
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $guest = Guest::where('booking_code', $request->input('booking_code'))->firstOrFail();
+
+        if ($guest->check_out_date) {
+            return back()->withErrors(['booking_code' => 'Tamu ini sudah checkout.']);
+        }
+
+        $guest->update(['check_out_date' => Carbon::today()]);
+
+        return redirect()->route('admin.manage_guests')
+            ->with('success', 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.');
+    }
+
     // ---------------------------------------------------------------
     // Helper
     // ---------------------------------------------------------------
 
-    /**
-     * Given a collection of Guest rows (with 'country'),
-     * returns an array with foreigner / local counts & percentages,
-     * plus sub-region breakdown for foreigners.
-     */
     private function getBreakdown($guests): array
     {
         $total = $guests->count();
 
         $localCountries = ['indonesia'];
 
-        // Sub-regions for foreigners
         $asiaCountries   = ['malaysia', 'singapore', 'thailand', 'philippines', 'vietnam',
                             'myanmar', 'cambodia', 'laos', 'brunei', 'timor-leste',
                             'china', 'japan', 'south korea', 'india', 'bangladesh',
@@ -126,12 +145,12 @@ class AdminGuestController extends Controller
                             'senegal', 'cameroon', 'egypt', 'morocco', 'tunisia',
                             'algeria', 'angola', 'ivory coast', 'rwanda', 'mali'];
 
-        $localCount    = 0;
-        $foreignCount  = 0;
-        $asiaCount     = 0;
-        $usEuOcCount   = 0;
-        $afCount       = 0;
-        $otherForeign  = 0;
+        $localCount   = 0;
+        $foreignCount = 0;
+        $asiaCount    = 0;
+        $usEuOcCount  = 0;
+        $afCount      = 0;
+        $otherForeign = 0;
 
         foreach ($guests as $g) {
             $c = strtolower(trim($g->country ?? ''));

@@ -60,11 +60,11 @@
                             </div>
                             <div class="stat-body">
                                 <p class="stat-label">All Guests</p>
-                                <p class="stat-value">18 Guests</p>
-                                <p class="stat-detail">50 Guests (week)</p>
-                                <p class="stat-detail">90 Guests (month)</p>
+                                <p class="stat-value">{{ $guestStats['today'] ?? 0 }} Guests</p>
+                                <p class="stat-detail">{{ $guestStats['week'] ?? 0 }} Guests (week)</p>
+                                <p class="stat-detail">{{ $guestStats['month'] ?? 0 }} Guests (month)</p>
                             </div>
-                            <p class="stat-footer">6 Check-outs today</p>
+                            <p class="stat-footer">Check-outs today</p>
                         </article>
             
                         <!-- Occupation card -->
@@ -471,6 +471,17 @@
             });
         }
 
+        // Inject booking chart data from backend
+        window.bookingChartDay = {!! json_encode($bookingStats['day']['data'] ?? []) !!};
+        window.bookingChartDayLabels = {!! json_encode($bookingStats['day']['labels'] ?? []) !!};
+        window.bookingChartWeek = {!! json_encode($bookingStats['week']['data'] ?? []) !!};
+        window.bookingChartWeekLabels = {!! json_encode($bookingStats['week']['labels'] ?? []) !!};
+        window.bookingChartMonth = {!! json_encode($bookingStats['month']['data'] ?? []) !!};
+        window.bookingChartMonthLabels = {!! json_encode($bookingStats['month']['labels'] ?? []) !!};
+        window.bookingChartRevenue = {!! json_encode($bookingStats['revenue']['data'] ?? []) !!};
+        window.bookingChartRevenueScaled = window.bookingChartRevenue;
+        window.bookingChartRevenueLabels = {!! json_encode($bookingStats['revenue']['labels'] ?? []) !!};
+
         // Booking Statistics Chart
         const bookingCtx = document.getElementById('bookingChart')?.getContext('2d');
         if (!bookingCtx || typeof Chart === 'undefined') {
@@ -483,10 +494,10 @@
             new Chart(bookingCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['Mon', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    labels: window.bookingChartDayLabels?.length ? window.bookingChartDayLabels : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                     datasets: [{
                         label: 'Bookings',
-                        data: [4, 3, 12, 15, 13, 6],
+                        data: window.bookingChartDay?.length ? window.bookingChartDay : [0, 0, 0, 0, 0, 0, 0],
                         backgroundColor: '#26A7A9',
                         borderRadius: 2
                     }]
@@ -507,7 +518,7 @@
                         },
                         y: {
                             beginAtZero: true,
-                            max: 20,
+                            max: Math.max(...(window.bookingChartDay || [0])) || 20,
                             grid: {
                                 display: false
                             },
@@ -532,10 +543,10 @@
             new Chart(revenueCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        labels: window.bookingChartRevenueLabels?.length ? window.bookingChartRevenueLabels : ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
                     datasets: [{
                         label: 'Revenue (M)',
-                        data: [1, 1.5, 3, 8],
+                        data: window.bookingChartRevenue?.length ? window.bookingChartRevenue : [0, 0, 0, 0],
                         backgroundColor: 'rgba(255, 127, 80, 0.2)',
                         borderColor: '#ff7f50',
                         borderWidth: 3,
