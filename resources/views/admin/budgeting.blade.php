@@ -190,16 +190,36 @@
                     <div class="table-filters">
                         <div class="search-box">
                             <i class="fa-solid fa-magnifying-glass"></i>
-                            <input type="text" placeholder="Search report title...">
+                            <input type="text" id="searchInput" placeholder="Search report title...">
                         </div>
-                        <div class="filter-btn">
-                            Category <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+
+                        {{-- Filter Category --}}
+                        <div class="filter-dropdown-wrap" id="filterCategoryWrap">
+                            <div class="filter-btn" id="filterCategoryBtn">
+                                Category <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                            </div>
+                            <div class="filter-dropdown-menu" id="filterCategoryMenu" hidden>
+                                <div class="filter-dropdown-item" data-value="">All Categories</div>
+                                <div class="filter-dropdown-item" data-value="Maintenance">Maintenance</div>
+                                <div class="filter-dropdown-item" data-value="Operational">Operational</div>
+                                <div class="filter-dropdown-item" data-value="Utilities">Utilities</div>
+                                <div class="filter-dropdown-item" data-value="Marketing">Marketing</div>
+                            </div>
                         </div>
-                        <div class="filter-btn">
-                            Status <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+
+                        {{-- Filter Status --}}
+                        <div class="filter-dropdown-wrap" id="filterStatusWrap">
+                            <div class="filter-btn" id="filterStatusBtn">
+                                Status <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>
+                            </div>
+                            <div class="filter-dropdown-menu" id="filterStatusMenu" hidden>
+                                <div class="filter-dropdown-item" data-value="">All Status</div>
+                                <div class="filter-dropdown-item" data-value="Pending">Pending</div>
+                                <div class="filter-dropdown-item" data-value="Approved">Approved</div>
+                                <div class="filter-dropdown-item" data-value="Rejected">Rejected</div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
                 <table>
                     <thead>
@@ -449,29 +469,72 @@
         currentPage++; loadRequests();
     });
 
-    // Search
-    document.querySelector('.search-box input')?.addEventListener('input', e => {
+    // Search input
+    document.getElementById('searchInput')?.addEventListener('input', e => {
         currentPage = 1;
         currentFilters.q_title = e.target.value;
         loadRequests();
     });
 
-    // Filter buttons
-    document.querySelectorAll('.table-filters .filter-btn').forEach((btn, idx) => {
-        btn.addEventListener('click', () => {
-            const filterType = idx === 0 ? 'category' : idx === 1 ? 'status' : null;
-            if (!filterType) return;
-            const options = filterType === 'category'
-                ? ['Maintenance', 'Operational', 'Utilities', 'Marketing', '']
-                : ['Pending', 'Approved', 'Rejected', ''];
-            const current  = currentFilters[filterType];
-            const newValue = options[(options.indexOf(current) + 1) % options.length];
-            currentPage = 1;
-            currentFilters[filterType] = newValue;
-            btn.innerHTML = (newValue || filterType.charAt(0).toUpperCase() + filterType.slice(1))
-                + ` <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
-            loadRequests();
+    // Filter dropdowns
+    function initFilterDropdown({ wrapId, btnId, menuId, filterKey, labelDefault }) {
+        const wrap = document.getElementById(wrapId);
+        const btn  = document.getElementById(btnId);
+        const menu = document.getElementById(menuId);
+        if (!wrap || !btn || !menu) return;
+
+        // Toggle menu
+        btn.addEventListener('click', e => {
+            e.stopPropagation();
+            const isOpen = !menu.hidden;
+            // Tutup semua dropdown dulu
+            document.querySelectorAll('.filter-dropdown-menu').forEach(m => m.hidden = true);
+            menu.hidden = isOpen;
         });
+
+        // Pilih item
+        menu.querySelectorAll('.filter-dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.dataset.value;
+
+                // Update active state
+                menu.querySelectorAll('.filter-dropdown-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // Update button label
+                btn.innerHTML = (value || labelDefault)
+                    + ` <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
+
+                // Update filter
+                currentFilters[filterKey] = value;
+                currentPage = 1;
+                loadRequests();
+
+                // Tutup menu
+                menu.hidden = true;
+            });
+        });
+    }
+
+    initFilterDropdown({
+        wrapId:       'filterCategoryWrap',
+        btnId:        'filterCategoryBtn',
+        menuId:       'filterCategoryMenu',
+        filterKey:    'category',
+        labelDefault: 'Category',
+    });
+
+    initFilterDropdown({
+        wrapId:       'filterStatusWrap',
+        btnId:        'filterStatusBtn',
+        menuId:       'filterStatusMenu',
+        filterKey:    'status',
+        labelDefault: 'Status',
+    });
+
+    // Tutup dropdown kalau klik di luar
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.filter-dropdown-menu').forEach(m => m.hidden = true);
     });
 
     loadStats();
