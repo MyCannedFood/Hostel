@@ -62,6 +62,10 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.article');
     })->name('admin.article');
 
+    Route::get('/admin/management-article/create', function () {
+        return view('admin.article-create');
+    })->name('admin.article.create');
+
     Route::get('/Admin/Finance', function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
     })->name('admin.finance');

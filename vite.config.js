@@ -12,6 +12,8 @@ export default defineConfig({
                 'resources/css/modal-revenue.css',
                 'resources/css/finance-accounting.css',
                 'resources/css/roombed.css',
+                'resources/css/admin-article.css',
+                'resources/css/admin-article-create.css',
                 'resources/js/app.js',
             ],
             refresh: true,

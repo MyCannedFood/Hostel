@@ -28,7 +28,7 @@
             <div class="content-area admin-article-page">
                 <div class="article-page-head">
                     <h1>Manage Articles</h1>
-                    <button type="button" class="article-create-btn">+ Write a New Article</button>
+                    <button type="button" class="article-create-btn" onclick="window.location.href='{{ route('admin.article.create') }}'">+ Write a New Article</button>
                 </div>
 
                 <section class="article-stat-grid" aria-label="Article summary">
@@ -92,7 +92,7 @@
                                     <td><span class="article-views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>128</span></td>
                                     <td>
                                         <div class="article-actions">
-                                            <button type="button" aria-label="Edit article"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
+                                            <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.create') }}'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
                                             <button type="button" aria-label="Open article"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></button>
                                         </div>
                                     </td>
@@ -106,7 +106,7 @@
                                     <td><span class="article-views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>8</span></td>
                                     <td>
                                         <div class="article-actions">
-                                            <button type="button" aria-label="Edit article"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
+                                            <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.create') }}'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
                                             <button type="button" aria-label="Open article"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></button>
                                         </div>
                                     </td>
@@ -120,7 +120,7 @@
                                     <td><span class="article-views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>128</span></td>
                                     <td>
                                         <div class="article-actions">
-                                            <button type="button" aria-label="Edit article"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
+                                            <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.create') }}'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
                                             <button type="button" aria-label="Open article"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></button>
                                         </div>
                                     </td>
