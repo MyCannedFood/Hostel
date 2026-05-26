@@ -62,6 +62,13 @@ class AdminBudgetingController extends Controller
             $query->where('category', $request->string('category')->toString());
         }
 
+        // ✅ FIX: Exclude budget requests yang sudah punya LPJ aktif
+        if ($request->boolean('exclude_with_lpj')) {
+            $query->whereDoesntHave('lpjReports', function ($q) {
+                $q->whereIn('status', ['Submitted', 'Approved']);
+            });
+        }
+
         $perPage   = (int) $request->input('per_page', 10);
         $perPage   = max(1, min(50, $perPage));
         $paginator = $query->orderByDesc('created_at')->paginate($perPage);
@@ -79,12 +86,10 @@ class AdminBudgetingController extends Controller
 
     public function stats(): JsonResponse
     {
-        // Ambil semua approved requests sekali
         $approvedRequests = BudgetRequest::where('status', 'Approved')->get();
 
         $approvedBudget = (int) $approvedRequests->sum('estimated_total_amount');
 
-        // Total actual spent dari LPJ yang submitted/approved
         $totalSpent = (int) $approvedRequests->sum(function (BudgetRequest $r) {
             return (int) $r->lpjReports()
                 ->whereIn('status', ['Submitted', 'Approved'])

@@ -483,34 +483,27 @@
         const menu = document.getElementById(menuId);
         if (!wrap || !btn || !menu) return;
 
-        // Toggle menu
         btn.addEventListener('click', e => {
             e.stopPropagation();
             const isOpen = !menu.hidden;
-            // Tutup semua dropdown dulu
             document.querySelectorAll('.filter-dropdown-menu').forEach(m => m.hidden = true);
             menu.hidden = isOpen;
         });
 
-        // Pilih item
         menu.querySelectorAll('.filter-dropdown-item').forEach(item => {
             item.addEventListener('click', () => {
                 const value = item.dataset.value;
 
-                // Update active state
                 menu.querySelectorAll('.filter-dropdown-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
 
-                // Update button label
                 btn.innerHTML = (value || labelDefault)
                     + ` <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i>`;
 
-                // Update filter
                 currentFilters[filterKey] = value;
                 currentPage = 1;
                 loadRequests();
 
-                // Tutup menu
                 menu.hidden = true;
             });
         });
@@ -532,7 +525,6 @@
         labelDefault: 'Status',
     });
 
-    // Tutup dropdown kalau klik di luar
     document.addEventListener('click', () => {
         document.querySelectorAll('.filter-dropdown-menu').forEach(m => m.hidden = true);
     });
@@ -675,7 +667,8 @@ window.addEventListener('keydown', e => {
 
     async function loadApprovedRequests() {
         try {
-            const res  = await fetch('/admin/budgeting/requests?status=Approved&per_page=100');
+            // ✅ FIX: tambah exclude_with_lpj=1 agar request yang sudah dilaporkan tidak muncul
+            const res  = await fetch('/admin/budgeting/requests?status=Approved&per_page=100&exclude_with_lpj=1');
             const json = await res.json();
             selectRequest.innerHTML = '<option value="" disabled selected>Select an approved request...</option>';
             (json.data || []).forEach(r => {
@@ -774,7 +767,6 @@ window.addEventListener('keydown', e => {
 
     window.updateLpjTotals = updateLpjTotals;
 
-    // Load approved requests saat modal LPJ dibuka
     const lpjOverlay = document.getElementById('overlayLpj');
     if (lpjOverlay) {
         new MutationObserver(mutations => {
