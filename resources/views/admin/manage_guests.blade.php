@@ -132,11 +132,11 @@
                     <!-- Check In/Out -->
                     <div class="guest-stat-card-split">
                         <div class="split-item">
-                            <div class="split-value">7</div>
+                            <div class="split-value">{{ $guestStats['checkout_today'] }}</div>
                             <button type="button" class="split-label split-label-btn" data-guest-action="checkout">Check-out</button>
                         </div>
                         <div class="split-item">
-                            <div class="split-value">25</div>
+                            <div class="split-value">{{ $guestStats['checkin_today'] }}</div>
                             <button type="button" class="split-label split-label-btn" data-guest-action="checkin">Check-in</button>
                         </div>
                     </div>
