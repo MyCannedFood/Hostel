@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/dashboard.css', 'resources/css/finance-accounting.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -33,6 +34,7 @@
                 {{-- ===== KPI CARDS ===== --}}
                 <section class="finance-kpi-grid" aria-label="Finance summary">
 
+                    {{-- Total Cash In --}}
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Total Cash In</span>
@@ -44,12 +46,15 @@
                                 </svg>
                             </span>
                         </div>
-                        <strong>IDR 25,000,000</strong>
-                        <p class="positive"><i class="fa-solid fa-arrow-up"></i> +12% from target</p>
-                        <small>+9% from booking</small>
-                        <small>+3% from experience</small>
+                        <strong>IDR {{ number_format($totalCashIn, 0, ',', '.') }}</strong>
+                        @if($totalCashIn > 0)
+                            <p class="positive"><i class="fa-solid fa-arrow-up"></i> From income sources</p>
+                        @else
+                            <p style="color:#7a857f; font-size:12px;">No income recorded yet</p>
+                        @endif
                     </article>
 
+                    {{-- Total Cash Out --}}
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Total Cash Out</span>
@@ -61,14 +66,18 @@
                                 </svg>
                             </span>
                         </div>
-                        <strong>IDR {{ number_format($ledgerEntries->where('type', 'Out')->sum('amount'), 0, ',', '.') }}</strong>
-                        <p class="warning">From accountability reports</p>
+                        <strong>IDR {{ number_format($totalCashOut, 0, ',', '.') }}</strong>
+                        @if($totalCashOut > 0)
+                            <p class="warning">From accountability reports</p>
+                        @else
+                            <p style="color:#7a857f; font-size:12px;">No expenditure recorded yet</p>
+                        @endif
                     </article>
 
                     <article class="finance-kpi-card">
                         <div class="finance-kpi-top">
                             <span>Net Profit</span>
-                            <span class="finance-kpi-icon green">
+                            <span class="finance-kpi-icon {{ $netProfit >= 0 ? 'green' : 'orange' }}">
                                 <svg viewBox="0 0 24 24" aria-hidden="true">
                                     <path d="M4 19h16"></path>
                                     <path d="M7 16V9"></path>
@@ -78,9 +87,17 @@
                                 </svg>
                             </span>
                         </div>
-                        <strong>IDR 2,700,000</strong>
-                        <p><span class="healthy-badge">Healthy</span></p>
-                        <small>64% margin achieved this period</small>
+                        <strong>IDR {{ number_format($netProfit, 0, ',', '.') }}</strong>
+                        @if($netProfit > 0)
+                            <p><span class="healthy-badge">Healthy</span></p>
+                        @elseif($netProfit < 0)
+                            <p><span class="healthy-badge" style="background:#fdf0e6; color:#d9864a;">Deficit</span></p>
+                        @else
+                            <p><span class="healthy-badge" style="background:#f4f5f2; color:#7a857f;">Break Even</span></p>
+                        @endif
+                        <small>
+                            {{ $totalCashIn > 0 ? round(($netProfit / $totalCashIn) * 100, 1) . '% margin' : 'No income yet' }}
+                        </small>
                     </article>
 
                     {{-- Pending Actions — dari database --}}
@@ -107,58 +124,35 @@
                     </article>
 
                 </section>
-
                 {{-- ===== CHARTS ===== --}}
                 <section class="finance-chart-grid">
+
+                    {{-- Revenue Statistics --}}
                     <article class="finance-panel">
                         <div class="finance-panel-head">
                             <h2>Revenue Statistics</h2>
                             <span>Unit: IDR | Day</span>
                         </div>
-                        <div class="finance-bar-chart" aria-label="Revenue statistics bar chart">
-                            <div class="finance-y-axis">
-                                <span>50M</span><span>40M</span><span>30M</span>
-                                <span>20M</span><span>10M</span><span>0</span>
-                            </div>
-                            <div class="finance-bars">
-                                <div><span style="height: 42%"></span><small>Mon</small></div>
-                                <div><span style="height: 66%"></span><small>Tue</small></div>
-                                <div><span style="height: 32%"></span><small>Wed</small></div>
-                                <div><span style="height: 80%"></span><small>Thu</small></div>
-                                <div><span style="height: 54%"></span><small>Fri</small></div>
-                                <div><span style="height: 86%"></span><small>Sat</small></div>
-                                <div><span style="height: 60%"></span><small>Sun</small></div>
-                            </div>
+                        <div style="position:relative; height:220px;">
+                            <canvas id="revenueStatChart"></canvas>
                         </div>
                     </article>
 
+                    {{-- Financial Trend --}}
                     <article class="finance-panel">
                         <div class="finance-panel-head">
                             <h2>Financial Trend</h2>
-                            <span>Day</span>
+                            <span>Weekly</span>
                         </div>
-                        <div class="finance-area-chart" aria-label="Financial trend area chart">
-                            <svg viewBox="0 0 520 230" preserveAspectRatio="none" role="img" aria-hidden="true">
-                                <defs>
-                                    <linearGradient id="financeTrendFill" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stop-color="#d9864a" stop-opacity="0.34"/>
-                                        <stop offset="100%" stop-color="#d9864a" stop-opacity="0"/>
-                                    </linearGradient>
-                                </defs>
-                                <path class="grid" d="M0 42H520M0 88H520M0 134H520M0 180H520"/>
-                                <path class="area" d="M0 135 C38 126 70 139 104 134 C148 128 170 146 214 132 C252 120 276 104 318 99 C362 94 392 102 426 106 C458 110 472 82 498 80 C508 80 516 84 520 88 L520 230 L0 230 Z"/>
-                                <path class="line" d="M0 135 C38 126 70 139 104 134 C148 128 170 146 214 132 C252 120 276 104 318 99 C362 94 392 102 426 106 C458 110 472 82 498 80 C508 80 516 84 520 88"/>
-                            </svg>
-                            <div class="finance-week-labels">
-                                <span>Week 1</span><span>Week 2</span>
-                                <span>Week 3</span><span>Week 4</span>
-                            </div>
-                            <div class="finance-legend">
-                                <span><i class="target"></i> Revenue Target</span>
-                                <span><i class="actual"></i> Actual Income</span>
-                            </div>
+                        <div style="position:relative; height:220px;">
+                            <canvas id="financialTrendChart"></canvas>
+                        </div>
+                        <div class="finance-legend" style="margin-top:12px;">
+                            <span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#26A7A9;margin-right:5px;"></i> Cash In</span>
+                            <span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#d9864a;margin-right:5px;"></i> Cash Out</span>
                         </div>
                     </article>
+
                 </section>
 
                 {{-- ===== PENDING APPROVALS ===== --}}
@@ -456,6 +450,120 @@
                 console.error(e);
                 alert('Terjadi kesalahan, silakan coba lagi.');
             }
+        }
+    </script>
+
+    <script>
+        // ── Revenue Statistics Chart ──
+        const revenueStatCtx = document.getElementById('revenueStatChart')?.getContext('2d');
+        if (revenueStatCtx) {
+            const revenueData   = {!! json_encode($revenueData) !!};
+            const revenueLabels = {!! json_encode($revenueLabels) !!};
+            const maxRevenue    = Math.max(...revenueData, 1);
+
+            new Chart(revenueStatCtx, {
+                type: 'bar',
+                data: {
+                    labels: revenueLabels,
+                    datasets: [{
+                        data: revenueData,
+                        backgroundColor: '#26A7A9',
+                        borderRadius: 4,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => 'IDR ' + ctx.parsed.y.toLocaleString('id-ID'),
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: {
+                                callback: val => {
+                                    if (val >= 1000000) return (val / 1000000) + 'M';
+                                    if (val >= 1000)    return (val / 1000) + 'K';
+                                    return val;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ── Financial Trend Chart ──
+        const trendCtx = document.getElementById('financialTrendChart')?.getContext('2d');
+        if (trendCtx) {
+            const trendLabels  = {!! json_encode($trendLabels) !!};
+            const trendCashIn  = {!! json_encode($trendCashIn) !!};
+            const trendCashOut = {!! json_encode($trendCashOut) !!};
+
+            new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: trendLabels,
+                    datasets: [
+                        {
+                            label: 'Cash In',
+                            data: trendCashIn,
+                            borderColor: '#26A7A9',
+                            backgroundColor: 'rgba(38,167,169,0.12)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#26A7A9',
+                        },
+                        {
+                            label: 'Cash Out',
+                            data: trendCashOut,
+                            borderColor: '#d9864a',
+                            backgroundColor: 'rgba(217,134,74,0.12)',
+                            borderWidth: 2.5,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#d9864a',
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => ctx.dataset.label + ': IDR ' + ctx.parsed.y.toLocaleString('id-ID'),
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: {
+                            beginAtZero: true,
+                            grid: { display: false },
+                            ticks: {
+                                callback: val => {
+                                    if (val >= 1000000) return (val / 1000000) + 'M';
+                                    if (val >= 1000)    return (val / 1000) + 'K';
+                                    return val;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
