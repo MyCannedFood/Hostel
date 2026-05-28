@@ -34,23 +34,29 @@
                 <section class="article-stat-grid" aria-label="Article summary">
                     <article class="article-stat-card">
                         <span>Total Articles</span>
-                        <strong>24</strong>
+                        <strong>{{ $stats['total'] }}</strong>
                     </article>
                     <article class="article-stat-card">
                         <span>Published</span>
-                        <strong>18</strong>
+                        <strong>{{ $stats['published'] }}</strong>
                     </article>
                     <article class="article-stat-card">
                         <span>Drafts</span>
-                        <strong>6</strong>
+                        <strong>{{ $stats['drafts'] }}</strong>
                     </article>
                     <article class="article-stat-card highlight">
                         <span>Total Views</span>
-                        <strong>1.2k</strong>
+                        <strong>{{ $stats['views'] }}</strong>
                     </article>
                 </section>
 
                 <section class="article-table-card">
+                    @if(session('success'))
+                        <div style="background-color: #d4edda; color: #155724; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #c3e6cb;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     <div class="article-toolbar">
                         <nav class="article-tabs" aria-label="Article filters">
                             <button type="button" class="active">All Content</button>
@@ -83,59 +89,57 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td><img src="{{ asset('images/journal/The harmony islamic.png') }}" alt="Article thumbnail"></td>
-                                    <td><strong>The Harmony of Islamic Values and Javanese Wisdom</strong></td>
-                                    <td>Admin</td>
-                                    <td>14/05/2026</td>
-                                    <td><span class="article-status published">Published</span></td>
-                                    <td><span class="article-views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>128</span></td>
-                                    <td>
-                                        <div class="article-actions">
-                                            <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.create') }}'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
-                                            <button type="button" aria-label="Open article"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{{ asset('images/journal/Herbal Javanese jamu.png') }}" alt="Article thumbnail"></td>
-                                    <td><strong>The Healing Power of Archipelago Rhizomes</strong></td>
-                                    <td>Admin</td>
-                                    <td>10/05/2026</td>
-                                    <td><span class="article-status draft">Draft</span></td>
-                                    <td><span class="article-views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>8</span></td>
-                                    <td>
-                                        <div class="article-actions">
-                                            <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.create') }}'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
-                                            <button type="button" aria-label="Open article"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><img src="{{ asset('images/journal/Crafting with local community.png') }}" alt="Article thumbnail"></td>
-                                    <td><strong>Connecting Through Handcrafted Art</strong></td>
-                                    <td>Admin</td>
-                                    <td>14/05/2026</td>
-                                    <td><span class="article-status draft">Draft</span></td>
-                                    <td><span class="article-views"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>128</span></td>
-                                    <td>
-                                        <div class="article-actions">
-                                            <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.create') }}'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg></button>
-                                            <button type="button" aria-label="Open article"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="16" rx="2"></rect><path d="M9 8h6M9 12h6M9 16h4"></path></svg></button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @forelse($articles as $art)
+                                    <tr>
+                                        <td>
+                                            @if($art->thumbnail)
+                                                <img src="{{ asset($art->thumbnail) }}" alt="Article thumbnail">
+                                            @else
+                                                <img src="{{ asset('images/journal/The harmony islamic.png') }}" alt="Article thumbnail">
+                                            @endif
+                                        </td>
+                                        <td><strong>{{ $art->title }}</strong></td>
+                                        <td>{{ $art->admin->name ?? 'Admin' }}</td>
+                                        <td>{{ $art->publish_at ? $art->publish_at->format('d/m/Y') : $art->created_at->format('d/m/Y') }}</td>
+                                        <td><span class="article-status {{ strtolower($art->status) }}">{{ $art->status }}</span></td>
+                                        <td>
+                                            <span class="article-views">
+                                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path><circle cx="12" cy="12" r="2.5"></circle></svg>
+                                                {{ $art->views_count }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="article-actions" style="display: flex; align-items: center; gap: 8px;">
+                                                <button type="button" aria-label="Edit article" onclick="window.location.href='{{ route('admin.article.edit', $art->id) }}'">
+                                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 4.5-1 10-10a2.1 2.1 0 0 0-3-3l-10 10L4 20Z"></path><path d="m14 7 3 3"></path></svg>
+                                                </button>
+                                                <form action="{{ route('admin.article.destroy', $art->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this article?');">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" aria-label="Delete article" style="background: none; border: none; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 4px; border: 1px solid rgba(26, 61, 10, 0.15); color: #d9534f; transition: all 0.2s;">
+                                                        <svg viewBox="0 0 24 24" aria-hidden="true" style="width: 14px; height: 14px; fill: currentColor;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 32px; color: #888;">
+                                            No articles found. Write a new article to get started!
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
 
                     <div class="article-table-foot">
-                        <span>Showing 1 to 3 of 12 entries</span>
+                        <span>Showing 1 to {{ $articles->count() }} of {{ $articles->count() }} entries</span>
                         <div class="article-pagination">
-                            <button type="button">Previous</button>
+                            <button type="button" disabled>Previous</button>
                             <button type="button" class="active">1</button>
-                            <button type="button">2</button>
-                            <button type="button">Next</button>
+                            <button type="button" disabled>Next</button>
                         </div>
                     </div>
                 </section>

@@ -323,6 +323,7 @@
 
 .meta-input-element {
     flex: 1;
+    min-width: 0;
     border: 0;
     outline: none;
     background: transparent;
@@ -331,6 +332,19 @@
     font-size: 14px;
     color: var(--article-green, #1a3d0a);
     font-weight: 500;
+}
+
+input[type="datetime-local"].meta-input-element {
+    padding: 8px 6px 8px 12px;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input[type="datetime-local"].meta-input-element::-webkit-calendar-picker-indicator {
+    display: none;
 }
 
 .meta-select-container {

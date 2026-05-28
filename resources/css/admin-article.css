@@ -287,6 +287,7 @@
     gap: 16px;
     padding: 10px 16px;
     background: var(--article-soft);
+    border-top: 1px solid var(--article-green);
     font-size: 12px;
 }
 

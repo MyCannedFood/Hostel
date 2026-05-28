@@ -26,7 +26,22 @@
             </header>
 
             <div class="content-area admin-article-page">
-                <div class="editor-container">
+                @if($errors->any())
+                    <div style="background-color: #f8d7da; color: #721c24; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: 1px solid #f5c6cb;">
+                        <ul style="margin: 0; padding-left: 20px;">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ isset($article) ? route('admin.article.update', $article->id) : route('admin.article.store') }}" method="POST" enctype="multipart/form-data" class="editor-container">
+                    @csrf
+                    @if(isset($article))
+                        @method('PUT')
+                    @endif
+
                     <!-- Left Side: Main Editor Area -->
                     <div class="editor-main">
                         <a href="{{ route('admin.article') }}" class="back-to-list-link">
@@ -36,14 +51,22 @@
                             Return to Article List
                         </a>
 
-                        <h2 class="editor-title">Organize Your Articles</h2>
+                        <h2 class="editor-title">{{ isset($article) ? 'Edit Your Article' : 'Organize Your Articles' }}</h2>
 
-                        <div class="thumbnail-upload-zone">
-                            <img src="{{ asset('images/journal/The harmony islamic.png') }}" alt="Article Thumbnail" class="thumbnail-preview-img">
+                        <div class="thumbnail-upload-zone" onclick="document.getElementById('thumbnailInput').click();" style="cursor: pointer;">
+                            @if(isset($article) && $article->thumbnail)
+                                <img src="{{ asset($article->thumbnail) }}" alt="Article Thumbnail" class="thumbnail-preview-img" id="thumbnailPreview">
+                            @else
+                                <div id="thumbnailPreview" class="thumbnail-empty-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;width:100%;height:100%;">
+                                    <svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="rgba(26,61,10,0.35)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="6" width="36" height="36" rx="4"/><circle cx="16" cy="18" r="3"/><polyline points="6 34 16 22 24 30 32 20 42 34"/></svg>
+                                    <span style="font-size:13px;color:rgba(26,61,10,0.45);font-family:inherit;">Click to upload thumbnail</span>
+                                </div>
+                            @endif
+                            <input type="file" name="thumbnail" id="thumbnailInput" accept="image/*" style="display: none;" onchange="previewImage(this);">
                             <div class="alasare-badge">ALASARE</div>
                         </div>
 
-                        <textarea class="article-title-field" rows="2" placeholder="Enter article title...">Embracing Serenity: The Harmony of Islamic Values and Javanese Wisdom amidst Nature’s Lush Embrace</textarea>
+                        <textarea class="article-title-field" name="title" rows="2" placeholder="Enter article title...">{{ old('title', $article->title ?? '') }}</textarea>
 
                         <div class="editor-toolbar-row">
                             <button type="button" class="toolbar-icon-btn format-bold-btn">B</button>
@@ -71,14 +94,14 @@
                             </button>
                         </div>
 
-                        <textarea class="article-body-textarea" placeholder="On the mist-covered hillsides of dawn, AlaSare stands not merely as a place of rest, but as a visual narrative of balance...">On the mist-covered hillsides of dawn, AlaSare stands not merely as a place of rest, but as a visual narrative of balance. Here, the "Tropical Zen" philosophy is translated through the humble touch of Javanese vernacular architecture, blending intimately with the principles of...</textarea>
+                        <textarea class="article-body-textarea" name="content" placeholder="On the mist-covered hillsides of dawn, AlaSare stands not merely as a place of rest, but as a visual narrative of balance...">{{ old('content', $article->content ?? '') }}</textarea>
                     </div>
 
                     <!-- Right Side: Metadata / Publish Panel -->
                     <div class="editor-sidebar-panel">
                         <div class="sidebar-action-card">
-                            <button type="button" class="publish-submit-btn">Update & Publish</button>
-                            <button type="button" class="draft-save-btn">Save as Draft</button>
+                            <button type="submit" name="status" value="Published" class="publish-submit-btn">{{ isset($article) ? 'Update & Publish' : 'Publish' }}</button>
+                            <button type="submit" name="status" value="Draft" class="draft-save-btn">Save as Draft</button>
                         </div>
 
                         <div class="sidebar-details-card">
@@ -94,7 +117,10 @@
                                             <circle cx="12" cy="7" r="4"/>
                                         </svg>
                                     </span>
-                                    <input type="text" class="meta-input-element" value="Admin">
+                                    @php
+                                        $authorName = isset($article) ? ($article->admin?->name ?? 'Admin') : (Auth::guard('admin')->user()?->name ?? 'Admin');
+                                    @endphp
+                                    <input type="text" class="meta-input-element" name="author" placeholder="{{ $authorName }}" value="{{ old('author') }}">
                                 </div>
                             </div>
 
@@ -109,7 +135,10 @@
                                             <line x1="3" y1="10" x2="21" y2="10"/>
                                         </svg>
                                     </span>
-                                    <input type="text" class="meta-input-element" value="14 Mei 2026">
+                                    @php
+                                        $publishVal = old('publish_at', isset($article) && $article->publish_at ? $article->publish_at->format('Y-m-d\TH:i') : now()->format('Y-m-d\TH:i'));
+                                    @endphp
+                                    <input type="datetime-local" class="meta-input-element" name="publish_at" value="{{ $publishVal }}">
                                 </div>
                             </div>
 
@@ -123,17 +152,18 @@
                                             <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                                         </svg>
                                     </span>
-                                    <input type="text" class="meta-input-element" value="AlaSare.com">
+                                    <input type="text" class="meta-input-element" name="source" placeholder="e.g. AlaSare.com" value="{{ old('source', isset($article) ? ($article->source ?? '') : '') }}">
                                 </div>
                             </div>
 
                             <div class="meta-field-group">
                                 <label class="meta-field-label">CATEGORY</label>
                                 <div class="meta-select-container">
-                                    <select class="meta-select-element">
-                                        <option>Culture & Serenity</option>
-                                        <option>Wellness & Nature</option>
-                                        <option>Eco & Discovery</option>
+                                    @php $selectedCat = old('category', isset($article) ? ($article->category ?? 'Culture & Serenity') : 'Culture & Serenity'); @endphp
+                                    <select class="meta-select-element" name="category">
+                                        <option value="Culture & Serenity" {{ $selectedCat == 'Culture & Serenity' ? 'selected' : '' }}>Culture & Serenity</option>
+                                        <option value="Wellness & Nature" {{ $selectedCat == 'Wellness & Nature' ? 'selected' : '' }}>Wellness & Nature</option>
+                                        <option value="Eco & Discovery" {{ $selectedCat == 'Eco & Discovery' ? 'selected' : '' }}>Eco & Discovery</option>
                                     </select>
                                     <span class="meta-select-arrow">
                                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -145,11 +175,11 @@
 
                             <div class="meta-field-group">
                                 <label class="meta-field-label">META DESCRIPTION</label>
-                                <textarea class="meta-textarea-element" placeholder="A brief description of SEO..."></textarea>
+                                <textarea class="meta-textarea-element" name="meta_description" placeholder="A brief description of SEO...">{{ old('meta_description', isset($article) ? ($article->meta_description ?? '') : '') }}</textarea>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </main>
     </div>
@@ -158,6 +188,7 @@
         const sidebar = document.getElementById('adminSidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        const ta = document.querySelector('textarea[name="content"]');
 
         function setSidebarOpen(isOpen) {
             if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
@@ -182,6 +213,107 @@
                 if (window.innerWidth >= 1024) setSidebarOpen(false);
             });
         }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const preview = document.getElementById('thumbnailPreview');
+                    // If it's the empty-state div, replace it with an img
+                    if (preview.tagName === 'DIV') {
+                        const img = document.createElement('img');
+                        img.id = 'thumbnailPreview';
+                        img.alt = 'Article Thumbnail';
+                        img.className = 'thumbnail-preview-img';
+                        img.src = e.target.result;
+                        preview.replaceWith(img);
+                    } else {
+                        preview.src = e.target.result;
+                    }
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function getSelection() {
+            const start = ta.selectionStart;
+            const end = ta.selectionEnd;
+            return { start, end, text: ta.value.substring(start, end) };
+        }
+
+        function replaceSelection(before, after) {
+            const { start, end, text } = getSelection();
+            const selected = text || 'text';
+            ta.value = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+            const newPos = start + before.length + selected.length;
+            ta.setSelectionRange(newPos, newPos);
+            ta.focus();
+        }
+
+        function wrapLines(prefix) {
+            const { start, end } = getSelection();
+            const val = ta.value;
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const lineEnd = val.indexOf('\n', end);
+            const endPos = lineEnd === -1 ? val.length : lineEnd;
+            const lines = val.substring(lineStart, endPos).split('\n');
+            const already = lines.every(l => l.startsWith(prefix));
+            const newLines = already ? lines.map(l => l.slice(prefix.length)).join('\n') : lines.map(l => prefix + l).join('\n');
+            ta.value = val.substring(0, lineStart) + newLines + val.substring(endPos);
+            ta.setSelectionRange(lineStart, lineStart + newLines.length);
+            ta.focus();
+        }
+
+        document.querySelector('.format-bold-btn').addEventListener('click', () => {
+            const { start, end, text } = getSelection();
+            if (text.startsWith('**') && text.endsWith('**')) {
+                const inner = text.slice(2, -2);
+                ta.value = ta.value.substring(0, start) + inner + ta.value.substring(end);
+                ta.setSelectionRange(start, start + inner.length);
+                ta.focus();
+            } else { replaceSelection('**', '**'); }
+        });
+
+        document.querySelector('.format-italic-btn').addEventListener('click', () => {
+            const { start, end, text } = getSelection();
+            if (text.startsWith('_') && text.endsWith('_')) {
+                const inner = text.slice(1, -1);
+                ta.value = ta.value.substring(0, start) + inner + ta.value.substring(end);
+                ta.setSelectionRange(start, start + inner.length);
+                ta.focus();
+            } else { replaceSelection('_', '_'); }
+        });
+
+        document.querySelector('.format-h2-btn').addEventListener('click', () => wrapLines('## '));
+        document.querySelector('.format-quote-btn').addEventListener('click', () => wrapLines('> '));
+
+        document.querySelector('.format-image-btn').addEventListener('click', () => {
+            const url = prompt('Image URL:');
+            if (!url) return;
+            const alt = prompt('Alt text (optional):') || 'image';
+            const { start, end } = getSelection();
+            const md = `![${alt}](${url})`;
+            ta.value = ta.value.substring(0, start) + md + ta.value.substring(end);
+            ta.setSelectionRange(start + md.length, start + md.length);
+            ta.focus();
+        });
+
+        document.querySelector('.format-link-btn').addEventListener('click', () => {
+            const { start, end, text } = getSelection();
+            const url = prompt('URL:');
+            if (!url) return;
+            const label = text || prompt('Link text:') || url;
+            const md = `[${label}](${url})`;
+            ta.value = ta.value.substring(0, start) + md + ta.value.substring(end);
+            ta.setSelectionRange(start + md.length, start + md.length);
+            ta.focus();
+        });
+
+        document.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && document.activeElement === ta) {
+                if (e.key === 'b') { e.preventDefault(); document.querySelector('.format-bold-btn').click(); }
+                if (e.key === 'i') { e.preventDefault(); document.querySelector('.format-italic-btn').click(); }
+            }
+        });
     </script>
 </body>
 </html>

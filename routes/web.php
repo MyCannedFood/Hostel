@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,13 +63,12 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.dashboard-layout', ['page' => 'Booking']);
     })->name('admin.bookings');
 
-    Route::get('/admin/management-article', function () {
-        return view('admin.article');
-    })->name('admin.article');
-
-    Route::get('/admin/management-article/create', function () {
-        return view('admin.article-create');
-    })->name('admin.article.create');
+    Route::get('/admin/management-article', [AdminArticleController::class, 'index'])->name('admin.article');
+    Route::get('/admin/management-article/create', [AdminArticleController::class, 'create'])->name('admin.article.create');
+    Route::post('/admin/management-article/store', [AdminArticleController::class, 'store'])->name('admin.article.store');
+    Route::get('/admin/management-article/{article}/edit', [AdminArticleController::class, 'edit'])->name('admin.article.edit');
+    Route::put('/admin/management-article/{article}', [AdminArticleController::class, 'update'])->name('admin.article.update');
+    Route::delete('/admin/management-article/{article}', [AdminArticleController::class, 'destroy'])->name('admin.article.destroy');
 
     Route::get('/Admin/Finance', function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
