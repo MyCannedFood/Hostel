@@ -939,3 +939,15 @@
         align-items: flex-start;
     }
 }
+
+/* ── Drag & Drop state ──────────────────────────────────── */
+.upload-zone.drag-over {
+    border-color: #4a7c3f;
+    background: #edf5ea;
+    transform: scale(1.01);
+    transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+
+.upload-zone.drag-over .upload-main-text {
+    color: #2d4a1e;
+}

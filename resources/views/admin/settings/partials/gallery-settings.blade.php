@@ -301,7 +301,7 @@
             </div>
 
             {{-- Upload gambar baru (opsional) --}}
-            <div class="upload-zone" style="margin-bottom:16px;" onclick="document.getElementById('editFileInput').click()">
+            <div class="upload-zone" id="editDropZone" style="margin-bottom:16px;" onclick="document.getElementById('editFileInput').click()">
                 <div class="upload-icon" style="font-size:22px;">
                     <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24">
                         <polyline points="16 16 12 12 8 16"/>
@@ -387,20 +387,91 @@ function closeUploadModal() {
     document.body.style.overflow = '';
 }
 
-/* ── Preview gambar di upload zone ── */
+/* ══════════════════════════════════════════════════
+   DRAG & DROP — helper terpusat
+   Dipakai oleh upload zone (modal upload) dan edit zone (modal edit)
+══════════════════════════════════════════════════ */
+
+/**
+ * Aktifkan drag-and-drop pada sebuah zone.
+ * @param {string} zoneId       — id elemen drop zone
+ * @param {string} fileInputId  — id <input type="file">
+ * @param {Function} onFile     — callback(file) setelah file diterima
+ */
+function initDropZone(zoneId, fileInputId, onFile) {
+    const zone  = document.getElementById(zoneId);
+    const input = document.getElementById(fileInputId);
+    if (!zone || !input) return;
+
+    /* Cegah browser buka file secara langsung */
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {
+        zone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); });
+        document.body.addEventListener(evt, e => e.preventDefault());
+    });
+
+    /* Visual feedback saat file di-hover */
+    zone.addEventListener('dragenter', () => zone.classList.add('drag-over'));
+    zone.addEventListener('dragover',  () => zone.classList.add('drag-over'));
+    zone.addEventListener('dragleave', e => {
+        /* Hanya hilangkan class kalau pointer benar-benar keluar zona */
+        if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+
+    /* Drop handler */
+    zone.addEventListener('drop', e => {
+        zone.classList.remove('drag-over');
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+
+        /* Validasi tipe file di sisi klien */
+        const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+        if (!allowed.includes(file.type)) {
+            alert('Format file tidak didukung. Gunakan JPG, PNG, atau WEBP.');
+            return;
+        }
+
+        /* Validasi ukuran (5MB) */
+        if (file.size > 5 * 1024 * 1024) {
+            alert('Ukuran file melebihi 5MB.');
+            return;
+        }
+
+        /* Inject file ke input supaya bisa di-submit bersama form */
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+
+        onFile(file);
+    });
+}
+
+/* ── Preview helper ── */
+function applyPreviewUpload(file) {
+    document.getElementById('uploadZoneText').textContent = file.name;
+}
+
+function applyPreviewEdit(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+        document.getElementById('editCurrentImg').src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('editZoneText').textContent = file.name;
+}
+
+/* ── Inisialisasi setelah DOM siap ── */
+document.addEventListener('DOMContentLoaded', () => {
+    initDropZone('uploadZone', 'uploadFileInput', applyPreviewUpload);
+    initDropZone('editDropZone', 'editFileInput', applyPreviewEdit);
+});
+
+/* ── Preview via klik (input onchange) ── */
 function previewUpload(input) {
-    if (input.files && input.files[0]) {
-        document.getElementById('uploadZoneText').textContent = input.files[0].name;
-    }
+    if (input.files && input.files[0]) applyPreviewUpload(input.files[0]);
 }
 function previewEdit(input) {
     if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = e => {
-            document.getElementById('editCurrentImg').src = e.target.result;
-            document.getElementById('editZoneText').textContent = input.files[0].name;
-        };
-        reader.readAsDataURL(input.files[0]);
+        applyPreviewEdit(input.files[0]);
     }
 }
 
