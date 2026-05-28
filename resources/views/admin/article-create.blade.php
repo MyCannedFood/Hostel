@@ -233,14 +233,26 @@
     });
 
     // Set existing content
-    const existing = document.getElementById('contentInput').value;
+    const existing = document.getElementById('contentInput').value.trim();
     if (existing) {
         quill.clipboard.dangerouslyPasteHTML(existing);
     }
 
-    // Sync ke hidden textarea sebelum submit
-    document.querySelector('form').addEventListener('submit', () => {
-        document.getElementById('contentInput').value = quill.getSemanticHTML();
+    // Keep hidden textarea always in sync on every keystroke
+    quill.on('text-change', function() {
+        const html = quill.root.innerHTML;
+        document.getElementById('contentInput').value = (html === '<p><br></p>') ? '' : html;
+    });
+
+    // Validate on submit (content already synced via text-change)
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const content = document.getElementById('contentInput').value.trim();
+        if (!content) {
+            e.preventDefault();
+            alert('Content tidak boleh kosong!');
+            quill.focus();
+            return;
+        }
     });
 
     // Custom image handler — upload ke server
