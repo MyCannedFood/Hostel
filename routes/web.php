@@ -13,7 +13,7 @@ use App\Http\Controllers\AdminAuthController;
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
 Route::get('/rooms', fn () => view('pages.rooms'));
 
-// UBAH INI
+// USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
 
 Route::get('/experience', fn () => view('pages.experience'));
@@ -47,16 +47,30 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 Route::middleware(['is_admin'])->group(function () {
 
     // Dashboard
-    Route::get('/admin/dashboard', [\App\Http\Controllers\AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/dashboard',
+        [\App\Http\Controllers\AdminDashboardController::class, 'index'])
+        ->name('admin.dashboard');
 
     // Manage Guests
-    Route::get('/admin/manage-guests', [\App\Http\Controllers\AdminGuestController::class, 'index'])->name('admin.manage_guests');
-    Route::post('/admin/manage-guests', [\App\Http\Controllers\AdminGuestController::class, 'store'])->name('admin.manage_guests.store');
-    Route::post('/admin/manage-guests/checkout', [\App\Http\Controllers\AdminGuestController::class, 'checkout'])->name('admin.manage_guests.checkout');
+    Route::get('/admin/manage-guests',
+        [\App\Http\Controllers\AdminGuestController::class, 'index'])
+        ->name('admin.manage_guests');
 
-    Route::get('/admin/manage-occupation', fn () => view('admin.manage_occupation'))->name('admin.manage_occupation');
+    Route::post('/admin/manage-guests',
+        [\App\Http\Controllers\AdminGuestController::class, 'store'])
+        ->name('admin.manage_guests.store');
 
-    Route::get('/admin/manage-revenue', fn () => view('admin.manage_revenue'))->name('admin.manage_revenue');
+    Route::post('/admin/manage-guests/checkout',
+        [\App\Http\Controllers\AdminGuestController::class, 'checkout'])
+        ->name('admin.manage_guests.checkout');
+
+    Route::get('/admin/manage-occupation',
+        fn () => view('admin.manage_occupation'))
+        ->name('admin.manage_occupation');
+
+    Route::get('/admin/manage-revenue',
+        fn () => view('admin.manage_revenue'))
+        ->name('admin.manage_revenue');
 
     Route::get('/Admin/Rooms-Management', function () {
         return view('admin.room-bed');
@@ -78,16 +92,17 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
     })->name('admin.finance');
 
-    // UBAH SETTINGS
-    Route::get('/Admin/Settings', [\App\Http\Controllers\SettingsController::class, 'index'])
+    // SETTINGS
+    Route::get('/Admin/Settings',
+        [\App\Http\Controllers\SettingsController::class, 'index'])
         ->name('admin.settings');
 
-    // TAMBAH GALLERY CRUD
+    // GALLERY CRUD
     Route::post('/admin/gallery',
         [\App\Http\Controllers\GalleryController::class, 'store'])
         ->name('admin.gallery.store');
 
-    Route::post('/admin/gallery/{gallery}',
+    Route::put('/admin/gallery/{gallery}',
         [\App\Http\Controllers\GalleryController::class, 'update'])
         ->name('admin.gallery.update');
 
@@ -96,7 +111,8 @@ Route::middleware(['is_admin'])->group(function () {
         ->name('admin.gallery.destroy');
 
     // Finance Accounting
-    Route::get('/admin/finance-accounting', [\App\Http\Controllers\AdminFinanceController::class, 'index'])
+    Route::get('/admin/finance-accounting',
+        [\App\Http\Controllers\AdminFinanceController::class, 'index'])
         ->name('admin.finance-accounting');
 
     Route::post('/admin/finance-accounting/approve-reject',
@@ -104,7 +120,8 @@ Route::middleware(['is_admin'])->group(function () {
         ->name('admin.finance.approve-reject');
 
     // Budgeting
-    Route::get('/admin/budgeting', [\App\Http\Controllers\AdminBudgetingController::class, 'index'])
+    Route::get('/admin/budgeting',
+        [\App\Http\Controllers\AdminBudgetingController::class, 'index'])
         ->name('admin.budgeting');
 
     Route::get('/admin/budgeting/requests',
