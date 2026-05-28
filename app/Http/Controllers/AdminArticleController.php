@@ -126,4 +126,11 @@ class AdminArticleController extends Controller
 
         return redirect()->route('admin.article')->with('success', 'Article deleted successfully!');
     }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate(['image' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120']);
+        $path = $request->file('image')->store('public/articles/content');
+        return response()->json(['url' => Storage::url($path)]);
+    }
 }

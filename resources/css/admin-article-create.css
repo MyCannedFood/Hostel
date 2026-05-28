@@ -148,36 +148,50 @@
     border-color: var(--article-green, #1a3d0a);
 }
 
-.editor-toolbar-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 0;
-    border-bottom: 1px solid rgba(26, 61, 10, 0.18);
-    margin-bottom: 24px;
-}
-
-.toolbar-icon-btn {
-    border: 0;
-    background: transparent;
-    color: var(--article-green, #1a3d0a);
-    opacity: 0.65;
-    font-size: 16px;
-    font-weight: bold;
+.ql-toolbar {
+    border-radius: 8px 8px 0 0;
+    border: 1px solid rgba(26, 61, 10, 0.18) !important;
     font-family: inherit;
-    width: 32px;
-    height: 32px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
 }
 
-.toolbar-icon-btn:hover {
-    opacity: 1;
-    background: rgba(26, 61, 10, 0.05);
+.ql-container {
+    border-radius: 0 0 8px 8px;
+    border: 1px solid rgba(26, 61, 10, 0.18) !important;
+    border-top: none !important;
+    font-family: inherit;
+    font-size: 15px;
+}
+
+.ql-editor {
+    min-height: 320px;
+    line-height: 1.75;
+}
+
+.ql-editor.ql-blank::before {
+    font-style: normal;
+    color: rgba(26, 61, 10, 0.35);
+}
+
+.ql-toolbar .ql-stroke {
+    stroke: rgba(26, 61, 10, 0.65) !important;
+}
+
+.ql-toolbar .ql-fill {
+    fill: rgba(26, 61, 10, 0.65) !important;
+}
+
+.ql-toolbar .ql-picker {
+    color: rgba(26, 61, 10, 0.65) !important;
+}
+
+.ql-toolbar button:hover .ql-stroke,
+.ql-toolbar button.ql-active .ql-stroke {
+    stroke: rgba(26, 61, 10, 1) !important;
+}
+
+.ql-toolbar button:hover .ql-fill,
+.ql-toolbar button.ql-active .ql-fill {
+    fill: rgba(26, 61, 10, 1) !important;
 }
 
 .toolbar-v-divider {

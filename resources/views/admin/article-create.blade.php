@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
     <title>Write New Article - AlaSare</title>
     @vite(['resources/css/dashboard.css', 'resources/css/admin-article.css', 'resources/css/admin-article-create.css', 'resources/js/app.js'])
 </head>
@@ -68,33 +70,8 @@
 
                         <textarea class="article-title-field" name="title" rows="2" placeholder="Enter article title...">{{ old('title', $article->title ?? '') }}</textarea>
 
-                        <div class="editor-toolbar-row">
-                            <button type="button" class="toolbar-icon-btn format-bold-btn">B</button>
-                            <button type="button" class="toolbar-icon-btn format-italic-btn">I</button>
-                            <span class="toolbar-v-divider"></span>
-                            <button type="button" class="toolbar-icon-btn format-h2-btn">H2</button>
-                            <button type="button" class="toolbar-icon-btn format-quote-btn">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
-                                </svg>
-                            </button>
-                            <span class="toolbar-v-divider"></span>
-                            <button type="button" class="toolbar-icon-btn format-image-btn">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <polyline points="21 15 16 10 5 21"/>
-                                </svg>
-                            </button>
-                            <button type="button" class="toolbar-icon-btn format-link-btn">
-                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <textarea class="article-body-textarea" name="content" placeholder="On the mist-covered hillsides of dawn, AlaSare stands not merely as a place of rest, but as a visual narrative of balance...">{{ old('content', $article->content ?? '') }}</textarea>
+                        <div id="quill-editor" style="min-height: 320px;"></div>
+                        <textarea name="content" id="contentInput" style="display:none;">{{ old('content', $article->content ?? '') }}</textarea>
                     </div>
 
                     <!-- Right Side: Metadata / Publish Panel -->
@@ -188,7 +165,7 @@
         const sidebar = document.getElementById('adminSidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-        const ta = document.querySelector('textarea[name="content"]');
+        const inlineImageInput = document.getElementById('inlineImageInput');
 
         function setSidebarOpen(isOpen) {
             if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
@@ -234,86 +211,69 @@
                 reader.readAsDataURL(input.files[0]);
             }
         }
-        function getSelection() {
-            const start = ta.selectionStart;
-            const end = ta.selectionEnd;
-            return { start, end, text: ta.value.substring(start, end) };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+    <script>
+    const quill = new Quill('#quill-editor', {
+        theme: 'snow',
+        placeholder: 'On the mist-covered hillsides of dawn...',
+        modules: {
+            toolbar: {
+                container: [
+                    ['bold', 'italic'],
+                    [{ header: 2 }],
+                    ['blockquote'],
+                    ['image', 'link'],
+                ],
+                handlers: {
+                    image: imageHandler
+                }
+            }
         }
+    });
 
-        function replaceSelection(before, after) {
-            const { start, end, text } = getSelection();
-            const selected = text || 'text';
-            ta.value = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
-            const newPos = start + before.length + selected.length;
-            ta.setSelectionRange(newPos, newPos);
-            ta.focus();
-        }
+    // Set existing content
+    const existing = document.getElementById('contentInput').value;
+    if (existing) {
+        quill.clipboard.dangerouslyPasteHTML(existing);
+    }
 
-        function wrapLines(prefix) {
-            const { start, end } = getSelection();
-            const val = ta.value;
-            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
-            const lineEnd = val.indexOf('\n', end);
-            const endPos = lineEnd === -1 ? val.length : lineEnd;
-            const lines = val.substring(lineStart, endPos).split('\n');
-            const already = lines.every(l => l.startsWith(prefix));
-            const newLines = already ? lines.map(l => l.slice(prefix.length)).join('\n') : lines.map(l => prefix + l).join('\n');
-            ta.value = val.substring(0, lineStart) + newLines + val.substring(endPos);
-            ta.setSelectionRange(lineStart, lineStart + newLines.length);
-            ta.focus();
-        }
+    // Sync ke hidden textarea sebelum submit
+    document.querySelector('form').addEventListener('submit', () => {
+        document.getElementById('contentInput').value = quill.getSemanticHTML();
+    });
 
-        document.querySelector('.format-bold-btn').addEventListener('click', () => {
-            const { start, end, text } = getSelection();
-            if (text.startsWith('**') && text.endsWith('**')) {
-                const inner = text.slice(2, -2);
-                ta.value = ta.value.substring(0, start) + inner + ta.value.substring(end);
-                ta.setSelectionRange(start, start + inner.length);
-                ta.focus();
-            } else { replaceSelection('**', '**'); }
-        });
+    // Custom image handler — upload ke server
+    function imageHandler() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.click();
 
-        document.querySelector('.format-italic-btn').addEventListener('click', () => {
-            const { start, end, text } = getSelection();
-            if (text.startsWith('_') && text.endsWith('_')) {
-                const inner = text.slice(1, -1);
-                ta.value = ta.value.substring(0, start) + inner + ta.value.substring(end);
-                ta.setSelectionRange(start, start + inner.length);
-                ta.focus();
-            } else { replaceSelection('_', '_'); }
-        });
+        input.addEventListener('change', async () => {
+            const file = input.files[0];
+            if (!file) return;
 
-        document.querySelector('.format-h2-btn').addEventListener('click', () => wrapLines('## '));
-        document.querySelector('.format-quote-btn').addEventListener('click', () => wrapLines('> '));
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
 
-        document.querySelector('.format-image-btn').addEventListener('click', () => {
-            const url = prompt('Image URL:');
-            if (!url) return;
-            const alt = prompt('Alt text (optional):') || 'image';
-            const { start, end } = getSelection();
-            const md = `![${alt}](${url})`;
-            ta.value = ta.value.substring(0, start) + md + ta.value.substring(end);
-            ta.setSelectionRange(start + md.length, start + md.length);
-            ta.focus();
-        });
-
-        document.querySelector('.format-link-btn').addEventListener('click', () => {
-            const { start, end, text } = getSelection();
-            const url = prompt('URL:');
-            if (!url) return;
-            const label = text || prompt('Link text:') || url;
-            const md = `[${label}](${url})`;
-            ta.value = ta.value.substring(0, start) + md + ta.value.substring(end);
-            ta.setSelectionRange(start + md.length, start + md.length);
-            ta.focus();
-        });
-
-        document.addEventListener('keydown', e => {
-            if ((e.ctrlKey || e.metaKey) && document.activeElement === ta) {
-                if (e.key === 'b') { e.preventDefault(); document.querySelector('.format-bold-btn').click(); }
-                if (e.key === 'i') { e.preventDefault(); document.querySelector('.format-italic-btn').click(); }
+            try {
+                const res = await fetch('{{ route("admin.upload.image") }}', {
+                    method: 'POST',
+                    body: formData,
+                });
+                const data = await res.json();
+                if (data.url) {
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, 'image', data.url);
+                    quill.setSelection(range.index + 1);
+                }
+            } catch (err) {
+                alert('Upload failed. Please try again.');
             }
         });
+    }
     </script>
 </body>
 </html>

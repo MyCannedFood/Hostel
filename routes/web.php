@@ -87,6 +87,7 @@ Route::middleware(['is_admin'])->group(function () {
     Route::get('/admin/management-article/{article}/edit', [AdminArticleController::class, 'edit'])->name('admin.article.edit');
     Route::put('/admin/management-article/{article}', [AdminArticleController::class, 'update'])->name('admin.article.update');
     Route::delete('/admin/management-article/{article}', [AdminArticleController::class, 'destroy'])->name('admin.article.destroy');
+    Route::post('/admin/upload-image', [AdminArticleController::class, 'uploadImage'])->name('admin.upload.image');
 
     Route::get('/Admin/Finance', function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
