@@ -24,7 +24,6 @@
     transition: transform 0.25s ease;
     box-shadow: 12px 0 32px rgba(26, 61, 10, 0.16);
   }
-
   .sidebar.open {
     transform: translateX(0);
   }
@@ -61,9 +60,7 @@
 }
 
 @media (min-width: 768px) {
-  .sidebar-logo h1 {
-    font-size: 32px;
-  }
+  .sidebar-logo h1 { font-size: 32px; }
 }
 
 .sidebar-logo-subtitle {
@@ -77,9 +74,7 @@
 }
 
 @media (min-width: 768px) {
-  .sidebar-logo-subtitle {
-    font-size: 12px;
-  }
+  .sidebar-logo-subtitle { font-size: 12px; }
 }
 
 .sidebar-menu {
@@ -89,17 +84,18 @@
   margin-right: 12px;
 }
 
+/* ── Menu item base (shared by <a> and <span>) ── */
 .menu-item {
   display: flex;
   align-items: center;
   padding: 4px;
-  cursor: pointer;
   transition: background-color 0.3s ease;
+  border-radius: 4px;
+  text-decoration: none;
 }
 
-.menu-item:hover {
-  background-color: #e5e7eb;
-}
+a.menu-item { cursor: pointer; }
+a.menu-item:hover { background-color: #e5e7eb; }
 
 .menu-item img {
   width: 16px;
@@ -113,13 +109,8 @@
   border-radius: 4px;
 }
 
-.menu-item.active img {
-  filter: brightness(0) invert(1);
-}
-
-.menu-item.active .menu-text {
-  color: #ffffff;
-}
+.menu-item.active img  { filter: brightness(0) invert(1); }
+.menu-item.active .menu-text { color: #ffffff; }
 
 .menu-text {
   font-size: 16px;
@@ -130,11 +121,19 @@
 }
 
 @media (min-width: 768px) {
-  .menu-text {
-    font-size: 18px;
-  }
+  .menu-text { font-size: 18px; }
 }
 
+/* ── Disabled menu item ── */
+.menu-item--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  pointer-events: none;
+  user-select: none;
+  position: relative;
+}
+
+/* ── Sidebar footer ── */
 .sidebar-footer {
   margin-top: auto;
   margin-right: 12px;
@@ -170,9 +169,7 @@
 }
 
 @media (min-width: 768px) {
-  .admin-name {
-    font-size: 18px;
-  }
+  .admin-name { font-size: 18px; }
 }
 
 .logout-btn {
@@ -183,14 +180,8 @@
   transition: opacity 0.3s ease;
 }
 
-.logout-btn:hover {
-  opacity: 0.8;
-}
-
-.logout-btn img {
-  width: 18px;
-  height: 18px;
-}
+.logout-btn:hover { opacity: 0.8; }
+.logout-btn img   { width: 18px; height: 18px; }
 
 .logout-text {
   font-size: 16px;
@@ -199,6 +190,19 @@
   margin-left: 10px;
 }
 </style>
+
+@php
+    $admin = auth('admin')->user();
+
+    $isDashboard  = request()->is('admin/dashboard');
+    $isRooms      = request()->is('Admin/Rooms-Management');
+    $isBookings   = request()->is('Admin/Manage-Bookings') || request()->is('admin/booking*');
+    $isArticle    = request()->is('admin/management-article*');
+    $isExperience = request()->is('admin/experience*');
+    $isBudget     = request()->is('admin/budgeting*');
+    $isSettings   = request()->is('Admin/Settings*');
+    $isFinance    = request()->is('admin/finance-accounting*');
+@endphp
 
 <!-- Sidebar -->
 <aside class="sidebar" id="adminSidebar" aria-hidden="false">
@@ -210,54 +214,118 @@
         </div>
 
         <nav class="sidebar-menu" role="navigation" aria-label="Main navigation">
-@php
-    $isDashboard = request()->is('admin/dashboard');
-    $isRooms = request()->is('Admin/Rooms-Management');
-    $isBookings = request()->is('Admin/Manage-Bookings');
-    $isArticle = request()->is('admin/management-article');
-    $isBudget = request()->is('admin/budgeting');
-    $isSettings = request()->is('Admin/Settings');
-    $isFinance = request()->is('admin/finance-accounting');
-@endphp
 
-            <a class="menu-item {{ $isDashboard ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/dashboard') }}">
+            {{-- ── DASHBOARD ── --}}
+            @if($admin->hasPermission('dashboard'))
+                <a class="menu-item {{ $isDashboard ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/admin/dashboard') }}">
+                    <img src="{{ asset('images/admin/img_icon.svg') }}" alt="" width="16" height="16">
+                    <span class="menu-text">Dashboard</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon.svg') }}" alt="" width="16" height="16">
+                    <span class="menu-text">Dashboard</span>
+                </span>
+            @endif
 
-                <img src="{{ asset('images/admin/img_icon.svg') }}" alt="" width="16" height="16">
-                <span class="menu-text">Dashboard</span>
-            </a>
+            {{-- ── ROOM & BED ── --}}
+            @if($admin->hasPermission('room_bed'))
+                <a class="menu-item {{ $isRooms ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/Admin/Rooms-Management') }}">
+                    <img src="{{ asset('images/admin/img_icon_gray_900.svg') }}" alt="" width="22" height="14">
+                    <span class="menu-text">Room & Bed</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon_gray_900.svg') }}" alt="" width="22" height="14">
+                    <span class="menu-text">Room & Bed</span>
+                </span>
+            @endif
 
-            <a class="menu-item {{ $isRooms ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Rooms-Management') }}">
-                <img src="{{ asset('images/admin/img_icon_gray_900.svg') }}" alt="" width="22" height="14">
-                <span class="menu-text">Room & Bed</span>
-            </a>
+            {{-- ── BOOKING ── --}}
+            @if($admin->hasPermission('reservation'))
+                <a class="menu-item {{ $isBookings ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/Admin/Manage-Bookings') }}">
+                    <img src="{{ asset('images/admin/img_icon_gray_900_20x18.svg') }}" alt="" width="18" height="20">
+                    <span class="menu-text">Booking</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon_gray_900_20x18.svg') }}" alt="" width="18" height="20">
+                    <span class="menu-text">Booking</span>
+                </span>
+            @endif
 
-            <a class="menu-item {{ $isBookings ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Manage-Bookings') }}">
-                <img src="{{ asset('images/admin/img_icon_gray_900_20x18.svg') }}" alt="" width="18" height="20">
-                <span class="menu-text">Booking</span>
-            </a>
+            {{-- ── ARTICLE ── --}}
+            @if($admin->hasPermission('article'))
+                <a class="menu-item {{ $isArticle ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/admin/management-article') }}">
+                    <img src="{{ asset('images/admin/img_icon_gray_900_16x18.svg') }}" alt="" width="18" height="16">
+                    <span class="menu-text">Article</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon_gray_900_16x18.svg') }}" alt="" width="18" height="16">
+                    <span class="menu-text">Article</span>
+                </span>
+            @endif
 
-            <a class="menu-item {{ $isArticle ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/management-article') }}">
-                <img src="{{ asset('images/admin/img_icon_gray_900_16x18.svg') }}" alt="" width="18" height="16">
-                <span class="menu-text">Article</span>
-            </a>
+            {{-- ── EXPERIENCE ── --}}
+            @if($admin->hasPermission('experience'))
+                <a class="menu-item {{ $isExperience ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/admin/experience') }}">
+                    <img src="{{ asset('images/admin/line-md_compass.png') }}" alt="" width="18" height="16">
+                    <span class="menu-text">Experience</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/line-md_compass.png') }}" alt="" width="18" height="16">
+                    <span class="menu-text">Experience</span>
+                </span>
+            @endif
 
-            <a class="menu-item {{ $isBudget ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/budgeting') }}">
-                <img src="{{ asset('images/admin/img_icon_green_800_22x14.svg') }}" alt="" width="18" height="16">
-                <span class="menu-text">Budgeting</span>
-            </a>
+            {{-- ── BUDGETING & REPORT ── --}}
+            @if($admin->hasPermission('budgeting_report'))
+                <a class="menu-item {{ $isBudget ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/admin/budgeting') }}">
+                    <img src="{{ asset('images/admin/img_icon_green_800_22x14.svg') }}" alt="" width="18" height="16">
+                    <span class="menu-text">Budgeting</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon_green_800_22x14.svg') }}" alt="" width="18" height="16">
+                    <span class="menu-text">Budgeting</span>
+                </span>
+            @endif
 
+            {{-- ── SETTINGS ── --}}
+            @if($admin->hasPermission('settings'))
+                <a class="menu-item {{ $isSettings ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/Admin/Settings') }}">
+                    <img src="{{ asset('images/admin/img_icon_gray_900_20x20.svg') }}" alt="" width="20" height="20">
+                    <span class="menu-text">Settings</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon_gray_900_20x20.svg') }}" alt="" width="20" height="20">
+                    <span class="menu-text">Settings</span>
+                </span>
+            @endif
 
-            <a class="menu-item {{ $isSettings ? 'active' : '' }}" role="menuitem" href="{{ url('/Admin/Settings') }}">
-
-                <img src="{{ asset('images/admin/img_icon_gray_900_20x20.svg') }}" alt="" width="20" height="20">
-                <span class="menu-text">Settings</span>
-            </a>
-
-            <a class="menu-item {{ $isFinance ? 'active' : '' }}" role="menuitem" href="{{ url('/admin/finance-accounting') }}">
-
-                <img src="{{ asset('images/admin/img_icon_green_800_16x22.svg') }}" alt="" width="20" height="20">
-                <span class="menu-text">Finance Accounting</span>
-            </a>
+            {{-- ── FINANCE ACCOUNTING ── --}}
+            @if($admin->hasPermission('finance_accounting'))
+                <a class="menu-item {{ $isFinance ? 'active' : '' }}"
+                   role="menuitem" href="{{ url('/admin/finance-accounting') }}">
+                    <img src="{{ asset('images/admin/img_icon_green_800_16x22.svg') }}" alt="" width="20" height="20">
+                    <span class="menu-text">Finance Accounting</span>
+                </a>
+            @else
+                <span class="menu-item menu-item--disabled" title="Akses tidak diizinkan">
+                    <img src="{{ asset('images/admin/img_icon_green_800_16x22.svg') }}" alt="" width="20" height="20">
+                    <span class="menu-text">Finance Accounting</span>
+                </span>
+            @endif
 
         </nav>
     </div>
@@ -265,17 +333,17 @@
     <div class="sidebar-footer">
         <div class="admin-profile">
             <div class="admin-info">
-                <img src="{{ asset('images/admin/profile.png') }}" alt="AlaSare Admin profile picture">
-                <span class="admin-name">AlaSare Admin</span>
+                <img src="{{ asset('images/admin/profile.png') }}" alt="{{ $admin->name }} profile picture">
+                {{-- Tampilkan nama admin yang login, bukan hardcoded --}}
+                <span class="admin-name">{{ $admin->name }}</span>
             </div>
             <form class="logout-btn" method="POST" action="{{ route('admin.logout') }}">
                 @csrf
-                <button type="submit" style="all: unset; cursor: pointer; display: flex; align-items: center; width: 100%; justify-content: flex-start;">
+                <button type="submit" style="all:unset; cursor:pointer; display:flex; align-items:center; width:100%; justify-content:flex-start;">
                     <img src="{{ asset('images/admin/img_icon_deep_orange_400.svg') }}" alt="" width="18" height="18">
-                    <span class="logout-text" style="padding: 0 5px;">  Logout</span>
+                    <span class="logout-text" style="padding:0 5px;">Logout</span>
                 </button>
             </form>
         </div>
     </div>
 </aside>
-

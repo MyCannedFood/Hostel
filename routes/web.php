@@ -104,17 +104,36 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.new-reservation');
     })->name('admin.booking.create');
 
-    Route::get('/admin/management-article', [AdminArticleController::class, 'index'])->name('admin.article');
-    Route::get('/admin/management-article/create', [AdminArticleController::class, 'create'])->name('admin.article.create');
-    Route::post('/admin/management-article/store', [AdminArticleController::class, 'store'])->name('admin.article.store');
-    Route::get('/admin/management-article/{article}/edit', [AdminArticleController::class, 'edit'])->name('admin.article.edit');
-    Route::put('/admin/management-article/{article}', [AdminArticleController::class, 'update'])->name('admin.article.update');
-    Route::delete('/admin/management-article/{article}', [AdminArticleController::class, 'destroy'])->name('admin.article.destroy');
-    Route::post('/admin/upload-image', [AdminArticleController::class, 'uploadImage'])->name('admin.upload.image');
+    // ARTICLE MANAGEMENT
+    Route::get('/admin/management-article', [AdminArticleController::class, 'index'])
+        ->name('admin.article');
+
+    Route::get('/admin/management-article/create', [AdminArticleController::class, 'create'])
+        ->name('admin.article.create');
+
+    Route::post('/admin/management-article/store', [AdminArticleController::class, 'store'])
+        ->name('admin.article.store');
+
+    Route::get('/admin/management-article/{article}/edit', [AdminArticleController::class, 'edit'])
+        ->name('admin.article.edit');
+
+    Route::put('/admin/management-article/{article}', [AdminArticleController::class, 'update'])
+        ->name('admin.article.update');
+
+    Route::delete('/admin/management-article/{article}', [AdminArticleController::class, 'destroy'])
+        ->name('admin.article.destroy');
+
+    Route::post('/admin/upload-image', [AdminArticleController::class, 'uploadImage'])
+        ->name('admin.upload.image');
 
     Route::get('/Admin/Finance', function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
     })->name('admin.finance');
+
+    // EXPERIENCE
+    Route::get('/admin/experience', function () {
+        return view('admin.experience');
+    })->name('admin.experience');
 
     // SETTINGS
     Route::get('/Admin/Settings',
@@ -133,6 +152,42 @@ Route::middleware(['is_admin'])->group(function () {
     Route::delete('/admin/gallery/{gallery}',
         [\App\Http\Controllers\GalleryController::class, 'destroy'])
         ->name('admin.gallery.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | STAFF CRUD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/admin/staff',
+        [\App\Http\Controllers\StaffController::class, 'store'])
+        ->name('admin.staff.store');
+
+    Route::put('/admin/staff/{admin}',
+        [\App\Http\Controllers\StaffController::class, 'update'])
+        ->name('admin.staff.update');
+
+    Route::delete('/admin/staff/{admin}',
+        [\App\Http\Controllers\StaffController::class, 'destroy'])
+        ->name('admin.staff.destroy');
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROLES CRUD
+    |--------------------------------------------------------------------------
+    */
+
+    Route::post('/admin/roles',
+        [\App\Http\Controllers\RoleController::class, 'store'])
+        ->name('admin.roles.store');
+
+    Route::put('/admin/roles/{role}',
+        [\App\Http\Controllers\RoleController::class, 'update'])
+        ->name('admin.roles.update');
+
+    Route::delete('/admin/roles/{role}',
+        [\App\Http\Controllers\RoleController::class, 'destroy'])
+        ->name('admin.roles.destroy');
 
     // Finance Accounting
     Route::get('/admin/finance-accounting',
