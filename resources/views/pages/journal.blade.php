@@ -14,61 +14,38 @@
     <div class="journal-header">
         <h1>Journal & Story</h1>
         <div class="journal-categories">
-            <a href="#" class="category-link active">All</a>
-            <a href="#" class="category-link">Travel Tips</a>
-            <a href="#" class="category-link">Culture & Serenity</a>
-            <a href="#" class="category-link">Events</a>
+            <a href="{{ route('journal.index') }}" class="category-link {{ !$selectedCategory || $selectedCategory === 'All' ? 'active' : '' }}">All</a>
+            @foreach($categories as $cat)
+                <a href="{{ route('journal.index', ['category' => $cat]) }}" class="category-link {{ $selectedCategory === $cat ? 'active' : '' }}">{{ $cat }}</a>
+            @endforeach
         </div>
     </div>
 
     <div class="journal-grid">
-        <!-- Article 1 -->
-        <article class="journal-card">
-            <div class="journal-card-image">
-                <img src="{{ asset('images/journal/The harmony islamic.png') }}" alt="The Harmony of Islamic Values and Javanese Wisdom">
+        @forelse($articles as $art)
+            <article class="journal-card">
+                <div class="journal-card-image">
+                    @if($art->thumbnail)
+                        <img src="{{ asset($art->thumbnail) }}" alt="{{ $art->title }}">
+                    @else
+                        <img src="{{ asset('images/journal/The harmony islamic.png') }}" alt="{{ $art->title }}">
+                    @endif
+                </div>
+                <div class="journal-card-category">{{ $art->category }}</div>
+                <h3>{{ $art->title }}</h3>
+                <p class="journal-card-excerpt">{{ Str::limit(strip_tags($art->content), 120) }}</p>
+                <a href="{{ route('journal.show', $art->id) }}" class="discover-more">
+                    Discover More
+                    <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 1L17 6L12 11M1 6H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+            </article>
+        @empty
+            <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: rgba(26,61,10,0.6);">
+                <p style="font-size: 18px; font-weight: 500;">No articles found.</p>
             </div>
-            <div class="journal-card-category">Culture & Serenity</div>
-            <h3>The Harmony of Islamic Values and Javanese Wisdom</h3>
-            <p class="journal-card-excerpt">Finding a moment to breathe through tafakkur (nature reflection), where the whispers of mountain breezes meet ...</p>
-            <a href="/journal/detail" class="discover-more">
-                Discover More
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1L17 6L12 11M1 6H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-        </article>
-
-        <!-- Article 2 -->
-        <article class="journal-card">
-            <div class="journal-card-image">
-                <img src="{{ asset('images/journal/Traditional Indonesian herbs.png') }}" alt="The Healing Power of Archipelago Rhizomes">
-            </div>
-            <div class="journal-card-category">Taste of AlaSare</div>
-            <h3>The Healing Power of Archipelago Rhizomes</h3>
-            <p class="journal-card-excerpt">Tracing the history of traditional herbal remedies passed down through generations, warming the body and soul...</p>
-            <a href="/journal/detail" class="discover-more">
-                Discover More
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1L17 6L12 11M1 6H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-        </article>
-
-        <!-- Article 3 -->
-        <article class="journal-card">
-            <div class="journal-card-image">
-                <img src="{{ asset('images/journal/Crafting with local community.png') }}" alt="Connecting Through Handcrafted Art">
-            </div>
-            <div class="journal-card-category">Travel Tips</div>
-            <h3>Connecting Through Handcrafted Art</h3>
-            <p class="journal-card-excerpt">A guide to deep interaction with the local community, where you are not merely a guest but a part of the family...</p>
-            <a href="/journal/detail" class="discover-more">
-                Discover More
-                <svg width="18" height="12" viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 1L17 6L12 11M1 6H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-        </article>
+        @endforelse
     </div>
 
     <!-- Subscription Section -->
