@@ -149,7 +149,7 @@
                                     </span>
                                 </div>
                             </div>
-
+                            
                             <div class="meta-field-group">
                                 <label class="meta-field-label">META DESCRIPTION</label>
                                 <textarea class="meta-textarea-element" name="meta_description" placeholder="A brief description of SEO...">{{ old('meta_description', isset($article) ? ($article->meta_description ?? '') : '') }}</textarea>
@@ -196,7 +196,6 @@
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     const preview = document.getElementById('thumbnailPreview');
-                    // If it's the empty-state div, replace it with an img
                     if (preview.tagName === 'DIV') {
                         const img = document.createElement('img');
                         img.id = 'thumbnailPreview';
@@ -226,25 +225,23 @@
                     ['image', 'link'],
                 ],
                 handlers: {
-                    image: imageHandler
+                    image: imageHandler,
+                    link: linkHandler
                 }
             }
         }
     });
 
-    // Set existing content
     const existing = document.getElementById('contentInput').value.trim();
     if (existing) {
         quill.clipboard.dangerouslyPasteHTML(existing);
     }
 
-    // Keep hidden textarea always in sync on every keystroke
     quill.on('text-change', function() {
         const html = quill.root.innerHTML;
         document.getElementById('contentInput').value = (html === '<p><br></p>') ? '' : html;
     });
 
-    // Validate on submit (content already synced via text-change)
     document.querySelector('form').addEventListener('submit', function(e) {
         const content = document.getElementById('contentInput').value.trim();
         if (!content) {
@@ -255,7 +252,7 @@
         }
     });
 
-    // Custom image handler — upload ke server
+    // Image handler
     function imageHandler() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -285,6 +282,24 @@
                 alert('Upload failed. Please try again.');
             }
         });
+    }
+
+    function linkHandler(value) {
+        if (value) {
+            const range = quill.getSelection();
+            if (range && range.length > 0) {
+                const url = prompt('Masukkan URL:');
+                if (url) quill.format('link', url);
+            } else {
+                const url = prompt('Masukkan URL:');
+                if (!url) return;
+                const text = prompt('Teks link:') || url;
+                const pos = quill.getSelection(true);
+                quill.insertText(pos.index, text, 'link', url);
+            }
+        } else {
+            quill.format('link', false);
+        }
     }
     </script>
 </body>
