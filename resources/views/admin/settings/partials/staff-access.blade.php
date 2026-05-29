@@ -533,7 +533,7 @@ function openEditStaffModal(id, name, email, roleId) {
     // roleId adalah integer ID — cocokkan dengan value option
     const sel = document.getElementById('editStaffRole');
     for (let o of sel.options) o.selected = (o.value == roleId);
-    document.getElementById('editStaffForm').action = '/admin/staff/' + id;
+    document.getElementById('editStaffForm').action = '/admin/staff/' + encodeURIComponent(id);
     openModal('editStaffModal');
 }
 
