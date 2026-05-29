@@ -951,3 +951,361 @@
 .upload-zone.drag-over .upload-main-text {
     color: #2d4a1e;
 }
+
+
+/* ════════════════════════════════════════════════
+   LANDING PAGE SETTINGS
+   ════════════════════════════════════════════════ */
+
+/* ── Back link ── */
+.lp-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    color: #4a7c3f;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+.lp-back-link:hover { color: #2d4a1e; }
+
+/* ── Landing page section index list ── */
+.lp-section-list {
+    background: #fff;
+    border: 1.5px solid #dde3de;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.lp-section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid #f0f4ee;
+    text-decoration: none;
+    color: #1a3d0a;
+    font-size: 15px;
+    font-weight: 500;
+    transition: background 0.15s;
+    cursor: pointer;
+}
+.lp-section-row:last-child { border-bottom: none; }
+.lp-section-row:hover { background: #f6f9f5; }
+.lp-section-row-chevron {
+    font-size: 18px;
+    color: #9aaa96;
+}
+
+/* ── Edit page cards ── */
+.lp-card {
+    background: #fff;
+    border: 1.5px solid #dde3de;
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 20px;
+}
+
+.lp-card-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9aaa96;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+}
+
+/* ── Underline-style inputs (used in landing page forms) ── */
+.lp-field {
+    margin-bottom: 24px;
+}
+.lp-field:last-child { margin-bottom: 0; }
+
+.lp-field-label {
+    font-size: 12px;
+    color: #9aaa96;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.lp-input,
+.lp-textarea {
+    width: 100%;
+    border: none;
+    border-bottom: 1.5px solid #c4d0c0;
+    border-radius: 0;
+    padding: 6px 0 8px;
+    font-size: 15px;
+    color: #1a3d0a;
+    background: transparent;
+    outline: none;
+    transition: border-color 0.15s;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+.lp-input:focus,
+.lp-textarea:focus { border-bottom-color: #2d4a1e; }
+.lp-textarea { resize: vertical; min-height: 100px; line-height: 1.7; }
+
+.lp-heading-input {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.lp-char-counter {
+    text-align: right;
+    font-size: 11px;
+    color: #9aaa96;
+    margin-top: 4px;
+}
+
+/* ── Image preview + controls ── */
+.lp-image-wrap {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e8ede8;
+    margin-bottom: 14px;
+}
+.lp-image-wrap img {
+    width: 100%;
+    display: block;
+    object-fit: cover;
+}
+.lp-image-wrap.portrait { max-height: 340px; }
+.lp-image-wrap.landscape { max-height: 260px; }
+
+.lp-image-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.lp-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1.5px solid #2d4a1e;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    color: #2d4a1e;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.lp-upload-btn:hover { background: #f0f4ee; }
+.lp-upload-btn input[type="file"] { display: none; }
+
+.lp-remove-btn {
+    font-size: 13px;
+    font-weight: 600;
+    color: #d97706;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.lp-remove-btn:hover { color: #b45309; }
+
+.lp-image-hint {
+    font-size: 12px;
+    color: #9aaa96;
+    font-style: italic;
+}
+
+/* ── Info box ── */
+.lp-info-box {
+    display: flex;
+    gap: 10px;
+    padding: 14px 16px;
+    background: #f6f9f5;
+    border: 1px solid #c4d0c0;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #5a6a58;
+    line-height: 1.6;
+    margin-top: 14px;
+}
+.lp-info-icon { flex-shrink: 0; color: #4a7c3f; margin-top: 1px; }
+
+/* ── Card footer (Cancel / Save) ── */
+.lp-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f4ee;
+    margin-top: 20px;
+}
+
+/* ── Status bar (Last saved / Live status) ── */
+.lp-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    font-size: 12px;
+    color: #9aaa96;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+.lp-status-bar-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.lp-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4a7c3f;
+    flex-shrink: 0;
+}
+.lp-live-text { color: #4a7c3f; font-weight: 600; }
+
+/* ── Philosophy two-column layout ── */
+.lp-philosophy-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 28px;
+    align-items: flex-start;
+}
+@media (max-width: 900px) {
+    .lp-philosophy-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Feature list (Philosophy) ── */
+.lp-features-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9aaa96;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+.lp-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f4ee;
+}
+.lp-feature-item:last-child { border-bottom: none; }
+.lp-feature-icon {
+    width: 34px;
+    height: 34px;
+    background: #f0f4ee;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+}
+.lp-feature-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #e0e8de;
+    padding: 4px 0;
+    font-size: 13px;
+    color: #1a3d0a;
+    background: transparent;
+    outline: none;
+}
+.lp-feature-input:focus { border-bottom-color: #2d4a1e; }
+
+.lp-add-feature-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #d97706;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px 0 0;
+}
+
+/* ── Flora detail card items ── */
+.lp-flora-cards-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+.lp-flora-card-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f4ee;
+}
+.lp-flora-card-item:last-child { border-bottom: none; }
+.lp-flora-thumb {
+    width: 54px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: #e8ede8;
+    flex-shrink: 0;
+}
+.lp-flora-thumb-placeholder {
+    width: 54px;
+    height: 44px;
+    border-radius: 8px;
+    background: #e8ede8;
+    flex-shrink: 0;
+}
+.lp-flora-text { flex: 1; min-width: 0; }
+.lp-flora-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a3d0a;
+    margin-bottom: 2px;
+}
+.lp-flora-desc {
+    font-size: 12px;
+    color: #9aaa96;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Card modal (Flora / other) ── */
+.lp-modal-upload-zone {
+    border: 1.5px dashed #c4d0c0;
+    border-radius: 10px;
+    background: #fafcfa;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: border-color 0.15s, background 0.15s;
+}
+.lp-modal-upload-zone:hover {
+    border-color: #4a7c3f;
+    background: #f4f9f4;
+}
+.lp-modal-upload-zone svg { color: #4a7c3f; margin-bottom: 8px; }
+.lp-modal-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: #2d4a1e;
+    color: #fff;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
