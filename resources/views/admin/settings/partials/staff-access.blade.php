@@ -1,6 +1,12 @@
 {{-- resources/views/admin/settings/partials/staff-access.blade.php --}}
 
-@php $activeTab = request('tab', 'staff-list'); @endphp
+@php
+    $activeTab   = request('tab', 'staff-list');
+    // Fallback: ambil langsung dari DB kalau controller belum pass $roleOptions
+    $roleOptions = $roleOptions ?? \App\Models\Role::orderBy('name')->get();
+    $staffList   = $staffList   ?? \App\Models\Admin::with('role')->orderBy('name')->get();
+    $roles       = $roles       ?? \App\Models\Role::withCount('admins')->orderBy('name')->get();
+@endphp
 
 {{-- ── Flash Messages ── --}}
 @if(session('success'))
@@ -24,7 +30,7 @@
     @if($activeTab === 'staff-list')
         <button class="btn btn-dark" onclick="openAddAccountModal()">
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
-            + Add Account
+            Add Account
         </button>
     @else
         <button class="btn btn-orange" onclick="openAddRoleModal()">
@@ -91,11 +97,11 @@
                             {{ ucfirst($staff->status) }}
                         </span>
                     </td>
-                    <td>{{ $staff->role ?? '-' }}</td>
+                    <td>{{ $staff->role->name ?? '-' }}</td>
                     <td style="color:#5a6a58;">{{ $staff->email }}</td>
                     <td>
                         <button class="action-btn edit-only" title="Edit"
-                            onclick="openEditStaffModal('{{ $staff->id }}','{{ addslashes($staff->name) }}','{{ $staff->email }}','{{ $staff->role }}')">
+                            onclick="openEditStaffModal('{{ $staff->id }}','{{ addslashes($staff->name) }}','{{ $staff->email }}','{{ $staff->role_id ?? '' }}')">
                             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -267,11 +273,15 @@
             <div class="form-row" style="align-items:flex-end;">
                 <div class="form-group" style="margin-bottom:0;">
                     <label class="form-label">Select Role</label>
-                    <select class="form-select" name="role">
-                        <option value="admin">Admin</option>
-                        <option value="finance">Finance</option>
-                        <option value="receptionist">Receptionist</option>
-                        <option value="staff">Staff</option>
+                    <select class="form-select" name="role_id">
+                        @forelse($roleOptions as $r)
+                            <option value="{{ $r->id }}"
+                                {{ old('role_id') == $r->id ? 'selected' : '' }}>
+                                {{ $r->name }}
+                            </option>
+                        @empty
+                            <option value="">-- Belum ada role, jalankan RoleSeeder --</option>
+                        @endforelse
                     </select>
                 </div>
                 <div class="form-group" style="margin-bottom:0;">
@@ -517,11 +527,12 @@ function openAddAccountModal() { openModal('addAccountModal'); }
 function openAddRoleModal() { openModal('addRoleModal'); }
 
 /* ── Edit Staff ── */
-function openEditStaffModal(id, name, email, role) {
+function openEditStaffModal(id, name, email, roleId) {
     document.getElementById('editStaffName').value  = name;
     document.getElementById('editStaffEmail').value = email;
+    // roleId adalah integer ID — cocokkan dengan value option
     const sel = document.getElementById('editStaffRole');
-    for (let o of sel.options) o.selected = o.value === role.toLowerCase();
+    for (let o of sel.options) o.selected = (o.value == roleId);
     document.getElementById('editStaffForm').action = '/admin/staff/' + id;
     openModal('editStaffModal');
 }
