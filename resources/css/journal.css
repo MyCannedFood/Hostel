@@ -114,6 +114,7 @@
     margin-bottom: 20px;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -261,6 +262,66 @@
 .journal-body p {
     margin-bottom: 30px;
     opacity: 0.9;
+}
+
+.journal-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+    margin: 20px auto;
+}
+
+/* Smart side-by-side styling for consecutive image paragraphs (robust to <br> or extra spaces) */
+.journal-body p:has(img):has(+ p:has(img)) {
+    display: inline-block;
+    width: calc(50% - 16px);
+    margin-right: 28px;
+    vertical-align: top;
+    margin-bottom: 30px;
+}
+
+.journal-body p:has(img) + p:has(img) {
+    display: inline-block;
+    width: calc(50% - 16px);
+    vertical-align: top;
+    margin-bottom: 30px;
+}
+
+/* Force side-by-side images to have consistent widescreen aspect ratio and cover fit */
+.journal-body p:has(img):has(+ p:has(img)) img,
+.journal-body p:has(img) + p:has(img) img {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .journal-body p:has(img):has(+ p:has(img)),
+    .journal-body p:has(img) + p:has(img) {
+        display: block;
+        width: 100%;
+        margin-right: 0;
+    }
+}
+
+/* Fix bold and strong rendering for Quill content */
+.journal-body strong, 
+.journal-body b {
+    font-weight: 700 !important;
+}
+
+/* Fix blockquote rendering for Quill content (Quill outputs simple blockquote elements) */
+.journal-body blockquote {
+    border-left: 2.5px solid var(--color-journal-accent);
+    padding-left: 30px;
+    margin: 40px 0;
+    font-family: var(--font-serif);
+    font-size: 24px;
+    font-style: italic;
+    color: var(--color-journal-text);
+    line-height: 1.6;
 }
 
 .journal-blockquote {

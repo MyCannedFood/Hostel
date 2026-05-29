@@ -29,8 +29,8 @@ Route::get('/experience/payment', fn () => view('pages.experience-payment'));
 Route::get('/experience/success', fn () => view('pages.experience-success'));
 
 Route::get('/profile', fn () => view('pages.profile'));
-Route::get('/journal', fn () => view('pages.journal'));
-Route::get('/journal/detail', fn () => view('pages.journal-detail'));
+Route::get('/journal', [\App\Http\Controllers\JournalController::class, 'index'])->name('journal.index');
+Route::get('/journal/{article}', [\App\Http\Controllers\JournalController::class, 'show'])->name('journal.show');
 
 // Book now routes
 Route::get('/calendar', fn () => view('pages.calendar'));
