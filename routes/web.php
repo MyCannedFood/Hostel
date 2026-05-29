@@ -77,9 +77,32 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.room-bed');
     })->name('admin.rooms');
 
+    // Add new room popup (returns only modal markup)
+    Route::get('/admin/add-new-room-popup', function () {
+        return view('admin.add-new-room-full');
+    })->name('admin.add_new_room_popup');
+
+    // Add new bed popup (returns only modal markup)
+    Route::get('/admin/add-new-bed-popup', function () {
+        return view('admin.add-new-bed');
+    })->name('admin.add_new_bed_popup');
+
+    // Add new floor popup (returns only modal markup)
+    Route::get('/admin/add-new-floor-popup', function () {
+        return view('admin.add-new-floor');
+    })->name('admin.add_new_floor_popup');
+
     Route::get('/Admin/Manage-Bookings', function () {
-        return view('admin.dashboard-layout', ['page' => 'Booking']);
+        return view('admin.booking');
     })->name('admin.bookings');
+    
+    Route::get('/admin/booking', function () {
+        return view('admin.booking');
+    })->name('admin.booking');
+
+    Route::get('/admin/booking/create', function () {
+        return view('admin.new-reservation');
+    })->name('admin.booking.create');
 
     Route::get('/admin/management-article', [AdminArticleController::class, 'index'])->name('admin.article');
     Route::get('/admin/management-article/create', [AdminArticleController::class, 'create'])->name('admin.article.create');

@@ -104,6 +104,48 @@
             padding: 12px;
         }
 
+            .btn-outline-green {
+                background-color: var(--white);
+                color: var(--dark-green);
+                border: 1px solid var(--dark-green);
+                justify-content: center;
+            }
+
+            .btn-with-icon {
+                position: relative;
+                padding-left: 44px;
+            }
+
+            .btn-with-icon .btn-icon {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 18px;
+                height: 18px;
+                display: block;
+            }
+
+            .floor-plan-btn {
+                width: 100%;
+                background-color: var(--white);
+                color: var(--dark-green);
+                border: 1px solid var(--dark-green);
+                justify-content: center;
+                position: relative;
+                padding-left: 44px;
+            }
+
+            .floor-plan-btn .btn-icon {
+                position: absolute;
+                left: 16px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 18px;
+                height: 18px;
+                display: block;
+            }
+
         /* Cards Grid */
         .cards-grid {
             display: grid;
@@ -367,9 +409,242 @@
         }
 
         .toggle.off { 
-            background: var(--light-green); 
-            border: 1px solid var(--dark-green);
+
+        .room-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 99999 !important;
+            pointer-events: auto;
         }
+
+        .room-modal.is-open {
+            display: flex;
+        }
+
+        .room-modal__panel {
+            width: 100%;
+            max-width: 600px;
+            background-color: var(--bg-main);
+            border-radius: 8px;
+            outline: 1px solid var(--primary-dark);
+            box-shadow: 0px 4px 24px rgba(26, 61, 10, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            max-height: 90vh;
+            position: relative;
+            z-index: 100000;
+        }
+
+        .room-modal__header {
+            background-color: var(--primary-light);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--primary-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .room-modal__title {
+            color: var(--primary-dark);
+            font-size: 30px;
+            font-weight: 500;
+        }
+
+        .room-modal__close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .room-modal__close:hover {
+            color: var(--primary-dark);
+        }
+
+        .room-modal__body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .room-modal .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .room-modal .form-label {
+            color: var(--primary-dark);
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+        }
+
+        .room-modal .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--primary-dark);
+            outline: none;
+        }
+
+        .room-modal .form-control:focus {
+            border-color: var(--primary-dark);
+        }
+
+        .room-modal .form-control::placeholder {
+            color: rgba(26, 61, 10, 0.5);
+        }
+
+        .room-modal select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A3D0A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: 10px auto;
+        }
+
+        .room-modal textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .room-modal .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .room-modal .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .room-modal .input-group input {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .room-modal .input-btn {
+            background-color: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-top-right-radius: 2px;
+            border-bottom-right-radius: 2px;
+            color: var(--primary-dark);
+            cursor: pointer;
+        }
+
+        .room-modal .facilities-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .room-modal .facility-chip {
+            background-color: var(--primary-light);
+            border: 1px solid var(--primary-dark);
+            border-radius: 2px;
+            padding: 6px 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .room-modal .facility-chip input[type="checkbox"] {
+            display: none;
+        }
+
+        .room-modal .custom-checkbox {
+            width: 14px;
+            height: 14px;
+            background-color: var(--white);
+            border: 1px solid var(--primary-dark);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .room-modal .facility-chip input[type="checkbox"]:checked + .custom-checkbox {
+            background-color: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+
+        .room-modal .facility-chip input[type="checkbox"]:checked + .custom-checkbox::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            color: var(--white);
+            font-size: 10px;
+        }
+
+        .room-modal .facility-text {
+            color: var(--primary-dark);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .room-modal__footer {
+            background-color: var(--primary-light);
+            padding: 16px 24px;
+            border-top: 1px solid var(--primary-dark);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .room-modal .btn-outline {
+            background-color: var(--white);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-dark);
+        }
+
+        .room-modal .btn-outline:hover {
+            background-color: #f0f0f0;
+        }
+
+        .room-modal .btn-orange {
+            background-color: var(--accent-orange);
+            color: var(--white);
+            border: 1px solid transparent;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .room-modal .btn-orange:hover {
+            background-color: #c4763e;
+        }
+
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .room-modal .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .room-modal__panel {
+                max-width: 100%;
+            }
+        }
+
         .toggle.off .knob {
             background: var(--dark-green);
             transform: translateX(0);
@@ -500,7 +775,7 @@
                     Manage Rooms & Beds
                 </h1>
                 
-                <button style="display: inline-flex; align-items: center; gap: 8px; background-color: #D9864A; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; font-family: 'DM Sans', sans-serif; border-radius: 4px; cursor: pointer;">
+                <button id="openRoomModal" type="button" style="display: inline-flex; align-items: center; gap: 8px; background-color: #D9864A; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; font-family: 'DM Sans', sans-serif; border-radius: 4px; cursor: pointer;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -549,6 +824,10 @@
                             </div>
                         </div>
                         <button class="btn btn-full">Edit Room Profile</button>
+                            <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal>
+                                <img src="{{ asset('images/peta.svg') }}" alt="Map" class="btn-icon">
+                                <span>Manage Floor Plans</span>
+                            </button>
                     </div>
                 </div>
 
@@ -589,6 +868,10 @@
                             </div>
                         </div>
                         <button class="btn btn-full">Edit Room Profile</button>
+                                <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal>
+                                    <img src="{{ asset('images/peta.svg') }}" alt="Map" class="btn-icon">
+                                    <span>Manage Floor Plans</span>
+                                </button>
                     </div>
                 </div>
 
@@ -629,6 +912,10 @@
                             </div>
                         </div>
                         <button class="btn btn-full">Edit Room Profile</button>
+                                <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal>
+                                    <img src="{{ asset('images/peta.svg') }}" alt="Map" class="btn-icon">
+                                    <span>Manage Floor Plans</span>
+                                </button>
                     </div>
                 </div>
                 
@@ -642,7 +929,7 @@
                         <option>Serene Haven - 8 Beds</option>
                     </select>
                     
-                    <button class="btn sans-serif" style="height: 36px; padding: 0 16px; font-size: 14px; border: 1px solid var(--orange); box-sizing: border-box;">
+                    <button id="openBedModal" class="btn sans-serif" type="button" style="height: 36px; padding: 0 16px; font-size: 14px; border: 1px solid var(--orange); box-sizing: border-box;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -752,27 +1039,151 @@
 
         </div>
     </div>
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ambil semua elemen yang punya class 'toggle'
-            const toggles = document.querySelectorAll('.toggle');
-            
-            toggles.forEach(function(toggle) {
-                // Tambahkan aksi ketika di-klik
-                toggle.addEventListener('click', function() {
-                    // Kalau saat ini 'on', ubah jadi 'off'
-                    if (this.classList.contains('on')) {
-                        this.classList.remove('on');
-                        this.classList.add('off');
-                    } 
-                    // Kalau saat ini 'off', ubah jadi 'on'
-                    else {
-                        this.classList.remove('off');
-                        this.classList.add('on');
-                    }
-                });
-            });
+
+    <!-- modal will be fetched dynamically as a second-layer popup -->
+
+    <script>
+    (function(){
+        function closeInjectedModal() {
+            const c = document.getElementById('addNewRoomContainer');
+            const b = document.getElementById('addNewBedContainer');
+            if (c) c.remove();
+            if (b) b.remove();
+            document.body.classList.remove('modal-open');
+        }
+
+        async function openAddNewRoom() {
+            try {
+                const res = await fetch('/admin/add-new-room-popup', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+                const html = await res.text();
+
+                // Remove existing container if present
+                const existing = document.getElementById('addNewRoomContainer');
+                if (existing) existing.remove();
+
+                const container = document.createElement('div');
+                container.id = 'addNewRoomContainer';
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                const modal = document.getElementById('roomModal');
+                if (modal) {
+                    modal.hidden = false;
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('modal-open');
+                }
+
+                // wire up close buttons inside loaded markup
+                const closeButtons = document.querySelectorAll('[data-room-modal-close]');
+                closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
+
+                // click outside to close
+                const overlay = document.getElementById('roomModal');
+                if (overlay) {
+                    overlay.addEventListener('click', function (e) {
+                        if (e.target === overlay) {
+                            closeInjectedModal();
+                        }
+                    });
+                }
+
+            } catch (err) {
+                console.error('openAddNewRoom error', err);
+            }
+        }
+
+        async function openAddNewBed() {
+            try {
+                const res = await fetch('/admin/add-new-bed-popup', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+                const html = await res.text();
+
+                const existing = document.getElementById('addNewBedContainer');
+                if (existing) existing.remove();
+
+                const container = document.createElement('div');
+                container.id = 'addNewBedContainer';
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                const modal = document.getElementById('bedModal');
+                if (modal) {
+                    modal.hidden = false;
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('modal-open');
+                }
+
+                const closeButtons = document.querySelectorAll('[data-bed-modal-close]');
+                closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
+
+                const overlay = document.getElementById('bedModal');
+                if (overlay) {
+                    overlay.addEventListener('click', function (e) {
+                        if (e.target === overlay) {
+                            closeInjectedModal();
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('openAddNewBed error', err);
+            }
+        }
+
+        async function openAddNewFloor() {
+            try {
+                const res = await fetch('/admin/add-new-floor-popup', { credentials: 'same-origin' });
+                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+                const html = await res.text();
+
+                const existing = document.getElementById('addNewFloorContainer');
+                if (existing) existing.remove();
+
+                const container = document.createElement('div');
+                container.id = 'addNewFloorContainer';
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                const modal = document.getElementById('floorModal');
+                if (modal) {
+                    modal.hidden = false;
+                    modal.classList.add('is-open');
+                    modal.setAttribute('aria-hidden', 'false');
+                    document.body.classList.add('modal-open');
+                }
+
+                const closeButtons = document.querySelectorAll('[data-floor-modal-close]');
+                closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
+
+                const overlay = document.getElementById('floorModal');
+                if (overlay) {
+                    overlay.addEventListener('click', function (e) {
+                        if (e.target === overlay) {
+                            closeInjectedModal();
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('openAddNewFloor error', err);
+            }
+        }
+
+        // expose and attach to button
+        window.openAddNewRoom = openAddNewRoom;
+        window.openAddNewBed = openAddNewBed;
+        window.openAddNewFloor = openAddNewFloor;
+        const openBtn = document.getElementById('openRoomModal');
+        if (openBtn) openBtn.addEventListener('click', openAddNewRoom);
+
+        const openBedBtn = document.getElementById('openBedModal');
+        if (openBedBtn) openBedBtn.addEventListener('click', openAddNewBed);
+
+        document.querySelectorAll('[data-open-floor-modal]').forEach(btn => {
+            btn.addEventListener('click', openAddNewFloor);
         });
+    })();
     </script>
 </body>
 
