@@ -7,9 +7,6 @@
 
 {{-- ── Route ke sub-section ── --}}
 @if(!$sub)
-    {{-- ════════════════════
-         INDEX: Daftar sections
-    ════════════════════ --}}
     <div class="section-header">
         <h2 class="section-title" style="font-size:26px;">Landing Page Settings</h2>
     </div>
@@ -22,7 +19,11 @@
             ['key' => 'philosophy',   'label' => 'Our Philosophy'],
             ['key' => 'flora',        'label' => 'The Flora Concept'],
             ['key' => 'map',          'label' => 'AlaSare Map'],
+            ['key' => 'rooms',        'label' => 'Featured Rooms'],
+            ['key' => 'articles',     'label' => 'Featured Articles'],
             ['key' => 'guest-stories','label' => 'Guest Stories'],
+            ['key' => 'awards',       'label' => 'Awards & Recognitions'],
+            ['key' => 'medpar',       'label' => 'Media & Partners']
         ];
         @endphp
         @foreach($sections as $s)
@@ -46,7 +47,19 @@
 @elseif($sub === 'map')
     @include('admin.settings.partials.LandingPage.LandingPagePartials.alasare-map')
 
+@elseif($sub === 'rooms')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.featured-rooms')
+
+@elseif($sub === 'articles')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.featured-articles')
+
 @elseif($sub === 'guest-stories')
     @include('admin.settings.partials.LandingPage.LandingPagePartials.guest-stories')
+
+@elseif($sub === 'awards')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.awards-recognitions')
+
+@elseif($sub === 'medpar')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.media-partners')
 
 @endif
