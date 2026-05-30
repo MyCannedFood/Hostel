@@ -251,4 +251,8 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\LandingPageController::class, 'updateHero'])
         ->name('admin.landing.hero.update');
 
+    Route::put('/admin/landing/philosophy',                          // ← uncomment ini
+        [\App\Http\Controllers\LandingPageController::class, 'updatePhilosophy'])
+        ->name('admin.landing.philosophy.update');
+
 });

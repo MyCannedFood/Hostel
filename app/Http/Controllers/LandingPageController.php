@@ -1,9 +1,10 @@
 <?php
-// FILE: app/Http/Controllers/LandingPageController.php
+// FILE: app/Http/Controllers/LandingPageController.php  (ganti seluruh isi)
 
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateHeroRequest;
+use App\Http\Requests\UpdatePhilosophyRequest;
 use App\Models\LandingPageSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -11,20 +12,17 @@ use Illuminate\Support\Facades\Storage;
 class LandingPageController extends Controller
 {
     /* ══════════════════════════════════════════
-       HERO SECTION
+       HERO
     ══════════════════════════════════════════ */
     public function updateHero(UpdateHeroRequest $request): RedirectResponse
     {
         $setting = LandingPageSetting::firstOrNew(['section' => 'hero']);
         $data    = $setting->data ?? LandingPageSetting::DEFAULTS['hero'];
 
-        // Update teks
         $data['headline']    = $request->headline;
         $data['subheadline'] = $request->subheadline;
 
-        // Upload bg_image kalau ada file baru
         if ($request->hasFile('bg_image')) {
-            // Hapus gambar lama
             if (!empty($data['bg_image'])) {
                 Storage::disk('public')->delete($data['bg_image']);
             }
@@ -32,7 +30,6 @@ class LandingPageController extends Controller
                 ->store('landing/hero', 'public');
         }
 
-        // Hapus bg_image kalau user klik Remove
         if ($request->boolean('remove_bg_image') && !$request->hasFile('bg_image')) {
             if (!empty($data['bg_image'])) {
                 Storage::disk('public')->delete($data['bg_image']);
@@ -50,17 +47,69 @@ class LandingPageController extends Controller
     }
 
     /* ══════════════════════════════════════════
-       PHILOSOPHY — placeholder, aktifkan nanti
+       PHILOSOPHY
     ══════════════════════════════════════════ */
-    // public function updatePhilosophy(Request $request): RedirectResponse { ... }
+    public function updatePhilosophy(UpdatePhilosophyRequest $request): RedirectResponse
+    {
+        $setting = LandingPageSetting::firstOrNew(['section' => 'philosophy']);
+        $data    = $setting->data ?? LandingPageSetting::DEFAULTS['philosophy'];
 
-    /* ══════════════════════════════════════════
-       FLORA — placeholder, aktifkan nanti
-    ══════════════════════════════════════════ */
-    // public function updateFlora(Request $request): RedirectResponse { ... }
+        // ── Text fields ──
+        $data['tagline']     = $request->tagline;
+        $data['heading']     = $request->heading;
+        $data['body_1']      = $request->body_1;
+        $data['body_2']      = $request->body_2;
+        $data['badge_label'] = $request->badge_label;
+        $data['badge_value'] = $request->badge_value;
 
-    /* ══════════════════════════════════════════
-       MAP — placeholder, aktifkan nanti
-    ══════════════════════════════════════════ */
-    // public function updateMap(Request $request): RedirectResponse { ... }
+        // ── Side image ──
+        if ($request->hasFile('side_image')) {
+            if (!empty($data['side_image'])) {
+                Storage::disk('public')->delete($data['side_image']);
+            }
+            $data['side_image'] = $request->file('side_image')
+                ->store('landing/philosophy', 'public');
+        }
+        if ($request->boolean('remove_side_image') && !$request->hasFile('side_image')) {
+            if (!empty($data['side_image'])) {
+                Storage::disk('public')->delete($data['side_image']);
+            }
+            $data['side_image'] = null;
+        }
+
+        // ── Features ──
+        $features    = [];
+        $oldFeatures = collect($data['features'] ?? []);
+
+        foreach ($request->features ?? [] as $i => $feat) {
+            $iconPath = $feat['icon_path'] ?? null; // existing path
+
+            // Upload icon baru kalau ada
+            if (isset($request->allFiles()['features'][$i]['icon'])) {
+                $file = $request->allFiles()['features'][$i]['icon'];
+                // Hapus ikon lama
+                if ($iconPath) {
+                    Storage::disk('public')->delete($iconPath);
+                }
+                $iconPath = $file->store('landing/philosophy/icons', 'public');
+            }
+
+            $features[] = [
+                'icon_path'   => $iconPath,
+                'icon_label'  => $feat['title'] ?? '',
+                'title'       => $feat['title'] ?? '',
+                'description' => $feat['description'] ?? '',
+            ];
+        }
+
+        $data['features'] = $features;
+
+        $setting->data       = $data;
+        $setting->updated_by = auth('admin')->id();
+        $setting->save();
+
+        return redirect()
+            ->route('admin.settings', ['section' => 'landing', 'sub' => 'philosophy'])
+            ->with('success', 'Our Philosophy section berhasil diperbarui.');
+    }
 }

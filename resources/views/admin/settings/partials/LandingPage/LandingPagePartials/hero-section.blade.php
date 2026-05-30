@@ -1,7 +1,7 @@
 {{-- resources/views/admin/settings/partials/LandingPage/LandingPagePartials/hero-section.blade.php --}}
 
 @php
-    $heroData = $heroSettings?->data ?? \App\Models\LandingPageSetting::DEFAULTS['hero'];
+    $heroData = array_merge(\App\Models\LandingPageSetting::DEFAULTS['hero'], $heroSettings?->data ?? []);
     $bgImageUrl = !empty($heroData['bg_image'])
         ? asset('storage/' . $heroData['bg_image'])
         : asset('images/hero.png');
