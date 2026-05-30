@@ -82,6 +82,19 @@
                                     <span class="settings-nav-chevron">›</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="{{ route('admin.settings', ['section' => 'landing']) }}"
+                                   class="settings-nav-card {{ $section === 'landing' ? 'active' : '' }}">
+                                    <span class="settings-nav-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                            <path d="M3 9h18M9 21V9"/>
+                                        </svg>
+                                    </span>
+                                    <span class="settings-nav-label">Landing Page Settings</span>
+                                    <span class="settings-nav-chevron">›</span>
+                                </a>
+                            </li>
                         </ul>
                     </nav>
 
@@ -95,6 +108,9 @@
 
                         @elseif($section === 'general')
                             @include('admin.settings.partials.general-settings')
+
+                        @elseif($section === 'landing')
+                            @include('admin.settings.partials.landing-page-settings')
 
                         @else
                             @include('admin.settings.partials.gallery-settings')
@@ -127,6 +143,26 @@
             window.addEventListener('keydown', e => { if (e.key === 'Escape') setSidebarOpen(false); });
             window.addEventListener('resize', () => { if (window.innerWidth >= 1024) setSidebarOpen(false); });
         }
+    </script>
+
+    {{-- ── Shared helpers untuk Landing Page image previews ── --}}
+    <script>
+    function previewLpImage(input, previewId) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                document.getElementById(previewId).src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeLpImage(previewId, wrapId) {
+        const img  = document.getElementById(previewId);
+        const wrap = document.getElementById(wrapId);
+        img.src = '';
+        wrap.style.display = 'none';
+    }
     </script>
 </body>
 </html>

@@ -9,7 +9,10 @@ class UpdateAdminRequest extends FormRequest
  
     public function rules(): array
     {
-        $adminId = $this->route('admin');  // dari route /admin/staff/{admin}
+        $adminParam = $this->route('admin'); // dari route /admin/staff/{admin}
+        $adminId = is_object($adminParam) ? ($adminParam->getKey() ?? null) : $adminParam;
+
+
  
         return [
             'name'     => ['required', 'string', 'max:255'],
