@@ -98,9 +98,9 @@
                         <tbody>
                             @php
                             $experiences = [
-                                ['img' => 'images/admin/exp1.jpg', 'name' => 'Nurture the Earth', 'category' => 'Nature', 'price' => 'Rp 450.000', 'active' => true],
-                                ['img' => 'images/admin/exp2.jpg', 'name' => 'Batik Tulis Ritual', 'category' => 'Culture', 'price' => 'Rp 600.000', 'active' => true],
-                                ['img' => 'images/admin/exp3.jpg', 'name' => 'Gamelan Sound Meditation', 'category' => 'Wellness', 'price' => 'Rp 350.000', 'active' => false],
+                                ['img' => 'images/experience/Nurture the Earth - Tree Planting.png', 'name' => 'Nurture the Earth', 'category' => 'Nature', 'price' => 'Rp 450.000', 'active' => true],
+                                ['img' => 'images/experience/Batik Canting Ritual.png', 'name' => 'Batik Tulis Ritual', 'category' => 'Culture', 'price' => 'Rp 600.000', 'active' => true],
+                                ['img' => 'images/experience/Gamelan Sound Meditation.png', 'name' => 'Gamelan Sound Meditation', 'category' => 'Wellness', 'price' => 'Rp 350.000', 'active' => false],
                             ];
                             @endphp
                             @foreach($experiences as $exp)
