@@ -1,10 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
+use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\PageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,12 +19,13 @@ Route::get('/rooms', fn () => view('pages.rooms'));
 // USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
 
-Route::get('/experience', fn () => view('pages.experience'));
 Route::get('/contact', fn () => view('pages.contact-location'));
 Route::get('/location', fn () => view('pages.contact-location'));
 Route::get('/contact-location', fn () => view('pages.contact-location'));
 
 // Experience
+Route::get('/experience', [ExperienceController::class, 'index'])
+    ->name('experience');
 Route::get('/experience/booking-detail', fn () => view('pages.experience-booking-detail'));
 Route::get('/experience/payment-method', fn () => view('pages.experience-payment-method'));
 Route::get('/experience/payment', fn () => view('pages.experience-payment'));
