@@ -1,5 +1,14 @@
 {{-- resources/views/admin/settings/partials/LandingPage/LandingPagePartials/alasare-map.blade.php --}}
 
+@php
+    // Fallback jika controller belum pass $mapSettings
+    $mapSettings ??= null;
+    $mapData = $mapSettings?->data ?? [];
+    $mapImageUrl = !empty($mapData['map_image'])
+        ? asset('storage/' . $mapData['map_image'])
+        : asset('images/map/alasare-map.png');
+@endphp
+
 <a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="lp-back-link">
     ← Back to Landing Page Settings
 </a>
@@ -13,7 +22,7 @@
         <p class="lp-card-label">Map Image (Landscape)</p>
 
         <div class="lp-image-wrap landscape" id="mapImgWrap">
-            <img src="{{ $mapSettings->map_image ?? asset('images/map/alasare-map.png') }}"
+            <img src="{{ $mapImageUrl }}"
                  alt="AlaSare Map" id="mapImgPreview"
                  style="height:280px; width:100%; object-fit:cover;">
         </div>
@@ -64,8 +73,8 @@
         </svg>
         Last Updated:
         <span style="color:#5a6a58;">
-            {{ $mapSettings->updated_at?->format('F j, Y') ?? 'October 12, 2023' }}
-            by {{ $mapSettings->updatedBy ?? 'Admin' }}
+            {{ $mapSettings?->updated_at?->format('F j, Y') ?? 'October 12, 2023' }}
+            by {{ $mapSettings?->data['updated_by_name'] ?? 'Admin' }}
         </span>
     </div>
     <div class="lp-status-bar-item">

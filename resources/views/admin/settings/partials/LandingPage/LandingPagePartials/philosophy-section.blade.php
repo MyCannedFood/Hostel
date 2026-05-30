@@ -1,5 +1,7 @@
 {{-- resources/views/admin/settings/partials/LandingPage/LandingPagePartials/philosophy-section.blade.php --}}
 
+@php $philosophySettings ??= null; @endphp
+
 <a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="lp-back-link">
     ← Back to Landing Page Settings
 </a>

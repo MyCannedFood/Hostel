@@ -1,4 +1,15 @@
-{{-- Home - Hero --}}
+{{-- resources/views/home/sections/hero.blade.php --}}
+{{-- Data: $heroData array dari PageController --}}
+
+@php
+    // Fallback ke default kalau $heroData belum dipass (e.g. saat preview langsung)
+    $heroData    ??= \App\Models\LandingPageSetting::DEFAULTS['hero'];
+    $headline    = $heroData['headline']    ?? 'A Javanese Sanctuary, Woven by Nature';
+    $subheadline = $heroData['subheadline'] ?? 'Immerse yourself in the deep tranquility of Nusantara culture, where architecture breathes with the forest.';
+    $bgImageUrl  = !empty($heroData['bg_image'])
+                   ? asset('storage/' . $heroData['bg_image'])
+                   : asset('images/hero.png');
+@endphp
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
@@ -11,17 +22,14 @@
         --terracotta:   #d9864a;
     }
 
-    /* ── Hero wrapper — true full-bleed, flush to navbar ── */
     #home-hero {
         position: relative;
         width: 100vw;
-        /* Breakout dari parent container apapun */
         margin-left:  calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
         margin-top: 0 !important;
         margin-bottom: 0;
         padding: 0 !important;
-        /* Tinggi = full viewport dikurangi tinggi navbar (64px) */
         height: calc(100vh - 64px);
         min-height: 540px;
         overflow: hidden;
@@ -32,11 +40,9 @@
         box-sizing: border-box;
     }
 
-    /* Background image */
     #home-hero .hero-bg {
         position: absolute;
         inset: 0;
-        background-image: url("{{ asset('images/hero.png') }}");
         background-size: cover;
         background-position: center 30%;
         transform: scale(1.04);
@@ -48,7 +54,6 @@
         to   { transform: scale(1.00); }
     }
 
-    /* Dark gradient overlay */
     #home-hero .hero-overlay {
         position: absolute;
         inset: 0;
@@ -60,7 +65,6 @@
         );
     }
 
-    /* Content */
     #home-hero .hero-content {
         position: relative;
         z-index: 2;
@@ -96,7 +100,6 @@
         letter-spacing: 0.01em;
     }
 
-    /* ── Booking bar ── */
     #home-hero .hero-booking {
         position: absolute;
         bottom: 0;
@@ -187,65 +190,54 @@
         transform: translateY(-1px);
     }
 
-    /* ── WhatsApp floating button (removed, use global navbar component) ── */
-    /* .hero-wa-btn { ... } */
-
-    /* ── Mobile ── */
     @media (max-width: 640px) {
         #home-hero {
             height: calc(100svh - 64px);
             min-height: 480px;
         }
-
         #home-hero .hero-booking {
             width: 100%;
             border-radius: 0;
             flex-direction: column;
         }
-
         .hero-booking-field {
             border-right: none;
             border-bottom: 1px solid #eee;
             padding: 12px 16px;
         }
-
         .hero-booking-btn-wrap {
             padding: 12px 16px 16px;
         }
-
         .hero-booking-btn {
             width: 100%;
             padding: 14px;
             font-size: 14px;
         }
-
-        .hero-wa-btn {
-            bottom: 20px;
-            right: 20px;
-            width: 48px;
-            height: 48px;
-        }
     }
 </style>
 
 <section id="home-hero">
-    <div class="hero-bg"></div>
+    {{-- Background image di-inject via inline style supaya URL dari DB bisa dipakai --}}
+    <div class="hero-bg"
+         style="background-image: url('{{ $bgImageUrl }}');">
+    </div>
     <div class="hero-overlay"></div>
 
     <div class="hero-content">
-        <h1>A Javanese Sanctuary,<br>Woven by Nature</h1>
-        <p>Immerse yourself in the deep tranquility of Nusantara culture, where architecture breathes with the forest.</p>
+        {{-- Headline dan sub-headline dari DB, dengan fallback --}}
+        <h1>{!! nl2br(e($headline)) !!}</h1>
+        <p>{{ $subheadline }}</p>
     </div>
 
     <div class="hero-booking">
         <div class="hero-booking-field">
             <label for="hero-checkin">Check-In</label>
-            <input type="date" id="hero-checkin" name="checkin" value="2026-10-12">
+            <input type="date" id="hero-checkin" name="checkin" value="{{ date('Y-m-d', strtotime('+1 day')) }}">
         </div>
 
         <div class="hero-booking-field">
             <label for="hero-checkout">Check-Out</label>
-            <input type="date" id="hero-checkout" name="checkout" value="2026-10-15">
+            <input type="date" id="hero-checkout" name="checkout" value="{{ date('Y-m-d', strtotime('+4 days')) }}">
         </div>
 
         <div class="hero-booking-field" style="border-right:none;">
@@ -260,10 +252,9 @@
 
         <div class="hero-booking-btn-wrap">
             <button class="hero-booking-btn" type="button"
-                onclick="window.location.href='/rooms'">
+                    onclick="window.location.href='/rooms'">
                 Check Availability
             </button>
         </div>
     </div>
 </section>
-</a>

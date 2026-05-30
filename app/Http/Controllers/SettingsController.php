@@ -1,20 +1,20 @@
 <?php
+// FILE: app/Http/Controllers/SettingsController.php  (ganti seluruh isi)
 
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Gallery;
 use App\Models\Role;
+use App\Models\LandingPageSetting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
     public function index(Request $request)
     {
         $section = $request->get('section', 'gallery');
-        $sub     = $request->get('sub');
-        $data    = ['section' => $section, 'sub' => $sub];
+        $data    = ['section' => $section];
 
         /* ── Gallery ── */
         if ($section === 'gallery') {
@@ -27,13 +27,13 @@ class SettingsController extends Controller
                 $query->where('status', $request->status);
             }
 
-            $data['photos'] = $query->orderBy('column_placement')
-                ->orderBy('order_number')
-                ->paginate(10)
-                ->appends($request->except('page'));
-            $data['totalPhotos'] = Gallery::count();
+            $data['photos']         = $query->orderBy('column_placement')
+                                            ->orderBy('order_number')
+                                            ->paginate(10)
+                                            ->appends($request->except('page'));
+            $data['totalPhotos']    = Gallery::count();
             $data['filterCategory'] = $request->get('category', 'all');
-            $data['filterStatus'] = $request->get('status', 'all');
+            $data['filterStatus']   = $request->get('status', 'all');
         }
 
         /* ── Staff & Access Rights ── */
@@ -61,55 +61,22 @@ class SettingsController extends Controller
 
         /* ── Landing Page Settings ── */
         if ($section === 'landing') {
-            // Saat ini belum ada model khusus landing-map/hero di repo,
-            // jadi kita berikan fallback agar partial bisa render.
-            // Partial akan membaca $mapSettings/$heroSettings/$... sesuai kebutuhan.
-            $data['mapSettings'] = (object) [
-                'map_image' => null,
-                'updated_at' => null,
-                'updatedBy' => null,
-            ];
+            $sub = $request->get('sub');
 
-            $data['heroSettings'] = (object) [
-                'bg_image' => null,
-                'headline' => null,
-                'subheadline' => null,
-                'updated_at' => null,
-                'updatedBy' => null,
-            ];
-
-            $data['philosophySettings'] = (object) [
-                'bg_image' => null,
-                'title' => null,
-                'content' => null,
-                'updated_at' => null,
-                'updatedBy' => null,
-            ];
-
-            $data['floraSettings'] = (object) [
-                'title' => null,
-                'content' => null,
-                'updated_at' => null,
-                'updatedBy' => null,
-            ];
-
-            $data['guestStoriesSettings'] = (object) [
-                'updated_at' => null,
-                'updatedBy' => null,
-            ];
-
-            // Pastikan sub valid (biar tidak error di partial lain)
-            if ($sub && !in_array($sub, ['hero', 'philosophy', 'flora', 'map', 'guest-stories'], true)) {
-                $data['sub'] = null;
+            if ($sub === 'hero') {
+                $data['heroSettings'] = LandingPageSetting::getSection('hero');
+            } elseif ($sub === 'map') {
+                $data['mapSettings'] = LandingPageSetting::getSection('map');
+            } elseif ($sub === 'philosophy') {
+                $data['philosophySettings'] = LandingPageSetting::getSection('philosophy');
+            } elseif ($sub === 'flora') {
+                $data['floraSettings'] = LandingPageSetting::getSection('flora');
+            } elseif ($sub === 'guest-stories') {
+                $data['guestStoriesSettings'] = LandingPageSetting::getSection('guest_stories');
             }
-        }
-
-        /* ── General Settings (existing views) ── */
-        if ($section === 'general') {
-            // Tidak ada data spesifik untuk general saat ini (view kemungkinan manage via frontend)
+            // featured-rooms, featured-articles, awards, media-partners: UI only untuk sekarang
         }
 
         return view('admin.settings.settings', $data);
     }
 }
-

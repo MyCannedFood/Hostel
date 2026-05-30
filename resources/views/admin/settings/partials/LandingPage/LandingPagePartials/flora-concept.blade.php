@@ -1,5 +1,7 @@
 {{-- resources/views/admin/settings/partials/LandingPage/LandingPagePartials/flora-concept.blade.php --}}
 
+@php $floraSettings ??= null; @endphp
+
 <a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="lp-back-link">
     ← Back to Landing Page Settings
 </a>

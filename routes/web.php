@@ -219,4 +219,9 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\AdminLpjController::class, 'store'])
         ->name('admin.budgeting.lpj.store');
 
+    // ── LANDING PAGE SETTINGS ──
+    Route::put('/admin/landing/hero',
+        [\App\Http\Controllers\LandingPageController::class, 'updateHero'])
+        ->name('admin.landing.hero.update');
+
 });

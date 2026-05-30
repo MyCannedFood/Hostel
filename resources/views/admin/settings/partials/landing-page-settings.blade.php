@@ -18,11 +18,15 @@
     <div class="lp-section-list">
         @php
         $sections = [
-            ['key' => 'hero',         'label' => 'Hero Section'],
-            ['key' => 'philosophy',   'label' => 'Our Philosophy'],
-            ['key' => 'flora',        'label' => 'The Flora Concept'],
-            ['key' => 'map',          'label' => 'AlaSare Map'],
-            ['key' => 'guest-stories','label' => 'Guest Stories'],
+            ['key' => 'hero',            'label' => 'Hero Section'],
+            ['key' => 'philosophy',      'label' => 'Our Philosophy'],
+            ['key' => 'flora',           'label' => 'The Flora Concept'],
+            ['key' => 'map',             'label' => 'AlaSare Map'],
+            ['key' => 'featured-rooms',  'label' => 'Featured Rooms'],
+            ['key' => 'featured-articles','label' => 'Featured Articles'],
+            ['key' => 'guest-stories',   'label' => 'Guest Stories'],
+            ['key' => 'awards',          'label' => 'Awards & Recognition'],
+            ['key' => 'media-partners',  'label' => 'Media & Partners'],
         ];
         @endphp
         @foreach($sections as $s)
@@ -48,5 +52,17 @@
 
 @elseif($sub === 'guest-stories')
     @include('admin.settings.partials.LandingPage.LandingPagePartials.guest-stories')
+
+@elseif($sub === 'featured-rooms')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.featured-rooms')
+
+@elseif($sub === 'featured-articles')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.featured-articles')
+
+@elseif($sub === 'awards')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.awards-recognition')
+
+@elseif($sub === 'media-partners')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.media-partners')
 
 @endif
