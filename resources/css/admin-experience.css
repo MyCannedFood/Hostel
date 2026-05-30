@@ -54,6 +54,18 @@
     cursor: pointer;
 }
 
+.exp-btn-primary-form {
+    border: none;
+    background: var(--exp-green);
+    color: #fff;
+    border-radius: 2px;
+    padding: 8px 18px;
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 .exp-checkin-row {
     display: flex;
     align-items: flex-end;
@@ -713,8 +725,6 @@
     color: #fff;
     cursor: pointer;
 }
-
-.exp-btn-cancel:hover { background: rgba(26, 61, 10, 0.04); }
 
 .scan-qr-frame {
     position: relative;

@@ -95,7 +95,23 @@
                                     <span class="settings-nav-chevron">›</span>
                                 </a>
                             </li>
+
+                              <li>
+                                <a href="{{ route('admin.settings', ['section' => 'location']) }}"
+                                   class="settings-nav-card {{ $section === 'location' ? 'active' : '' }}">
+                                    <span class="settings-nav-icon">
+                                        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+                                            <circle cx="12" cy="10" r="3"/>
+                                        </svg>
+                                    </span>
+                                    <span class="settings-nav-label">Location and Contact Settings</span>
+                                    <span class="settings-nav-chevron">›</span>
+                                </a>
+                            </li>
+                            
                         </ul>
+
                     </nav>
 
                     {{-- ── Right Content Panel ── --}}
@@ -111,6 +127,9 @@
 
                         @elseif($section === 'landing')
                             @include('admin.settings.partials.landing-page-settings')
+
+                        @elseif($section === 'location')
+                            @include('admin.settings.partials.contact-location-settings')
 
                         @else
                             @include('admin.settings.partials.gallery-settings')

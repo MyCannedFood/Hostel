@@ -1,9 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PageController;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
+use App\Http\Controllers\AdminExperienceController;
+use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\PageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,12 +19,13 @@ Route::get('/rooms', fn () => view('pages.rooms'));
 // USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
 
-Route::get('/experience', fn () => view('pages.experience'));
 Route::get('/contact', fn () => view('pages.contact-location'));
 Route::get('/location', fn () => view('pages.contact-location'));
 Route::get('/contact-location', fn () => view('pages.contact-location'));
 
 // Experience
+Route::get('/experience', [ExperienceController::class, 'index'])
+    ->name('experience');
 Route::get('/experience/booking-detail', fn () => view('pages.experience-booking-detail'));
 Route::get('/experience/payment-method', fn () => view('pages.experience-payment-method'));
 Route::get('/experience/payment', fn () => view('pages.experience-payment'));
@@ -126,14 +129,38 @@ Route::middleware(['is_admin'])->group(function () {
     Route::post('/admin/upload-image', [AdminArticleController::class, 'uploadImage'])
         ->name('admin.upload.image');
 
+    // Finance
     Route::get('/Admin/Finance', function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
     })->name('admin.finance');
 
-    // EXPERIENCE
-    Route::get('/admin/experience', function () {
-        return view('admin.experience');
-    })->name('admin.experience');
+    // Experience 
+    Route::get('/admin/experience', [AdminExperienceController::class, 'index'])
+        ->name('admin.experience');
+
+    Route::post('/admin/experience/store', [AdminExperienceController::class, 'storeExperience'])
+        ->name('admin.experience.store');
+    
+    Route::post('/admin/experience/{experience}/update', [AdminExperienceController::class, 'updateExperience'])
+        ->name('admin.experience.update');
+    
+    Route::post('/admin/experience/{experience}/toggle', [AdminExperienceController::class, 'toggleStatus'])
+        ->name('admin.experience.toggle');
+    
+    Route::delete('/admin/experience/{experience}', [AdminExperienceController::class, 'destroyExperience'])
+        ->name('admin.experience.destroy');
+
+    Route::post('/admin/experience/booking/store', [AdminExperienceController::class, 'storeBooking'])
+        ->name('admin.experience.booking.store');
+    
+    Route::post('/admin/experience/booking/{booking}/update', [AdminExperienceController::class, 'updateBooking'])
+        ->name('admin.experience.booking.update');
+    
+    Route::post('/admin/experience/booking/{booking}/checkin', [AdminExperienceController::class, 'checkIn'])
+        ->name('admin.experience.booking.checkin');
+    
+    Route::post('/admin/experience/verify-ticket', [AdminExperienceController::class, 'verifyTicket'])
+        ->name('admin.experience.verify');
 
     // SETTINGS
     Route::get('/Admin/Settings',

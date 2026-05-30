@@ -21,60 +21,43 @@
 
     {{-- Content Container --}}
     <section class="experience-container">
-        
+
         {{-- Filters --}}
         <div class="experience-filters">
-            <button class="filter-btn active">ALL</button>
-            <button class="filter-btn">WELLNESS</button>
-            <button class="filter-btn">CULTURAL</button>
-            <button class="filter-btn">NATURE</button>
+            <button class="filter-btn active" data-filter="all">ALL</button>
+            <button class="filter-btn" data-filter="Wellness">WELLNESS</button>
+            <button class="filter-btn" data-filter="Culture">CULTURAL</button>
+            <button class="filter-btn" data-filter="Nature">NATURE</button>
         </div>
 
         {{-- Grid --}}
         <div class="experience-grid">
-            
-            {{-- Card 1 --}}
-            <div class="experience-card">
+            @forelse($experiences as $exp)
+            <div class="experience-card" data-category="{{ $exp->category }}">
                 <div class="card-image-wrapper">
-                    <span class="card-tag">WELLNESS</span>
-                    <img src="{{ asset('images/experience/Traditional Jamu Ritual.png') }}" alt="Traditional Jamu Ritual" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800'">
+                    <span class="card-tag">{{ strtoupper($exp->category) }}</span>
+                    @if($exp->cover_image)
+                        <img src="{{ asset($exp->cover_image) }}" alt="{{ $exp->name }}" class="card-image">
+                    @else
+                        <img src="https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800" alt="{{ $exp->name }}" class="card-image">
+                    @endif
                 </div>
                 <div class="card-content">
-                    <div class="card-meta">IDR 250.000 / session</div>
-                    <h3 class="card-title">Traditional Jamu Ritual</h3>
-                    <p class="card-desc">Learn the art of crafting jamu from a choice of hand-picked medicinal herbs grown in AlaSare's organic garden for ancestral balance.</p>
+                    <div class="card-meta">IDR {{ number_format($exp->price, 0, ',', '.') }} / person</div>
+                    <h3 class="card-title">{{ $exp->name }}</h3>
+                    <p class="card-desc">
+                        @if($exp->inclusions && count($exp->inclusions) > 0)
+                            {{ implode(', ', $exp->inclusions) }}
+                        @else
+                            {{ $exp->name }} experience at AlaSare.
+                        @endif
+                    </p>
                     <a href="#" class="card-btn">Book Now</a>
                 </div>
             </div>
-
-            {{-- Card 2 --}}
-            <div class="experience-card">
-                <div class="card-image-wrapper">
-                    <span class="card-tag">CULTURAL</span>
-                    <img src="{{ asset('images/experience/Batik Canting Ritual.png') }}" alt="Batik Canting Ritual" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&q=80&w=800'">
-                </div>
-                <div class="card-content">
-                    <div class="card-meta">IDR 350.000 / person</div>
-                    <h3 class="card-title">Batik Canting Ritual</h3>
-                    <p class="card-desc">Beyond art, Batik is a meditation of patience. Pour your story onto cloth through the intricate technique of hand-drawn batik tulis, rich in philosophy.</p>
-                    <a href="#" class="card-btn">Book Now</a>
-                </div>
-            </div>
-
-            {{-- Card 3 --}}
-            <div class="experience-card">
-                <div class="card-image-wrapper">
-                    <span class="card-tag">NATURE</span>
-                    <img src="{{ asset('images/experience/Nurture the Earth - Tree Planting.png') }}" alt="Nurture the Earth" class="card-image" onerror="this.src='https://images.unsplash.com/photo-1611080911579-2cd1ab8b50e4?auto=format&fit=crop&q=80&w=800'">
-                </div>
-                <div class="card-content">
-                    <div class="card-meta">IDR 200.000 / PERSON</div>
-                    <h3 class="card-title">Nurture the Earth</h3>
-                    <p class="card-desc">Join our earthling journey. Plant a native tree sapling in the AlaSare forest, leaving a living legacy of growth and renewal for the Javanese soil.</p>
-                    <a href="/experience/booking-detail" class="card-btn">Book Now</a>
-                </div>
-            </div>
-
+            @empty
+            <p style="color:rgba(0,0,0,0.4);font-size:14px;">No experiences available at the moment.</p>
+            @endforelse
         </div>
 
         {{-- Discover More --}}
@@ -89,4 +72,21 @@
 <x-whatsapp_floating />
 
 </body>
+<script>
+document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+
+        const filter = this.dataset.filter;
+        document.querySelectorAll('.experience-card').forEach(card => {
+            if (filter === 'all' || card.dataset.category === filter) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
 </html>

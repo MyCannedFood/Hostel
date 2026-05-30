@@ -7,9 +7,6 @@
 
 {{-- ── Route ke sub-section ── --}}
 @if(!$sub)
-    {{-- ════════════════════
-         INDEX: Daftar sections
-    ════════════════════ --}}
     <div class="section-header">
         <h2 class="section-title" style="font-size:26px;">Landing Page Settings</h2>
     </div>
@@ -49,6 +46,12 @@
 
 @elseif($sub === 'map')
     @include('admin.settings.partials.LandingPage.LandingPagePartials.alasare-map')
+
+@elseif($sub === 'rooms')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.featured-rooms')
+
+@elseif($sub === 'articles')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.featured-articles')
 
 @elseif($sub === 'guest-stories')
     @include('admin.settings.partials.LandingPage.LandingPagePartials.guest-stories')
