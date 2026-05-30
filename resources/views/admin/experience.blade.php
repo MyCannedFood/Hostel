@@ -313,7 +313,7 @@
 
             <div class="exp-modal-footer">
                 <button class="exp-btn-cancel" onclick="closeExpModal()">Cancel</button>
-                <button class="exp-btn-primary">Add Experience</button>
+                <button class="exp-btn-primary-form">Add Experience</button>
             </div>
         </div>
     </div>
@@ -364,7 +364,7 @@
             </div>
 
             <div class="exp-modal-footer" style="flex-direction: column; gap: 8px;">
-                <button class="exp-btn-primary" style="width:100%; text-align:center; padding: 11px;" onclick="verifyScan()">Verify & Check In</button>
+                <button class="exp-btn-primary-form" style="width:100%; text-align:center; padding: 11px;" onclick="verifyScan()">Verify & Check In</button>
                 <button class="exp-btn-cancel" style="width:100%; text-align:center;" onclick="closeScanModal()">Cancel</button>
             </div>
         </div>
@@ -572,7 +572,7 @@
 
             <div class="exp-modal-footer">
                 <button class="exp-btn-cancel" onclick="closeEditGuestModal()">Cancel</button>
-                <button class="exp-btn-primary" onclick="saveGuestChanges()">Save Changes</button>
+                <button class="exp-btn-primary-form" onclick="saveGuestChanges()">Save Changes</button>
             </div>
         </div>
     </div>
@@ -707,7 +707,7 @@
 
             <div class="exp-modal-footer">
                 <button class="exp-btn-cancel" onclick="closeAddGuestModal()">Cancel</button>
-                <button class="exp-btn-primary" onclick="confirmBooking()">Confirm Booking</button>
+                <button class="exp-btn-primary-form" onclick="confirmBooking()">Confirm Booking</button>
             </div>
         </div>
     </div>
