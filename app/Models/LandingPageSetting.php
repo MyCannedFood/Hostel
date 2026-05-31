@@ -1,5 +1,4 @@
 <?php
-// FILE: app/Models/LandingPageSetting.php  (ganti seluruh isi)
 
 namespace App\Models;
 
@@ -29,7 +28,7 @@ class LandingPageSetting extends Model
             'body_2'      => 'This mindful 4:1 ratio ensures that our traditional Javanese structures do not dominate the landscape, but rather nestle within it, allowing the ancient rhythms of the jungle to remain undisturbed.',
             'features'    => [
                 [
-                    'icon_path'   => null,   // path in storage/app/public/landing/philosophy/icons/
+                    'icon_path'   => null,
                     'icon_label'  => 'Footprint',
                     'title'       => 'Minimal Footprint',
                     'description' => 'Elevated structures preserving the natural topography and soil integrity.',
@@ -41,19 +40,41 @@ class LandingPageSetting extends Model
                     'description' => 'Over 200 native species planted to restore the local ecosystem.',
                 ],
             ],
-            'side_image'  => null,   // path in storage/app/public/landing/philosophy/
+            'side_image'  => null,
             'badge_label' => 'Conservation',
             'badge_value' => '80% Forest Cover',
         ],
 
         'flora' => [
+            'eyebrow'     => 'Living Ecosystem',
             'title'       => 'The Flora Concept',
-            'description' => 'Our commitment to Indonesian biodiversity is reflected in every corner of AlaSare.',
-            'cards'       => [],
+            'description' => 'Every plant at AlaSare serves a purpose, from culinary delights to therapeutic aromas, creating a multi-sensory journey through Java.',
+            'cards'       => [
+                [
+                    'image_path'  => null,
+                    'eyebrow'     => 'Nourishment',
+                    'title'       => 'Edible Garden',
+                    'description' => 'Discover our collection of rare Nusantara vegetables and medicinal herbs, harvested daily for our kitchen.',
+                ],
+                [
+                    'image_path'  => null,
+                    'eyebrow'     => 'Aromatherapy',
+                    'title'       => 'The Scent of Java',
+                    'description' => 'Breathe in the calming essence of Melati (Jasmine) and Ylang-Ylang strategically planted to catch the evening breeze.',
+                ],
+                [
+                    'image_path'  => null,
+                    'eyebrow'     => 'Architecture',
+                    'title'       => 'Tropical Wilderness',
+                    'description' => 'Lush Brazilian ferns and native creepers designed to blur the boundaries between your room and the jungle.',
+                ],
+            ],
         ],
 
         'map' => [
-            'map_image'       => null,
+            'subtitle'        => 'Explore the Ground',
+            'title'           => 'AlaSare Map',
+            'map_image'       => null,  // storage/app/public/landing/map/xxx.jpg
             'updated_by_name' => null,
         ],
 

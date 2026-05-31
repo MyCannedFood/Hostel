@@ -1,13 +1,25 @@
-{{-- resources/views/admin/settings/partials/LandingPage/LandingPagePartials/alasare-map.blade.php --}}
-
 @php
-    // Fallback jika controller belum pass $mapSettings
     $mapSettings ??= null;
-    $mapData = $mapSettings?->data ?? [];
-    $mapImageUrl = !empty($mapData['map_image'])
-        ? asset('storage/' . $mapData['map_image'])
-        : asset('images/map/alasare-map.png');
+    $d = array_merge(
+        \App\Models\LandingPageSetting::DEFAULTS['map'],
+        $mapSettings?->data ?? []
+    );
+    $mapImageUrl = !empty($d['map_image'])
+        ? asset('storage/' . $d['map_image'])
+        : asset('map-alasare.png');
 @endphp
+
+{{-- ── Flash ── --}}
+@if(session('success'))
+    <div style="margin-bottom:16px;padding:12px 16px;background:#e6f4e6;border:1px solid #a3d4a3;border-radius:10px;color:#2e7d32;font-size:13px;font-weight:600;">
+        ✓ {{ session('success') }}
+    </div>
+@endif
+@if($errors->any())
+    <div style="margin-bottom:16px;padding:12px 16px;background:#fdecea;border:1px solid #f5a5a5;border-radius:10px;color:#c62828;font-size:13px;">
+        @foreach($errors->all() as $e)<div>• {{ $e }}</div>@endforeach
+    </div>
+@endif
 
 <a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="lp-back-link">
     ← Back to Landing Page Settings
@@ -15,17 +27,46 @@
 
 <h2 class="section-title" style="margin-bottom:24px;">Edit AlaSare Map</h2>
 
-<form method="POST" action="#" enctype="multipart/form-data" id="mapForm">
+<form method="POST"
+      action="{{ route('admin.landing.map.update') }}"
+      enctype="multipart/form-data"
+      id="mapForm">
     @csrf @method('PUT')
 
+    {{-- ── Section Labels ── --}}
+    <div class="lp-card" style="margin-bottom:16px;">
+        <p class="lp-card-label">Section Labels</p>
+
+        <div class="lp-field">
+            <label class="lp-field-label">Subtitle
+                <span style="font-weight:400;color:#b0b8b0;">(kecil di atas judul)</span>
+            </label>
+            <input type="text" class="lp-input" name="subtitle"
+                   value="{{ old('subtitle', $d['subtitle']) }}"
+                   maxlength="100" placeholder="e.g. Explore the Ground">
+        </div>
+
+        <div class="lp-field" style="margin-bottom:0;">
+            <label class="lp-field-label">Section Title</label>
+            <input type="text" class="lp-input lp-heading-input" name="title"
+                   value="{{ old('title', $d['title']) }}"
+                   maxlength="200" placeholder="e.g. AlaSare Map">
+        </div>
+    </div>
+
+    {{-- ── Map Image ── --}}
     <div class="lp-card">
         <p class="lp-card-label">Map Image (Landscape)</p>
 
-        <div class="lp-image-wrap landscape" id="mapImgWrap">
+        {{-- Preview --}}
+        <div class="lp-image-wrap landscape" id="mapImgWrap"
+             style="{{ empty($d['map_image']) ? '' : '' }}">
             <img src="{{ $mapImageUrl }}"
                  alt="AlaSare Map" id="mapImgPreview"
-                 style="height:280px; width:100%; object-fit:cover;">
+                 style="height:280px;width:100%;object-fit:cover;">
         </div>
+
+        <input type="hidden" name="remove_map_image" id="removeMapFlag" value="0">
 
         <div class="lp-image-controls" style="margin-top:14px;">
             <label class="lp-upload-btn">
@@ -35,10 +76,9 @@
                 </svg>
                 Upload New Map
                 <input type="file" name="map_image" accept="image/*"
-                       onchange="previewLpImage(this,'mapImgPreview')">
+                       onchange="previewMapImage(this)" style="display:none">
             </label>
-            <button type="button" class="lp-remove-btn"
-                    onclick="removeLpImage('mapImgPreview','mapImgWrap')">
+            <button type="button" class="lp-remove-btn" onclick="removeMapImage()">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
                 </svg>
@@ -73,8 +113,12 @@
         </svg>
         Last Updated:
         <span style="color:#5a6a58;">
-            {{ $mapSettings?->updated_at?->format('F j, Y') ?? 'October 12, 2023' }}
-            by {{ $mapSettings?->data['updated_by_name'] ?? 'Admin' }}
+            @if($mapSettings?->updated_at)
+                {{ $mapSettings->updated_at->format('F j, Y') }}
+                by {{ $d['updated_by_name'] ?? 'Admin' }}
+            @else
+                Belum pernah diupdate
+            @endif
         </span>
     </div>
     <div class="lp-status-bar-item">
@@ -82,3 +126,31 @@
         <span class="lp-live-text">Currently Published</span>
     </div>
 </div>
+
+<script>
+function previewMapImage(input) {
+    if (!input.files[0]) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+        const wrap = document.getElementById('mapImgWrap');
+        document.getElementById('mapImgPreview').src = e.target.result;
+        wrap.style.display = 'block';
+        document.getElementById('removeMapFlag').value = '0';
+    };
+    reader.readAsDataURL(input.files[0]);
+}
+
+function removeMapImage() {
+    if (!confirm('Hapus gambar map?')) return;
+    document.getElementById('mapImgWrap').style.display = 'none';
+    document.getElementById('removeMapFlag').value = '1';
+    document.querySelector('input[name="map_image"]').value = '';
+}
+
+// Drag & drop
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof initDropZone === 'function') {
+        initDropZone('mapImgWrap', 'mapImgWrap', file => {});
+    }
+});
+</script>

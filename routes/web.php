@@ -255,4 +255,12 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\LandingPageController::class, 'updatePhilosophy'])
         ->name('admin.landing.philosophy.update');
 
+    Route::put('/admin/landing/flora',                               // ← uncomment ini
+        [\App\Http\Controllers\LandingPageController::class, 'updateFlora'])
+        ->name('admin.landing.flora.update');
+
+    Route::put('/admin/landing/map',                                 // ← uncomment ini
+        [\App\Http\Controllers\LandingPageController::class, 'updateMap'])
+        ->name('admin.landing.map.update');
+
 });
