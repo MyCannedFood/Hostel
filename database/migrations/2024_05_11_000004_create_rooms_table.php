@@ -14,15 +14,17 @@ return new class extends Migration
         Schema::create('rooms', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->decimal('base_price', 15, 2);
-            $table->string('type');
+            $table->string('photo')->nullable();
+            $table->string('layout_photo')->nullable(); // Tambahan untuk foto denah
             $table->enum('gender_type', ['Male', 'Female', 'Mixed']);
-            $table->integer('floor')->default(1);
             $table->integer('capacity');
             $table->text('description')->nullable();
+            $table->text('attributes')->nullable(); // comma-separated
+            $table->text('main_facilities')->nullable(); // comma-separated
             $table->string('status')->default('Available');
             $table->boolean('is_active')->default(true);
-            $table->timestamps();
+            $table->timestamps(); // otomatis membuat created_at dan updated_at
+            $table->softDeletes(); // otomatis membuat deleted_at
         });
     }
 

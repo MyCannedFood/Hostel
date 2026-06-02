@@ -14,12 +14,14 @@ return new class extends Migration
         Schema::create('beds', function (Blueprint $table) {
             $table->id();
             $table->foreignId('room_id')->constrained('rooms')->onDelete('cascade');
-            $table->string('bed_code')->unique();
-            $table->enum('level', ['Lower', 'Upper']);
-            $table->string('position')->nullable();
-            $table->string('status')->default('Available');
+            $table->string('name')->unique(); 
+            $table->string('position')->nullable(); 
+            $table->string('status')->default('Available'); 
+            $table->decimal('base_price', 15, 2)->default(0); 
             $table->boolean('is_active')->default(true);
-            $table->timestamps();
+            
+            $table->timestamps(); // Otomatis membuat kolom created_at dan updated_at
+            $table->softDeletes(); // Otomatis membuat kolom deleted_at
         });
     }
 

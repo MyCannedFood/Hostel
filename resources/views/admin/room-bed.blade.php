@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Manage Rooms & Beds</title>
     @vite('resources/css/app.css')
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -182,6 +183,17 @@
             left: 16px;
             display: flex;
             gap: 8px;
+            max-width: calc(100% - 32px);
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(26, 61, 10, 0.5) transparent;
+            -ms-overflow-style: none;
+        }
+
+        .card-tags::-webkit-scrollbar {
+            display: none;
         }
 
         .tag {
@@ -191,6 +203,7 @@
             letter-spacing: 1px;
             border-radius: 2px;
             text-transform: uppercase;
+            flex: 0 0 auto;
         }
 
         .tag-dark { background: var(--dark-green); color: var(--white); }
@@ -379,6 +392,7 @@
             text-align: center !important; /* Memaksa khusus kolom ini ke tengah */
         }
 
+
         /* Merapikan posisi tombol edit & toggle di tengah */
         .actions {
             display: flex;
@@ -407,8 +421,11 @@
             background: var(--white);
             transform: translateX(16px);
         }
-
-        .toggle.off { 
+        .status-maintenance {
+            background: var(--orange);
+            color: var(--white);
+            border: 1px solid var(--orange);
+        }
 
         .room-modal {
             position: fixed;
@@ -786,147 +803,99 @@
             </div>
 
             <div class="cards-grid">
-                
-                <div class="card">
-                    <div class="card-image-wrapper">
-                        <img src="{{ asset('images/Background.png') }}" alt="Serene Haven">
-                        <div class="card-tags">
-                            <span class="tag tag-dark">MALE ONLY</span>
-                            <span class="tag tag-green">ACTIVE</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h2 class="card-title">Serene Haven</h2>
-                            <div class="bed-count">
-                                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 10V7A2 2 0 0 0 18 5H6A2 2 0 0 0 4 7V10A2 2 0 0 0 2 12V20H4V17H20V20H22V12A2 2 0 0 0 20 10ZM14 7H18V10H14V7ZM6 7H10V10H6V7ZM4 12H20V15H4V12Z"/></svg>
-                                8 Beds
-                            </div>
-                        </div>
-                        <p class="card-desc sans-serif">A functional and minimalist space designed for maximum...</p>
-                        
-                        <div class="amenities sans-serif">
-                            <div class="amenity-item">
-                                <svg viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.4 13.4 15 12 15C10.6 15 9.4 15.4 8.4 16.2L12 21ZM12 11C9.3 11 6.8 12.1 5 13.9L6.4 15.3C7.9 13.8 9.9 13 12 13C14.1 13 16.1 13.8 17.6 15.3L19 13.9C17.2 12.1 14.7 11 12 11ZM12 7C8.2 7 4.7 8.5 2.1 11L3.5 12.4C5.7 10.3 8.7 9 12 9C15.3 9 18.3 10.3 20.5 12.4L21.9 11C19.3 8.5 15.8 7 12 7ZM12 3C6.9 3 2.3 5 0 8.3L1.4 9.7C3.3 6.8 7.4 5 12 5C16.6 5 20.7 6.8 22.6 9.7L24 8.3C21.7 5 17.1 3 12 3Z"/></svg>
-                                WI-FI
-                            </div>
-                            <div class="amenity-item">
-                                    <img src="{{ asset('images/AC.svg') }}" alt="AC Icon" style="width: 20px; height: 20px;">
-                                    AC
+                @php
+                    $rooms = $rooms ?? collect();
+                @endphp
+
+                @if ($rooms->count())
+                    @foreach ($rooms as $room)
+                        @php
+                            $roomPhoto = $room->photo ? asset('storage/' . $room->photo) : asset('images/Background.png');
+                            $roomGender = $room->gender_type ?: 'Male';
+                            $genderLabel = $roomGender === 'Female' ? 'FEMALE ONLY' : ($roomGender === 'Mixed' ? 'MIXED' : 'MALE ONLY');
+                            $genderTagClass = $roomGender === 'Female' ? 'tag-orange' : ($roomGender === 'Mixed' ? 'tag-white' : 'tag-dark');
+                            $status = strtolower((string) $room->status);
+                            $statusLabel = $room->status ?: 'Active';
+                            $statusTagClass = $status === 'available' || $status === 'active' ? 'tag-green' : 'tag-white';
+                            $statusText = $status === 'available' || $status === 'active' ? 'ACTIVE' : strtoupper($statusLabel);
+                            $amenities = array_values(array_filter(array_map('trim', explode(',', (string) $room->main_facilities))));
+                            $attributes = array_values(array_filter(array_map('trim', explode(',', (string) $room->attributes))));
+                        @endphp
+
+                        <div class="card">
+                            <div class="card-image-wrapper">
+                                <img src="{{ $roomPhoto }}" alt="{{ $room->name }}">
+                                <div class="card-tags">
+                                    <span class="tag {{ $genderTagClass }}">{{ $genderLabel }}</span>
+                                    <span class="tag {{ $statusTagClass }}">{{ $statusText }}</span>
+                                    @foreach ($attributes as $attribute)
+                                        <span class="tag tag-white">{{ strtoupper($attribute) }}</span>
+                                    @endforeach
                                 </div>
-                            <div class="amenity-item">
-                                <svg viewBox="0 0 24 24"><path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8H9V6ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z"/></svg>
-                                LOKER
                             </div>
-                            <div class="amenity-item">
-                                    <img src="{{ asset('images/shower.svg') }}" alt="Shared Icon" style="width: 20px; height: 20px;">
-                                    SHARED
-                            </div>
-                        </div>
-                        <button class="btn btn-full">Edit Room Profile</button>
-                            <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal>
-                                <img src="{{ asset('images/peta.svg') }}" alt="Map" class="btn-icon">
-                                <span>Manage Floor Plans</span>
-                            </button>
-                    </div>
-                </div>
+                            <div class="card-content">
+                                <div class="card-header">
+                                    <h2 class="card-title">{{ $room->name }}</h2>
+                                    <div class="bed-count">
+                                        <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 10V7A2 2 0 0 0 18 5H6A2 2 0 0 0 4 7V10A2 2 0 0 0 2 12V20H4V17H20V20H22V12A2 2 0 0 0 20 10ZM14 7H18V10H14V7ZM6 7H10V10H6V7ZM4 12H20V15H4V12Z"/></svg>
+                                        {{ $room->capacity }} Beds
+                                    </div>
+                                </div>
+                                <p class="card-desc sans-serif">{{ \Illuminate\Support\Str::limit($room->description ?? 'No description provided.', 80) }}</p>
 
-                <div class="card">
-                    <div class="card-image-wrapper">
-                        <img src="{{ asset('images/rooms/room_2.png') }}" alt="Botanika">
-                        <div class="card-tags">
-                            <span class="tag tag-dark">MALE ONLY</span>
-                            <span class="tag tag-green">ACTIVE</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h2 class="card-title">Botanika</h2>
-                            <div class="bed-count">
-                                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 10V7A2 2 0 0 0 18 5H6A2 2 0 0 0 4 7V10A2 2 0 0 0 2 12V20H4V17H20V20H22V12A2 2 0 0 0 20 10ZM14 7H18V10H14V7ZM6 7H10V10H6V7ZM4 12H20V15H4V12Z"/></svg>
-                                6 Beds
-                            </div>
-                        </div>
-                        <p class="card-desc sans-serif">Tropical atmosphere with natural lighting and extra...</p>
-                        
-                        <div class="amenities sans-serif">
-                            <div class="amenity-item">
-                                <svg viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.4 13.4 15 12 15C10.6 15 9.4 15.4 8.4 16.2L12 21ZM12 11C9.3 11 6.8 12.1 5 13.9L6.4 15.3C7.9 13.8 9.9 13 12 13C14.1 13 16.1 13.8 17.6 15.3L19 13.9C17.2 12.1 14.7 11 12 11ZM12 7C8.2 7 4.7 8.5 2.1 11L3.5 12.4C5.7 10.3 8.7 9 12 9C15.3 9 18.3 10.3 20.5 12.4L21.9 11C19.3 8.5 15.8 7 12 7ZM12 3C6.9 3 2.3 5 0 8.3L1.4 9.7C3.3 6.8 7.4 5 12 5C16.6 5 20.7 6.8 22.6 9.7L24 8.3C21.7 5 17.1 3 12 3Z"/></svg>
-                                WI-FI
-                            </div>
-                            <div class="amenity-item">
-                                <img src="{{ asset('images/AC.svg') }}" alt="AC Icon" style="width: 20px; height: 20px;">
-                                AC
-                            </div>
-                            <div class="amenity-item">
-                                <svg viewBox="0 0 24 24"><path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8H9V6ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z"/></svg>
-                                LOKER
-                            </div>
-                            <div class="amenity-item">
-                                <img src="{{ asset('images/shower.svg') }}" alt="Shower Icon" style="width: 20px; height: 20px;">
-                                SHARED
-                            </div>
-                        </div>
-                        <button class="btn btn-full">Edit Room Profile</button>
-                                <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal>
+                                <div class="amenities sans-serif">
+                                    @if (count($amenities))
+                                        @foreach ($amenities as $amenity)
+                                            @php
+                                                $amenityKey = strtolower(trim($amenity));
+                                            @endphp
+                                            <div class="amenity-item">
+                                                @if ($amenityKey === 'wifi' || $amenityKey === 'wi-fi')
+                                                    <svg viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.4 13.4 15 12 15C10.6 15 9.4 15.4 8.4 16.2L12 21ZM12 11C9.3 11 6.8 12.1 5 13.9L6.4 15.3C7.9 13.8 9.9 13 12 13C14.1 13 16.1 13.8 17.6 15.3L19 13.9C17.2 12.1 14.7 11 12 11ZM12 7C8.2 7 4.7 8.5 2.1 11L3.5 12.4C5.7 10.3 8.7 9 12 9C15.3 9 18.3 10.3 20.5 12.4L21.9 11C19.3 8.5 15.8 7 12 7ZM12 3C6.9 3 2.3 5 0 8.3L1.4 9.7C3.3 6.8 7.4 5 12 5C16.6 5 20.7 6.8 22.6 9.7L24 8.3C21.7 5 17.1 3 12 3Z"/></svg>
+                                                @elseif ($amenityKey === 'ac')
+                                                    <img src="{{ asset('images/AC.svg') }}" alt="AC Icon" style="width: 20px; height: 20px;">
+                                                @elseif ($amenityKey === 'loker' || $amenityKey === 'locker' || $amenityKey === 'lockers')
+                                                    <svg viewBox="0 0 24 24"><path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8H9V6ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z"/></svg>
+                                                @elseif ($amenityKey === 'shared' || $amenityKey === 'shower' || $amenityKey === 'en-suite bath' || $amenityKey === 'ensuite bath' || $amenityKey === 'en suite bath')
+                                                    <img src="{{ asset('images/shower.svg') }}" alt="Shared Icon" style="width: 20px; height: 20px;">
+                                                @else
+                                                    <span>{{ strtoupper($amenity) }}</span>
+                                                @endif
+                                                <span>{{ strtoupper($amenity) }}</span>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="amenity-item">
+                                            <span>No facilities</span>
+                                        </div>
+                                    @endif
+                                </div>
+                                
+                                <button class="btn btn-full edit-room-btn" type="button" data-room-id="{{ $room->id }}">Edit Room Profile</button>
+                                <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal data-room-id="{{ $room->id }}">
                                     <img src="{{ asset('images/peta.svg') }}" alt="Map" class="btn-icon">
                                     <span>Manage Floor Plans</span>
                                 </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-image-wrapper">
-                        <img src="{{ asset('images/The Heritage Room.png') }}" alt="The Heritage">
-                        <div class="card-tags">
-                            <span class="tag tag-orange">FEMALE ONLY</span>
-                            <span class="tag tag-white">NOT ACTIVE</span>
-                        </div>
-                    </div>
-                    <div class="card-content">
-                        <div class="card-header">
-                            <h2 class="card-title">The Heritage</h2>
-                            <div class="bed-count">
-                                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20 10V7A2 2 0 0 0 18 5H6A2 2 0 0 0 4 7V10A2 2 0 0 0 2 12V20H4V17H20V20H22V12A2 2 0 0 0 20 10ZM14 7H18V10H14V7ZM6 7H10V10H6V7ZM4 12H20V15H4V12Z"/></svg>
-                                8 Beds
                             </div>
                         </div>
-                        <p class="card-desc sans-serif">Classic Javanese royal aesthetic for couples or friends.</p>
-                        
-                        <div class="amenities sans-serif">
-                            <div class="amenity-item">
-                                <svg viewBox="0 0 24 24"><path d="M12 21L15.6 16.2C14.6 15.4 13.4 15 12 15C10.6 15 9.4 15.4 8.4 16.2L12 21ZM12 11C9.3 11 6.8 12.1 5 13.9L6.4 15.3C7.9 13.8 9.9 13 12 13C14.1 13 16.1 13.8 17.6 15.3L19 13.9C17.2 12.1 14.7 11 12 11ZM12 7C8.2 7 4.7 8.5 2.1 11L3.5 12.4C5.7 10.3 8.7 9 12 9C15.3 9 18.3 10.3 20.5 12.4L21.9 11C19.3 8.5 15.8 7 12 7ZM12 3C6.9 3 2.3 5 0 8.3L1.4 9.7C3.3 6.8 7.4 5 12 5C16.6 5 20.7 6.8 22.6 9.7L24 8.3C21.7 5 17.1 3 12 3Z"/></svg>
-                                WI-FI
-                            </div>
-                            <div class="amenity-item">
-                                <img src="{{ asset('images/AC.svg') }}" alt="AC Icon" style="width: 20px; height: 20px;">
-                                AC
-                            </div>
-                            <div class="amenity-item">
-                                <svg viewBox="0 0 24 24"><path d="M18 8H17V6C17 3.24 14.76 1 12 1C9.24 1 7 3.24 7 6V8H6C4.9 8 4 8.9 4 10V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V10C20 8.9 19.1 8 18 8ZM9 6C9 4.34 10.34 3 12 3C13.66 3 15 4.34 15 6V8H9V6ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z"/></svg>
-                                LOKER
-                            </div>
-                            <div class="amenity-item">
-                                <img src="{{ asset('images/shower.svg') }}" alt="Shower Icon" style="width: 20px; height: 20px;">
-                                SHARED
-                            </div>
-                        </div>
-                        <button class="btn btn-full">Edit Room Profile</button>
-                                <button class="btn btn-full btn-outline-green btn-with-icon floor-plan-btn" type="button" data-open-floor-modal>
-                                    <img src="{{ asset('images/peta.svg') }}" alt="Map" class="btn-icon">
-                                    <span>Manage Floor Plans</span>
-                                </button>
+                    @endforeach
+                @else
+                    <div style="grid-column: 1 / -1; padding: 24px; border: 1px dashed var(--dark-green); border-radius: 8px; text-align: center; background: rgba(184, 217, 160, 0.15);">
+                        No rooms available. Please add a new room to get started.
                     </div>
-                </div>
-                
+                @endif
             </div>
 
             <div class="table-section">
                 <div class="table-header-bar">
                     <h2 class="table-header-title">Price & Status Bed Management</h2>
                     <div class="table-controls">
-                    <select class="dropdown">
-                        <option>Serene Haven - 8 Beds</option>
+                    <select id="bedRoomSelect" class="dropdown">
+                        @foreach ($rooms as $room)
+                            <option value="{{ $room->id }}" @selected((int) ($selectedRoomId ?? 0) === (int) $room->id)>
+                                {{ $room->name }} - {{ $room->capacity }} Beds
+                            </option>
+                        @endforeach
                     </select>
                     
                     <button id="openBedModal" class="btn sans-serif" type="button" style="height: 36px; padding: 0 16px; font-size: 14px; border: 1px solid var(--orange); box-sizing: border-box;">
@@ -950,89 +919,42 @@
         </tr>
     </thead>
     <tbody>
-        <tr>
-            <td>SH-1T</td>
-            <td>1 - Top Bed</td>
-            <td>
-                <div class="price-wrapper">
-                    <strong>IDR</strong> <span>117.500</span>
-                </div>
-            </td>
-            <td><span class="status-badge status-tersedia">TERSEDIA</span></td>
-            <td>
-                <div class="actions">
-                    <button class="icon-btn">
-                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z"/></svg>
-                    </button>
-                    <div class="toggle on">
-                        <div class="knob"></div>
+        @forelse ($selectedRoom?->beds ?? collect() as $bed)
+            @php
+                $bedStatus = strtolower((string) $bed->status);
+                // Cek jika statusnya occupied, maintenance, atau maintance, gunakan class status-maintenance
+                $bedStatusClass = ($bedStatus === 'occupied' || $bedStatus === 'maintenance' || $bedStatus === 'maintance') 
+                    ? 'status-maintenance' 
+                    : 'status-tersedia';
+                $bedStatusLabel = strtoupper($bed->status ?: 'Available');
+            @endphp
+            <tr>
+                <td>{{ $bed->name }}</td>
+                <td>{{ $bed->position }}</td>
+                <td>
+                    <div class="price-wrapper">
+                        <strong>IDR</strong> <span>{{ number_format((float) $bed->base_price, 0, ',', '.') }}</span>
                     </div>
-                </div>
-            </td>
-        </tr>
-        
-        <tr>
-            <td>SH-1B</td>
-            <td>1 - Bottom Bed</td>
-            <td>
-                <div class="price-wrapper">
-                    <strong>IDR</strong> <span>125.000</span>
-                </div>
-            </td>
-            <td><span class="status-badge status-tersedia">TERSEDIA</span></td>
-            <td>
-                <div class="actions">
-                    <button class="icon-btn">
-                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z"/></svg>
-                    </button>
-                    <div class="toggle on">
-                        <div class="knob"></div>
+                </td>
+                <td><span class="status-badge {{ $bedStatusClass }}">{{ $bedStatusLabel }}</span></td>
+                <td>
+                    <div class="actions">
+                        <button class="icon-btn" type="button" data-bed-edit-id="{{ $bed->id }}" aria-label="Edit bed">
+                            <svg viewBox="0 0 24 24"><path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z"/></svg>
+                        </button>
+                        <button class="icon-btn" type="button" data-bed-delete-id="{{ $bed->id }}" aria-label="Delete bed">
+                            <img src="{{ asset('images/delete.svg') }}" alt="Delete bed" style="width:18px;height:18px;display:block;">
+                        </button>
                     </div>
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td>SH-2B</td>
-            <td>2- Bottom Bed</td>
-            <td>
-                <div class="price-wrapper">
-                    <strong>IDR</strong> <span>125.000</span>
-                </div>
-            </td>
-            <td><span class="status-badge status-maintenance">MAINTENANCE</span></td>
-            <td>
-                <div class="actions">
-                    <button class="icon-btn">
-                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z"/></svg>
-                    </button>
-                    <div class="toggle off">
-                        <div class="knob"></div>
-                    </div>
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td>SH-2T</td>
-            <td>2 - Top Bed</td>
-            <td>
-                <div class="price-wrapper">
-                    <strong>IDR</strong> <span>117.500</span>
-                </div>
-            </td>
-            <td><span class="status-badge status-tersedia">TERSEDIA</span></td>
-            <td>
-                <div class="actions">
-                    <button class="icon-btn">
-                        <svg viewBox="0 0 24 24"><path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z"/></svg>
-                    </button>
-                    <div class="toggle on">
-                        <div class="knob"></div>
-                    </div>
-                </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td colspan="5" style="text-align:center; padding: 24px; color: var(--dark-green);">
+                    No beds found for this room.
+                </td>
+            </tr>
+        @endforelse
     </tbody>
 </table>
             </div>
@@ -1040,152 +962,214 @@
         </div>
     </div>
 
-    <!-- modal will be fetched dynamically as a second-layer popup -->
-
     <script>
-    (function(){
-        function closeInjectedModal() {
-            const c = document.getElementById('addNewRoomContainer');
-            const b = document.getElementById('addNewBedContainer');
-            if (c) c.remove();
-            if (b) b.remove();
-            document.body.classList.remove('modal-open');
-        }
-
-        async function openAddNewRoom() {
-            try {
-                const res = await fetch('/admin/add-new-room-popup', { credentials: 'same-origin' });
-                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-                const html = await res.text();
-
-                // Remove existing container if present
-                const existing = document.getElementById('addNewRoomContainer');
-                if (existing) existing.remove();
-
-                const container = document.createElement('div');
-                container.id = 'addNewRoomContainer';
-                container.innerHTML = html;
-                document.body.appendChild(container);
-
-                const modal = document.getElementById('roomModal');
-                if (modal) {
-                    modal.hidden = false;
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('modal-open');
-                }
-
-                // wire up close buttons inside loaded markup
-                const closeButtons = document.querySelectorAll('[data-room-modal-close]');
-                closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
-
-                // click outside to close
-                const overlay = document.getElementById('roomModal');
-                if (overlay) {
-                    overlay.addEventListener('click', function (e) {
-                        if (e.target === overlay) {
-                            closeInjectedModal();
-                        }
-                    });
-                }
-
-            } catch (err) {
-                console.error('openAddNewRoom error', err);
-            }
-        }
-
-        async function openAddNewBed() {
-            try {
-                const res = await fetch('/admin/add-new-bed-popup', { credentials: 'same-origin' });
-                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-                const html = await res.text();
-
-                const existing = document.getElementById('addNewBedContainer');
-                if (existing) existing.remove();
-
-                const container = document.createElement('div');
-                container.id = 'addNewBedContainer';
-                container.innerHTML = html;
-                document.body.appendChild(container);
-
-                const modal = document.getElementById('bedModal');
-                if (modal) {
-                    modal.hidden = false;
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('modal-open');
-                }
-
-                const closeButtons = document.querySelectorAll('[data-bed-modal-close]');
-                closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
-
-                const overlay = document.getElementById('bedModal');
-                if (overlay) {
-                    overlay.addEventListener('click', function (e) {
-                        if (e.target === overlay) {
-                            closeInjectedModal();
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error('openAddNewBed error', err);
-            }
-        }
-
-        async function openAddNewFloor() {
-            try {
-                const res = await fetch('/admin/add-new-floor-popup', { credentials: 'same-origin' });
-                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
-                const html = await res.text();
-
-                const existing = document.getElementById('addNewFloorContainer');
-                if (existing) existing.remove();
-
-                const container = document.createElement('div');
-                container.id = 'addNewFloorContainer';
-                container.innerHTML = html;
-                document.body.appendChild(container);
-
-                const modal = document.getElementById('floorModal');
-                if (modal) {
-                    modal.hidden = false;
-                    modal.classList.add('is-open');
-                    modal.setAttribute('aria-hidden', 'false');
-                    document.body.classList.add('modal-open');
-                }
-
-                const closeButtons = document.querySelectorAll('[data-floor-modal-close]');
-                closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
-
-                const overlay = document.getElementById('floorModal');
-                if (overlay) {
-                    overlay.addEventListener('click', function (e) {
-                        if (e.target === overlay) {
-                            closeInjectedModal();
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error('openAddNewFloor error', err);
-            }
-        }
-
-        // expose and attach to button
-        window.openAddNewRoom = openAddNewRoom;
-        window.openAddNewBed = openAddNewBed;
-        window.openAddNewFloor = openAddNewFloor;
-        const openBtn = document.getElementById('openRoomModal');
-        if (openBtn) openBtn.addEventListener('click', openAddNewRoom);
-
-        const openBedBtn = document.getElementById('openBedModal');
-        if (openBedBtn) openBedBtn.addEventListener('click', openAddNewBed);
-
-        document.querySelectorAll('[data-open-floor-modal]').forEach(btn => {
-            btn.addEventListener('click', openAddNewFloor);
+(function(){
+    // Fungsi untuk menutup semua tipe modal
+    function closeInjectedModal() {
+        ['addNewRoomContainer', 'editNewRoomContainer', 'addNewBedContainer', 'addNewFloorContainer'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
         });
-    })();
-    </script>
+        document.body.classList.remove('modal-open');
+    }
+
+    // FUNGSI INTI (DRY - Don't Repeat Yourself)
+    // Menangani semua fetch AJAX dan eksekusi ulang script di dalam modal
+    async function fetchAndInjectModal(url, containerId, modalId) {
+        try {
+            const res = await fetch(url, { credentials: 'same-origin' });
+            if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+            const html = await res.text();
+
+            // Hapus container lama jika ada
+            const existing = document.getElementById(containerId);
+            if (existing) existing.remove();
+
+            // Buat container baru
+            const container = document.createElement('div');
+            container.id = containerId;
+            container.innerHTML = html;
+            document.body.appendChild(container);
+
+            // Eksekusi ulang tag <script> yang terbawa dari file blade modal
+            const scripts = container.querySelectorAll('script');
+            scripts.forEach(oldScript => {
+                const newScript = document.createElement('script');
+                newScript.textContent = oldScript.textContent;
+                newScript.async = false;
+                oldScript.parentNode.replaceChild(newScript, oldScript);
+            });
+
+            // Tampilkan modalnya
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.hidden = false;
+                modal.classList.add('is-open');
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            }
+
+            // Pasang fungsi close ke tombol 'X' atau 'Cancel'
+            const closeSelector = `[data-${modalId.replace('Modal', '')}-modal-close], .floor-modal__close`;
+            document.querySelectorAll(closeSelector).forEach(btn => {
+                btn.addEventListener('click', closeInjectedModal);
+            });
+
+            // Klik overlay hitam untuk close
+            if (modal) {
+                modal.addEventListener('click', function (e) {
+                    if (e.target === modal) closeInjectedModal();
+                });
+            }
+        } catch (err) {
+            console.error(`Error loading modal from ${url}:`, err);
+        }
+    }
+
+    // BUNGKUSAN FUNGSI PEMANGGIL
+    window.openAddNewRoom = () => fetchAndInjectModal('/admin/add-new-room-popup', 'addNewRoomContainer', 'roomModal');
+    
+    window.openEditRoom = (roomId) => fetchAndInjectModal(`/admin/rooms/${roomId}/edit-popup`, 'editNewRoomContainer', 'roomModal');
+    
+    // Perbaikan: Bawa roomId ke modal map
+    window.openAddNewFloor = (roomId) => {
+        const url = roomId ? `/admin/add-new-floor-popup?room_id=${roomId}` : '/admin/add-new-floor-popup';
+        fetchAndInjectModal(url, 'addNewFloorContainer', 'floorModal');
+    };
+
+    window.openAddNewBed = () => {
+        const roomSelect = document.getElementById('bedRoomSelect');
+        const roomId = roomSelect ? roomSelect.value : '';
+        const url = roomId ? `/admin/add-new-bed-popup?room_id=${encodeURIComponent(roomId)}` : '/admin/add-new-bed-popup';
+        fetchAndInjectModal(url, 'addNewBedContainer', 'bedModal');
+    };
+
+    window.openEditBed = (bedId) => {
+        const roomSelect = document.getElementById('bedRoomSelect');
+        const roomId = roomSelect ? roomSelect.value : '';
+        const url = roomId
+            ? `/admin/beds/${bedId}/edit-popup?room_id=${encodeURIComponent(roomId)}`
+            : `/admin/beds/${bedId}/edit-popup`;
+        fetchAndInjectModal(url, 'editNewBedContainer', 'bedModal');
+    };
+
+    // TRIGGER TOMBOL DI HALAMAN UTAMA
+    document.getElementById('openRoomModal')?.addEventListener('click', window.openAddNewRoom);
+    document.getElementById('openBedModal')?.addEventListener('click', window.openAddNewBed);
+
+    document.querySelectorAll('.edit-room-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const roomId = this.getAttribute('data-room-id');
+            if (roomId) window.openEditRoom(roomId);
+        });
+    });
+
+    document.querySelectorAll('[data-open-floor-modal]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const roomId = this.getAttribute('data-room-id');
+            window.openAddNewFloor(roomId);
+        });
+    });
+
+    document.querySelectorAll('[data-bed-edit-id]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const bedId = this.getAttribute('data-bed-edit-id');
+            if (bedId) window.openEditBed(bedId);
+        });
+    });
+
+    // TRIGGER DROPDOWN SELECT ROOM
+    const bedRoomSelect = document.getElementById('bedRoomSelect');
+    if (bedRoomSelect) {
+        bedRoomSelect.addEventListener('change', function () {
+            const url = new URL(window.location.href);
+            url.searchParams.set('room_id', this.value);
+            window.location.href = url.toString();
+        });
+    }
+
+    // CSRF TOKEN SETUP
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+    // AJAX DELETE BED
+    document.querySelectorAll('[data-bed-delete-id]').forEach(btn => {
+        btn.addEventListener('click', async function () {
+            const bedId = this.getAttribute('data-bed-delete-id');
+            if (!bedId || !window.confirm('Hapus bed ini?')) return;
+
+            const fd = new FormData();
+            fd.append('_method', 'DELETE');
+            if (csrfToken) fd.append('_token', csrfToken);
+
+            try {
+                const response = await fetch(`/admin/beds/${bedId}`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: fd,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        ...(csrfToken && {'X-CSRF-TOKEN': csrfToken})
+                    },
+                });
+
+                const rawText = await response.text();
+                let json = {};
+
+                try {
+                    json = rawText ? JSON.parse(rawText) : {};
+                } catch (parseError) {
+                    json = { message: rawText || 'Gagal menghapus bed' };
+                }
+
+                if (response.ok && json.success) {
+                    window.location.reload();
+                } else {
+                    alert(json.message || 'Gagal menghapus bed');
+                }
+            } catch (err) {
+                console.error('Delete bed error', err);
+                alert('Delete bed failed: ' + err.message);
+            }
+        });
+    });
+
+    // EVENT DELEGATION UNTUK SUBMIT FORM (Solusi agar form AJAX tetap terbaca)
+    document.addEventListener('submit', async function(e) {
+        // Cek kalau form yang di-submit punya ID 'addRoomForm' (Sesuaikan kalau ID form bed beda)
+        if (e.target && e.target.id === 'addRoomForm') {
+            e.preventDefault();
+            const form = e.target;
+            const fd = new FormData(form);
+            
+            try {
+                const res = await fetch('/admin/rooms', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: fd
+                });
+                
+                const json = await res.json();
+                if (json.success) {
+                    closeInjectedModal();
+                    window.location.reload();
+                } else {
+                    alert('Gagal: ' + (json.message || 'Silakan cek kembali inputan Anda.'));
+                }
+            } catch (err) {
+                console.error('Submit form error:', err);
+                alert('Terjadi kesalahan pada server.');
+            }
+        }
+    });
+
+    window.closeInjectedModal = closeInjectedModal;
+})();
+</script>
 </body>
-
 </html>
-

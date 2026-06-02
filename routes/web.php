@@ -6,6 +6,9 @@ use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\Admin\BookingController;
+use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\BedController;
 
 /*
 |--------------------------------------------------------------------------
@@ -77,35 +80,80 @@ Route::middleware(['is_admin'])->group(function () {
         ->name('admin.manage_revenue');
 
     Route::get('/Admin/Rooms-Management', function () {
-        return view('admin.room-bed');
+        $selectedRoomId = (int) request('room_id', 0);
+        $rooms = \App\Models\Room::with('beds')->latest()->get();
+
+        if (!$selectedRoomId) {
+            $selectedRoomId = (int) $rooms->first()?->id;
+        }
+
+        $selectedRoom = $rooms->firstWhere('id', $selectedRoomId) ?? $rooms->first();
+
+        return view('admin.room-bed', compact('rooms', 'selectedRoom', 'selectedRoomId'));
     })->name('admin.rooms');
 
     // Add new room popup (returns only modal markup)
     Route::get('/admin/add-new-room-popup', function () {
         return view('admin.add-new-room-full');
     })->name('admin.add_new_room_popup');
+    
+    Route::get('add-new-room-popup',[RoomController::class,'addNewRoomPopup']);
+    Route::post('rooms',[RoomController::class,'store']);
+    Route::get('/admin/rooms/{room}/edit-popup', [RoomController::class, 'editRoomPopup'])->name('admin.rooms.edit_popup');
+    Route::put('rooms/{room}', [RoomController::class, 'update'])->name('admin.rooms.update');
+    Route::delete('rooms/{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
+   
 
     // Add new bed popup (returns only modal markup)
-    Route::get('/admin/add-new-bed-popup', function () {
-        return view('admin.add-new-bed');
-    })->name('admin.add_new_bed_popup');
+    Route::get('/admin/add-new-bed-popup', [BedController::class, 'addNewBedPopup'])
+        ->name('admin.add_new_bed_popup');
 
-    // Add new floor popup (returns only modal markup)
-    Route::get('/admin/add-new-floor-popup', function () {
-        return view('admin.add-new-floor');
+    Route::get('/admin/beds/{bed}/edit-popup', [BedController::class, 'editBedPopup'])
+        ->name('admin.beds.edit_popup');
+    
+    Route::get('/admin/add-new-floor-popup', function (\Illuminate\Http\Request $request) {
+        // Cari kamar berdasarkan room_id yang dikirim dari tombol
+        $selectedRoom = \App\Models\Room::with(['beds.bedPin', 'bedPins.bed'])->find($request->query('room_id'));
+        return view('admin.add-new-floor', compact('selectedRoom'));
     })->name('admin.add_new_floor_popup');
 
-    Route::get('/Admin/Manage-Bookings', function () {
-        return view('admin.booking');
-    })->name('admin.bookings');
-    
-    Route::get('/admin/booking', function () {
-        return view('admin.booking');
-    })->name('admin.booking');
+    Route::prefix('admin')->group(function () {
+        // Ini akan jadi: /admin/rooms/{id}/upload-layout
+        Route::post('rooms/{id}/upload-layout', [RoomController::class, 'uploadLayout'])->name('rooms.upload_layout');
 
-    Route::get('/admin/booking/create', function () {
-        return view('admin.new-reservation');
-    })->name('admin.booking.create');
+        Route::post('rooms/{room}/bed-pins/sync', [\App\Http\Controllers\Admin\BedPinController::class, 'syncRoomPins'])
+            ->name('rooms.bed_pins.sync');
+        
+        // Ini akan jadi: /admin/bed-pins
+        Route::apiResource('bed-pins', \App\Http\Controllers\Admin\BedPinController::class)->only(['store', 'update', 'destroy']);
+        
+        // Ini akan jadi: /admin/beds
+        Route::apiResource('beds', BedController::class)->except(['index', 'show']);
+    });
+
+    Route::get('/Admin/Manage-Bookings', [BookingController::class, 'index'])
+        ->name('admin.bookings');
+    
+    Route::get('/admin/booking', [BookingController::class, 'index'])
+        ->name('admin.booking');
+
+    Route::get('/admin/booking/create', [BookingController::class, 'create'])
+        ->name('admin.booking.create');
+
+    Route::get('/admin/booking/{booking}/edit-popup', [BookingController::class, 'edit'])
+        ->name('admin.booking.edit_popup');
+
+    Route::post('/admin/booking', [BookingController::class, 'store'])
+        ->name('admin.booking.store');
+
+    Route::put('/admin/booking/{booking}', [BookingController::class, 'update'])
+        ->name('admin.booking.update');
+
+    Route::delete('/admin/booking/{booking}', [BookingController::class, 'destroy'])
+        ->name('admin.booking.destroy');
+
+    Route::patch('/admin/booking/{id}/status', [BookingController::class, 'updateStatus'])
+        ->name('admin.booking.update_status');
 
     // ARTICLE MANAGEMENT
     Route::get('/admin/management-article', [AdminArticleController::class, 'index'])

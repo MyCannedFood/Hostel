@@ -50,8 +50,9 @@
             flex-direction: column;
             background-color: var(--light-bg);
             overflow-y: auto;
-            margin-left: 260px;
-            width: calc(100% - 260px);
+            /* Use responsive offset matching the fixed sidebar */
+            margin-left: max(18%, 250px);
+            width: calc(100% - max(18%, 250px));
             position: relative;
             z-index: 1;
         }
@@ -408,7 +409,7 @@
                         <i class="fa-solid fa-user-plus stat-icon"></i> DAILY ARRIVALS
                     </div>
                     <div class="stat-body">
-                        <span class="stat-number">12</span> <span class="stat-label">guests</span>
+                        <span class="stat-number">{{ $dailyArrivals ?? 0 }}</span> <span class="stat-label">guests</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -416,7 +417,7 @@
                         <i class="fa-solid fa-wallet stat-icon orange"></i> PENDING PAYMENTS
                     </div>
                     <div class="stat-body">
-                        <span class="stat-number orange">3</span> <span class="stat-label">bookings</span>
+                        <span class="stat-number orange">{{ $pendingPayments ?? 0 }}</span> <span class="stat-label">bookings</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -424,7 +425,7 @@
                         <i class="fa-solid fa-arrow-right-from-bracket stat-icon"></i> CHECK-OUT TODAY
                     </div>
                     <div class="stat-body">
-                        <span class="stat-number">8</span> <span class="stat-label">guests</span>
+                        <span class="stat-number">{{ $checkoutToday ?? 0 }}</span> <span class="stat-label">guests</span>
                     </div>
                 </div>
                 <div class="stat-card">
@@ -432,26 +433,34 @@
                         <i class="fa-solid fa-arrow-right-to-bracket stat-icon"></i> CHECK-IN TODAY
                     </div>
                     <div class="stat-body">
-                        <span class="stat-number">12</span> <span class="stat-label">guests</span>
+                        <span class="stat-number">{{ $checkinToday ?? 0 }}</span> <span class="stat-label">guests</span>
                     </div>
                 </div>
             </div>
 
-            <div class="filters">
+            <form class="filters" method="GET" action="{{ route('admin.booking') }}">
                 <div class="search-box">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Search Booking ID, Guest, or Contact...">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Booking ID, Guest, or Contact...">
                 </div>
-                <select class="filter-select">
-                    <option>All Room Types</option>
+                <select class="filter-select" name="room_id">
+                    <option value="">All Room Types</option>
+                    @foreach(($rooms ?? []) as $room)
+                        <option value="{{ $room->id }}" @selected((string) request('room_id') === (string) $room->id)>{{ $room->name }}</option>
+                    @endforeach
                 </select>
-                <select class="filter-select">
-                    <option>All Statuses</option>
+                <select class="filter-select" name="status">
+                    <option value="all" @selected(request('status', 'all') === 'all')>All Statuses</option>
+                    <option value="PENDING" @selected(request('status') === 'PENDING')>Pending</option>
+                    <option value="CONFIRMED" @selected(request('status') === 'CONFIRMED')>Confirmed</option>
+                    <option value="CANCELLED" @selected(request('status') === 'CANCELLED')>Cancelled</option>
+                    <option value="COMPLETED" @selected(request('status') === 'COMPLETED')>Completed</option>
                 </select>
-                <select class="filter-select">
-                    <option>Date Range</option>
-                </select>
-            </div>
+                <input class="filter-select" type="date" name="date_from" value="{{ request('date_from') }}" aria-label="Date from">
+                <input class="filter-select" type="date" name="date_to" value="{{ request('date_to') }}" aria-label="Date to">
+                <button class="btn-add" type="submit" style="padding: 12px 18px;">Apply</button>
+                <a class="btn-add" href="{{ route('admin.booking') }}" style="padding: 12px 18px; text-decoration: none; display: inline-flex; align-items: center;">Reset</a>
+            </form>
 
             <div class="table-container">
                 <table>
@@ -462,104 +471,67 @@
                             <th>Room & Bed</th>
                             <th>Dates & Stay</th>
                             <th>Payment</th>
-                            <th>Status</th>
+                            <th>Payment Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="booking-id">#BK-2025-<br>1042</td>
-                            <td>
-                                <div class="guest-name">Julian</div>
-                                <div class="text-muted">+62 812-9876-xxxx</div>
-                            </td>
-                            <td>
-                                <div class="room-name">Serene Haven</div>
-                                <div class="text-sub">SH-B1 | Bottom Bed</div>
-                            </td>
-                            <td>
-                                <div>11 May - 30<br>May 2025</div>
-                                <div class="text-sub">19 Nights</div>
-                            </td>
-                            <td>
-                                <div>IDR 643,500</div>
-                                <div class="text-sub">QRIS / E-Wallet</div>
-                            </td>
-                            <td><span class="badge confirmed">CONFIRMED</span></td>
-                            <td>
-                                <div class="actions">
-                                    <button class="action-btn"><i class="fa-solid fa-check"></i></button>
-                                    <button class="action-btn"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="action-btn"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="booking-id">#BK-2025-<br>1043</td>
-                            <td>
-                                <div class="guest-name">Aditya Pratama</div>
-                                <div class="text-muted">aditya.p@email.com</div>
-                            </td>
-                            <td>
-                                <div class="room-name">Botanika</div>
-                                <div class="text-sub">BT-T1 | Top Bed</div>
-                            </td>
-                            <td>
-                                <div>12 May - 15<br>May 2025</div>
-                                <div class="text-sub">3 Nights</div>
-                            </td>
-                            <td>
-                                <div>IDR 120,000</div>
-                                <div class="text-sub">Bank Transfer</div>
-                            </td>
-                            <td><span class="badge pending">PENDING</span></td>
-                            <td>
-                                <div class="actions">
-                                    <button class="action-btn"><i class="fa-solid fa-check"></i></button>
-                                    <button class="action-btn"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="action-btn"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="booking-id cancelled-text">#BK-2025-<br>1040</td>
-                            <td style="opacity: 0.6;">
-                                <div class="guest-name">Siti Aminah</div>
-                                <div class="text-muted">+62 813-1122-xxxx</div>
-                            </td>
-                            <td style="opacity: 0.6;">
-                                <div class="room-name">Lotus Dorm</div>
-                                <div class="text-muted">-</div>
-                            </td>
-                            <td style="opacity: 0.6;">
-                                <div>05 May - 07<br>May 2025</div>
-                                <div class="text-muted">2 Nights</div>
-                            </td>
-                            <td style="opacity: 0.6;">
-                                <div>IDR 85,000</div>
-                                <div class="text-muted">Refunded</div>
-                            </td>
-                            <td><span class="badge cancelled">CANCELLED</span></td>
-                            <td>
-                                <div class="actions">
-                                   <button class="action-btn"><i class="fa-solid fa-check"></i></button>
-                                    <button class="action-btn"><i class="fa-solid fa-pen"></i></button>
-                                    <button class="action-btn"><i class="fa-solid fa-xmark"></i></button>
-                                </div>
-                            </td>
-                        </tr>
+                        @forelse (($bookings ?? collect()) as $booking)
+                            @php
+                                $status = strtoupper((string) $booking->status);
+                                $statusClass = match ($status) {
+                                    'PENDING' => 'pending',
+                                    'CANCELLED' => 'cancelled',
+                                    default => 'confirmed',
+                                };
+                                $guest = $booking->guest;
+                                $room = $booking->room;
+                                $bed = $booking->bed;
+                            @endphp
+                            <tr>
+                                @php $bookingId = $booking->id; @endphp
+                                <td class="booking-id">#{{ $booking->booking_code }}</td>
+                                <td>
+                                    <div class="guest-name">{{ trim(($guest?->first_name ?? '') . ' ' . ($guest?->last_name ?? '')) ?: 'Guest' }}</div>
+                                    <div class="text-muted">{{ $guest?->phone ?: $guest?->email ?: '-' }}</div>
+                                </td>
+                                <td>
+                                    <div class="room-name">{{ $room?->name ?? '-' }}</div>
+                                    <div class="text-sub">{{ $bed?->name ?? '-' }}{{ $bed?->position ? ' | ' . $bed->position : '' }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ optional($booking->check_in_date)->format('d M Y') }} - {{ optional($booking->check_out_date)->format('d M Y') }}</div>
+                                    <div class="text-sub">{{ $booking->total_nights }} Nights</div>
+                                </td>
+                                <td>
+                                    <div>IDR {{ number_format((float) $booking->total_price, 0, ',', '.') }}</div>
+                                    <div class="text-sub">{{ $booking->payment_method ?: '-' }}</div>
+                                </td>
+                                <td><span class="badge {{ $statusClass }}">{{ $status }}</span></td>
+                                <td>
+                                    <div class="actions">
+                                        <button class="action-btn" type="button" title="Confirm" aria-label="Confirm booking" data-booking-status-action="CONFIRMED" data-booking-id="{{ $bookingId }}"><i class="fa-solid fa-check"></i></button>
+                                        <button class="action-btn" type="button" title="Edit" aria-label="Edit booking" data-booking-edit-action data-booking-edit-url="{{ route('admin.booking.edit_popup', $bookingId) }}"><i class="fa-solid fa-pen"></i></button>
+                                        <button class="action-btn" type="button" title="Cancel" aria-label="Cancel booking" data-booking-status-action="CANCELLED" data-booking-id="{{ $bookingId }}"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" style="padding: 24px; text-align: center; color: var(--text-muted);">
+                                    No bookings found.
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
                 
                 <div class="pagination">
-                    <div class="page-info">Showing 1 to 3 of 42 entries</div>
+                    <div class="page-info">
+                        Showing {{ $bookings->firstItem() ?? 0 }} to {{ $bookings->lastItem() ?? 0 }} of {{ $bookings->total() ?? 0 }} entries
+                    </div>
                     <div class="page-numbers">
-                        <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button class="page-btn active">1</button>
-                        <button class="page-btn">2</button>
-                        <button class="page-btn">3</button>
-                        <button class="page-btn">...</button>
-                        <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
+                        {{ $bookings->links() }}
                     </div>
                 </div>
             </div>
@@ -569,7 +541,7 @@
     </div>
 
     <div class="reservation-modal" id="reservationModal" hidden aria-hidden="true">
-        <iframe class="reservation-modal__frame" src="{{ route('admin.booking.create') }}" title="New Reservation Form"></iframe>
+        <iframe class="reservation-modal__frame" id="reservationFrame" src="{{ route('admin.booking.create') }}" title="New Reservation Form"></iframe>
     </div>
 
 
@@ -577,6 +549,10 @@
     <script>
         const openReservationModal = document.getElementById('openReservationModal');
         const reservationModal = document.getElementById('reservationModal');
+        const reservationFrame = document.getElementById('reservationFrame');
+        const bookingStatusButtons = document.querySelectorAll('[data-booking-status-action]');
+        const bookingEditButtons = document.querySelectorAll('[data-booking-edit-action]');
+        const csrfToken = @json(csrf_token());
 
         function setReservationModalOpen(isOpen) {
             if (!reservationModal) {
@@ -590,6 +566,10 @@
 
         if (openReservationModal && reservationModal) {
             openReservationModal.addEventListener('click', function () {
+                if (reservationFrame) {
+                    reservationFrame.src = @json(route('admin.booking.create'));
+                    reservationFrame.title = 'New Reservation Form';
+                }
                 setReservationModalOpen(true);
             });
 
@@ -611,10 +591,87 @@
                 }
 
                 if (event.data && event.data.type === 'close-reservation-modal') {
+                    // Close the modal first
                     setReservationModalOpen(false);
+
+                    // If iframe provided a message, show it then reload parent so table updates
+                    if (event.data.success && event.data.message) {
+                        try {
+                            alert(event.data.message);
+                        } catch (e) {
+                            // ignore
+                        }
+                        // reload to refresh bookings list
+                        window.location.reload();
+                    } else if (event.data.success) {
+                        window.location.reload();
+                    }
                 }
             });
         }
+
+        bookingEditButtons.forEach((button) => {
+            button.addEventListener('click', function () {
+                const editUrl = this.getAttribute('data-booking-edit-url');
+
+                if (!editUrl || !reservationModal || !reservationFrame) {
+                    return;
+                }
+
+                reservationFrame.src = editUrl;
+                reservationFrame.title = 'Edit Reservation Form';
+                setReservationModalOpen(true);
+            });
+        });
+
+        bookingStatusButtons.forEach((button) => {
+            button.addEventListener('click', async function () {
+                const bookingId = this.getAttribute('data-booking-id');
+                const status = this.getAttribute('data-booking-status-action');
+
+                if (!bookingId || !status) {
+                    return;
+                }
+
+                if (status === 'CANCELLED' && !window.confirm('Cancel booking ini?')) {
+                    return;
+                }
+
+                this.disabled = true;
+
+                try {
+                    const response = await fetch(`/admin/booking/${bookingId}/status`, {
+                        method: 'PATCH',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status }),
+                    });
+
+                    const rawText = await response.text();
+                    let json = {};
+
+                    try {
+                        json = rawText ? JSON.parse(rawText) : {};
+                    } catch (parseError) {
+                        json = { message: rawText || 'Gagal memperbarui status booking' };
+                    }
+
+                    if (!response.ok || !json.success) {
+                        throw new Error(json.message || 'Gagal memperbarui status booking');
+                    }
+
+                    window.location.reload();
+                } catch (error) {
+                    alert(error.message || 'Gagal memperbarui status booking');
+                } finally {
+                    this.disabled = false;
+                }
+            });
+        });
     </script>
 
 </body>

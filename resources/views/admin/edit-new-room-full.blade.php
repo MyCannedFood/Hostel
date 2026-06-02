@@ -1,3 +1,10 @@
+@php
+	$room = $room ?? null;
+	$attributes = array_values(array_filter(array_map('trim', explode(',', (string) ($room->attributes ?? '')))));
+	$mainFacilities = array_values(array_filter(array_map('trim', explode(',', (string) ($room->main_facilities ?? '')))));
+	$roomPhoto = !empty($room?->photo) ? asset('storage/' . $room->photo) : asset('images/Background.png');
+	$hasExistingPhoto = !empty($room?->photo);
+@endphp
 <style>
 	:root {
 		--primary-dark: #1A3D0A;
@@ -325,76 +332,99 @@
 <div class="room-modal is-open" id="roomModal" role="dialog" aria-modal="true" aria-labelledby="addNewRoomTitle" aria-hidden="false">
 	<div class="room-modal__panel">
 		<header class="room-modal__header">
-			<h2 class="room-modal__title" id="addNewRoomTitle">Add New Room</h2>
+			<h2 class="room-modal__title" id="addNewRoomTitle">Edit Room</h2>
 			<button type="button" class="room-modal__close" data-room-modal-close aria-label="Close modal">&times;</button>
 		</header>
 
 		<div class="room-modal__body">
 			<form id="addRoomForm" method="POST" enctype="multipart/form-data">
 				@csrf
-
+				<input type="hidden" name="room_id" value="{{ $room->id ?? '' }}">
 				<input type="file" name="photo" id="photoInput" accept="image/*" hidden>
 
 				<div class="form-group">
 					<label class="form-label">Photo of Main Room</label>
-					<label class="upload-area" id="uploadArea" for="photoInput">
-						<i class="fa-regular fa-image upload-icon"></i>
-						<span class="upload-text">Click to upload image</span>
-						<span class="upload-subtext">JPG, PNG (Max 5MB)</span>
+                    <label for="photoInput" class="upload-area" id="uploadArea">
+                        <div class="upload-icon">+</div>
+                        <div class="upload-text">Click to upload photo</div>
 					</label>
 				</div>
-				<div id="uploadPreview" style="display:none; margin-top:12px; padding: 12px; background-color: #f5f5f5; border: 2px dashed var(--primary-dark); border-radius: 4px; text-align: center; cursor: pointer;"></div>
+
+				<div id="uploadPreview" style="display:{{ $hasExistingPhoto ? 'block' : 'none' }}; margin-top:12px; padding: 12px; background-color: #f5f5f5; border: 2px dashed var(--primary-dark); border-radius: 4px; text-align: center; cursor: pointer;">
+					@if ($hasExistingPhoto)
+						<img src="{{ $roomPhoto }}" alt="{{ $room->name }}" style="max-width:100%; max-height:140px; border-radius:4px; object-fit:contain;">
+					@endif
+				</div>
 
 				<div class="form-group">
 					<label class="form-label">Room Name</label>
-					<input type="text" name="name" class="form-control" placeholder="Cth: Pavilion" required>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Room Type</label>
-					<select name="gender_type" class="form-control" required>
-						<option value="Male">Male</option>
-						<option value="Female">Female</option>
-					</select>
-				</div>
-
-				<div class="form-group">
-					<label class="form-label">Description</label>
-					<textarea name="description" class="form-control" placeholder="Describe the atmosphere and advantages of this room..."></textarea>
+					<input type="text" name="name" class="form-control" placeholder="Cth: Pavilion" value="{{ old('name', $room->name ?? '') }}" required>
 				</div>
 
 				<div class="grid-2">
 					<div class="form-group">
-						<label class="form-label">Capacity (Bed)</label>
-						<input type="number" name="capacity" class="form-control" value="4">
+						<label class="form-label">Room Type</label>
+						<select name="gender_type" class="form-control" required>
+							<option value="Male" @selected(old('gender_type', $room->gender_type ?? 'Male') === 'Male')>Male</option>
+							<option value="Female" @selected(old('gender_type', $room->gender_type ?? '') === 'Female')>Female</option>
+							<option value="Mixed" @selected(old('gender_type', $room->gender_type ?? '') === 'Mixed')>Mixed</option>
+						</select>
 					</div>
 
 					<div class="form-group">
-						<label class="form-label">Status</label>
-						<select name="status" class="form-control">
-							<option value="Available">Active</option>
-							<option value="Inactive">Inactive</option>
-							<option value="Maintenance">Maintenance</option>
-						</select>
+						<label class="form-label">Capacity (Bed)</label>
+						<input type="number" min="1" name="capacity" class="form-control" value="{{ old('capacity', $room->capacity ?? 4) }}">
 					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Description</label>
+					<textarea name="description" class="form-control" placeholder="Describe the atmosphere and advantages of this room...">{{ old('description', $room->description ?? '') }}</textarea>
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Status</label>
+					<select name="status" class="form-control">
+						<option value="Available" @selected(old('status', $room->status ?? 'Available') === 'Available')>Active</option>
+						<option value="Inactive" @selected(old('status', $room->status ?? '') === 'Inactive')>Inactive</option>
+						<option value="Maintenance" @selected(old('status', $room->status ?? '') === 'Maintenance')>Maintenance</option>
+					</select>
 				</div>
 
 				<div class="form-group">
 					<label class="form-label">Attributes</label>
 					<div id="attributesWrapper">
-						<div class="input-actions attr-row">
-							<div class="input-group" style="flex: 1;">
-								<input type="text" name="attributes[]" class="form-control" value="Simple & Functional">
+						@if (count($attributes))
+							@foreach ($attributes as $attribute)
+								<div class="input-actions attr-row">
+									<div class="input-group" style="flex: 1;">
+										<input type="text" name="attributes[]" class="form-control" value="{{ $attribute }}">
+									</div>
+									<div class="icon-group" aria-label="Attribute actions">
+										<button type="button" class="icon-btn add-attr" aria-label="Add attribute">
+											<img src="{{ asset('images/Plus square.svg') }}" alt="Add attribute">
+										</button>
+										<button type="button" class="icon-btn remove-attr" aria-label="Delete attribute">
+											<img src="{{ asset('images/delete.svg') }}" alt="Delete attribute">
+										</button>
+									</div>
+								</div>
+							@endforeach
+						@else
+							<div class="input-actions attr-row">
+								<div class="input-group" style="flex: 1;">
+									<input type="text" name="attributes[]" class="form-control" value="">
+								</div>
+								<div class="icon-group" aria-label="Attribute actions">
+									<button type="button" class="icon-btn add-attr" aria-label="Add attribute">
+										<img src="{{ asset('images/Plus square.svg') }}" alt="Add attribute">
+									</button>
+									<button type="button" class="icon-btn remove-attr" aria-label="Delete attribute">
+										<img src="{{ asset('images/delete.svg') }}" alt="Delete attribute">
+									</button>
+								</div>
 							</div>
-							<div class="icon-group" aria-label="Attribute actions">
-								<button type="button" class="icon-btn add-attr" aria-label="Add attribute">
-									<img src="{{ asset('images/Plus square.svg') }}" alt="Add attribute">
-								</button>
-								<button type="button" class="icon-btn remove-attr" aria-label="Delete attribute">
-									<img src="{{ asset('images/delete.svg') }}" alt="Delete attribute">
-								</button>
-							</div>
-						</div>
+						@endif
 					</div>
 				</div>
 
@@ -402,202 +432,202 @@
 					<label class="form-label">Main Facilities</label>
 					<div class="facilities-list">
 						<label class="facility-chip">
-							<input type="checkbox" name="main_facilities[]" value="AC" checked>
+							<input type="checkbox" name="main_facilities[]" value="AC" @checked(in_array('AC', $mainFacilities))>
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">AC</span>
 						</label>
 
 						<label class="facility-chip">
-							<input type="checkbox" name="main_facilities[]" value="Wifi" checked>
+							<input type="checkbox" name="main_facilities[]" value="Wifi" @checked(in_array('Wifi', $mainFacilities))>
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">Wifi</span>
 						</label>
 
 						<label class="facility-chip">
-							<input type="checkbox" name="main_facilities[]" value="En-suite Bath">
+							<input type="checkbox" name="main_facilities[]" value="En-suite Bath" @checked(in_array('En-suite Bath', $mainFacilities))>
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">En-suite Bath</span>
 						</label>
 
 						<label class="facility-chip">
-							<input type="checkbox" name="main_facilities[]" value="Lockers">
+							<input type="checkbox" name="main_facilities[]" value="Lockers" @checked(in_array('Lockers', $mainFacilities))>
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">Lockers</span>
 						</label>
 					</div>
 				</div>
-
-
-
 			</form>
 		</div>
 
 		<footer class="room-modal__footer">
 			<button type="button" class="btn btn-outline" data-room-modal-close>Cancel</button>
-			<button type="button" class="btn btn-orange" id="saveRoomBtn">Save Room</button>
+			<button type="button" class="btn btn-outline" id="deleteRoomBtn">Delete Room</button>
+			<button type="button" class="btn btn-orange" id="saveRoomBtn">Edit Room</button>
 		</footer>
 	</div>
 </div>
 
 <script>
-console.log('[Room Modal] Script loaded and executing');
-
 (() => {
-	console.log('[Room Modal] IIFE started');
-	
-	const container = document.getElementById('roomModal');
-	function closeInjectedModal() {
-		const c = document.getElementById('addNewRoomContainer');
-		if (c) c.remove();
-		document.body.classList.remove('modal-open');
-	}
-
-	// wire close buttons
-	document.querySelectorAll('[data-room-modal-close]').forEach(btn => btn.addEventListener('click', closeInjectedModal));
-
-	// upload area
+	const roomId = {{ (int) ($room->id ?? 0) }};
+	const form = document.getElementById('addRoomForm');
+	const saveBtn = document.getElementById('saveRoomBtn');
+	const deleteBtn = document.getElementById('deleteRoomBtn');
 	const photoInput = document.getElementById('photoInput');
 	const uploadArea = document.getElementById('uploadArea');
 	const uploadPreview = document.getElementById('uploadPreview');
-	
-	console.log('[Room Modal] Elements found - photoInput:', !!photoInput, 'uploadArea:', !!uploadArea, 'uploadPreview:', !!uploadPreview);
-	
+	const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+	const formTokenInput = form ? form.querySelector('input[name="_token"]') : null;
+	const csrfToken = (csrfMeta && csrfMeta.getAttribute('content')) || (formTokenInput && formTokenInput.value) || '';
+
+	function closeInjectedModal() {
+		const container = document.getElementById('editNewRoomContainer');
+		if (container) container.remove();
+		document.body.classList.remove('modal-open');
+	}
+
+	window.closeInjectedModal = closeInjectedModal;
+
+	const closeButtons = document.querySelectorAll('[data-room-modal-close]');
+	closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
+
 	if (photoInput && uploadArea && uploadPreview) {
-		// rely on label's `for` to open file picker; show preview when file selected
 		photoInput.addEventListener('change', (e) => {
-			const f = e.target.files && e.target.files[0];
-			console.log('[Room Modal] File selected:', f ? f.name : 'none');
-			
-			if (!f) {
-				// Clear preview - show text again
+			const file = e.target.files && e.target.files[0];
+			if (!file) {
 				uploadArea.style.display = 'flex';
 				uploadPreview.style.display = 'none';
 				uploadPreview.innerHTML = '';
 				return;
 			}
-			
-			const url = URL.createObjectURL(f);
-			// create image element for clearer layout control
+
 			const img = document.createElement('img');
-			img.src = url;
+			img.src = URL.createObjectURL(file);
 			img.style.maxWidth = '100%';
 			img.style.maxHeight = '140px';
 			img.style.borderRadius = '4px';
 			img.style.objectFit = 'contain';
-			
-			// Hide upload area text and show preview in its place
+
 			uploadArea.style.display = 'none';
 			uploadPreview.innerHTML = '';
 			uploadPreview.appendChild(img);
 			uploadPreview.style.display = 'block';
-			console.log('[Room Modal] Preview displayed, upload area hidden');
 		});
-		
-		// Click preview to upload new image
-		uploadPreview.addEventListener('click', () => {
-			photoInput.click();
-		});
+
+		uploadPreview.addEventListener('click', () => photoInput.click());
 	}
 
-    	// attributes add/remove
-    	document.addEventListener('click', function (e) {
-    		if (e.target.closest('.add-attr')) {
-    			e.preventDefault();
-    			const wrapper = document.getElementById('attributesWrapper');
-    			const row = e.target.closest('.attr-row');
-    			if (wrapper && row) {
-    				const clone = row.cloneNode(true);
-    				clone.querySelectorAll('input').forEach(i => i.value = '');
-    				wrapper.appendChild(clone);
-    				console.log('[Room Modal] Attribute row added');
-    			}
-    			return;
-    		}
-    		if (e.target.closest('.remove-attr')) {
-    			e.preventDefault();
-    			const wrapper = document.getElementById('attributesWrapper');
-    			const rows = wrapper.querySelectorAll('.attr-row');
-    			if (rows.length <= 1) {
-    				console.log('[Room Modal] Cannot remove - only one attribute left');
-    				return;
-    			}
-    			const row = e.target.closest('.attr-row');
-    			if (row) {
-    				row.remove();
-    				console.log('[Room Modal] Attribute row removed');
-    			}
-    			return;
-    		}
-    	});
+	document.addEventListener('click', function (e) {
+		if (e.target.closest('.add-attr')) {
+			e.preventDefault();
+			const wrapper = document.getElementById('attributesWrapper');
+			const row = e.target.closest('.attr-row');
+			if (wrapper && row) {
+				const clone = row.cloneNode(true);
+				clone.querySelectorAll('input').forEach(input => input.value = '');
+				wrapper.appendChild(clone);
+			}
+			return;
+		}
 
-    	// no bed UI in this modal — beds will be managed separately
+		if (e.target.closest('.remove-attr')) {
+			e.preventDefault();
+			const wrapper = document.getElementById('attributesWrapper');
+			const rows = wrapper ? wrapper.querySelectorAll('.attr-row') : [];
+			if (rows.length <= 1) return;
+			const row = e.target.closest('.attr-row');
+			if (row) row.remove();
+			return;
+		}
+	});
 
-	// form submit via AJAX
-	const form = document.getElementById('addRoomForm');
-	const saveBtn = document.getElementById('saveRoomBtn');
-	
-	console.log('[Room Modal] form:', form, 'saveBtn:', saveBtn);
-	
-	if (saveBtn && form) {
-		saveBtn.addEventListener('click', async (ev) => {
-			ev.preventDefault();
+	if (saveBtn && form && roomId) {
+		saveBtn.addEventListener('click', async (event) => {
+			event.preventDefault();
 			const fd = new FormData(form);
+			fd.append('_method', 'PUT');
+			if (csrfToken && !fd.get('_token')) {
+				fd.append('_token', csrfToken);
+			}
+
+			const headers = {
+				'X-Requested-With': 'XMLHttpRequest',
+				'Accept': 'application/json',
+			};
+			if (csrfToken) {
+				headers['X-CSRF-TOKEN'] = csrfToken;
+			}
+
 			try {
 				saveBtn.disabled = true;
-				// debug: log FormData keys and file name (if any)
-				console.log('[Room Modal] FormData contents:');
-				for (const pair of fd.entries()) {
-					if (pair[0] === 'photo' && pair[1] instanceof File) {
-						console.log('  ' + pair[0] + ':', pair[1].name, '(' + pair[1].size + ' bytes)');
-					} else {
-						console.log('  ' + pair[0] + ':', pair[1]);
-					}
-				}
-
-				console.log('[Room Modal] Sending to /rooms');
-				const res = await fetch('/rooms', {
+				const response = await fetch(`/rooms/${roomId}`, {
 					method: 'POST',
 					credentials: 'same-origin',
 					body: fd,
-					headers: {
-						'X-Requested-With': 'XMLHttpRequest',
-						'Accept': 'application/json'
-					}
+					headers,
 				});
-				
-				console.log('[Room Modal] Response status:', res.status);
-				
-				let json = null;
-				try {
-					json = await res.json();
-					console.log('[Room Modal] Response JSON:', json);
-				} catch (e) {
-					const txt = await res.text();
-					console.error('[Room Modal] Non-JSON response:', txt);
-					alert('Server returned non-JSON response. See console for details.');
-					return;
-				}
-				
-				if (res.ok && json.success) {
-					console.log('[Room Modal] Room saved successfully!');
+
+				const json = await response.json();
+				if (response.ok && json.success) {
 					closeInjectedModal();
 					location.reload();
+					return;
+				}
+
+				if (json.errors) {
+					alert(Object.values(json.errors).flat().join('\n'));
 				} else {
-					// show validation errors if present
-					if (json.errors) {
-						const messages = Object.values(json.errors).flat().join('\n');
-						console.error('[Room Modal] Validation errors:', messages);
-						alert(messages);
-					} else {
-						console.error('[Room Modal] Save failed:', json.message);
-						alert((json.message || 'Failed to save room'));
-					}
+					alert(json.message || 'Failed to update room');
 				}
 			} catch (err) {
-				console.error('[Room Modal] Error:', err);
-				alert('Error while saving room: ' + err.message);
+				console.error('[Room Edit Modal] Error:', err);
+				alert('Error while updating room: ' + err.message);
 			} finally {
 				saveBtn.disabled = false;
+			}
+		});
+	}
+
+	if (deleteBtn && roomId) {
+		deleteBtn.addEventListener('click', async () => {
+			if (!window.confirm('Delete this room?')) return;
+
+			const fd = new FormData();
+			fd.append('_method', 'DELETE');
+			if (csrfToken) {
+				fd.append('_token', csrfToken);
+			}
+
+			const headers = {
+				'X-Requested-With': 'XMLHttpRequest',
+				'Accept': 'application/json',
+			};
+			if (csrfToken) {
+				headers['X-CSRF-TOKEN'] = csrfToken;
+			}
+
+			try {
+				deleteBtn.disabled = true;
+				const response = await fetch(`/rooms/${roomId}`, {
+					method: 'POST',
+					credentials: 'same-origin',
+					body: fd,
+					headers,
+				});
+
+				const json = await response.json();
+				if (response.ok && json.success) {
+					closeInjectedModal();
+					location.reload();
+					return;
+				}
+
+				alert(json.message || 'Failed to delete room');
+			} catch (err) {
+				console.error('[Room Edit Modal] Error:', err);
+				alert('Error while deleting room: ' + err.message);
+			} finally {
+				deleteBtn.disabled = false;
 			}
 		});
 	}

@@ -205,23 +205,29 @@
 
 @php
     $rooms = $rooms ?? collect();
-    $selectedRoomId = (int) ($selectedRoomId ?? ($rooms->first()?->id ?? 0));
+    $bed = $bed ?? null;
+    $selectedRoomId = (int) ($selectedRoomId ?? ($bed?->room_id ?? $rooms->first()?->id ?? 0));
+    $modalTitle = $bed ? 'Edit BED' : 'Edit BED';
+    $formAction = $bed ? route('beds.update', $bed->id) : route('beds.store');
 @endphp
 
-<div class="bed-modal is-open" id="bedModal" role="dialog" aria-modal="true" aria-labelledby="addNewBedTitle" aria-hidden="false">
+<div class="bed-modal is-open" id="bedModal" role="dialog" aria-modal="true" aria-labelledby="editBedTitle" aria-hidden="false">
     <div class="bed-modal__panel">
         <header class="bed-modal__header">
-            <h2 class="bed-modal__title" id="addNewBedTitle">Add New BED</h2>
+            <h2 class="bed-modal__title" id="editBedTitle">{{ $modalTitle }}</h2>
             <button type="button" class="bed-modal__close" data-bed-modal-close aria-label="Close modal">&times;</button>
         </header>
 
-        <form action="{{ route('beds.store') }}" method="POST" id="addBedForm">
+        <form action="{{ $formAction }}" method="POST" id="editBedForm">
             @csrf
+            @if ($bed)
+                @method('PUT')
+            @endif
 
             <div class="bed-modal__body">
                 <div class="alert-info">
                     <img src="{{ asset('images/warning.svg') }}" alt="Warning">
-                    <span>Adding a bed to the selected room.</span>
+                    <span>Update bed data before saving the changes.</span>
                 </div>
 
                 <div class="form-group">
@@ -237,20 +243,20 @@
 
                 <div class="form-group">
                     <label class="form-label" for="bed_name">Bed ID/Name</label>
-                    <input type="text" id="bed_name" name="name" class="form-control" placeholder="Enter Bed ID (e.g. SH-B3)" required>
+                    <input type="text" id="bed_name" name="name" class="form-control" placeholder="Enter Bed ID (e.g. SH-B3)" value="{{ old('name', $bed?->name) }}" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="bed_position">Position</label>
-                    <input type="text" id="bed_position" name="position" class="form-control" placeholder="e.g. 1 - Bottom Bed" required>
+                    <input type="text" id="bed_position" name="position" class="form-control" placeholder="e.g. 1 - Bottom Bed" value="{{ old('position', $bed?->position) }}" required>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="bed_status">Current Status</label>
                     <select id="bed_status" name="status" class="form-control" required>
-                        <option value="Available">Available</option>
-                        <option value="Occupied">Occupied</option>
-                        <option value="Maintenance">Maintenance</option>
+                        <option value="Available" @selected(old('status', $bed?->status) === 'Available')>Available</option>
+                        <option value="Occupied" @selected(old('status', $bed?->status) === 'Occupied')>Occupied</option>
+                        <option value="Maintenance" @selected(old('status', $bed?->status) === 'Maintenance')>Maintenance</option>
                     </select>
                 </div>
 
@@ -258,14 +264,14 @@
                     <label class="form-label" for="base_price">Base Price (IDR / Night)</label>
                     <div class="input-group">
                         <span class="input-group-text">IDR</span>
-                        <input type="number" id="base_price" name="base_price" class="form-control" placeholder="0" min="0" required>
+                        <input type="number" id="base_price" name="base_price" class="form-control" placeholder="0" min="0" value="{{ old('base_price', $bed?->base_price) }}" required>
                     </div>
                 </div>
             </div>
 
             <footer class="bed-modal__footer">
                 <button type="button" class="btn btn-outline" data-bed-modal-close>Cancel</button>
-                <button type="submit" class="btn btn-orange">Add Bed</button>
+                <button type="submit" class="btn btn-orange">Save Changes</button>
             </footer>
         </form>
     </div>
@@ -274,13 +280,13 @@
 <script>
 (() => {
     const modal = document.getElementById('bedModal');
-    const form = document.getElementById('addBedForm');
+    const form = document.getElementById('editBedForm');
     const closeButtons = document.querySelectorAll('[data-bed-modal-close]');
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
 
     function closeInjectedModal() {
-        const container = document.getElementById('addNewBedContainer');
+        const container = document.getElementById('editNewBedContainer');
         if (container) container.remove();
         document.body.classList.remove('modal-open');
     }
@@ -335,7 +341,7 @@
                 if (json.errors) {
                     alert(Object.values(json.errors).flat().join('\n'));
                 } else {
-                    alert(json.message || 'Failed to add bed');
+                    alert(json.message || 'Failed to update bed');
                 }
             } catch (err) {
                 console.error('[Bed Modal] Error:', err);

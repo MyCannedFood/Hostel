@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>New Reservation Modal</title>
+    <title>Edit New Reservation Modal</title>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;700&family=Liberation+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -131,6 +131,7 @@
         .payment-card {
             color: var(--primary-dark) !important;
         }
+
         .guest-search-panel {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -266,32 +267,53 @@
     </style>
 </head>
 <body>
+    @php
+        $guest = $booking->guest ?? null;
+        $initialGuestData = $guest ? [
+            'id' => $guest->id,
+            'booking_code' => $guest->booking_code,
+            'status' => $guest->status,
+            'first_name' => $guest->first_name,
+            'last_name' => $guest->last_name,
+            'email' => $guest->email,
+            'phone' => $guest->phone,
+            'age' => $guest->age,
+            'occupation' => $guest->occupation,
+            'country' => $guest->country,
+            'city' => $guest->city,
+            'address' => $guest->address,
+            'id_number' => $guest->id_number,
+            'self_description' => $guest->self_description,
+        ] : null;
+    @endphp
     <div class="modal">
         <header class="modal-header">
-            <h2 class="serif-text">New Reservation</h2>
+            <h2 class="serif-text">Edit Reservation: {{ $booking->booking_code }}</h2>
             <button class="btn-close" type="button" aria-label="Close modal" data-close-reservation><i class="fa-solid fa-xmark"></i></button>
         </header>
 
-        <form id="reservationForm" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; overflow: hidden; height: 100%;">
+        <form id="reservationForm" action="{{ route('admin.booking.update', $booking->id) }}" method="POST" enctype="multipart/form-data" style="display: flex; flex-direction: column; overflow: hidden; height: 100%;">
+            @csrf
+            @method('PUT')
             <input type="hidden" name="guest_id" id="guestIdField" value="">
-            <input type="hidden" name="guest_status" id="guestStatusField" value="save">
+            <input type="hidden" name="guest_status" id="guestStatusField" value="{{ $guest->status ?? 'save' }}">
             
             <div class="modal-body">
                 <div class="grid-2">
                     <div class="form-group">
                         <label class="serif-text">Check-In</label>
-                        <input type="date" name="check_in_date" class="form-control" required>
+                        <input type="date" name="check_in_date" class="form-control" value="{{ optional($booking->check_in_date)->format('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
                         <label class="serif-text">Check-Out</label>
-                        <input type="date" name="check_out_date" class="form-control" required>
+                        <input type="date" name="check_out_date" class="form-control" value="{{ optional($booking->check_out_date)->format('Y-m-d') }}" required>
                     </div>
                     <div class="form-group">
                         <label class="serif-text">Select Room</label>
                         <select class="form-control" name="room_id" id="roomSelect" required>
                             <option value="">Select Room...</option>
                             @foreach($rooms ?? [] as $room)
-                                <option value="{{ $room->id }}">{{ $room->name }}</option>
+                                <option value="{{ $room->id }}" {{ (int) $booking->room_id === (int) $room->id ? 'selected' : '' }}>{{ $room->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -300,7 +322,7 @@
                         <select class="form-control" name="bed_id" id="bedSelect">
                             <option value="">Select Bed...</option>
                             @foreach($beds ?? [] as $bed)
-                                <option value="{{ $bed->id }}" data-room-id="{{ $bed->room_id }}">
+                                <option value="{{ $bed->id }}" data-room-id="{{ $bed->room_id }}" {{ (int) $booking->bed_id === (int) $bed->id ? 'selected' : '' }} style="{{ (int) $booking->room_id !== (int) $bed->room_id ? 'display:none;' : '' }}">
                                     {{ $bed->name }} ({{ $bed->position }})
                                 </option>
                             @endforeach
@@ -324,28 +346,28 @@
                         <div id="guestSelectedCard" class="guest-selected-card">
                             <div class="guest-selected-card__top">
                                 <div>
-                                    <div class="guest-selected-card__name" id="guestSelectedName">-</div>
+                                    <div class="guest-selected-card__name" id="guestSelectedName">{{ trim(($guest->first_name ?? '') . ' ' . ($guest->last_name ?? '')) ?: 'Guest' }}</div>
                                     <div class="guest-selected-card__meta" id="guestSelectedMeta"></div>
                                 </div>
-                                <span id="guestSelectedStatus" class="guest-status-badge guest-status-save">SAVE</span>
+                                <span id="guestSelectedStatus" class="guest-status-badge {{ (($guest->status ?? 'save') === 'block') ? 'guest-status-block' : 'guest-status-save' }}">{{ strtoupper($guest->status ?? 'save') }}</span>
                             </div>
                         </div>
                         <div id="guestSearchEmpty" class="guest-search-empty" hidden>No matching guest found.</div>
                     </div>
 
                     <div class="grid-4" style="margin-bottom: 12px;">
-                        <input type="text" name="first_name" class="form-control" placeholder="First Name" required>
-                        <input type="text" name="last_name" class="form-control" placeholder="Last Name">
-                        <input type="email" name="email" class="form-control" placeholder="Email">
-                        <input type="tel" name="phone" class="form-control" placeholder="Phone" required>
-                        <input type="number" name="age" class="form-control" placeholder="Age">
-                        <input type="text" name="occupation" class="form-control" placeholder="Occupation">
-                        <input type="text" name="country" class="form-control" placeholder="Country">
-                        <input type="text" name="city" class="form-control" placeholder="City">
+                        <input type="text" name="first_name" class="form-control" placeholder="First Name" value="{{ $guest->first_name ?? '' }}" required>
+                        <input type="text" name="last_name" class="form-control" placeholder="Last Name" value="{{ $guest->last_name ?? '' }}">
+                        <input type="email" name="email" class="form-control" placeholder="Email" value="{{ $guest->email ?? '' }}">
+                        <input type="tel" name="phone" class="form-control" placeholder="Phone" value="{{ $guest->phone ?? '' }}" required>
+                        <input type="number" name="age" class="form-control" placeholder="Age" value="{{ $guest->age ?? '' }}">
+                        <input type="text" name="occupation" class="form-control" placeholder="Occupation" value="{{ $guest->occupation ?? '' }}">
+                        <input type="text" name="country" class="form-control" placeholder="Country" value="{{ $guest->country ?? '' }}">
+                        <input type="text" name="city" class="form-control" placeholder="City" value="{{ $guest->city ?? '' }}">
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <textarea class="form-control" name="self_description" placeholder="Self Description"></textarea>
-                        <textarea class="form-control" name="personal_notes" placeholder="Personal Notes (Internal)"></textarea>
+                        <textarea class="form-control" name="self_description" placeholder="Self Description">{{ $guest->self_description ?? '' }}</textarea>
+                        <textarea class="form-control" name="personal_notes" placeholder="Personal Notes (Internal)">{{ $booking->personal_notes ?? '' }}</textarea>
                     </div>
                 </div>
 
@@ -354,7 +376,7 @@
                         <div class="orange-header serif-text">ID Card / Data</div>
                         <div class="form-group">
                             <label class="serif-text">ID Number</label>
-                            <input type="text" name="id_number" class="form-control" placeholder="e.g. 3201xxxxxx">
+                            <input type="text" name="id_number" class="form-control" placeholder="e.g. 3201xxxxxx" value="{{ $guest->id_number ?? '' }}">
                         </div>
                         <div class="form-group">
                             <label class="serif-text">Profile Picture</label>
@@ -370,7 +392,7 @@
                         <div class="orange-header serif-text">Deposit & Document</div>
                         <div class="form-group">
                             <label class="serif-text">Address</label>
-                            <input type="text" name="address" class="form-control" placeholder="Address Detail">
+                            <input type="text" name="address" class="form-control" placeholder="Address Detail" value="{{ $guest->address ?? '' }}">
                         </div>
                         <div class="form-group">
                             <label class="serif-text">Card Photo (KTP/Passport)</label>
@@ -388,7 +410,7 @@
                         Special Requests <i class="fa-solid fa-chevron-down chevron"></i>
                     </summary>
                     <div class="dropdown-content">
-                        <textarea name="special_requests" class="form-control serif-text" placeholder="e.g. Dietary restrictions, room preference, late check-in..." style="background-color: var(--bg-light);"></textarea>
+                        <textarea name="special_requests" class="form-control serif-text" placeholder="e.g. Dietary restrictions, room preference, late check-in..." style="background-color: var(--bg-light);">{{ $booking->special_requests ?? '' }}</textarea>
                     </div>
                 </details>
 
@@ -399,14 +421,14 @@
                     <div class="grid-2 dropdown-content">
                         <div class="transport-box">
                             <h4 class="serif-text">Arrival</h4>
-                            <input type="time" name="arrival_time" class="form-control serif-text" placeholder="Estimated Arrival Time">
-                            <input type="text" name="arrival_location" class="form-control serif-text" placeholder="Arriving Location (e.g. Airport, Train Station)">
+                            <input type="time" name="arrival_time" class="form-control serif-text" value="{{ $booking->arrival_time ?? '' }}" placeholder="Estimated Arrival Time">
+                            <input type="text" name="arrival_location" class="form-control serif-text" placeholder="Arriving Location (e.g. Airport, Train Station)" value="{{ $booking->arrival_location ?? '' }}">
                             <div class="text-right"><a href="#" class="link-orange serif-text clear-btn">Clear</a></div>
                         </div>
                         <div class="transport-box">
                             <h4 class="serif-text">Departure</h4>
-                            <input type="time" name="departure_time" class="form-control serif-text" placeholder="Estimated Departure Time">
-                            <input type="text" name="departure_location" class="form-control serif-text" placeholder="Arriving Location (e.g. Airport, Train Station)">
+                            <input type="time" name="departure_time" class="form-control serif-text" value="{{ $booking->departure_time ?? '' }}" placeholder="Estimated Departure Time">
+                            <input type="text" name="departure_location" class="form-control serif-text" placeholder="Arriving Location (e.g. Airport, Train Station)" value="{{ $booking->departure_location ?? '' }}">
                             <div class="text-right"><a href="#" class="link-orange serif-text clear-btn">Clear</a></div>
                         </div>
                     </div>
@@ -433,7 +455,7 @@
                             </ul>
                         </div>
                         <label class="checkbox-label">
-                            <input type="checkbox" name="policy_accepted" value="1" required> I ACCEPT
+                            <input type="checkbox" name="policy_accepted" value="1" {{ $booking->policy_accepted ? 'checked' : '' }} required> I ACCEPT
                         </label>
                     </div>
                 </details>
@@ -442,19 +464,19 @@
                     <label class="serif-text">Payment Method</label>
                     <div class="payment-grid">
                         <label class="payment-card">
-                            <input type="radio" name="payment_method" value="QRIS" checked>
+                            <input type="radio" name="payment_method" value="QRIS" {{ ($booking->payment_method ?? 'QRIS') === 'QRIS' ? 'checked' : '' }}>
                             <i class="fa-solid fa-qrcode"></i> QRIS (Recommended)
                         </label>
                         <label class="payment-card">
-                            <input type="radio" name="payment_method" value="E-Wallet">
+                            <input type="radio" name="payment_method" value="E-Wallet" {{ ($booking->payment_method ?? '') === 'E-Wallet' ? 'checked' : '' }}>
                             <i class="fa-solid fa-wallet"></i> E-Wallet
                         </label>
                         <label class="payment-card">
-                            <input type="radio" name="payment_method" value="Bank Transfer">
+                            <input type="radio" name="payment_method" value="Bank Transfer" {{ ($booking->payment_method ?? '') === 'Bank Transfer' ? 'checked' : '' }}>
                             <i class="fa-solid fa-building-columns"></i> Bank Transfer
                         </label>
                         <label class="payment-card">
-                            <input type="radio" name="payment_method" value="Credit/Debit Card">
+                            <input type="radio" name="payment_method" value="Credit/Debit Card" {{ ($booking->payment_method ?? '') === 'Credit/Debit Card' ? 'checked' : '' }}>
                             <i class="fa-regular fa-credit-card"></i> Credit/Debit Card
                         </label>
                     </div>
@@ -462,14 +484,19 @@
             </div>
 
             <footer class="modal-footer">
-                <button class="btn btn-outline" type="button" data-close-reservation style="background-color: var(--bg-white); color: #888; display: inline-flex; align-items: center; justify-content: center;">Cancel</button>
-                <button class="btn btn-orange" type="submit" id="btnSubmit">Create Reservation</button>
+                <button class="btn btn-danger" type="button" id="btnDeleteBooking"><i class="fa-solid fa-trash"></i> Delete Booking</button>
+                <div class="footer-right">
+                    <button class="btn btn-outline" type="button" data-close-reservation style="background-color: var(--bg-white); color: #888; display: inline-flex; align-items: center; justify-content: center;">Cancel</button>
+                    <button class="btn btn-orange" type="button" id="btnSubmit">Update Reservation</button>
+                </div>
             </footer>
         </form>
     </div>
 
     <script>
         const existingGuests = @json($guests ?? []);
+        const initialGuest = @json($initialGuestData);
+        
 
         // === 1. Logika Close Modal ===
         function closeReservationModal() {
@@ -510,6 +537,8 @@
         }
         setupImagePreview('profileBox', 'profileInput');
         setupImagePreview('cardBox', 'cardInput');
+
+        // defer selecting initial guest until DOM fields are defined below
 
         // === 2. Guest Search & Autofill ===
         const guestSearchInput  = document.getElementById('guestSearchInput');
@@ -682,6 +711,12 @@
             });
         }
 
+        // If the modal was opened for editing an existing booking, hydrate fields
+        // with the initial guest snapshot after DOM nodes exist.
+        if (initialGuest) {
+            selectGuest(initialGuest);
+        }
+
         // === 3. Filter Bed berdasarkan Kamar (Dynamic Select) ===
         const roomSelect = document.getElementById('roomSelect');
         const bedSelect = document.getElementById('bedSelect');
@@ -711,8 +746,10 @@
 
         // === 5. AJAX Submit Form (Menyimpan data ke Controller) ===
         const form = document.getElementById('reservationForm');
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Cegah reload halaman
+
+        async function submitReservationForm(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (e && e.stopPropagation) e.stopPropagation();
 
             if ((guestStatusField?.value || 'save') === 'block') {
                 alert('Guest ini berstatus BLOCK dan tidak bisa dipakai untuk reservasi baru.');
@@ -724,10 +761,58 @@
             submitBtn.innerText = 'Saving Data...';
 
             try {
-                const formData = new FormData(this);
-                
-                // Gunakan route store yang sudah dibuat di web.php (BookingController@store)
-                const response = await fetch("{{ route('admin.booking.store') }}", {
+                const formData = new FormData(form);
+
+                const response = await fetch(form.action, {
+                    method: form.getAttribute('method') || 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: formData
+                });
+
+                // Try parse JSON safely
+                let result = {};
+                try { result = await response.json(); } catch (err) { result = { success: false, message: 'Invalid server response' }; }
+
+                if (response.ok && result.success) {
+                    // Tutup modal dan kirim pesan ke parent dengan pesan sukses
+                    if (window.parent && window.parent !== window) {
+                        window.parent.postMessage({ type: 'close-reservation-modal', success: true, message: result.message || 'Reservasi berhasil diperbarui.' }, window.location.origin);
+                    } else {
+                        // fallback untuk halaman standalone: tampilkan pesan dan reload
+                        alert(result.message || 'Reservasi berhasil diperbarui.');
+                        window.location.href = "{{ route('admin.booking') }}";
+                    }
+                } else {
+                    alert('Gagal: ' + (result.message || 'Harap periksa kembali isian form Anda.'));
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Terjadi kesalahan pada koneksi server.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Update Reservation';
+            }
+        }
+
+        // Bind both form submit and button click to the AJAX submit function
+        form.addEventListener('submit', submitReservationForm);
+        document.getElementById('btnSubmit')?.addEventListener('click', submitReservationForm);
+
+        const btnDeleteBooking = document.getElementById('btnDeleteBooking');
+        btnDeleteBooking?.addEventListener('click', async function () {
+            if (!confirm('Peringatan: Yakin ingin menghapus permanen data reservasi ini?')) return;
+
+            btnDeleteBooking.disabled = true;
+            btnDeleteBooking.innerHTML = 'Deleting...';
+
+            try {
+                const formData = new FormData();
+                formData.append('_method', 'DELETE');
+
+                const response = await fetch("{{ route('admin.booking.destroy', $booking->id) }}", {
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
@@ -739,22 +824,22 @@
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // Beri tahu halaman utama untuk menutup iframe dan tampilkan pesan sukses
                     if (window.parent && window.parent !== window) {
-                        window.parent.postMessage({ type: 'close-reservation-modal', success: true, message: result.message || 'Reservasi berhasil dibuat.' }, window.location.origin);
+                        window.parent.postMessage({ type: 'close-reservation-modal', success: true, message: result.message || 'Data Reservasi Berhasil Dihapus!' }, window.location.origin);
                     } else {
-                        alert(result.message || 'Reservasi berhasil dibuat.');
+                        alert(result.message || 'Data Reservasi Berhasil Dihapus!');
                         window.location.href = "{{ route('admin.booking') }}";
                     }
                 } else {
-                    alert('Gagal: ' + (result.message || 'Harap periksa kembali isian form Anda.'));
+                    alert('Gagal menghapus: ' + (result.message || 'Terjadi kesalahan'));
+                    btnDeleteBooking.disabled = false;
+                    btnDeleteBooking.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Booking';
                 }
             } catch (error) {
                 console.error(error);
-                alert('Terjadi kesalahan pada koneksi server.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = 'Create Reservation';
+                alert('Terjadi kesalahan koneksi saat menghapus.');
+                btnDeleteBooking.disabled = false;
+                btnDeleteBooking.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Booking';
             }
         });
     </script>

@@ -74,7 +74,6 @@ class AdminGuestController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'booking_code' => ['required', 'string', 'max:255', 'unique:guests,booking_code'],
             'first_name'   => ['required', 'string', 'max:255'],
             'last_name'    => ['required', 'string', 'max:255'],
             'country'      => ['required', 'string', 'max:255'],
@@ -84,8 +83,11 @@ class AdminGuestController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
+        $bookingCode = $this->generateBookingCode();
+
         Guest::create([
-            'booking_code'   => $request->input('booking_code'),
+            'booking_code'   => $bookingCode,
+            'status'         => 'save',
             'first_name'     => $request->input('first_name'),
             'last_name'      => $request->input('last_name'),
             'country'        => $request->input('country'),
@@ -101,6 +103,7 @@ class AdminGuestController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'booking_code' => ['required', 'string', 'exists:guests,booking_code'],
+            'status'       => ['required', 'in:safe,blacklist'],
         ]);
 
         if ($validator->fails()) {
@@ -113,7 +116,10 @@ class AdminGuestController extends Controller
             return back()->withErrors(['booking_code' => 'Tamu ini sudah checkout.']);
         }
 
-        $guest->update(['check_out_date' => Carbon::today()]);
+        $guest->update([
+            'check_out_date' => Carbon::today(),
+            'status'         => $request->input('status') === 'blacklist' ? 'block' : 'save',
+        ]);
 
         return redirect()->route('admin.manage_guests')
             ->with('success', 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.');
@@ -187,5 +193,29 @@ class AdminGuestController extends Controller
             'other'        => $otherForeign,
             'other_pct'    => $pct($otherForeign),
         ];
+    }
+
+    private function generateBookingCode(): string
+    {
+        $prefix = 'BK-' . Carbon::now()->format('Y') . '-';
+        $lastBookingCode = Guest::where('booking_code', 'like', $prefix . '%')
+            ->orderByDesc('booking_code')
+            ->value('booking_code');
+
+        $nextNumber = 1001;
+
+        if ($lastBookingCode) {
+            $suffix = (int) substr($lastBookingCode, -4);
+            if ($suffix >= 1001) {
+                $nextNumber = $suffix + 1;
+            }
+        }
+
+        do {
+            $bookingCode = $prefix . $nextNumber;
+            $nextNumber++;
+        } while (Guest::where('booking_code', $bookingCode)->exists());
+
+        return $bookingCode;
     }
 }

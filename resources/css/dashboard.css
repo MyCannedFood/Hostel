@@ -36,8 +36,11 @@ body {
 
 @media (min-width: 1024px) {
   .main-content {
-    margin-left: 18%;
-    width: calc(100% - 18%);
+    /* Offset main content to account for fixed sidebar width.
+       Use the larger of 18% or 250px (sidebar has min-width:250px)
+       so content won't be overlapped on medium-large viewports. */
+    margin-left: max(18%, 260px);
+    width: calc(100% - max(18%, 260px));
   }
 }
 
