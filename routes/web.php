@@ -311,6 +311,10 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\LandingPageController::class, 'updateMap'])
         ->name('admin.landing.map.update');
 
+    Route::put('/admin/landing/featured-rooms',
+        [\App\Http\Controllers\LandingPageController::class, 'updateFeaturedRooms'])
+        ->name('admin.landing.featured-rooms.update');
+
     Route::put('/admin/landing/guest-stories',          // ← tambah ini
         [\App\Http\Controllers\LandingPageController::class, 'updateGuestStories'])
         ->name('admin.landing.guest-stories.update');

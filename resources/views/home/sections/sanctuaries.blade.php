@@ -1,13 +1,25 @@
 {{-- resources/views/home/sections/sanctuaries.blade.php --}}
 
 <section id="home-sanctuaries">
+    @php
+        $featuredRoomsData = $featuredRoomsData ?? [
+            'title' => 'Sanctuaries',
+            'description' => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
+        ];
+        $featuredRooms = collect($featuredRooms ?? []);
+        $roomPhoto = function ($room) {
+            if (!$room->photo) return asset('images/rooms/room_1.png');
+            return str_starts_with($room->photo, 'images/')
+                ? asset($room->photo)
+                : asset('storage/' . $room->photo);
+        };
+    @endphp
 
     {{-- Header --}}
     <div class="sanctuaries-header">
-        <h2 class="sanctuaries-title">Sanctuaries</h2>
+        <h2 class="sanctuaries-title">{{ $featuredRoomsData['title'] ?? 'Sanctuaries' }}</h2>
         <p class="sanctuaries-subtitle">
-            Each villa possesses a unique soul, crafted from<br>
-            reclaimed teak and designed to frame the forest.
+            {{ $featuredRoomsData['description'] ?? 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.' }}
         </p>
     </div>
 
@@ -21,89 +33,40 @@
 
         <div class="sanctuaries-carousel" id="sanctuariesCarousel">
 
-            {{-- Card 1: The Teak Nest --}}
-            <div class="sanctuary-card">
-                <div class="card-image-wrapper">
-                    <img src="{{ asset('images/villas/teak-nest.png') }}" alt="The Teak Nest" class="card-image">
-                </div>
-                <div class="card-body">
-                    <div class="card-top-row">
-                        <h3 class="card-title">The Teak Nest</h3>
-                        <div class="card-price">IDR 3.5M<span class="price-per">/night</span></div>
+            @forelse($featuredRooms as $room)
+                <div class="sanctuary-card">
+                    <div class="card-image-wrapper">
+                        @if($room->gender_type)
+                            <span class="card-badge">{{ $room->gender_type }} Only</span>
+                        @endif
+                        <img src="{{ $roomPhoto($room) }}" alt="{{ $room->name }}" class="card-image">
                     </div>
-                    <p class="card-desc">
-                        Elevated among the canopy, this intimate space features 100-year-old reclaimed teak and a private terrace overlooking the...
-                    </p>
-                    <div class="card-footer">
-                        <div class="card-amenities">
-                            {{-- Wifi --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
-                            {{-- Coffee --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/></svg>
-                            {{-- Hiking/Nature --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m3 17 4-8 4 4 2.5-5L17 17"/><path d="M21 17H3"/></svg>
+                    <div class="card-body">
+                        <div class="card-top-row">
+                            <h3 class="card-title">{{ $room->name }}</h3>
+                            <div class="card-price">{{ $room->beds_count ?: $room->capacity }}<span class="price-per"> beds</span></div>
                         </div>
-                        <a href="#" class="card-reserve">RESERVE</a>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Card 2: Jasmine Pavilion --}}
-            <div class="sanctuary-card">
-                <div class="card-image-wrapper">
-                    <span class="card-badge">Male Only</span>
-                    <img src="{{ asset('images/villas/jasmine-pavilion.png') }}" alt="Jasmine Pavilion" class="card-image">
-                </div>
-                <div class="card-body">
-                    <div class="card-top-row">
-                        <h3 class="card-title">Jasmine Pavilion</h3>
-                        <div class="card-price">IDR 5.2M<span class="price-per">/night</span></div>
-                    </div>
-                    <p class="card-desc">
-                        Surrounded by our aromatic gardens, featuring a private plunge pool and a semi-outdoor stone bathtub under the stars.
-                    </p>
-                    <div class="card-footer">
-                        <div class="card-amenities">
-                            {{-- Wifi --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
-                            {{-- Pool --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12h20"/><path d="M2 12c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M6 6v3"/><path d="M18 6v3"/><path d="M9 3h6"/></svg>
-                            {{-- Bathtub --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 6 6.5 3.5a1.5 1.5 0 0 0-1-.5C4.683 3 4 3.683 4 4.5V17a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/><line x1="10" y1="10" x2="8" y2="12"/><line x1="14" y1="10" x2="12" y2="12"/><line x1="18" y1="10" x2="16" y2="12"/></svg>
+                        <p class="card-desc">
+                            {{ $room->description ?: 'A quiet shared sanctuary designed for comfort, rest, and simple daily rituals.' }}
+                        </p>
+                        <div class="card-footer">
+                            <div class="card-amenities">
+                                <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
+                                <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <a href="{{ url('/rooms') }}" class="card-reserve">RESERVE</a>
                         </div>
-                        <a href="#" class="card-reserve">RESERVE</a>
                     </div>
                 </div>
-            </div>
-
-            {{-- Card 3: The Heritage House --}}
-            <div class="sanctuary-card">
-                <div class="card-image-wrapper">
-                    <img src="{{ asset('images/villas/heritage-house.png') }}" alt="The Heritage House" class="card-image">
-                </div>
-                <div class="card-body">
-                    <div class="card-top-row">
-                        <h3 class="card-title">The Heritage House</h3>
-                        <div class="card-price">IDR 7.8M<span class="price-per">/night</span></div>
-                    </div>
-                    <p class="card-desc">
-                        A meticulously restored traditional Joglo house for families seeking a deep cultural immersion...
-                    </p>
-                    <div class="card-footer">
-                        <div class="card-amenities">
-                            {{-- Wifi --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="20" r="1" fill="currentColor"/></svg>
-                            {{-- Family --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                            {{-- Dining --}}
-                            <svg class="amenity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/></svg>
-                        </div>
-                        <a href="#" class="card-reserve">RESERVE</a>
+            @empty
+                <div class="sanctuary-card">
+                    <div class="card-body">
+                        <h3 class="card-title">No featured rooms yet</h3>
+                        <p class="card-desc">Select rooms from the admin settings to show them here.</p>
                     </div>
                 </div>
-            </div>
-
-            {{-- Tambahkan card lainnya di sini --}}
+            @endforelse
 
         </div>
 

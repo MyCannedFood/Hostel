@@ -6,6 +6,7 @@ use App\Models\Admin;
 use App\Models\Gallery;
 use App\Models\LandingPageSetting;
 use App\Models\Role;
+use App\Models\Room;
 use Illuminate\Http\Request;
 
 class SettingsController extends Controller
@@ -53,6 +54,8 @@ class SettingsController extends Controller
                 'philosophy'    => $data['philosophySettings']    = LandingPageSetting::getSection('philosophy'),
                 'flora'         => $data['floraSettings']         = LandingPageSetting::getSection('flora'),
                 'map'           => $data['mapSettings']           = LandingPageSetting::getSection('map'),
+                'featured-rooms',
+                'rooms'         => $this->prepareFeaturedRoomsData($data),
                 'guest-stories' => $data['guestStoriesSettings']  = LandingPageSetting::getSection('guest_stories'),
                 'awards'        => $data['awardsSettings']        = LandingPageSetting::getSection('awards'),
                 default         => null,
@@ -60,5 +63,45 @@ class SettingsController extends Controller
         }
 
         return view('admin.settings.settings', $data);
+    }
+
+    private function prepareFeaturedRoomsData(array &$data): null
+    {
+        $setting = LandingPageSetting::getSection('featured_rooms');
+        $payload = array_merge(
+            LandingPageSetting::DEFAULTS['featured_rooms'],
+            $setting->data ?? []
+        );
+
+        $selectedIds = collect($payload['room_ids'] ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $allRooms = Room::withCount('beds')
+            ->orderBy('name')
+            ->get();
+
+        $selectedRooms = $allRooms
+            ->whereIn('id', $selectedIds)
+            ->sortBy(fn ($room) => $selectedIds->search($room->id))
+            ->values();
+
+        if (!$setting->exists && $selectedRooms->isEmpty()) {
+            $selectedRooms = $allRooms
+                ->where('is_active', true)
+                ->take(3)
+                ->values();
+            $payload['room_ids'] = $selectedRooms->pluck('id')->all();
+        }
+
+        $data['featuredRoomsSettings'] = $setting;
+        $data['featuredRoomsData']     = $payload;
+        $data['selectedRoomIds']       = collect($payload['room_ids'])->map(fn ($id) => (int) $id)->all();
+        $data['selectedRooms']         = $selectedRooms;
+        $data['allRooms']              = $allRooms;
+
+        return null;
     }
 }
