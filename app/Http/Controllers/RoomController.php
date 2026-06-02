@@ -27,7 +27,7 @@ class RoomController extends Controller
 
         $roomData = $rooms->map(function ($room) use ($roomPhoto, $genderLabel) {
             $totalBeds = $room->beds->count();
-            $availableBeds = $room->beds->where('is_available', true)->count();
+            $availableBeds = $room->beds->where('is_active', true)->count();
             $availabilityPercentage = $totalBeds > 0 ? ($availableBeds / $totalBeds) * 100 : 0;
             $isSoldOut = $availableBeds === 0;
 
@@ -48,8 +48,15 @@ class RoomController extends Controller
             ];
         });
 
+        // Calculate sanctuary stats dynamically
+        $totalCapacity = $rooms->sum('capacity');
+        $roomTypes = $rooms->pluck('gender_type')->unique();
+        $roomTypeLabel = $roomTypes->count() > 1 ? 'Mixed' : $roomTypes->first();
+
         return view('pages.rooms', [
             'rooms' => $roomData,
+            'totalCapacity' => $totalCapacity,
+            'roomTypeLabel' => $roomTypeLabel,
         ]);
     }
 }

@@ -27,11 +27,11 @@
             </div>
             <div class="sanctuaries-stats">
                 <div class="stat-item">
-                    <h3>24</h3>
+                    <h3>{{ $totalCapacity ?? 24 }}</h3>
                     <p>Capacity</p>
                 </div>
                 <div class="stat-item">
-                    <h3>Shared</h3>
+                    <h3>{{ $roomTypeLabel ?? 'Shared' }}</h3>
                     <p>Social Spaces</p>
                 </div>
             </div>
@@ -79,11 +79,11 @@
                             </div>
                         </div>
                         <div class="room-features">
-                            @if(!empty($room['main_facilities']))
-                                @foreach($room['main_facilities'] as $facility)
+                            @if(!empty($room['attributes']))
+                                @foreach($room['attributes'] as $attr)
                                     <div class="room-feature">
                                         <svg viewBox="0 0 24 24"><path d="M19 19V4h-4V3H5v16H3v2h18v-2h-2zm-6-6h-2v-2h2v2z"/></svg>
-                                        <span>{{ $facility }}</span>
+                                        <span>{{ $attr }}</span>
                                     </div>
                                 @endforeach
                             @endif
@@ -102,10 +102,27 @@
 
                         <div class="room-actions">
                             <div class="room-icons">
-                                @if(!empty($room['attributes']))
-                                    @foreach($room['attributes'] as $attr)
-                                        <button class="icon-btn" title="{{ $attr }}">
-                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h6"/></svg>
+                                @if(!empty($room['main_facilities']))
+                                    @foreach($room['main_facilities'] as $facility)
+                                        @php
+                                            $facilityName = strtolower(trim($facility));
+                                            $iconPath = '';
+                                            if(str_contains($facilityName, 'wi-fi') || str_contains($facilityName, 'wifi')) {
+                                                $iconPath = 'M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20a1 1 0 1 0 0 2 1 1 0 0 0 0-2';
+                                            } elseif(str_contains($facilityName, 'ac') || str_contains($facilityName, 'air')) {
+                                                $iconPath = 'M2 12h20M2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6M12 2v2M12 12v4M8 12h8';
+                                            } elseif(str_contains($facilityName, 'locker') || str_contains($facilityName, 'lock')) {
+                                                $iconPath = 'M3 11h18a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2M7 11V7a5 5 0 0 1 10 0v4';
+                                            } elseif(str_contains($facilityName, 'en-suite bath') || str_contains($facilityName, 'bath') || str_contains($facilityName, 'shower')) {
+                                                $iconPath = 'M9 12h6M12 3v18M4 12h16M4 16h16';
+                                            } else {
+                                                $iconPath = 'M3 3h18a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2M9 9h6M9 12h6M9 15h6';
+                                            }
+                                        @endphp
+                                        <button class="icon-btn" title="{{ trim($facility) }}">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="{{ $iconPath }}"></path>
+                                            </svg>
                                         </button>
                                     @endforeach
                                 @endif

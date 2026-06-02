@@ -90,10 +90,30 @@
                             </span>
                         </div>
                         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;color:#7a857f;font-size:12px;">
-                            <span title="Wi-Fi">wi-fi</span>
-                            <span title="AC">ac</span>
-                            <span title="Locker">locker</span>
-                            <span title="Sharing">Sharing</span>
+                            @if($room->main_facilities)
+                                @php $facilities = explode(',', $room->main_facilities); @endphp
+                                @foreach($facilities as $facility)
+                                    @php
+                                        $facilityName = strtolower(trim($facility));
+                                        $icon = '';
+                                        if(str_contains($facilityName, 'wi-fi') || str_contains($facilityName, 'wifi')) {
+                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>';
+                                        } elseif(str_contains($facilityName, 'ac') || str_contains($facilityName, 'air')) {
+                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M2 12h20"/><path d="M2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6"/><path d="M12 2v2"/><path d="M12 12v4"/><path d="M8 12h8"/></svg>';
+                                        } elseif(str_contains($facilityName, 'locker') || str_contains($facilityName, 'lock')) {
+                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+                                        } elseif(str_contains($facilityName, 'en-suite bath') || str_contains($facilityName, 'bath') || str_contains($facilityName, 'shower')) {
+                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M9 12h6"/><path d="M12 3v18"/><path d="M4 12h16"/><path d="M4 16h16"/></svg>';
+                                        } else {
+                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h6"/></svg>';
+                                        }
+                                    @endphp
+                                    <div style="display:flex;align-items:center;gap:4px;">
+                                        {!! $icon !!}
+                                        <span title="{{ trim($facility) }}">{{ strtolower(trim($facility)) }}</span>
+                                    </div>
+                                @endforeach
+                            @endif
                             <span title="Beds">{{ $room->beds_count ?: $room->capacity }} beds</span>
                         </div>
                         <div style="font-size:12px;color:#7a857f;line-height:1.5;">
