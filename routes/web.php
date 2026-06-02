@@ -7,7 +7,8 @@ use App\Http\Controllers\AdminExperienceController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\RoomController as AdminRoomController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Admin\BedController;
 
 /*
@@ -17,7 +18,7 @@ use App\Http\Controllers\Admin\BedController;
 */
 
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
-Route::get('/rooms', fn () => view('pages.rooms'));
+Route::get('/rooms', [RoomController::class, 'index']);
 
 // USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
@@ -97,11 +98,11 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.add-new-room-full');
     })->name('admin.add_new_room_popup');
     
-    Route::get('add-new-room-popup',[RoomController::class,'addNewRoomPopup']);
-    Route::post('rooms',[RoomController::class,'store']);
-    Route::get('/admin/rooms/{room}/edit-popup', [RoomController::class, 'editRoomPopup'])->name('admin.rooms.edit_popup');
-    Route::put('rooms/{room}', [RoomController::class, 'update'])->name('admin.rooms.update');
-    Route::delete('rooms/{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
+    Route::get('add-new-room-popup',[AdminRoomController::class,'addNewRoomPopup']);
+    Route::post('rooms',[AdminRoomController::class,'store']);
+    Route::get('/admin/rooms/{room}/edit-popup', [AdminRoomController::class, 'editRoomPopup'])->name('admin.rooms.edit_popup');
+    Route::put('rooms/{room}', [AdminRoomController::class, 'update'])->name('admin.rooms.update');
+    Route::delete('rooms/{room}', [AdminRoomController::class, 'destroy'])->name('admin.rooms.destroy');
    
 
     // Add new bed popup (returns only modal markup)
@@ -119,7 +120,7 @@ Route::middleware(['is_admin'])->group(function () {
 
     Route::prefix('admin')->group(function () {
         // Ini akan jadi: /admin/rooms/{id}/upload-layout
-        Route::post('rooms/{id}/upload-layout', [RoomController::class, 'uploadLayout'])->name('rooms.upload_layout');
+        Route::post('rooms/{id}/upload-layout', [AdminRoomController::class, 'uploadLayout'])->name('rooms.upload_layout');
 
         Route::post('rooms/{room}/bed-pins/sync', [\App\Http\Controllers\Admin\BedPinController::class, 'syncRoomPins'])
             ->name('rooms.bed_pins.sync');

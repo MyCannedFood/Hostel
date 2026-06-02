@@ -41,6 +41,11 @@
 <form method="POST" action="{{ route('admin.landing.featured-rooms.update') }}">
     @csrf
     @method('PUT')
+    <div id="selectedRoomInputs">
+        @foreach($selectedRoomIds as $roomId)
+            <input type="hidden" name="room_ids[]" value="{{ $roomId }}">
+        @endforeach
+    </div>
 
     {{-- ── Section Info ── --}}
     <div class="lp-card">
@@ -115,9 +120,9 @@
 
     {{-- ════ MODAL: Select Room ════ --}}
     <div class="modal-overlay" id="roomPickerModal">
-        <div class="modal-box" style="max-width:560px;">
+        <div class="modal-box" style="max-width:520px;">
             <div class="modal-header">
-                <h3 class="modal-title">Select Rooms to Feature</h3>
+                <h3 class="modal-title">Select Room to Feature</h3>
                 <button type="button" class="modal-close" onclick="closeModal('roomPickerModal')">✕</button>
             </div>
 
@@ -155,9 +160,8 @@
                             <div style="font-size:11px;color:#7a857f;">Capacity: {{ $room->beds_count ?: $room->capacity }} Beds</div>
                             <div style="font-size:11px;color:#9aaa96;margin-top:2px;">wi-fi ac locker sharing</div>
                         </div>
-                        <input type="checkbox" name="room_ids[]" value="{{ $room->id }}"
-                               {{ in_array($room->id, $selectedRoomIds, true) ? 'checked' : '' }}
-                               onchange="syncFeaturedRoomSelection(this)"
+                        <input type="checkbox" name="selected_room" value="{{ $room->id }}"
+                               class="circular-checkbox"
                                style="width:18px;height:18px;accent-color:#2d4a1e;flex-shrink:0;">
                     </label>
                 @empty
@@ -166,14 +170,10 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-orange-outline" onclick="closeModal('roomPickerModal')">Done</button>
+                <button type="button" class="btn btn-orange-outline" onclick="closeModal('roomPickerModal')">Cancel</button>
+                <button type="button" class="btn btn-dark" onclick="addSelectedRoomAndSubmit()">Add to Homepage</button>
             </div>
         </div>
-    </div>
-
-    <div class="lp-footer-actions" style="display:flex;justify-content:flex-end;gap:12px;margin-top:20px;">
-        <a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="btn btn-orange-outline">Cancel</a>
-        <button type="submit" class="btn btn-dark">Save Featured Rooms</button>
     </div>
 </form>
 
@@ -185,6 +185,31 @@
     transition:border-color .15s,background .15s;
 }
 .lp-dashed-btn:hover { border-color:#4a7c3f;background:#f4f9f4; }
+.circular-checkbox {
+    border-radius: 50%;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid #c4d0c0;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    position: relative;
+}
+.circular-checkbox:checked {
+    background-color: #2d4a1e;
+    border-color: #2d4a1e;
+}
+.circular-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
 </style>
 
 <script>
@@ -196,22 +221,37 @@ function filterRooms(q) {
     });
 }
 function syncFeaturedRoomCount() {
-    const checked = document.querySelectorAll('input[name="room_ids[]"]:checked');
-    document.getElementById('selectedRoomCount').textContent = checked.length;
+    const selected = document.querySelectorAll('#selectedRoomInputs input[name="room_ids[]"]');
+    document.getElementById('selectedRoomCount').textContent = selected.length;
     const emptyState = document.getElementById('emptySelectedRooms');
-    if (emptyState) emptyState.style.display = checked.length ? 'none' : '';
+    if (emptyState) emptyState.style.display = selected.length ? 'none' : '';
 }
-function syncFeaturedRoomSelection(input) {
-    const row = document.querySelector(`.selected-room-row[data-room-id="${input.value}"]`);
-    if (row) row.style.display = input.checked ? 'flex' : 'none';
-    syncFeaturedRoomCount();
+function hasSelectedRoom(roomId) {
+    return Boolean(document.querySelector(`#selectedRoomInputs input[name="room_ids[]"][value="${roomId}"]`));
+}
+function addSelectedRoomInput(roomId) {
+    if (hasSelectedRoom(roomId)) return;
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'room_ids[]';
+    input.value = roomId;
+    document.getElementById('selectedRoomInputs').appendChild(input);
+}
+function addSelectedRoomAndSubmit() {
+    const selected = document.querySelectorAll('input[name="selected_room"]:checked');
+    if (selected.length === 0) return;
+    selected.forEach(checkbox => {
+        addSelectedRoomInput(checkbox.value);
+    });
+    document.querySelector('form[action="{{ route('admin.landing.featured-rooms.update') }}"]').submit();
 }
 function unselectFeaturedRoom(roomId) {
-    const input = document.querySelector(`input[name="room_ids[]"][value="${roomId}"]`);
-    if (input) input.checked = false;
+    const input = document.querySelector(`#selectedRoomInputs input[name="room_ids[]"][value="${roomId}"]`);
+    if (input) input.remove();
     const row = document.querySelector(`.selected-room-row[data-room-id="${roomId}"]`);
     if (row) row.style.display = 'none';
     syncFeaturedRoomCount();
+    document.querySelector('form[action="{{ route('admin.landing.featured-rooms.update') }}"]').submit();
 }
 function openModal(id) {
     document.getElementById(id).classList.add('open');
