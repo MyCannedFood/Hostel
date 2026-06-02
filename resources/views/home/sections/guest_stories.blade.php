@@ -1,4 +1,57 @@
-{{-- Home - Guest Stories --}}
+{{-- resources/views/home/sections/guest_stories.blade.php --}}
+{{-- Data: $guestStoriesData, $awardsData dari PageController --}}
+
+@php
+    // ── Guest Stories ──
+    $guestStoriesData ??= \App\Models\LandingPageSetting::DEFAULTS['guest_stories'];
+    $guestStoriesData   = array_merge(
+        \App\Models\LandingPageSetting::DEFAULTS['guest_stories'],
+        $guestStoriesData
+    );
+    $sectionTitle = $guestStoriesData['title']   ?? 'Guest Stories';
+    $stories      = $guestStoriesData['stories'] ?? [];
+
+    if (count($stories) === 0) {
+        $stories = \App\Models\LandingPageSetting::DEFAULTS['guest_stories']['stories'];
+    }
+
+    $defaultStoryImages = [
+        'images/guest-edward-claire.jpg',
+        'images/guest-2.jpg',
+        'images/guest-3.jpg',
+    ];
+
+    // ── Awards / Badges ──
+    $awardsData ??= \App\Models\LandingPageSetting::DEFAULTS['awards'];
+    $awardsData   = array_merge(
+        \App\Models\LandingPageSetting::DEFAULTS['awards'],
+        $awardsData
+    );
+
+    // Ambil max 4 yang is_visible = true
+    $visibleAwards = collect($awardsData['items'] ?? [])
+        ->filter(fn($a) => !empty($a['is_visible']))
+        ->take(4)
+        ->values();
+
+    // Default badge fallbacks (urutan sama dengan DEFAULTS)
+    $defaultBadgeIcons = [
+        'images/badge-earthcheck.png',
+        'images/badge-tripadvisor.png',
+        'images/badge-heritage.png',
+        'images/badge-zerowaste.png',
+    ];
+
+    // Kalau DB kosong, pakai hardcoded defaults
+    if ($visibleAwards->isEmpty()) {
+        $visibleAwards = collect([
+            ['icon_path' => null, 'title' => 'EarthCheck',        'sub' => 'Gold Certified'],
+            ['icon_path' => null, 'title' => "Traveler's Choice", 'sub' => 'TripAdvisor 2025'],
+            ['icon_path' => null, 'title' => 'Local Heritage',    'sub' => 'Preservation'],
+            ['icon_path' => null, 'title' => 'Zero Waste',        'sub' => 'Initiative'],
+        ]);
+    }
+@endphp
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap');
@@ -12,7 +65,6 @@
         box-sizing: border-box;
     }
 
-    /* ── SLIDER WRAPPER ── */
     .stories-slider-wrap {
         max-width: 1100px;
         margin: 0 auto 72px;
@@ -27,32 +79,14 @@
         min-height: 480px;
     }
 
-    .stories-slide {
-        display: none;
-    }
-    .stories-slide.active {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        width: 100%;
-    }
+    .stories-slide         { display: none; }
+    .stories-slide.active  { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
 
-    /* ── PHOTO ── */
-    .stories-photo {
-        width: 100%;
-        min-height: 480px;
-        overflow: hidden;
-    }
-    .stories-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center top;
-        display: block;
-    }
+    .stories-photo { width: 100%; min-height: 480px; overflow: hidden; }
+    .stories-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
 
-    /* ── CONTENT ── */
     .stories-content {
-        background: rgba(246, 246, 241, 0.30);
+        background: rgba(246,246,241,0.30);
         padding: 60px 56px 48px;
         display: flex;
         flex-direction: column;
@@ -88,23 +122,9 @@
         margin: 0 0 36px;
     }
 
-    .stories-author-name {
-        font-family: 'Jost', sans-serif;
-        font-size: 13.5px;
-        font-weight: 600;
-        color: #1a3d0a;
-        margin: 0 0 5px;
-    }
+    .stories-author-name   { font-family: 'Jost', sans-serif; font-size: 13.5px; font-weight: 600; color: #1a3d0a; margin: 0 0 5px; }
+    .stories-author-origin { font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 300; color: #888; margin: 0; }
 
-    .stories-author-origin {
-        font-family: 'Jost', sans-serif;
-        font-size: 12px;
-        font-weight: 300;
-        color: #888;
-        margin: 0;
-    }
-
-    /* ── DOTS — di luar slide agar tidak ikut hide ── */
     .stories-dots-wrap {
         max-width: 1100px;
         margin: 0 auto 72px;
@@ -112,28 +132,16 @@
         box-sizing: border-box;
     }
 
-    .stories-dots {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 20px 56px 0;
-    }
+    .stories-dots { display: flex; align-items: center; gap: 10px; padding: 20px 56px 0; }
 
     .stories-dot {
-        width: 28px;
-        height: 3px;
-        background: #b8d9a0;
-        border: none;
-        padding: 0;
+        width: 28px; height: 3px;
+        background: #b8d9a0; border: none; padding: 0;
         cursor: pointer;
         transition: background 0.3s ease, width 0.3s ease;
     }
-    .stories-dot.active {
-        background: #1a3d0a;
-        width: 36px;
-    }
+    .stories-dot.active { background: #1a3d0a; width: 36px; }
 
-    /* ── BADGES ── */
     .stories-badges {
         max-width: 1100px;
         margin: 0 auto;
@@ -146,7 +154,7 @@
 
     .stories-badge-item {
         border: 1px solid rgba(26,61,10,0.10);
-        background: rgba(246, 246, 241, 0.50);
+        background: rgba(246,246,241,0.50);
         padding: 20px 16px;
         display: flex;
         flex-direction: column;
@@ -154,154 +162,75 @@
         gap: 8px;
     }
 
-    .stories-badge-item img {
-        width: 36px;
-        height: 36px;
-        object-fit: contain;
-        display: block;
-    }
+    .stories-badge-item img { width: 36px; height: 36px; object-fit: contain; display: block; }
+    .stories-badge-label { font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 600; color: #1a3d0a; text-align: center; margin: 0; }
+    .stories-badge-sub   { font-family: 'Jost', sans-serif; font-size: 11px; font-weight: 300; color: #888; text-align: center; margin: 0; }
 
-    .stories-badge-label {
-        font-family: 'Jost', sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        color: #1a3d0a;
-        text-align: center;
-        margin: 0;
-    }
-
-    .stories-badge-sub {
-        font-family: 'Jost', sans-serif;
-        font-size: 11px;
-        font-weight: 300;
-        color: #888;
-        text-align: center;
-        margin: 0;
-    }
-
-    /* ── Mobile ── */
     @media (max-width: 768px) {
-        #home-stories { padding: 60px 0 72px; }
-
-        .stories-slider-wrap {
-            padding: 0 20px;
-            margin-bottom: 0;
-        }
-
-        .stories-dots-wrap {
-            padding: 0 20px;
-            margin-bottom: 48px;
-        }
-
-        .stories-dots {
-            padding: 16px 20px 0;
-        }
-
-        .stories-slider { min-height: unset; }
-
-        .stories-slide.active {
-            grid-template-columns: 1fr;
-        }
-
-        .stories-photo {
-            min-height: 280px;
-            height: 280px;
-        }
-
-        .stories-content {
-            padding: 32px 28px 28px;
-        }
-
-        .stories-quote { font-size: 20px; }
-
-        .stories-badges {
-            padding: 0 20px;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .stories-badge-item { padding: 16px 14px; }
+        #home-stories        { padding: 60px 0 72px; }
+        .stories-slider-wrap { padding: 0 20px; margin-bottom: 0; }
+        .stories-dots-wrap   { padding: 0 20px; margin-bottom: 48px; }
+        .stories-dots        { padding: 16px 20px 0; }
+        .stories-slider      { min-height: unset; }
+        .stories-slide.active{ grid-template-columns: 1fr; }
+        .stories-photo       { min-height: 280px; height: 280px; }
+        .stories-content     { padding: 32px 28px 28px; }
+        .stories-quote       { font-size: 20px; }
+        .stories-badges      { padding: 0 20px; grid-template-columns: repeat(2,1fr); gap: 12px; }
+        .stories-badge-item  { padding: 16px 14px; }
     }
 </style>
 
 <section id="home-stories">
 
-    {{-- SLIDER --}}
+    {{-- ── SLIDER ── --}}
     <div class="stories-slider-wrap">
         <div class="stories-slider" id="storiesSlider">
-
-            {{-- Slide 1 --}}
-            <div class="stories-slide active">
+            @foreach($stories as $i => $story)
+            <div class="stories-slide {{ $loop->first ? 'active' : '' }}">
                 <div class="stories-photo">
-                    <img src="{{ asset('images/guest-edward-claire.jpg') }}" alt="Edward & Claire">
+                    @if(!empty($story['image_path']))
+                        <img src="{{ asset('storage/' . $story['image_path']) }}"
+                             alt="{{ $story['name'] ?? '' }}" loading="lazy">
+                    @else
+                        <img src="{{ asset($defaultStoryImages[$i] ?? 'images/guest-edward-claire.jpg') }}"
+                             alt="{{ $story['name'] ?? '' }}" loading="lazy">
+                    @endif
                 </div>
                 <div class="stories-content">
-                    <p class="stories-eyebrow">Guest Stories</p>
+                    <p class="stories-eyebrow">{{ $sectionTitle }}</p>
                     <span class="stories-quote-mark">"</span>
-                    <p class="stories-quote">"A profound experience. The way the villa integrates with the jungle made us feel like we were sleeping in the canopy. The scent of jasmine in the morning is something I will never forget."</p>
-                    <p class="stories-author-name">— Edward & Claire</p>
-                    <p class="stories-author-origin">United Kingdom</p>
+                    <p class="stories-quote">"{{ $story['quote'] ?? '' }}"</p>
+                    <p class="stories-author-name">— {{ $story['name'] ?? '' }}</p>
+                    <p class="stories-author-origin">{{ $story['origin'] ?? '' }}</p>
                 </div>
             </div>
-
-            {{-- Slide 2 --}}
-            <div class="stories-slide">
-                <div class="stories-photo">
-                    <img src="{{ asset('images/guest-2.jpg') }}" alt="Hiroshi & Yuki">
-                </div>
-                <div class="stories-content">
-                    <p class="stories-eyebrow">Guest Stories</p>
-                    <span class="stories-quote-mark">"</span>
-                    <p class="stories-quote">"Waking up to birdsong and the rustling of leaves, completely surrounded by green. AlasAre gave us a new definition of what luxury truly means."</p>
-                    <p class="stories-author-name">— Hiroshi & Yuki</p>
-                    <p class="stories-author-origin">Japan</p>
-                </div>
-            </div>
-
-            {{-- Slide 3 --}}
-            <div class="stories-slide">
-                <div class="stories-photo">
-                    <img src="{{ asset('images/guest-3.jpg') }}" alt="Sophie & Marc">
-                </div>
-                <div class="stories-content">
-                    <p class="stories-eyebrow">Guest Stories</p>
-                    <span class="stories-quote-mark">"</span>
-                    <p class="stories-quote">"The most restorative stay we have ever had. Every detail, from the herbs in our meals to the sound of rain on the jungle canopy, was deeply intentional."</p>
-                    <p class="stories-author-name">— Sophie & Marc</p>
-                    <p class="stories-author-origin">France</p>
-                </div>
-            </div>
-
+            @endforeach
         </div>
     </div>
 
-    {{-- DOTS — di luar slider agar tidak ikut tersembunyi --}}
+    {{-- ── DOTS ── --}}
     <div class="stories-dots-wrap">
         <div class="stories-dots" id="storiesDots"></div>
     </div>
 
-    {{-- BADGES --}}
+    {{-- ── BADGES (dari Awards & Recognition DB) ── --}}
     <div class="stories-badges">
+        @foreach($visibleAwards as $j => $award)
         <div class="stories-badge-item">
-            <img src="{{ asset('images/badge-earthcheck.png') }}" alt="EarthCheck">
-            <p class="stories-badge-label">EarthCheck</p>
-            <p class="stories-badge-sub">Gold Certified</p>
+            @if(!empty($award['icon_path']))
+                <img src="{{ asset('storage/' . $award['icon_path']) }}"
+                     alt="{{ $award['title'] ?? '' }}">
+            @else
+                <img src="{{ asset($defaultBadgeIcons[$j] ?? 'images/badge-earthcheck.png') }}"
+                     alt="{{ $award['title'] ?? '' }}">
+            @endif
+            <p class="stories-badge-label">{{ $award['title'] ?? '' }}</p>
+            @if(!empty($award['sub']))
+                <p class="stories-badge-sub">{{ $award['sub'] }}</p>
+            @endif
         </div>
-        <div class="stories-badge-item">
-            <img src="{{ asset('images/badge-tripadvisor.png') }}" alt="Traveler's Choice">
-            <p class="stories-badge-label">Traveler's Choice</p>
-            <p class="stories-badge-sub">TripAdvisor 2025</p>
-        </div>
-        <div class="stories-badge-item">
-            <img src="{{ asset('images/badge-heritage.png') }}" alt="Local Heritage">
-            <p class="stories-badge-label">Local Heritage</p>
-            <p class="stories-badge-sub">Preservation</p>
-        </div>
-        <div class="stories-badge-item">
-            <img src="{{ asset('images/badge-zerowaste.png') }}" alt="Zero Waste">
-            <p class="stories-badge-label">Zero Waste</p>
-            <p class="stories-badge-sub">Initiative</p>
-        </div>
+        @endforeach
     </div>
 
 </section>
@@ -312,42 +241,32 @@
     const dotsWrap = document.getElementById('storiesDots');
     const TOTAL    = slides.length;
     const INTERVAL = 5000;
-    let current    = 0;
-    let timer      = null;
+    let current = 0, timer = null;
 
-    /* Build dots */
+    if (TOTAL === 0) return;
+
     slides.forEach(function(_, i) {
         var btn = document.createElement('button');
         btn.className = 'stories-dot' + (i === 0 ? ' active' : '');
         btn.setAttribute('aria-label', 'Slide ' + (i + 1));
-        btn.addEventListener('click', function() {
-            goTo(i);
-            startTimer();
-        });
+        btn.addEventListener('click', function() { goTo(i); startTimer(); });
         dotsWrap.appendChild(btn);
     });
 
     var dots = Array.from(dotsWrap.querySelectorAll('.stories-dot'));
 
     function goTo(index) {
-        slides[current].classList.remove('active');
-        dots[current].classList.remove('active');
+        slides[current].classList.remove('active'); dots[current].classList.remove('active');
         current = (index + TOTAL) % TOTAL;
-        slides[current].classList.add('active');
-        dots[current].classList.add('active');
+        slides[current].classList.add('active'); dots[current].classList.add('active');
     }
 
     function startTimer() {
         if (timer) clearInterval(timer);
-        timer = setInterval(function() {
-            goTo(current + 1);
-        }, INTERVAL);
+        if (TOTAL > 1) timer = setInterval(function() { goTo(current + 1); }, INTERVAL);
     }
 
-    /* Init */
     startTimer();
-
-    /* Pause on hover */
     var slider = document.getElementById('storiesSlider');
     slider.addEventListener('mouseenter', function() { clearInterval(timer); timer = null; });
     slider.addEventListener('mouseleave', startTimer);

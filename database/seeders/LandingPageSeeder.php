@@ -1,6 +1,5 @@
 <?php
-// FILE: database/seeders/LandingPageSeeder.php
-// Jalankan: php artisan db:seed --class=LandingPageSeeder
+// FILE: database/seeders/LandingPageSeeder.php  (ganti seluruh isi)
 
 namespace Database\Seeders;
 
@@ -14,7 +13,7 @@ class LandingPageSeeder extends Seeder
         foreach (LandingPageSetting::SECTIONS as $section) {
             LandingPageSetting::updateOrCreate(
                 ['section' => $section],
-                ['data'    => LandingPageSetting::DEFAULTS[$section] ?? []]
+                ['data' => LandingPageSetting::DEFAULTS[$section] ?? []]
             );
         }
     }

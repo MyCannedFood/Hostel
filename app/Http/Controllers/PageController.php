@@ -1,5 +1,4 @@
 <?php
-// FILE: app/Http/Controllers/PageController.php  (ganti seluruh isi)
 
 namespace App\Http\Controllers;
 
@@ -13,21 +12,23 @@ class PageController extends Controller
         $data = ['page' => $page];
 
         if (in_array(strtolower($page), ['home', ''])) {
-            // Ambil semua section sekaligus — satu query
-            $settings = LandingPageSetting::whereIn('section', ['hero', 'philosophy', 'flora', 'map', 'guest_stories'])
+            // Satu query untuk semua section sekaligus
+            $settings = LandingPageSetting::whereIn('section', LandingPageSetting::SECTIONS)
                 ->get()
                 ->keyBy('section');
 
-            // Helper: ambil data section, fallback ke DEFAULTS kalau belum ada di DB
-            $get = fn(string $s) => $settings->get($s)?->data
-                ?? LandingPageSetting::DEFAULTS[$s]
-                ?? [];
+            // Helper: ambil data section, merge dengan DEFAULTS supaya key baru selalu ada
+            $get = fn(string $s) => array_merge(
+                LandingPageSetting::DEFAULTS[$s] ?? [],
+                $settings->get($s)?->data ?? []
+            );
 
-            $data['heroData']        = $get('hero');
-            $data['philosophyData']  = $get('philosophy');
-            $data['floraData']       = $get('flora');
-            $data['mapData']         = $get('map');
-            $data['guestStoriesData']= $get('guest_stories');
+            $data['heroData']         = $get('hero');
+            $data['philosophyData']   = $get('philosophy');
+            $data['floraData']        = $get('flora');
+            $data['mapData']          = $get('map');
+            $data['guestStoriesData'] = $get('guest_stories');
+            $data['awardsData']       = $get('awards');
         }
 
         return view('pages.stub', $data);

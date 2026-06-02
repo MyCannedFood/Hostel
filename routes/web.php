@@ -263,4 +263,12 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\LandingPageController::class, 'updateMap'])
         ->name('admin.landing.map.update');
 
+    Route::put('/admin/landing/guest-stories',          // ← tambah ini
+        [\App\Http\Controllers\LandingPageController::class, 'updateGuestStories'])
+        ->name('admin.landing.guest-stories.update');
+
+    Route::put('/admin/landing/awards',                      // ← baru
+        [\App\Http\Controllers\LandingPageController::class, 'updateAwards'])
+        ->name('admin.landing.awards.update');
+
 });

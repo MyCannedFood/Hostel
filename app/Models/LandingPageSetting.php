@@ -11,7 +11,7 @@ class LandingPageSetting extends Model
     protected $casts    = ['data' => 'array'];
 
     public const SECTIONS = [
-        'hero', 'philosophy', 'flora', 'map', 'guest_stories',
+        'hero', 'philosophy', 'flora', 'map', 'guest_stories', 'awards',
     ];
 
     public const DEFAULTS = [
@@ -27,18 +27,8 @@ class LandingPageSetting extends Model
             'body_1'      => 'At AlasAre, we believe true luxury is space. From our 500 sqm land, only 100 sqm is used for buildings. The remaining 400 sqm is intentionally returned to nature as a private, breathing forest.',
             'body_2'      => 'This mindful 4:1 ratio ensures that our traditional Javanese structures do not dominate the landscape, but rather nestle within it, allowing the ancient rhythms of the jungle to remain undisturbed.',
             'features'    => [
-                [
-                    'icon_path'   => null,
-                    'icon_label'  => 'Footprint',
-                    'title'       => 'Minimal Footprint',
-                    'description' => 'Elevated structures preserving the natural topography and soil integrity.',
-                ],
-                [
-                    'icon_path'   => null,
-                    'icon_label'  => 'Rewilding',
-                    'title'       => 'Rewilding Project',
-                    'description' => 'Over 200 native species planted to restore the local ecosystem.',
-                ],
+                ['icon_path' => null, 'icon_label' => 'Footprint', 'title' => 'Minimal Footprint', 'description' => 'Elevated structures preserving the natural topography and soil integrity.'],
+                ['icon_path' => null, 'icon_label' => 'Rewilding', 'title' => 'Rewilding Project',  'description' => 'Over 200 native species planted to restore the local ecosystem.'],
             ],
             'side_image'  => null,
             'badge_label' => 'Conservation',
@@ -50,37 +40,36 @@ class LandingPageSetting extends Model
             'title'       => 'The Flora Concept',
             'description' => 'Every plant at AlaSare serves a purpose, from culinary delights to therapeutic aromas, creating a multi-sensory journey through Java.',
             'cards'       => [
-                [
-                    'image_path'  => null,
-                    'eyebrow'     => 'Nourishment',
-                    'title'       => 'Edible Garden',
-                    'description' => 'Discover our collection of rare Nusantara vegetables and medicinal herbs, harvested daily for our kitchen.',
-                ],
-                [
-                    'image_path'  => null,
-                    'eyebrow'     => 'Aromatherapy',
-                    'title'       => 'The Scent of Java',
-                    'description' => 'Breathe in the calming essence of Melati (Jasmine) and Ylang-Ylang strategically planted to catch the evening breeze.',
-                ],
-                [
-                    'image_path'  => null,
-                    'eyebrow'     => 'Architecture',
-                    'title'       => 'Tropical Wilderness',
-                    'description' => 'Lush Brazilian ferns and native creepers designed to blur the boundaries between your room and the jungle.',
-                ],
+                ['image_path' => null, 'eyebrow' => 'Nourishment',  'title' => 'Edible Garden',       'description' => 'Discover our collection of rare Nusantara vegetables and medicinal herbs, harvested daily for our kitchen.'],
+                ['image_path' => null, 'eyebrow' => 'Aromatherapy', 'title' => 'The Scent of Java',   'description' => 'Breathe in the calming essence of Melati (Jasmine) and Ylang-Ylang strategically planted to catch the evening breeze.'],
+                ['image_path' => null, 'eyebrow' => 'Architecture', 'title' => 'Tropical Wilderness', 'description' => 'Lush Brazilian ferns and native creepers designed to blur the boundaries between your room and the jungle.'],
             ],
         ],
 
         'map' => [
             'subtitle'        => 'Explore the Ground',
             'title'           => 'AlaSare Map',
-            'map_image'       => null,  // storage/app/public/landing/map/xxx.jpg
+            'map_image'       => null,
             'updated_by_name' => null,
         ],
 
         'guest_stories' => [
             'title'   => 'Guest Stories',
-            'stories' => [],
+            'stories' => [
+                ['image_path' => null, 'name' => 'Edward & Claire', 'origin' => 'United Kingdom', 'quote' => 'A profound experience. The way the villa integrates with the jungle made us feel like we were sleeping in the canopy.'],
+                ['image_path' => null, 'name' => 'Hiroshi & Yuki',  'origin' => 'Japan',          'quote' => 'Waking up to birdsong and the rustling of leaves, completely surrounded by green. AlasAre gave us a new definition of what luxury truly means.'],
+                ['image_path' => null, 'name' => 'Sophie & Marc',   'origin' => 'France',         'quote' => 'The most restorative stay we have ever had. Every detail, from the herbs in our meals to the sound of rain on the jungle canopy, was deeply intentional.'],
+            ],
+        ],
+
+        'awards' => [
+            'section_title' => 'Awards and Recognition',
+            'items'         => [
+                ['icon_path' => null, 'title' => 'EarthCheck',        'sub' => 'Gold Certified',   'is_visible' => true],
+                ['icon_path' => null, 'title' => "Traveler's Choice", 'sub' => 'TripAdvisor 2025', 'is_visible' => true],
+                ['icon_path' => null, 'title' => 'Local Heritage',    'sub' => 'Preservation',     'is_visible' => true],
+                ['icon_path' => null, 'title' => 'Zero Waste',        'sub' => 'Initiative',       'is_visible' => true],
+            ],
         ],
     ];
 
