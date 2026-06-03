@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdateHeroRequest;
 use App\Http\Requests\UpdatePhilosophyRequest;
 use App\Http\Requests\UpdateFloraRequest;
+use App\Http\Requests\UpdateFeaturedRoomsRequest;
 use App\Http\Requests\UpdateMapRequest;
 use App\Http\Requests\UpdateGuestStoriesRequest;
 use App\Http\Requests\UpdateAwardsRequest;
@@ -124,6 +125,30 @@ class LandingPageController extends Controller
 
         return redirect()->route('admin.settings', ['section' => 'landing', 'sub' => 'map'])
             ->with('success', 'AlaSare Map berhasil diperbarui.');
+    }
+
+    /* ═══════════════════════════════ FEATURED ROOMS ══ */
+    public function updateFeaturedRooms(UpdateFeaturedRoomsRequest $request): RedirectResponse
+    {
+        $setting = LandingPageSetting::firstOrNew(['section' => 'featured_rooms']);
+        $data    = array_merge(LandingPageSetting::DEFAULTS['featured_rooms'], $setting->data ?? []);
+
+        $data['title']       = $request->title;
+        $data['description'] = $request->description;
+        $data['room_ids']    = collect($request->input('room_ids', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $setting->data       = $data;
+        $setting->updated_by = auth('admin')->id();
+        $setting->save();
+
+        return redirect()
+            ->route('admin.settings', ['section' => 'landing', 'sub' => 'featured-rooms'])
+            ->with('success', 'Featured Rooms berhasil diperbarui.');
     }
 
     /* ══════════════════════════════════ GUEST STORIES ══ */

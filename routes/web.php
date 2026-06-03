@@ -7,7 +7,8 @@ use App\Http\Controllers\AdminExperienceController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\BookingController;
-use App\Http\Controllers\Admin\RoomController;
+use App\Http\Controllers\Admin\RoomController as AdminRoomController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Admin\BedController;
 
 /*
@@ -17,7 +18,7 @@ use App\Http\Controllers\Admin\BedController;
 */
 
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
-Route::get('/rooms', fn () => view('pages.rooms'));
+Route::get('/rooms', [RoomController::class, 'index']);
 
 // USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
@@ -96,13 +97,12 @@ Route::middleware(['is_admin'])->group(function () {
     Route::get('/admin/add-new-room-popup', function () {
         return view('admin.add-new-room-full');
     })->name('admin.add_new_room_popup');
-    
-    Route::get('add-new-room-popup',[RoomController::class,'addNewRoomPopup']);
-    Route::post('rooms',[RoomController::class,'store']);
-    Route::get('/admin/rooms/{room}/edit-popup', [RoomController::class, 'editRoomPopup'])->name('admin.rooms.edit_popup');
-    Route::put('rooms/{room}', [RoomController::class, 'update'])->name('admin.rooms.update');
-    Route::delete('rooms/{room}', [RoomController::class, 'destroy'])->name('admin.rooms.destroy');
-   
+
+    Route::get('add-new-room-popup', [AdminRoomController::class, 'addNewRoomPopup']);
+    Route::post('rooms', [AdminRoomController::class, 'store']);
+    Route::get('/admin/rooms/{room}/edit-popup', [AdminRoomController::class, 'editRoomPopup'])->name('admin.rooms.edit_popup');
+    Route::put('rooms/{room}', [AdminRoomController::class, 'update'])->name('admin.rooms.update');
+    Route::delete('rooms/{room}', [AdminRoomController::class, 'destroy'])->name('admin.rooms.destroy');
 
     // Add new bed popup (returns only modal markup)
     Route::get('/admin/add-new-bed-popup', [BedController::class, 'addNewBedPopup'])
@@ -110,30 +110,26 @@ Route::middleware(['is_admin'])->group(function () {
 
     Route::get('/admin/beds/{bed}/edit-popup', [BedController::class, 'editBedPopup'])
         ->name('admin.beds.edit_popup');
-    
+
     Route::get('/admin/add-new-floor-popup', function (\Illuminate\Http\Request $request) {
-        // Cari kamar berdasarkan room_id yang dikirim dari tombol
         $selectedRoom = \App\Models\Room::with(['beds.bedPin', 'bedPins.bed'])->find($request->query('room_id'));
         return view('admin.add-new-floor', compact('selectedRoom'));
     })->name('admin.add_new_floor_popup');
 
     Route::prefix('admin')->group(function () {
-        // Ini akan jadi: /admin/rooms/{id}/upload-layout
-        Route::post('rooms/{id}/upload-layout', [RoomController::class, 'uploadLayout'])->name('rooms.upload_layout');
+        Route::post('rooms/{id}/upload-layout', [AdminRoomController::class, 'uploadLayout'])->name('rooms.upload_layout');
 
         Route::post('rooms/{room}/bed-pins/sync', [\App\Http\Controllers\Admin\BedPinController::class, 'syncRoomPins'])
             ->name('rooms.bed_pins.sync');
-        
-        // Ini akan jadi: /admin/bed-pins
+
         Route::apiResource('bed-pins', \App\Http\Controllers\Admin\BedPinController::class)->only(['store', 'update', 'destroy']);
-        
-        // Ini akan jadi: /admin/beds
+
         Route::apiResource('beds', BedController::class)->except(['index', 'show']);
     });
 
     Route::get('/Admin/Manage-Bookings', [BookingController::class, 'index'])
         ->name('admin.bookings');
-    
+
     Route::get('/admin/booking', [BookingController::class, 'index'])
         ->name('admin.booking');
 
@@ -182,31 +178,31 @@ Route::middleware(['is_admin'])->group(function () {
         return view('admin.dashboard-layout', ['page' => 'Budgetin & Report']);
     })->name('admin.finance');
 
-    // Experience 
+    // Experience
     Route::get('/admin/experience', [AdminExperienceController::class, 'index'])
         ->name('admin.experience');
 
     Route::post('/admin/experience/store', [AdminExperienceController::class, 'storeExperience'])
         ->name('admin.experience.store');
-    
+
     Route::post('/admin/experience/{experience}/update', [AdminExperienceController::class, 'updateExperience'])
         ->name('admin.experience.update');
-    
+
     Route::post('/admin/experience/{experience}/toggle', [AdminExperienceController::class, 'toggleStatus'])
         ->name('admin.experience.toggle');
-    
+
     Route::delete('/admin/experience/{experience}', [AdminExperienceController::class, 'destroyExperience'])
         ->name('admin.experience.destroy');
 
     Route::post('/admin/experience/booking/store', [AdminExperienceController::class, 'storeBooking'])
         ->name('admin.experience.booking.store');
-    
+
     Route::post('/admin/experience/booking/{booking}/update', [AdminExperienceController::class, 'updateBooking'])
         ->name('admin.experience.booking.update');
-    
+
     Route::post('/admin/experience/booking/{booking}/checkin', [AdminExperienceController::class, 'checkIn'])
         ->name('admin.experience.booking.checkin');
-    
+
     Route::post('/admin/experience/verify-ticket', [AdminExperienceController::class, 'verifyTicket'])
         ->name('admin.experience.verify');
 
@@ -299,28 +295,32 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\LandingPageController::class, 'updateHero'])
         ->name('admin.landing.hero.update');
 
-    Route::put('/admin/landing/philosophy',                          // ← uncomment ini
+    Route::put('/admin/landing/philosophy',
         [\App\Http\Controllers\LandingPageController::class, 'updatePhilosophy'])
         ->name('admin.landing.philosophy.update');
 
-    Route::put('/admin/landing/flora',                               // ← uncomment ini
+    Route::put('/admin/landing/flora',
         [\App\Http\Controllers\LandingPageController::class, 'updateFlora'])
         ->name('admin.landing.flora.update');
 
-    Route::put('/admin/landing/map',                                 // ← uncomment ini
+    Route::put('/admin/landing/map',
         [\App\Http\Controllers\LandingPageController::class, 'updateMap'])
         ->name('admin.landing.map.update');
 
-    Route::put('/admin/landing/guest-stories',          // ← tambah ini
-        [\App\Http\Controllers\LandingPageController::class, 'updateGuestStories'])
-        ->name('admin.landing.guest-stories.update');
-
-    Route::put('/admin/landing/awards',                      // ← baru
-        [\App\Http\Controllers\LandingPageController::class, 'updateAwards'])
-        ->name('admin.landing.awards.update');
+    Route::put('/admin/landing/featured-rooms',
+        [\App\Http\Controllers\LandingPageController::class, 'updateFeaturedRooms'])
+        ->name('admin.landing.featured-rooms.update');
 
     Route::put('/admin/landing/featured-articles',
         [\App\Http\Controllers\LandingPageController::class, 'updateFeaturedArticles'])
         ->name('admin.landing.featured-articles.update');
+
+    Route::put('/admin/landing/guest-stories',
+        [\App\Http\Controllers\LandingPageController::class, 'updateGuestStories'])
+        ->name('admin.landing.guest-stories.update');
+
+    Route::put('/admin/landing/awards',
+        [\App\Http\Controllers\LandingPageController::class, 'updateAwards'])
+        ->name('admin.landing.awards.update');
 
 });

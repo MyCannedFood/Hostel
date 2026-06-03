@@ -12,7 +12,7 @@ class LandingPageSetting extends Model
 
     public const SECTIONS = [
         'hero', 'philosophy', 'flora', 'map',
-        'guest_stories', 'awards', 'featured_articles',
+        'featured_rooms', 'guest_stories', 'awards', 'featured_articles',
     ];
 
     public const DEFAULTS = [
@@ -52,6 +52,12 @@ class LandingPageSetting extends Model
             'title'           => 'AlaSare Map',
             'map_image'       => null,
             'updated_by_name' => null,
+        ],
+
+        'featured_rooms' => [
+            'title'       => 'Sanctuaries',
+            'description' => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
+            'room_ids'    => [],
         ],
 
         'guest_stories' => [
