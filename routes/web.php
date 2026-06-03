@@ -294,6 +294,19 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\AdminLpjController::class, 'store'])
         ->name('admin.budgeting.lpj.store');
 
+    // ── GENERAL SETTINGS ──
+    Route::get('/admin/settings/general', function () {
+        return redirect()->route('admin.settings', ['section' => 'general']);
+    })->name('admin.settings.general');
+
+    Route::put('/admin/settings/hostel-information',
+        [\App\Http\Controllers\GeneralSettingsController::class, 'updateHostelInformation'])
+        ->name('admin.settings.hostel-information.update');
+
+    Route::put('/admin/settings/operational-policies',
+        [\App\Http\Controllers\GeneralSettingsController::class, 'updateOperationalPolicies'])
+        ->name('admin.settings.operational-policies.update');
+
     // ── LANDING PAGE SETTINGS ──
     Route::put('/admin/landing/hero',
         [\App\Http\Controllers\LandingPageController::class, 'updateHero'])

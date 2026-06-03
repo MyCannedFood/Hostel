@@ -1,18 +1,30 @@
 {{-- resources/views/admin/settings/partials/general-settings.blade.php --}}
 
-<div class="section-header">
-    <h2 class="section-title">General Settings</h2>
-</div>
+@php
+    $sub = request('sub');
+    $backUrl = route('admin.settings', ['section' => 'general']);
+@endphp
 
-<div class="general-placeholder">
-    <div class="general-placeholder-icon">
-        <svg width="48" height="48" fill="none" stroke="#9aaa96" stroke-width="1.4" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
+@if(!$sub)
+    <div class="section-header">
+        <h2 class="section-title" style="font-size:26px;">General Settings</h2>
     </div>
-    <h3 class="general-placeholder-title">General Settings</h3>
-    <p class="general-placeholder-text">
-        Halaman ini buat apa?
-    </p>
-</div>
+    <p style="color:#7a857f; font-size:14px; margin:-8px 0 20px;">Manage general hostel information and operational policies</p>
+
+    <div class="lp-section-list">
+        <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => 'hostel-info']) }}" class="lp-section-row">
+            <span>Hostel Information</span>
+            <span class="lp-section-row-chevron">›</span>
+        </a>
+        <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => 'operational-policies']) }}" class="lp-section-row">
+            <span>Operational Policies</span>
+            <span class="lp-section-row-chevron">›</span>
+        </a>
+    </div>
+
+@elseif($sub === 'hostel-info')
+    @include('admin.settings.partials.general-settings.hostel-information')
+
+@elseif($sub === 'operational-policies')
+    @include('admin.settings.partials.general-settings.operational-policies')
+@endif

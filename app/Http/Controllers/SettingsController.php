@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Admin;
 use App\Models\Gallery;
+use App\Models\GeneralSetting;
 use App\Models\LandingPageSetting;
 use App\Models\Role;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class SettingsController extends Controller
 {
@@ -43,6 +45,24 @@ class SettingsController extends Controller
             if ($tab === 'access-info')
                 $data['roles'] = Role::withCount('admins')->orderBy('name')->get();
             $data['roleOptions'] = Role::orderBy('name')->get();
+        }
+
+        /* ── General Settings ── */
+        if ($section === 'general') {
+            $sub = $request->get('sub');
+            $sectionKey = $sub === 'hostel-info' ? 'hostel_info'
+                : ($sub === 'operational-policies' ? 'operational_policies' : null);
+
+            if ($sectionKey) {
+                $setting = GeneralSetting::getSection($sectionKey);
+                $data['settings'] = array_merge(
+                    GeneralSetting::DEFAULTS[$sectionKey],
+                    $setting->data ?? []
+                );
+                $data['settings']['_section'] = Str::slug($sub);
+            } else {
+                $data['settings'] = [];
+            }
         }
 
         /* ── Landing Page ── */
