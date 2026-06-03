@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Article;
 use App\Models\Gallery;
 use App\Models\LandingPageSetting;
 use App\Models\Role;
 use App\Models\Room;
 use Illuminate\Http\Request;
-use App\Models\Article;
+use App\Models\SiteSetting;
+use App\Models\TransportationInfo;
 
 class SettingsController extends Controller
 {
@@ -51,22 +53,28 @@ class SettingsController extends Controller
             $sub = $request->get('sub');
 
             match ($sub) {
-                'hero'              => $data['heroSettings'] = LandingPageSetting::getSection('hero'),
-                'philosophy'        => $data['philosophySettings'] = LandingPageSetting::getSection('philosophy'),
-                'flora'             => $data['floraSettings'] = LandingPageSetting::getSection('flora'),
-                'map'               => $data['mapSettings'] = LandingPageSetting::getSection('map'),
-
+                'hero'              => $data['heroSettings']          = LandingPageSetting::getSection('hero'),
+                'philosophy'        => $data['philosophySettings']    = LandingPageSetting::getSection('philosophy'),
+                'flora'             => $data['floraSettings']         = LandingPageSetting::getSection('flora'),
+                'map'               => $data['mapSettings']           = LandingPageSetting::getSection('map'),
                 'featured-rooms',
                 'rooms'             => $this->prepareFeaturedRoomsData($data),
-
                 'featured-articles' => $this->prepareFeaturedArticlesData($data),
-
-                'guest-stories'     => $data['guestStoriesSettings'] = LandingPageSetting::getSection('guest_stories'),
-                'awards'            => $data['awardsSettings'] = LandingPageSetting::getSection('awards'),
+                'guest-stories'     => $data['guestStoriesSettings']  = LandingPageSetting::getSection('guest_stories'),
+                'awards'            => $data['awardsSettings']        = LandingPageSetting::getSection('awards'),
                 'media-partners'    => $data['mediaPartnersSettings'] = LandingPageSetting::getSection('media_partners'),
-
                 default             => null,
             };
+        }
+
+        /* ── Location ── */
+        if ($section === 'location') {
+            $data['address']      = SiteSetting::get('address', '');
+            $data['phone']        = SiteSetting::get('phone', '');
+            $data['publicEmail']  = SiteSetting::get('public_email', '');
+            $data['mapsLink']     = SiteSetting::get('maps_link', '');
+            $data['contactEmail'] = SiteSetting::get('contact_form_email', '');
+            $data['transports']   = TransportationInfo::orderBy('sort_order')->orderBy('id')->get();
         }
 
         return view('admin.settings.settings', $data);
@@ -130,7 +138,7 @@ class SettingsController extends Controller
         $allArticles = Article::where('status', 'Published')
             ->where(function ($q) {
                 $q->whereNull('publish_at')
-                ->orWhere('publish_at', '<=', now());
+                  ->orWhere('publish_at', '<=', now());
             })
             ->orderByDesc('publish_at')
             ->orderByDesc('created_at')

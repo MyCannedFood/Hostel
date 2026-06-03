@@ -1,18 +1,49 @@
 {{-- resources/views/admin/settings/partials/general-settings.blade.php --}}
 
-<div class="section-header">
-    <h2 class="section-title">General Settings</h2>
-</div>
+@php
+    $sub = request('sub');
+    $backUrl = route('admin.settings', ['section' => 'general']);
+@endphp
 
-<div class="general-placeholder">
-    <div class="general-placeholder-icon">
-        <svg width="48" height="48" fill="none" stroke="#9aaa96" stroke-width="1.4" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-        </svg>
+{{-- ── Route ke sub-section ── --}}
+@if(!$sub)
+    <div class="section-header">
+        <h2 class="section-title" style="font-size:26px;">General Setting</h2>
     </div>
-    <h3 class="general-placeholder-title">General Settings</h3>
-    <p class="general-placeholder-text">
-        Halaman ini buat apa?
-    </p>
-</div>
+    <p style="color:#7a857f; font-size:14px; margin:-8px 0 20px;">Manage general content structure</p>
+
+    <div class="lp-section-list">
+        @php
+        $sections = [
+            ['key' => 'hostel-information',  'label' => 'Hostel Information'],
+            ['key' => 'operational-policies', 'label' => 'Operational Policies'],
+            ['key' => 'payment-methods',     'label' => 'Payment Methods'],
+            ['key' => 'footer',              'label' => 'Footer'],
+            ['key' => 'profile',             'label' => 'Profile'],
+        ];
+        @endphp
+        @foreach($sections as $s)
+        <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => $s['key']]) }}"
+           class="lp-section-row">
+            <span>{{ $s['label'] }}</span>
+            <span class="lp-section-row-chevron">›</span>
+        </a>
+        @endforeach
+    </div>
+
+@elseif($sub === 'hostel-information')
+    @include('admin.settings.partials.General.hostel-information')
+
+@elseif($sub === 'operational-policies')
+    @include('admin.settings.partials.General.operational-policies')
+
+@elseif($sub === 'payment-methods')
+    @include('admin.settings.partials.General.payment-methods')
+
+@elseif($sub === 'footer')
+    @include('admin.settings.partials.General.footer')
+
+@elseif($sub === 'profile')
+    @include('admin.settings.partials.General.profile')
+
+@endif
