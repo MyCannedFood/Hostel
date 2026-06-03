@@ -12,14 +12,22 @@
     <p style="color:#7a857f; font-size:14px; margin:-8px 0 20px;">Manage general hostel information and operational policies</p>
 
     <div class="lp-section-list">
-        <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => 'hostel-info']) }}" class="lp-section-row">
-            <span>Hostel Information</span>
+        @php
+        $sections = [
+            ['key' => 'hostel-info',         'label' => 'Hostel Information'],
+            ['key' => 'operational-policies','label' => 'Operational Policies'],
+            ['key' => 'payment-methods',     'label' => 'Payment Methods'],
+            ['key' => 'footer',              'label' => 'Footer'],
+            ['key' => 'profile',             'label' => 'Profile'],
+        ];
+        @endphp
+        @foreach($sections as $s)
+        <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => $s['key']]) }}"
+           class="lp-section-row">
+            <span>{{ $s['label'] }}</span>
             <span class="lp-section-row-chevron">›</span>
         </a>
-        <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => 'operational-policies']) }}" class="lp-section-row">
-            <span>Operational Policies</span>
-            <span class="lp-section-row-chevron">›</span>
-        </a>
+        @endforeach
     </div>
 
 @elseif($sub === 'hostel-info')
@@ -27,4 +35,14 @@
 
 @elseif($sub === 'operational-policies')
     @include('admin.settings.partials.general-settings.operational-policies')
+
+@elseif($sub === 'payment-methods')
+    @include('admin.settings.partials.General.payment-methods')
+
+@elseif($sub === 'footer')
+    @include('admin.settings.partials.General.footer')
+
+@elseif($sub === 'profile')
+    @include('admin.settings.partials.General.profile')
+
 @endif

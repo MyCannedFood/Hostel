@@ -85,11 +85,17 @@
         </div>
 
         {{-- Add slot button ── --}}
-        <button type="button" class="lp-dashed-btn" style="margin-top:16px;"
-                id="addArticleBtn"
-                onclick="openModal('articlePickerModal')"
-                {{ $slotsUsed >= $maxSlots ? 'disabled' : '' }}
-                style="{{ $slotsUsed >= $maxSlots ? 'opacity:0.4;cursor:not-allowed;' : '' }}">
+        <button
+            type="button"
+            class="lp-dashed-btn"
+            id="addArticleBtn"
+            onclick="openModal('articlePickerModal')"
+            {{ $slotsUsed >= $maxSlots ? 'disabled' : '' }}
+            style="
+                margin-top:16px;
+                {{ $slotsUsed >= $maxSlots ? 'opacity:0.4;cursor:not-allowed;' : '' }}
+            "
+        >
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
             </svg>
@@ -129,25 +135,47 @@
             <button type="button" class="modal-close" onclick="closeModal('articlePickerModal')">✕</button>
         </div>
 
-        {{-- Search ── --}}
+        {{-- Search & Filter ── --}}
         <div style="margin-bottom:14px;">
+            {{-- Search input --}}
             <div class="search-wrap" style="width:100%;margin-bottom:10px;">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
                      style="position:absolute;left:10px;color:#a0a8a0;">
                     <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                 </svg>
-                <input type="text" class="search-input" placeholder="Search article title..."
-                       style="width:100%;padding-left:34px;" oninput="filterArticlePicker(this.value)">
+                <input type="text" class="search-input" id="articleSearchInput"
+                       placeholder="Search article title..."
+                       style="width:100%;padding-left:34px;"
+                       oninput="filterArticlePicker(this.value)">
             </div>
-            {{-- Category filter ── --}}
-            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-                <span style="font-size:12px;color:#7a857f;">Filter by:</span>
-                <button type="button" class="sort-btn article-cat-filter active" data-cat=""
-                        onclick="filterByCat(this,'')">All Categories</button>
-                @foreach($allArticles->pluck('category')->filter()->unique()->sort() as $cat)
-                <button type="button" class="sort-btn article-cat-filter" data-cat="{{ $cat }}"
-                        onclick="filterByCat(this,'{{ $cat }}')">{{ $cat }}</button>
-                @endforeach
+
+            {{-- Category dropdown filter ── --}}
+            <div style="display:flex;align-items:center;gap:8px;">
+                <span style="font-size:12px;color:#7a857f;white-space:nowrap;flex-shrink:0;">Filter by:</span>
+                <select
+                    id="articleCatFilter"
+                    onchange="filterByCat(this.value)"
+                    style="
+                        flex:1;
+                        padding:7px 32px 7px 12px;
+                        border:1px solid #d8e4d4;
+                        border-radius:8px;
+                        font-size:12px;
+                        font-weight:600;
+                        color:#2d4a1e;
+                        background:#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%232d4a1e' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E\") no-repeat right 10px center;
+                        appearance:none;
+                        -webkit-appearance:none;
+                        cursor:pointer;
+                        outline:none;
+                        transition:border-color .15s;
+                    "
+                >
+                    <option value="">All Categories</option>
+                    @foreach($allArticles->pluck('category')->filter()->unique()->sort() as $cat)
+                    <option value="{{ $cat }}">{{ $cat }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
@@ -158,9 +186,7 @@
             <label class="article-picker-row"
                    data-title="{{ strtolower($art->title) }}"
                    data-cat="{{ $art->category ?? '' }}"
-                   data-id="{{ $art->id }}"
-                   style="display:flex;align-items:flex-start;gap:14px;padding:12px 14px;
-                          cursor:pointer;transition:background .15s;border-bottom:1px solid #f0f4ee;">
+                   data-id="{{ $art->id }}">
                 {{-- Thumbnail --}}
                 @if($art->thumbnail)
                     <img src="{{ asset($art->thumbnail) }}" alt="{{ $art->title }}"
@@ -189,6 +215,12 @@
             @endforelse
         </div>
 
+        {{-- Empty state saat filter tidak ada hasil --}}
+        <div id="articlePickerEmpty"
+             style="display:none;padding:32px;text-align:center;color:#9aaa96;font-size:13px;">
+            Tidak ada artikel yang sesuai.
+        </div>
+
         <div class="modal-footer">
             <button type="button" class="btn btn-orange-outline" onclick="closeModal('articlePickerModal')">Cancel</button>
             <button type="button" class="btn btn-dark" onclick="addSelectedArticle()">Add to Homepage</button>
@@ -204,84 +236,161 @@
     transition:border-color .15s,background .15s;
 }
 .lp-dashed-btn:hover:not(:disabled){border-color:#4a7c3f;background:#f4f9f4;}
-.article-picker-row:hover{background:#f6f9f5;}
-.article-cat-filter.active{background:#2d4a1e;color:#fff;border-color:#2d4a1e;}
+
+/* ── Article picker row: selalu flex ── */
+.article-picker-row {
+    display:flex !important;
+    align-items:flex-start;
+    gap:14px;
+    padding:12px 14px;
+    cursor:pointer;
+    transition:background .15s;
+    border-bottom:1px solid #f0f4ee;
+}
+.article-picker-row:hover { background:#f6f9f5; }
+.article-picker-row:last-child { border-bottom:none; }
+
+/* ── Category filter select focus ── */
+#articleCatFilter:focus {
+    border-color:#4a7c3f;
+    box-shadow:0 0 0 3px rgba(74,124,63,.12);
+}
 </style>
 
+@php
+$articleJsData = $allArticles
+    ->mapWithKeys(function ($art) {
+        return [
+            $art->id => [
+                'id'        => $art->id,
+                'title'     => $art->title,
+                'category'  => $art->category ?? '',
+                'thumbnail' => $art->thumbnail ? asset($art->thumbnail) : '',
+                'excerpt'   => \Illuminate\Support\Str::limit(
+                    strip_tags($art->content),
+                    80
+                ),
+            ]
+        ];
+    })
+    ->toArray();
+@endphp
+
 <script>
-// ── Article data embedded for JS (avoid extra AJAX) ──
-const articleData = {
-    @foreach($allArticles as $art)
-    {{ $art->id }}: {
-        id:        {{ $art->id }},
-        title:     {{ json_encode($art->title) }},
-        category:  {{ json_encode($art->category ?? '') }},
-        thumbnail: {{ json_encode($art->thumbnail ? asset($art->thumbnail) : '') }},
-        excerpt:   {{ json_encode(Str::limit(strip_tags($art->content), 80)) }},
-    },
-    @endforeach
-};
+const articleData = @json($articleJsData);
+const MAX_SLOTS   = 3;
 
-const MAX_SLOTS = 3;
+/* ─────────────────────────────
+   Modal open / close
+───────────────────────────── */
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
 
-function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
-document.querySelectorAll('.modal-overlay').forEach(el=>{
-    el.addEventListener('click',e=>{ if(e.target===el) closeModal(el.id); });
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+// Close modal when clicking backdrop
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+        el.addEventListener('click', function (e) {
+            if (e.target === el) closeModal(el.id);
+        });
+    });
 });
 
-/* ── Filter article picker ── */
+/* ─────────────────────────────
+   Filter article picker
+   — selalu set display:'flex' (bukan '') agar layout tidak pecah
+───────────────────────────── */
 function filterArticlePicker(q) {
-    const cat = document.querySelector('.article-cat-filter.active')?.dataset.cat ?? '';
+    const keyword    = (q || '').toLowerCase().trim();
+    const activeCat  = (document.getElementById('articleCatFilter')?.value || '');
+    let   visCount   = 0;
+
     document.querySelectorAll('.article-picker-row').forEach(row => {
-        const matchTitle = row.dataset.title.includes(q.toLowerCase());
-        const matchCat   = !cat || row.dataset.cat === cat;
-        row.style.display = (matchTitle && matchCat) ? '' : 'none';
+        const matchTitle = (row.dataset.title || '').includes(keyword);
+        const matchCat   = !activeCat || (row.dataset.cat || '') === activeCat;
+        const show       = matchTitle && matchCat;
+
+        // Pakai 'flex' eksplisit — bukan '' — supaya layout selalu benar
+        row.style.display = show ? 'flex' : 'none';
+        if (show) visCount++;
     });
+
+    // Tampilkan empty state jika tidak ada hasil
+    const emptyEl = document.getElementById('articlePickerEmpty');
+    if (emptyEl) emptyEl.style.display = visCount === 0 ? 'block' : 'none';
 }
 
-function filterByCat(btn, cat) {
-    document.querySelectorAll('.article-cat-filter').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    filterArticlePicker(document.querySelector('input[placeholder="Search article title..."]')?.value ?? '');
+function filterByCat(cat) {
+    const searchInput = document.getElementById('articleSearchInput');
+    filterArticlePicker(searchInput ? searchInput.value : '');
 }
 
-/* ── Add selected article to list ── */
+/* ─────────────────────────────
+   Add selected article
+───────────────────────────── */
 function addSelectedArticle() {
     const radio = document.querySelector('input[name="picker_article"]:checked');
-    if (!radio) { alert('Pilih artikel terlebih dahulu.'); return; }
+
+    if (!radio) {
+        alert('Pilih artikel terlebih dahulu.');
+        return;
+    }
 
     const id = parseInt(radio.value);
+
     if (document.getElementById(`articleRow_${id}`)) {
-        alert('Artikel ini sudah ada di daftar.'); return;
+        alert('Artikel ini sudah ada di daftar.');
+        return;
     }
 
     const currentCount = document.querySelectorAll('input[name="article_ids[]"]').length;
-    if (currentCount >= MAX_SLOTS) { alert('Maksimal 3 artikel.'); return; }
+
+    if (currentCount >= MAX_SLOTS) {
+        alert('Maksimal 3 artikel.');
+        return;
+    }
 
     const art = articleData[id];
-    if (!art) return;
+    if (!art) {
+        console.error('Article data not found:', id);
+        return;
+    }
 
     const list = document.getElementById('selectedArticlesList');
     const div  = document.createElement('div');
-    div.className = 'lp-flora-card-item';
-    div.id        = `articleRow_${id}`;
+    div.className   = 'lp-flora-card-item';
+    div.id          = `articleRow_${id}`;
     div.style.cssText = 'padding:14px 0;border-bottom:1px solid #f0f4ee;';
 
     const thumbHtml = art.thumbnail
         ? `<img src="${art.thumbnail}" alt="${art.title}" style="width:80px;height:60px;border-radius:8px;object-fit:cover;">`
-        : `<div style="width:80px;height:60px;border-radius:8px;background:#e8ede8;flex-shrink:0;"></div>`;
+        : `<div style="width:80px;height:60px;border-radius:8px;background:#e8ede8;"></div>`;
 
     div.innerHTML = `
         <div style="flex-shrink:0;">${thumbHtml}</div>
         <div class="lp-flora-text">
-            <div style="font-size:10px;font-weight:700;color:#d97706;letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;">${art.category}</div>
+            <div style="font-size:10px;font-weight:700;color:#d97706;letter-spacing:.6px;text-transform:uppercase;margin-bottom:3px;">
+                ${art.category}
+            </div>
             <div class="lp-flora-title" style="font-size:13px;">${art.title}</div>
             <div class="lp-flora-desc">${art.excerpt}</div>
         </div>
         <button type="button" class="lp-remove-btn" style="flex-shrink:0;white-space:nowrap;"
-                onclick="removeArticle(${id})">Remove from Homepage</button>
-        <input type="hidden" name="article_ids[]" value="${id}" id="hArticle_${id}">`;
+                onclick="removeArticle(${id})">
+            Remove from Homepage
+        </button>
+        <input type="hidden" name="article_ids[]" value="${id}" id="hArticle_${id}">
+    `;
 
     list.appendChild(div);
     updateSlotsCount();
@@ -289,16 +398,29 @@ function addSelectedArticle() {
     radio.checked = false;
 }
 
-/* ── Remove article ── */
+/* ─────────────────────────────
+   Remove article
+───────────────────────────── */
 function removeArticle(id) {
-    document.getElementById(`articleRow_${id}`)?.remove();
+    const row = document.getElementById(`articleRow_${id}`);
+    if (row) row.remove();
     updateSlotsCount();
 }
 
+/* ─────────────────────────────
+   Update slots counter & button state
+───────────────────────────── */
 function updateSlotsCount() {
-    const count = document.querySelectorAll('input[name="article_ids[]"]').length;
-    document.getElementById('slotsUsedCount').textContent = count;
-    const btn = document.getElementById('addArticleBtn');
-    if (btn) { btn.disabled = count >= MAX_SLOTS; btn.style.opacity = count >= MAX_SLOTS ? '0.4' : '1'; }
+    const count   = document.querySelectorAll('input[name="article_ids[]"]').length;
+    const counter = document.getElementById('slotsUsedCount');
+    const btn     = document.getElementById('addArticleBtn');
+
+    if (counter) counter.textContent = count;
+
+    if (btn) {
+        btn.disabled      = count >= MAX_SLOTS;
+        btn.style.opacity = count >= MAX_SLOTS ? '0.4' : '1';
+        btn.style.cursor  = count >= MAX_SLOTS ? 'not-allowed' : 'pointer';
+    }
 }
 </script>

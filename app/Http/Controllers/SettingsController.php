@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\Article;
 use App\Models\Gallery;
 use App\Models\GeneralSetting;
 use App\Models\LandingPageSetting;
@@ -10,6 +11,8 @@ use App\Models\Role;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Models\SiteSetting;
+use App\Models\TransportationInfo;
 
 class SettingsController extends Controller
 {
@@ -70,17 +73,28 @@ class SettingsController extends Controller
             $sub = $request->get('sub');
 
             match ($sub) {
-                'hero'          => $data['heroSettings']          = LandingPageSetting::getSection('hero'),
-                'philosophy'    => $data['philosophySettings']    = LandingPageSetting::getSection('philosophy'),
-                'flora'         => $data['floraSettings']         = LandingPageSetting::getSection('flora'),
-                'map'           => $data['mapSettings']           = LandingPageSetting::getSection('map'),
+                'hero'              => $data['heroSettings']          = LandingPageSetting::getSection('hero'),
+                'philosophy'        => $data['philosophySettings']    = LandingPageSetting::getSection('philosophy'),
+                'flora'             => $data['floraSettings']         = LandingPageSetting::getSection('flora'),
+                'map'               => $data['mapSettings']           = LandingPageSetting::getSection('map'),
                 'featured-rooms',
-                'rooms'         => $this->prepareFeaturedRoomsData($data),
-                'guest-stories' => $data['guestStoriesSettings']  = LandingPageSetting::getSection('guest_stories'),
-                'awards'        => $data['awardsSettings']        = LandingPageSetting::getSection('awards'),
-                'media-partners' => $data['mediaPartnersSettings'] = LandingPageSetting::getSection('media_partners'),
-                default         => null,
+                'rooms'             => $this->prepareFeaturedRoomsData($data),
+                'featured-articles' => $this->prepareFeaturedArticlesData($data),
+                'guest-stories'     => $data['guestStoriesSettings']  = LandingPageSetting::getSection('guest_stories'),
+                'awards'            => $data['awardsSettings']        = LandingPageSetting::getSection('awards'),
+                'media-partners'    => $data['mediaPartnersSettings'] = LandingPageSetting::getSection('media_partners'),
+                default             => null,
             };
+        }
+
+        /* ── Location ── */
+        if ($section === 'location') {
+            $data['address']      = SiteSetting::get('address', '');
+            $data['phone']        = SiteSetting::get('phone', '');
+            $data['publicEmail']  = SiteSetting::get('public_email', '');
+            $data['mapsLink']     = SiteSetting::get('maps_link', '');
+            $data['contactEmail'] = SiteSetting::get('contact_form_email', '');
+            $data['transports']   = TransportationInfo::orderBy('sort_order')->orderBy('id')->get();
         }
 
         return view('admin.settings.settings', $data);
@@ -122,6 +136,43 @@ class SettingsController extends Controller
         $data['selectedRoomIds']       = collect($payload['room_ids'])->map(fn ($id) => (int) $id)->all();
         $data['selectedRooms']         = $selectedRooms;
         $data['allRooms']              = $allRooms;
+
+        return null;
+    }
+
+    private function prepareFeaturedArticlesData(array &$data): null
+    {
+        $setting = LandingPageSetting::getSection('featured_articles');
+
+        $payload = array_merge(
+            LandingPageSetting::DEFAULTS['featured_articles'],
+            $setting->data ?? []
+        );
+
+        $selectedIds = collect($payload['article_ids'] ?? [])
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->values();
+
+        $allArticles = Article::where('status', 'Published')
+            ->where(function ($q) {
+                $q->whereNull('publish_at')
+                  ->orWhere('publish_at', '<=', now());
+            })
+            ->orderByDesc('publish_at')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $selectedArticles = $allArticles
+            ->whereIn('id', $selectedIds)
+            ->sortBy(fn ($article) => $selectedIds->search($article->id))
+            ->values();
+
+        $data['featuredArticlesSetting'] = $setting;
+        $data['featuredArticlesData']    = $payload;
+        $data['selectedArticles']        = $selectedArticles;
+        $data['allArticles']             = $allArticles;
 
         return null;
     }

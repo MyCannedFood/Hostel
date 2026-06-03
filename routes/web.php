@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Admin\BedController;
+use App\Http\Controllers\ContactLocationController;
+use App\Http\Controllers\Admin\AdminContactLocationSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,9 +25,19 @@ Route::get('/rooms', [RoomController::class, 'index']);
 // USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
 
-Route::get('/contact', fn () => view('pages.contact-location'));
-Route::get('/location', fn () => view('pages.contact-location'));
-Route::get('/contact-location', fn () => view('pages.contact-location'));
+Route::get('/contact', [ContactLocationController::class, 'index'])
+    ->name('contact');
+
+Route::post('/contact', [ContactLocationController::class, 'store'])
+    ->name('contact.store');
+
+Route::get('/location', function () {
+    return redirect('/contact');
+});
+
+Route::get('/contact-location', function () {
+    return redirect('/contact');
+});
 
 // Experience
 Route::get('/experience', [ExperienceController::class, 'index'])
@@ -343,5 +355,27 @@ Route::middleware(['is_admin'])->group(function () {
     Route::put('/admin/landing/media-partners',
         [\App\Http\Controllers\LandingPageController::class, 'updateMediaPartners'])
         ->name('admin.landing.media-partners.update');
+
+ 
+    // CONTACT & LOCATION SETTINGS
+    Route::get('/admin/settings/location',
+        [AdminContactLocationSettingController::class, 'index'])
+        ->name('admin.settings.location');
+
+    Route::post('/admin/settings/location',
+        [AdminContactLocationSettingController::class, 'update'])
+        ->name('admin.settings.location.update');
+
+    Route::post('/admin/settings/location/transportation',
+        [AdminContactLocationSettingController::class, 'storeTransport'])
+        ->name('admin.settings.location.transport.store');
+
+    Route::put('/admin/settings/location/transportation/{transport}',
+        [AdminContactLocationSettingController::class, 'updateTransport'])
+        ->name('admin.settings.location.transport.update');
+
+    Route::delete('/admin/settings/location/transportation/{transport}',
+        [AdminContactLocationSettingController::class, 'destroyTransport'])
+        ->name('admin.settings.location.transport.destroy');
 
 });

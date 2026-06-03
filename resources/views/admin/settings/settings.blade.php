@@ -31,7 +31,7 @@
             <div class="content-area">
 
                 @php
-                    $section = request('section', 'gallery');
+                    $section = $section ?? request('section', 'gallery');
                 @endphp
 
                 <div class="settings-wrapper">
