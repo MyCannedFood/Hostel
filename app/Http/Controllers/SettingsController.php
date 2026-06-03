@@ -8,6 +8,8 @@ use App\Models\LandingPageSetting;
 use App\Models\Role;
 use App\Models\Room;
 use Illuminate\Http\Request;
+use App\Models\SiteSetting;
+use App\Models\TransportationInfo;
 
 class SettingsController extends Controller
 {
@@ -62,6 +64,15 @@ class SettingsController extends Controller
                 default         => null,
             };
         }
+        /* ── Location ── */
+        if ($section === 'location') {
+            $data['address']      = SiteSetting::get('address', '');
+            $data['phone']        = SiteSetting::get('phone', '');
+            $data['publicEmail']  = SiteSetting::get('public_email', '');
+            $data['mapsLink']     = SiteSetting::get('maps_link', '');
+            $data['contactEmail'] = SiteSetting::get('contact_form_email', '');
+            $data['transports']   = TransportationInfo::orderBy('sort_order')->orderBy('id')->get();
+        }
 
         return view('admin.settings.settings', $data);
     }
@@ -104,5 +115,9 @@ class SettingsController extends Controller
         $data['allRooms']              = $allRooms;
 
         return null;
+
+        
+        
     }
+
 }
