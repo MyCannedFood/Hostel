@@ -103,4 +103,16 @@ class PageController extends Controller
     {
         return view('pages.admin_stub', ['page' => $page]);
     }
+
+    public function guestStory(): \Illuminate\View\View
+    {
+        $setting = \App\Models\LandingPageSetting::getSection('guest_stories');
+    
+        $guestStoriesData = array_merge(
+            \App\Models\LandingPageSetting::DEFAULTS['guest_stories'],
+            $setting->data ?? []
+        );
+    
+        return view('pages.guest-story', compact('guestStoriesData'));
+    }
 }

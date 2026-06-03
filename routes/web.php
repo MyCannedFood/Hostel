@@ -46,6 +46,10 @@ Route::get('/bed-shared-room', fn () => view('pages.bed-shared-room'));
 Route::get('/guest-details', fn () => view('pages.guest-details'));
 Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 
+// Guest Story
+Route::get('/guest-story', [PageController::class, 'guestStory'])->name('guest-story');
+
+
 // Admin Auth Routes
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'login']);

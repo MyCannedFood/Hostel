@@ -247,10 +247,16 @@
                     Journal
                 </a>
 
+                <a href="/guest-story"
+                   class="{{ request()->is('guest-story') ? 'active-nav' : 'inactive-nav' }}">
+                    Guest Story
+                </a>
+
                 <a href="/contact"
                    class="{{ request()->is('contact') ? 'active-nav' : 'inactive-nav' }}">
                     Contact
                 </a>
+
 
             </div>
         </div>
@@ -360,6 +366,11 @@
             Journal
         </a>
 
+        <a href="/guest-story"
+           class="{{ request()->is('guest-story') ? 'active-link' : '' }}">
+            Guest Story
+        </a>
+
         <a href="/contact"
            class="{{ request()->is('contact') ? 'active-link' : '' }}">
             Contact
@@ -382,7 +393,7 @@
 
         </div>
 
-        <a href="/rooms" class="drawer-book">
+        <a href="/calendar" class="drawer-book">
             Book Now
         </a>
     </div>
