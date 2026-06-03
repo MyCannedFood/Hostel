@@ -13,6 +13,7 @@ class LandingPageSetting extends Model
     public const SECTIONS = [
         'hero', 'philosophy', 'flora', 'map',
         'featured_rooms', 'guest_stories', 'awards', 'featured_articles',
+        'media_partners',
     ];
 
     public const DEFAULTS = [
@@ -83,6 +84,24 @@ class LandingPageSetting extends Model
             'section_title'       => 'Journal & Stories',
             'section_description' => 'Curated stories on nature, slow living, and our architectural journey in the urban jungle.',
             'article_ids'         => [],   // max 3 integer IDs dari tabel articles
+        ],
+
+        'media_partners' => [
+            'title'   => 'As Seen In',
+            'partners' => [
+                ['logo_path' => null, 'name' => 'Condé Nast Traveller', 'url' => '', 'style' => 'font-family:Georgia,serif; font-size:17px; font-weight:400; letter-spacing:0.02em;'],
+                ['logo_path' => null, 'name' => 'TRAVEL + LEISURE',     'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:700; letter-spacing:0.12em;'],
+                ['logo_path' => null, 'name' => 'Tatler Asia',           'url' => '', 'style' => 'font-family:Georgia,serif; font-size:17px; font-style:italic; font-weight:400;'],
+                ['logo_path' => null, 'name' => 'National Geographic',  'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:17px; font-weight:700; letter-spacing:0.01em; color:#6b8f6b;'],
+                ['logo_path' => null, 'name' => 'VOGUE LIVING',          'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:14px; font-weight:400; letter-spacing:0.18em;'],
+                ['logo_path' => null, 'name' => 'the guardian',          'url' => '', 'style' => 'font-family:Georgia,serif; font-size:19px; font-weight:400; font-style:italic; color:#9aaa90;'],
+                ['logo_path' => null, 'name' => 'Forbes',                'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em;'],
+                ['logo_path' => null, 'name' => 'The New York Times',    'url' => '', 'style' => 'font-family:Georgia,serif; font-size:17px; font-weight:400; letter-spacing:0.04em; font-style:italic;'],
+                ['logo_path' => null, 'name' => 'Lonely Planet',         'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:13px; font-weight:700; letter-spacing:0.1em;'],
+                ['logo_path' => null, 'name' => 'Monocle',               'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:400; letter-spacing:0.08em;'],
+                ['logo_path' => null, 'name' => 'Wallpaper*',            'url' => '', 'style' => 'font-family:Georgia,serif; font-size:15px; font-style:italic;'],
+                ['logo_path' => null, 'name' => 'BBC Travel',            'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:700; letter-spacing:0.01em; color:#6b8f6b;'],
+            ],
         ],
     ];
 

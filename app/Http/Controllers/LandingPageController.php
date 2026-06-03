@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateFeaturedRoomsRequest;
 use App\Http\Requests\UpdateMapRequest;
 use App\Http\Requests\UpdateGuestStoriesRequest;
 use App\Http\Requests\UpdateAwardsRequest;
+use App\Http\Requests\UpdateMediaPartnersRequest;
 use App\Models\LandingPageSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -217,5 +218,44 @@ class LandingPageController extends Controller
         return redirect()
             ->route('admin.settings', ['section' => 'landing', 'sub' => 'awards'])
             ->with('success', 'Awards & Recognition berhasil diperbarui.');
+    }
+
+    /* ══════════════════════════════ MEDIA PARTNERS ══ */
+    public function updateMediaPartners(UpdateMediaPartnersRequest $request): RedirectResponse
+    {
+        $setting = LandingPageSetting::firstOrNew(['section' => 'media_partners']);
+        $data    = array_merge(LandingPageSetting::DEFAULTS['media_partners'], $setting->data ?? []);
+
+        $data['title'] = $request->title ?? $data['title'];
+
+        $partners = [];
+        $allFiles = $request->allFiles();
+
+        foreach ($request->partners ?? [] as $i => $partner) {
+            $logoPath = $partner['logo_path'] ?? null;
+            
+            // Upload logo baru jika ada
+            if (isset($allFiles['partners'][$i]['logo'])) {
+                $file = $allFiles['partners'][$i]['logo'];
+                if ($logoPath) Storage::disk('public')->delete($logoPath);
+                $logoPath = $file->store('landing/media-partners', 'public');
+            }
+
+            $partners[] = [
+                'logo_path' => $logoPath,
+                'name'      => $partner['name'] ?? '',
+                'url'       => $partner['url']  ?? '',
+                'style'     => $partner['style'] ?? '',
+            ];
+        }
+
+        $data['partners']    = $partners;
+        $setting->data       = $data;
+        $setting->updated_by = auth('admin')->id();
+        $setting->save();
+
+        return redirect()
+            ->route('admin.settings', ['section' => 'landing', 'sub' => 'media-partners'])
+            ->with('success', 'Media & Partners berhasil diperbarui.');
     }
 }

@@ -33,6 +33,7 @@ class PageController extends Controller
             $data['guestStoriesData']     = $get('guest_stories');
             $data['awardsData']           = $get('awards');
             $data['featuredArticlesData'] = $get('featured_articles');
+            $data['mediaPartnersData']    = $get('media_partners');
 
             // ── Featured Rooms ──────────────────────────────────────────────
             $hasFeaturedRoomsSetting = $settings->has('featured_rooms');

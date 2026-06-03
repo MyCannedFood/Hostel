@@ -58,6 +58,7 @@ class SettingsController extends Controller
                 'rooms'         => $this->prepareFeaturedRoomsData($data),
                 'guest-stories' => $data['guestStoriesSettings']  = LandingPageSetting::getSection('guest_stories'),
                 'awards'        => $data['awardsSettings']        = LandingPageSetting::getSection('awards'),
+                'media-partners' => $data['mediaPartnersSettings'] = LandingPageSetting::getSection('media_partners'),
                 default         => null,
             };
         }

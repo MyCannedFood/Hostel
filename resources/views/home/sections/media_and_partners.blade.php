@@ -3,20 +3,11 @@
     {{-- TANDA SECTION: media_and_partners --}}
 
     @php
-        $mediaPartners = [
-            ['name' => 'Condé Nast Traveller', 'style' => 'font-family:Georgia,serif; font-size:17px; font-weight:400; letter-spacing:0.02em;'],
-            ['name' => 'TRAVEL + LEISURE',     'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:700; letter-spacing:0.12em;'],
-            ['name' => 'Tatler Asia',           'style' => 'font-family:Georgia,serif; font-size:17px; font-style:italic; font-weight:400;'],
-            ['name' => 'National Geographic',  'style' => 'font-family:Arial,sans-serif; font-size:17px; font-weight:700; letter-spacing:0.01em; color:#6b8f6b;'],
-            ['name' => 'VOGUE LIVING',          'style' => 'font-family:Arial,sans-serif; font-size:14px; font-weight:400; letter-spacing:0.18em;'],
-            ['name' => 'the guardian',          'style' => 'font-family:Georgia,serif; font-size:19px; font-weight:400; font-style:italic; color:#9aaa90;'],
-            ['name' => 'Forbes',                'style' => 'font-family:Arial,sans-serif; font-size:16px; font-weight:700; letter-spacing:0.06em;'],
-            ['name' => 'The New York Times',    'style' => 'font-family:Georgia,serif; font-size:17px; font-weight:400; letter-spacing:0.04em; font-style:italic;'],
-            ['name' => 'Lonely Planet',         'style' => 'font-family:Arial,sans-serif; font-size:13px; font-weight:700; letter-spacing:0.1em;'],
-            ['name' => 'Monocle',               'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:400; letter-spacing:0.08em;'],
-            ['name' => 'Wallpaper*',            'style' => 'font-family:Georgia,serif; font-size:15px; font-style:italic;'],
-            ['name' => 'BBC Travel',            'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:700; letter-spacing:0.01em; color:#6b8f6b;'],
-        ];
+        // Load dari settings atau gunakan DEFAULTS
+        $mediaPartnersData ??= \App\Models\LandingPageSetting::DEFAULTS['media_partners'];
+        
+        $sectionTitle   = $mediaPartnersData['title'] ?? 'As Seen In';
+        $mediaPartners  = $mediaPartnersData['partners'] ?? [];
 
         $perRow     = 5;   // jumlah logo per baris
         $maxRows    = 2;   // maksimal baris yang tampil
@@ -27,20 +18,38 @@
     @endphp
 
     <p style="font-family:Arial,sans-serif; font-size:11px; font-weight:700; letter-spacing:0.18em; color:#6b8f6b; text-transform:uppercase; margin:0 0 40px;">
-        As Seen In
+        {{ $sectionTitle }}
     </p>
 
     {{-- Baris 1 --}}
     <div style="display:flex; align-items:center; justify-content:center; gap:0 48px; margin-bottom:28px; flex-wrap:nowrap;">
         @foreach($row1 as $media)
-            <span style="color:#a8a89e; white-space:nowrap; {{ $media['style'] }}">{{ $media['name'] }}</span>
+            @if(!empty($media['url']))
+                <a href="{{ $media['url'] }}" target="_blank" rel="noopener noreferrer" 
+                   style="color:#a8a89e; white-space:nowrap; {{ $media['style'] ?? '' }}; text-decoration:none; transition:opacity 0.2s;"
+                   onmouseover="this.style.opacity='0.7'" 
+                   onmouseout="this.style.opacity='1'">
+                    {{ $media['name'] }}
+                </a>
+            @else
+                <span style="color:#a8a89e; white-space:nowrap; {{ $media['style'] ?? '' }}">{{ $media['name'] }}</span>
+            @endif
         @endforeach
     </div>
 
     {{-- Baris 2 --}}
     <div style="display:flex; align-items:center; justify-content:center; gap:0 48px; flex-wrap:nowrap;">
         @foreach($row2 as $media)
-            <span style="color:#a8a89e; white-space:nowrap; {{ $media['style'] }}">{{ $media['name'] }}</span>
+            @if(!empty($media['url']))
+                <a href="{{ $media['url'] }}" target="_blank" rel="noopener noreferrer" 
+                   style="color:#a8a89e; white-space:nowrap; {{ $media['style'] ?? '' }}; text-decoration:none; transition:opacity 0.2s;"
+                   onmouseover="this.style.opacity='0.7'" 
+                   onmouseout="this.style.opacity='1'">
+                    {{ $media['name'] }}
+                </a>
+            @else
+                <span style="color:#a8a89e; white-space:nowrap; {{ $media['style'] ?? '' }}">{{ $media['name'] }}</span>
+            @endif
         @endforeach
     </div>
 
@@ -79,11 +88,22 @@
         <div style="overflow-y:auto; padding:24px 28px 28px; flex:1;">
             <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:16px 20px;">
                 @foreach($mediaPartners as $media)
-                    <div style="background:#eceae3; border-radius:4px; padding:18px 12px; display:flex; align-items:center; justify-content:center; min-height:60px; text-align:center;">
-                        <span style="color:#a8a89e; {{ $media['style'] }}; font-size:13px;">
-                            {{ $media['name'] }}
-                        </span>
-                    </div>
+                    @if(!empty($media['url']))
+                        <a href="{{ $media['url'] }}" target="_blank" rel="noopener noreferrer"
+                           style="background:#eceae3; border-radius:4px; padding:18px 12px; display:flex; align-items:center; justify-content:center; min-height:60px; text-align:center; text-decoration:none; transition:background 0.2s; cursor:pointer;"
+                           onmouseover="this.style.background='#dbd7ce'" 
+                           onmouseout="this.style.background='#eceae3'">
+                            <span style="color:#a8a89e; {{ $media['style'] ?? '' }}; font-size:13px;">
+                                {{ $media['name'] }}
+                            </span>
+                        </a>
+                    @else
+                        <div style="background:#eceae3; border-radius:4px; padding:18px 12px; display:flex; align-items:center; justify-content:center; min-height:60px; text-align:center;">
+                            <span style="color:#a8a89e; {{ $media['style'] ?? '' }}; font-size:13px;">
+                                {{ $media['name'] }}
+                            </span>
+                        </div>
+                    @endif
                 @endforeach
             </div>
         </div>
