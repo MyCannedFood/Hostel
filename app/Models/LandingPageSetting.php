@@ -11,7 +11,8 @@ class LandingPageSetting extends Model
     protected $casts    = ['data' => 'array'];
 
     public const SECTIONS = [
-        'hero', 'philosophy', 'flora', 'map', 'guest_stories', 'awards',
+        'hero', 'philosophy', 'flora', 'map',
+        'guest_stories', 'awards', 'featured_articles',
     ];
 
     public const DEFAULTS = [
@@ -70,6 +71,12 @@ class LandingPageSetting extends Model
                 ['icon_path' => null, 'title' => 'Local Heritage',    'sub' => 'Preservation',     'is_visible' => true],
                 ['icon_path' => null, 'title' => 'Zero Waste',        'sub' => 'Initiative',       'is_visible' => true],
             ],
+        ],
+
+        'featured_articles' => [
+            'section_title'       => 'Journal & Stories',
+            'section_description' => 'Curated stories on nature, slow living, and our architectural journey in the urban jungle.',
+            'article_ids'         => [],   // max 3 integer IDs dari tabel articles
         ],
     ];
 

@@ -319,4 +319,8 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\LandingPageController::class, 'updateAwards'])
         ->name('admin.landing.awards.update');
 
+    Route::put('/admin/landing/featured-articles',
+        [\App\Http\Controllers\LandingPageController::class, 'updateFeaturedArticles'])
+        ->name('admin.landing.featured-articles.update');
+
 });

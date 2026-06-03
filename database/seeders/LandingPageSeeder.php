@@ -1,5 +1,5 @@
 <?php
-// FILE: database/seeders/LandingPageSeeder.php  (ganti seluruh isi)
+// FILE: database/seeders/LandingPageSeeder.php
 
 namespace Database\Seeders;
 
