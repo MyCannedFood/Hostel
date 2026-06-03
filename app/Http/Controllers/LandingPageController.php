@@ -13,6 +13,7 @@ use App\Http\Requests\UpdateMediaPartnersRequest;
 use App\Models\LandingPageSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 
 class LandingPageController extends Controller
 {
@@ -150,6 +151,43 @@ class LandingPageController extends Controller
         return redirect()
             ->route('admin.settings', ['section' => 'landing', 'sub' => 'featured-rooms'])
             ->with('success', 'Featured Rooms berhasil diperbarui.');
+    }
+
+    /* ═════════════════════ FEATURED ARTICLES ═════════════════════ */
+    public function updateFeaturedArticles(Request $request): RedirectResponse
+    {
+        $setting = LandingPageSetting::firstOrNew([
+            'section' => 'featured_articles'
+        ]);
+
+        $data = array_merge(
+            LandingPageSetting::DEFAULTS['featured_articles'],
+            $setting->data ?? []
+        );
+
+        $data['section_title'] = $request->section_title;
+        $data['section_description'] = $request->section_description;
+
+        $data['article_ids'] = collect(
+            $request->input('article_ids', [])
+        )
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->unique()
+            ->take(3)
+            ->values()
+            ->all();
+
+        $setting->data = $data;
+        $setting->updated_by = auth('admin')->id();
+        $setting->save();
+
+        return redirect()
+            ->route('admin.settings', [
+                'section' => 'landing',
+                'sub' => 'featured-articles'
+            ])
+            ->with('success', 'Featured Articles berhasil diperbarui.');
     }
 
     /* ══════════════════════════════════ GUEST STORIES ══ */
