@@ -29,6 +29,10 @@ use App\Http\Controllers\Admin\AdminContactLocationSettingController;
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
 Route::get('/rooms', [RoomController::class, 'index']);
 
+Route::get('/profile', fn () => view('pages.profile'));
+Route::get('/journal', [\App\Http\Controllers\JournalController::class, 'index'])->name('journal.index');
+Route::get('/journal/{article}', [\App\Http\Controllers\JournalController::class, 'show'])->name('journal.show');
+
 // USER GALLERY
 Route::get('/gallery', [\App\Http\Controllers\PublicGalleryController::class, 'index']);
 
@@ -47,16 +51,29 @@ Route::get('/contact-location', function () {
 });
 
 // Experience
-Route::get('/experience', [ExperienceController::class, 'index'])
-    ->name('experience');
-Route::get('/experience/booking-detail', fn () => view('pages.experience-booking-detail'));
-Route::get('/experience/payment-method', fn () => view('pages.experience-payment-method'));
-Route::get('/experience/payment', fn () => view('pages.experience-payment'));
-Route::get('/experience/success', fn () => view('pages.experience-success'));
+Route::get('/experience/payment-method',    [ExperienceController::class, 'paymentMethod'])
+    ->name('experience.payment-method');
+ 
+Route::post('/experience/payment-method',   [ExperienceController::class, 'storePaymentMethod'])
+    ->name('experience.payment-method.store');
+ 
+Route::get('/experience/payment',           [ExperienceController::class, 'payment'])
+    ->name('experience.payment');
+ 
+Route::post('/experience/payment/confirm',  [ExperienceController::class, 'confirmPayment'])
+    ->name('experience.payment.confirm');
+ 
+Route::get('/experience/success',           [ExperienceController::class, 'success'])
+    ->name('experience.success');
 
-Route::get('/profile', fn () => view('pages.profile'));
-Route::get('/journal', [\App\Http\Controllers\JournalController::class, 'index'])->name('journal.index');
-Route::get('/journal/{article}', [\App\Http\Controllers\JournalController::class, 'show'])->name('journal.show');
+Route::get('/experience',                           [ExperienceController::class, 'index'])
+    ->name('experience');
+ 
+Route::get('/experience/{experience}/booking',      [ExperienceController::class, 'bookingDetail'])
+    ->name('experience.booking-detail');
+ 
+Route::post('/experience/{experience}/booking',     [ExperienceController::class, 'storeBookingDetail'])
+    ->name('experience.booking-detail.store');
 
 // Book now routes
 Route::get('/calendar', fn () => view('pages.calendar'));

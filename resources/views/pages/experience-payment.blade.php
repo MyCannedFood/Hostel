@@ -5,28 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Experience Payment - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{--
+    ══════════════════════════════════════════════════════
+    MIDTRANS SNAP — Uncomment saat akun Midtrans siap
+    ══════════════════════════════════════════════════════
+    @if(config('midtrans.is_production'))
+        <script src="https://app.midtrans.com/snap/snap.js"
+                data-client-key="{{ config('midtrans.client_key') }}"></script>
+    @else
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+                data-client-key="{{ config('midtrans.client_key') }}"></script>
+    @endif
+    ══════════════════════════════════════════════════════
+    --}}
 </head>
 <body class="payment-page">
-
-@php
-    $experience = (object)[
-        'name'              => 'Nature the Earth',
-        'short_description' => 'A soulful journey to the heart of our teak forest. Plant a sapling to leave a legacy of growth and renewal.',
-        'image'             => 'baju_kutu.png',
-        'inclusions'        => ['Sapling Included', 'Tools & Gear', 'Local Guide', 'Refreshments'],
-    ];
-
-    $booking = (object)[
-        'date'           => '2026-11-24',
-        'time'           => '07:00',
-        'guests'         => 1,
-        'subtotal'       => 350000,
-        'promo_discount' => 50000,
-        'total_amount'   => 300000,
-        'payment_method' => 'QRIS / E-Wallet',
-        'id'             => 1,
-    ];
-@endphp
 
 @include('components.navbar')
 
@@ -35,11 +29,11 @@
     <section class="payment-steps">
         <div class="steps-container">
             <div class="step step--done">
-                <a href="/experience/booking-detail" class="step-link">Detail</a>
+                <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="step-link">Detail</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <a href="/experience/payment-method" class="step-link">Payment Method</a>
+                <a href="{{ route('experience.payment-method') }}" class="step-link">Payment Method</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--active">
@@ -53,6 +47,13 @@
         </div>
     </section>
 
+    {{-- Flash Error --}}
+    @if(session('error'))
+        <div style="max-width:720px;margin:16px auto;padding:12px 16px;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;color:#dc2626;font-size:13px;">
+            {{ session('error') }}
+        </div>
+    @endif
+
     {{-- Page Header --}}
     <div class="payment-header">
         <h1 class="payment-title">Experience Payment</h1>
@@ -65,43 +66,55 @@
         {{-- Left: Experience Detail --}}
         <div class="payment-detail">
             <div class="detail-image-wrapper">
-                <img
-                    src="{{ asset('images/experience/' . $experience->image) }}"
-                    alt="{{ $experience->name }}"
-                    class="detail-image"
-                    onerror="this.src='https://images.unsplash.com/photo-1611080911579-2cd1ab8b50e4?auto=format&fit=crop&q=80&w=800'"
-                >
+                @if($experience->cover_image)
+                    <img src="{{ asset($experience->cover_image) }}"
+                         alt="{{ $experience->name }}" class="detail-image">
+                @else
+                    <img src="https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800"
+                         alt="{{ $experience->name }}" class="detail-image">
+                @endif
             </div>
 
             <div class="detail-body">
                 <h2 class="detail-title">{{ $experience->name }}</h2>
-                <p class="detail-desc">{{ $experience->short_description }}</p>
+                <p class="detail-desc">
+                    {{ $experience->short_description ?? $experience->name . ' experience at AlaSare.' }}
+                </p>
 
-                {{-- Inclusions --}}
+                @if($experience->inclusions && count($experience->inclusions))
                 <div class="detail-inclusions">
-                    @foreach ($experience->inclusions as $inclusion)
+                    @foreach($experience->inclusions as $inclusion)
                         <span class="inclusion-tag">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
                             {{ $inclusion }}
                         </span>
                     @endforeach
                 </div>
+                @endif
 
                 <hr class="detail-divider">
 
-                {{-- Booking Info --}}
                 <div class="detail-meta">
                     <div class="meta-item">
                         <span class="meta-label">Date</span>
-                        <span class="meta-value">{{ \Carbon\Carbon::parse($booking->date)->format('d/m/Y') }}</span>
+                        <span class="meta-value">
+                            {{ \Carbon\Carbon::parse($booking['scheduled_date'])->format('d/m/Y') }}
+                        </span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">Time</span>
-                        <span class="meta-value">{{ \Carbon\Carbon::parse($booking->time)->format('h:i A') }}</span>
+                        <span class="meta-label">Time Slot</span>
+                        <span class="meta-value">{{ $booking['time_slot'] }}</span>
                     </div>
                     <div class="meta-item">
                         <span class="meta-label">Guests</span>
-                        <span class="meta-value">{{ str_pad($booking->guests, 2, '0', STR_PAD_LEFT) }}</span>
+                        <span class="meta-value">{{ str_pad($booking['guest_count'], 2, '0', STR_PAD_LEFT) }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Name</span>
+                        <span class="meta-value">{{ $booking['guest_name'] }}</span>
                     </div>
                 </div>
             </div>
@@ -114,12 +127,14 @@
             <div class="summary-rows">
                 <div class="summary-row">
                     <span class="summary-key">Subtotal</span>
-                    <span class="summary-val">IDR {{ number_format($booking->subtotal, 0, ',', '.') }}</span>
+                    <span class="summary-val">IDR {{ number_format($booking['subtotal'], 0, ',', '.') }}</span>
                 </div>
-                @if ($booking->promo_discount > 0)
+                @if(($booking['promo_discount'] ?? 0) > 0)
                 <div class="summary-row">
                     <span class="summary-key">Promo Discount</span>
-                    <span class="summary-val summary-val--discount">- IDR {{ number_format($booking->promo_discount, 0, ',', '.') }}</span>
+                    <span class="summary-val summary-val--discount">
+                        - IDR {{ number_format($booking['promo_discount'], 0, ',', '.') }}
+                    </span>
                 </div>
                 @endif
                 <div class="summary-row">
@@ -130,32 +145,95 @@
 
             <div class="summary-total">
                 <span class="total-label">Total Amount</span>
-                <span class="total-amount">IDR {{ number_format($booking->total_amount, 0, ',', '.') }}</span>
+                <span class="total-amount">IDR {{ number_format($booking['total_amount'], 0, ',', '.') }}</span>
             </div>
 
             <div class="summary-payment-method">
-                <p class="method-text">Selected Payment Method: {{ $booking->payment_method }}</p>
+                <p class="method-text">
+                    Selected Payment Method: {{ $booking['payment_method'] }}
+                </p>
 
-                @if ($booking->payment_method === 'QRIS / E-Wallet')
-                    <p class="scan-label">Scan to Pay</p>
-                    <div class="qr-wrapper">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=ALS-2026-NTE-01"
-                        alt="QR Code"
-                        class="ticket-qr-img">
-                    </div>
+                {{--
+                ══════════════════════════════════════════════════════
+                MIDTRANS SNAP — Uncomment saat akun siap
+                Hapus seluruh blok "QR Placeholder" di bawah ini,
+                dan uncomment blok ini sebagai gantinya.
+                ══════════════════════════════════════════════════════
+
+                @if($snapToken)
+                    <button id="pay-button" class="confirm-btn" style="width:100%;margin-top:16px;">
+                        Bayar Sekarang
+                    </button>
+                    <script>
+                        document.getElementById('pay-button').addEventListener('click', function () {
+                            window.snap.pay('{{ $snapToken }}', {
+                                onSuccess: function (result) {
+                                    // Pembayaran berhasil → simpan booking ke DB
+                                    fetch('{{ route("experience.payment.confirm") }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        body: JSON.stringify({ midtrans_result: result })
+                                    }).then(() => {
+                                        window.location.href = '{{ route("experience.success") }}';
+                                    });
+                                },
+                                onPending: function (result) {
+                                    console.log('Pending:', result);
+                                },
+                                onError: function (result) {
+                                    alert('Pembayaran gagal. Silakan coba lagi.');
+                                    console.error('Error:', result);
+                                },
+                                onClose: function () {
+                                    // User menutup popup tanpa bayar — tidak perlu action
+                                }
+                            });
+                        });
+                    </script>
+                @else
+                    <p style="color:#dc2626;font-size:13px;margin-top:8px;">
+                        Gagal memuat payment gateway. Silakan kembali dan coba lagi.
+                    </p>
                 @endif
 
+                ══════════════════════════════════════════════════════
+                --}}
+
+                {{-- ── QR Placeholder (hapus blok ini saat Midtrans aktif) ── --}}
+                <p class="scan-label">Scan to Pay</p>
+                <div class="qr-wrapper">
+                    <img src="{{ $qrCodeUrl }}"
+                         alt="QR Code untuk pembayaran"
+                         class="ticket-qr-img">
+                </div>
+                <p style="font-size:11px;color:rgba(26,61,10,0.45);text-align:center;margin-top:4px;">
+                    Order ID: {{ $booking['pending_ticket_id'] }}
+                </p>
+
                 <div class="awaiting-timer">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <polyline points="12 6 12 12 16 14"/>
+                    </svg>
                     Awaiting Payment... <span id="countdown">14:59</span>
                 </div>
 
-                <form action="/experience/success" method="GET">
+                <form action="{{ route('experience.payment.confirm') }}" method="POST">
+                    @csrf
                     <button type="submit" class="confirm-btn">I Have Completed Payment</button>
                 </form>
+                {{-- ── End QR Placeholder ── --}}
 
                 <p class="secured-note">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
                     Secured by AlaSare Payment Gateway
                 </p>
             </div>
@@ -163,32 +241,34 @@
 
     </section>
 
-    {{-- Footer Security Note --}}
     <div class="page-secured">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
         Secured by AlaSare Encryption
     </div>
 
 </main>
 
-{{-- Back to Payment Method --}}
 <div class="back-bar">
-    <a href="/experience/payment-method" class="back-btn">Back To Payment Method</a>
+    <a href="{{ route('experience.payment-method') }}" class="back-btn">Back To Payment Method</a>
 </div>
 
 <x-whatsapp_floating />
 
 <script>
+    // Countdown 15 menit
     (function () {
         let total = 14 * 60 + 59;
-        const el = document.getElementById('countdown');
+        const el  = document.getElementById('countdown');
         if (!el) return;
         const t = setInterval(function () {
             if (total <= 0) { clearInterval(t); el.textContent = '00:00'; return; }
             total--;
-            const m = Math.floor(total / 60).toString().padStart(2, '0');
-            const s = (total % 60).toString().padStart(2, '0');
-            el.textContent = m + ':' + s;
+            el.textContent =
+                Math.floor(total / 60).toString().padStart(2, '0') + ':' +
+                (total % 60).toString().padStart(2, '0');
         }, 1000);
     })();
 </script>

@@ -8,6 +8,7 @@ class Experience extends Model
 {
     protected $fillable = [
         'name',
+        'short_description',
         'category',
         'price',
         'inclusions',
