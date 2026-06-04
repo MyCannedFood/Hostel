@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guest;
+use App\Models\GeneralLedger;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AdminDashboardController extends Controller
 {
@@ -30,6 +32,38 @@ class AdminDashboardController extends Controller
             'revenue' => ['labels' => [], 'data' => []],
         ];
 
+        $totalRevenue = (int) DB::table('payments')
+            ->where('status', 'settlement')
+            ->sum('amount');
+
+        $revenueThisWeek = (int) DB::table('payments')
+            ->where('status', 'settlement')
+            ->whereBetween('paid_at', [
+                $now->copy()->startOfWeek(Carbon::MONDAY),
+                $now->copy()->endOfWeek(Carbon::SUNDAY),
+            ])
+            ->sum('amount');
+
+        $revenueThisMonth = (int) DB::table('payments')
+            ->where('status', 'settlement')
+            ->whereBetween('paid_at', [
+                $now->copy()->startOfMonth(),
+                $now->copy()->endOfMonth(),
+            ])
+            ->sum('amount');
+
+        $revenueLastMonth = (int) DB::table('payments')
+            ->where('status', 'settlement')
+            ->whereBetween('paid_at', [
+                $now->copy()->subMonth()->startOfMonth(),
+                $now->copy()->subMonth()->endOfMonth(),
+            ])
+            ->sum('amount');
+
+        $revenueGrowth = $revenueLastMonth > 0
+            ? round(($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth * 100)
+            : 0;
+
         for ($i = 6; $i >= 0; $i--) {
             $day = $today->copy()->subDays($i);
             $bookingStats['day']['labels'][] = $day->format('D');
@@ -45,10 +79,17 @@ class AdminDashboardController extends Controller
 
         for ($i = 3; $i >= 0; $i--) {
             $weekStart = $now->copy()->subWeeks($i)->startOfWeek(Carbon::MONDAY);
+            $weekEnd   = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
             $bookingStats['revenue']['labels'][] = 'Week ' . $weekStart->format('W');
-            $bookingStats['revenue']['data'][]   = 0;
+            $bookingStats['revenue']['data'][]   = (int) DB::table('payments')
+                ->where('status', 'settlement')
+                ->whereBetween('paid_at', [$weekStart, $weekEnd])
+                ->sum('amount');
         }
 
-        return view('admin.dashboard', compact('guestStats', 'bookingStats'));
+        return view('admin.dashboard', compact(
+            'guestStats', 'bookingStats',
+            'totalRevenue', 'revenueThisWeek', 'revenueThisMonth', 'revenueGrowth'
+        ));
     }
 }

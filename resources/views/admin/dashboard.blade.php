@@ -112,11 +112,11 @@
                             </div>
                             <div class="stat-body">
                                 <p class="stat-label">Total Revenue</p>
-                                <p class="stat-value">IDR 4.200.000</p>
-                                <p class="stat-detail">IDR 4.200.000 (week)</p>
-                                <p class="stat-detail">IDR 4.200.000 (month)</p>
+                                <p class="stat-value">IDR {{ number_format($totalRevenue, 0, ',', '.') }}</p>
+                                <p class="stat-detail">IDR {{ number_format($revenueThisWeek, 0, ',', '.') }} (week)</p>
+                                <p class="stat-detail">IDR {{ number_format($revenueThisMonth, 0, ',', '.') }} (month)</p>
                             </div>
-                            <p class="stat-footer positive">+12% above target</p>
+                            <p class="stat-footer {{ $revenueGrowth >= 0 ? 'positive' : 'negative' }}">{{ $revenueGrowth >= 0 ? '+' : '' }}{{ $revenueGrowth }}% above target</p>
                         </article>
                     </div>
                 </section>

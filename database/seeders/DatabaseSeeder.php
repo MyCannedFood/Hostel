@@ -13,6 +13,8 @@ class DatabaseSeeder extends Seeder
             BedSeeder::class,
             GuestSeeder::class,
             AdminSeeder::class,
+            BookingSeeder::class,
+            RevenueSeeder::class,
         ]);
     }
 }

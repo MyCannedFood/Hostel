@@ -1,11 +1,3 @@
-@php
-$transactions = [
-    ['id' => 'TR-1042', 'description' => 'Booking #BK-9021',          'category' => 'Accommodation', 'type' => 'Income',  'amount' => 350000],
-    ['id' => 'TR-1043', 'description' => 'Cleaning Supplies Purchase', 'category' => 'Operational',   'type' => 'Expense', 'amount' => 400000],
-    ['id' => 'TR-1044', 'description' => 'Laundry Service',            'category' => 'Service',       'type' => 'Income',  'amount' => 150000],
-];
-@endphp
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -62,25 +54,24 @@ $transactions = [
                         Revenue
                         <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
                     </div>
-                    <div class="stat-value">IDR {{ number_format(4200000, 0, ',', '.') }}</div>
-                    <div class="stat-badge up">
-                        <i class="fa-solid fa-arrow-trend-up"></i> +12% from target
+                    <div class="stat-value">IDR {{ number_format($totalRevenue, 0, ',', '.') }}</div>
+                    <div class="stat-badge {{ $growthPercent >= 0 ? 'up' : 'down' }}">
+                        <i class="fa-solid fa-arrow-trend-{{ $growthPercent >= 0 ? 'up' : 'down' }}"></i>
+                        {{ $growthPercent >= 0 ? '+' : '' }}{{ $growthPercent }}% from target
                     </div>
-                    <div class="stat-sub">IDR 4.2M (week)<br>IDR 4.2M (month)</div>
+                    <div class="stat-sub">IDR {{ number_format($revenueThisWeek, 0, ',', '.') }} (week)<br>IDR {{ number_format($revenueThisMonth, 0, ',', '.') }} (month)</div>
                 </div>
 
                 {{-- Expenses --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Expenses
-                        {{-- FIX: stat-label-right sebagai flex wrapper, dots-wrapper sebagai anchor dropdown --}}
                         <div class="stat-label-right">
                             <div class="stat-icon orange"><i class="fa-solid fa-cart-shopping"></i></div>
                             <div class="dots-wrapper">
                                 <div class="three-dots" id="expenseDotsBtn" onclick="toggleDropdown(event, 'expenseDropdown')">
                                     <i class="fa-solid fa-ellipsis-vertical"></i>
                                 </div>
-                                {{-- FIX: dropdown di dalam dots-wrapper, bukan di luar stat-label --}}
                                 <div class="dropdown" id="expenseDropdown">
                                     <div class="dropdown-item" onclick="openModal('overlayExpense'); closeAllDropdowns()">
                                         <i class="fa-solid fa-file-circle-plus"></i> Request Expense
@@ -92,10 +83,10 @@ $transactions = [
                             </div>
                         </div>
                     </div>
-                    <div class="stat-value">IDR {{ number_format(1500000, 0, ',', '.') }}</div>
-                    <div class="progress-bar"><div class="progress-fill"></div></div>
-                    <div class="stat-sub" style="margin-bottom:6px;">35% of revenue allocated</div>
-                    <div class="stat-sub">Operational: IDR 1.2M<br>Maintenance: IDR 300K</div>
+                    <div class="stat-value">IDR {{ number_format($totalExpenses, 0, ',', '.') }}</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: {{ $expenseRatio }}%;"></div></div>
+                    <div class="stat-sub" style="margin-bottom:6px;">{{ $expenseRatio }}% of revenue allocated</div>
+                    <div class="stat-sub">Operational: IDR {{ number_format($expensesOperational, 0, ',', '.') }}<br>Maintenance: IDR {{ number_format($expensesMaintenance, 0, ',', '.') }}</div>
                 </div>
 
                 {{-- Net Profit --}}
@@ -104,11 +95,11 @@ $transactions = [
                         Net Profit
                         <div class="stat-icon green"><i class="fa-solid fa-building-columns"></i></div>
                     </div>
-                    <div class="stat-value">IDR {{ number_format(2700000, 0, ',', '.') }}</div>
-                    <div class="stat-badge healthy">
-                        <i class="fa-solid fa-circle-check"></i> Healthy
+                    <div class="stat-value">IDR {{ number_format($netProfit, 0, ',', '.') }}</div>
+                    <div class="stat-badge {{ $netProfit >= 0 ? 'healthy' : '' }}">
+                        <i class="fa-solid fa-circle-check"></i> {{ $netProfit >= 0 ? 'Healthy' : 'Loss' }}
                     </div>
-                    <div class="stat-sub">64% margin achieved this period</div>
+                    <div class="stat-sub">{{ $profitMargin }}% margin achieved this period</div>
                 </div>
 
                 {{-- Growth --}}
@@ -117,12 +108,11 @@ $transactions = [
                         Growth
                         <div class="stat-icon green"><i class="fa-solid fa-chart-line"></i></div>
                     </div>
-                    <div class="stat-value">+12.4%</div>
-                    {{-- FIX: tambah stat-sub untuk "Vs last month" --}}
-                    <div class="stat-sub" style="margin-bottom:4px; color:#8A9A8E; font-size:12px;">Vs last month (IDR 3.7M)</div>
-                    <div class="growth-row"><span>Daily Growth</span><span class="growth-val">+1.2%</span></div>
-                    <div class="growth-row"><span>Weekly Growth</span><span class="growth-val">+8.5%</span></div>
-                    <div class="growth-row"><span>Monthly Avg</span><span class="growth-val">11.8%</span></div>
+                    <div class="stat-value">{{ $growthPercent >= 0 ? '+' : '' }}{{ $growthPercent }}%</div>
+                    <div class="stat-sub" style="margin-bottom:4px; color:#8A9A8E; font-size:12px;">Vs last month (IDR {{ number_format($revenueLastMonth, 0, ',', '.') }})</div>
+                    <div class="growth-row"><span>Daily Growth</span><span class="growth-val">{{ $dailyGrowth >= 0 ? '+' : '' }}{{ $dailyGrowth }}%</span></div>
+                    <div class="growth-row"><span>Weekly Growth</span><span class="growth-val">{{ $weeklyGrowth >= 0 ? '+' : '' }}{{ $weeklyGrowth }}%</span></div>
+                    <div class="growth-row"><span>Monthly Avg</span><span class="growth-val">{{ $growthPercent >= 0 ? '+' : '' }}{{ $growthPercent }}%</span></div>
                 </div>
 
             </div>{{-- /stats-grid --}}
@@ -136,22 +126,23 @@ $transactions = [
                         <div class="chart-filter">Unit: IDR &nbsp; Day <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>
                     </div>
                     <div class="chart-body">
+                        @php
+                            $ymax = $revenueMax;
+                            $steps = 5;
+                            $stepVal = $ymax > 0 ? ceil($ymax / $steps / 100000) * 100000 : 100000;
+                        @endphp
                         <div class="y-axis">
-                            <div class="y-label">5M</div>
-                            <div class="y-label">4M</div>
-                            <div class="y-label">3M</div>
-                            <div class="y-label">2M</div>
-                            <div class="y-label">1M</div>
-                            <div class="y-label">0</div>
+                            @for ($s = $steps; $s >= 0; $s--)
+                                <div class="y-label">IDR {{ number_format($s * $stepVal, 0, ',', '.') }}</div>
+                            @endfor
                         </div>
                         <div class="bar-chart">
-                            <div class="bar-wrap"><div class="bar" style="height:42%"></div><div class="bar-label">Mon</div></div>
-                            <div class="bar-wrap"><div class="bar" style="height:64%"></div><div class="bar-label">Tue</div></div>
-                            <div class="bar-wrap"><div class="bar" style="height:28%"></div><div class="bar-label">Wed</div></div>
-                            <div class="bar-wrap"><div class="bar" style="height:82%"></div><div class="bar-label">Thu</div></div>
-                            <div class="bar-wrap"><div class="bar" style="height:54%"></div><div class="bar-label">Fri</div></div>
-                            <div class="bar-wrap"><div class="bar" style="height:90%"></div><div class="bar-label">Sat</div></div>
-                            <div class="bar-wrap"><div class="bar" style="height:62%"></div><div class="bar-label">Sun</div></div>
+                            @foreach ($revenueLabels as $i => $label)
+                                <div class="bar-wrap">
+                                    <div class="bar" style="height: {{ $revenueMax > 0 ? ($revenueData[$i] / $revenueMax) * 100 : 0 }}%"></div>
+                                    <div class="bar-label">{{ $label }}</div>
+                                </div>
+                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -173,14 +164,10 @@ $transactions = [
                                     <stop offset="100%" stop-color="#4B9960" stop-opacity="0"/>
                                 </linearGradient>
                             </defs>
-                            <path d="M0,100 C50,95 100,85 150,80 C200,75 250,72 300,68 C350,64 380,62 400,60"
-                                  stroke="#D9864A" stroke-width="2" fill="none"/>
-                            <path d="M0,100 C50,95 100,85 150,80 C200,75 250,72 300,68 C350,64 380,62 400,60 L400,160 L0,160 Z"
-                                  fill="url(#areaGrad1)"/>
-                            <path d="M0,120 C30,115 60,105 100,90 C140,75 170,65 200,72 C230,79 260,85 300,78 C340,71 370,55 400,45"
-                                  stroke="#4B9960" stroke-width="2" fill="none"/>
-                            <path d="M0,120 C30,115 60,105 100,90 C140,75 170,65 200,72 C230,79 260,85 300,78 C340,71 370,55 400,45 L400,160 L0,160 Z"
-                                  fill="url(#areaGrad2)"/>
+                            <path d="{{ $pathTarget }}" stroke="#D9864A" stroke-width="2" fill="none"/>
+                            <path d="{{ $pathTargetArea }}" fill="url(#areaGrad1)"/>
+                            <path d="{{ $pathRevenue }}" stroke="#4B9960" stroke-width="2" fill="none"/>
+                            <path d="{{ $pathRevenueArea }}" fill="url(#areaGrad2)"/>
                         </svg>
                     </div>
                     <div class="area-legend">

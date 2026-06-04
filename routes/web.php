@@ -179,7 +179,7 @@ Route::middleware(['is_admin'])->group(function () {
         ->name('admin.manage_occupation');
 
     Route::get('/admin/manage-revenue',
-        fn () => view('admin.manage_revenue'))
+        [\App\Http\Controllers\AdminRevenueController::class, 'index'])
         ->name('admin.manage_revenue');
 
     Route::get('/Admin/Rooms-Management', function () {
