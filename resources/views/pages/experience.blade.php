@@ -39,20 +39,24 @@
                     @if($exp->cover_image)
                         <img src="{{ asset($exp->cover_image) }}" alt="{{ $exp->name }}" class="card-image">
                     @else
-                        <img src="https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800" alt="{{ $exp->name }}" class="card-image">
+                        <img src="https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800"
+                             alt="{{ $exp->name }}" class="card-image">
                     @endif
                 </div>
                 <div class="card-content">
                     <div class="card-meta">IDR {{ number_format($exp->price, 0, ',', '.') }} / person</div>
                     <h3 class="card-title">{{ $exp->name }}</h3>
                     <p class="card-desc">
-                        @if($exp->inclusions && count($exp->inclusions) > 0)
+                        @if($exp->short_description)
+                            {{ $exp->short_description }}
+                        @elseif($exp->inclusions && count($exp->inclusions) > 0)
                             {{ implode(', ', $exp->inclusions) }}
                         @else
                             {{ $exp->name }} experience at AlaSare.
                         @endif
                     </p>
-                    <a href="#" class="card-btn">Book Now</a>
+                    {{-- Book Now → ke booking detail experience ini --}}
+                    <a href="{{ route('experience.booking-detail', $exp->id) }}" class="card-btn">Book Now</a>
                 </div>
             </div>
             @empty
@@ -71,7 +75,6 @@
 @include('components.footer')
 <x-whatsapp_floating />
 
-</body>
 <script>
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -89,4 +92,6 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 </script>
+
+</body>
 </html>

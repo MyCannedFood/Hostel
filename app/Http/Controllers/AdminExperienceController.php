@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Experience;
 use App\Models\ExperienceBooking;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
@@ -15,7 +14,7 @@ class AdminExperienceController extends Controller
     public function index(): View
     {
         $experiences = Experience::withCount('bookings')->orderBy('created_at', 'desc')->get();
-        $bookings = ExperienceBooking::with('experience')->orderBy('created_at', 'desc')->get();
+        $bookings    = ExperienceBooking::with('experience')->orderBy('created_at', 'desc')->get();
 
         return view('admin.experience', compact('experiences', 'bookings'));
     }
@@ -25,29 +24,31 @@ class AdminExperienceController extends Controller
     public function storeExperience(Request $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'category'    => 'required|string|max:255',
-            'price'       => 'required|numeric|min:0',
-            'inclusions'  => 'nullable|array',
-            'time_slots'  => 'nullable|array',
-            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'status'      => 'required|in:Active,Inactive',
+            'name'              => 'required|string|max:255',
+            'short_description' => 'nullable|string|max:500',
+            'category'          => 'required|string|max:255',
+            'price'             => 'required|numeric|min:0',
+            'inclusions'        => 'nullable|array',
+            'time_slots'        => 'nullable|array',
+            'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'status'            => 'required|in:Active,Inactive',
         ]);
 
         $coverPath = null;
         if ($request->hasFile('cover_image')) {
-            $path = $request->file('cover_image')->store('public/experiences');
+            $path      = $request->file('cover_image')->store('public/experiences');
             $coverPath = Storage::url($path);
         }
 
         $experience = Experience::create([
-            'name'        => $validated['name'],
-            'category'    => $validated['category'],
-            'price'       => $validated['price'],
-            'inclusions'  => $validated['inclusions'] ?? [],
-            'time_slots'  => $validated['time_slots'] ?? [],
-            'cover_image' => $coverPath,
-            'status'      => $validated['status'],
+            'name'              => $validated['name'],
+            'short_description' => $validated['short_description'] ?? null,
+            'category'          => $validated['category'],
+            'price'             => $validated['price'],
+            'inclusions'        => $validated['inclusions'] ?? [],
+            'time_slots'        => $validated['time_slots'] ?? [],
+            'cover_image'       => $coverPath,
+            'status'            => $validated['status'],
         ]);
 
         return response()->json(['success' => true, 'experience' => $experience]);
@@ -56,13 +57,14 @@ class AdminExperienceController extends Controller
     public function updateExperience(Request $request, Experience $experience): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'name'        => 'required|string|max:255',
-            'category'    => 'required|string|max:255',
-            'price'       => 'required|numeric|min:0',
-            'inclusions'  => 'nullable|array',
-            'time_slots'  => 'nullable|array',
-            'cover_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'status'      => 'required|in:Active,Inactive',
+            'name'              => 'required|string|max:255',
+            'short_description' => 'nullable|string|max:500',
+            'category'          => 'required|string|max:255',
+            'price'             => 'required|numeric|min:0',
+            'inclusions'        => 'nullable|array',
+            'time_slots'        => 'nullable|array',
+            'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'status'            => 'required|in:Active,Inactive',
         ]);
 
         $coverPath = $experience->cover_image;
@@ -70,18 +72,19 @@ class AdminExperienceController extends Controller
             if ($experience->cover_image) {
                 Storage::delete(str_replace('/storage/', 'public/', $experience->cover_image));
             }
-            $path = $request->file('cover_image')->store('public/experiences');
+            $path      = $request->file('cover_image')->store('public/experiences');
             $coverPath = Storage::url($path);
         }
 
         $experience->update([
-            'name'        => $validated['name'],
-            'category'    => $validated['category'],
-            'price'       => $validated['price'],
-            'inclusions'  => $validated['inclusions'] ?? [],
-            'time_slots'  => $validated['time_slots'] ?? [],
-            'cover_image' => $coverPath,
-            'status'      => $validated['status'],
+            'name'              => $validated['name'],
+            'short_description' => $validated['short_description'] ?? null,
+            'category'          => $validated['category'],
+            'price'             => $validated['price'],
+            'inclusions'        => $validated['inclusions'] ?? [],
+            'time_slots'        => $validated['time_slots'] ?? [],
+            'cover_image'       => $coverPath,
+            'status'            => $validated['status'],
         ]);
 
         return response()->json(['success' => true, 'experience' => $experience]);
@@ -163,8 +166,11 @@ class AdminExperienceController extends Controller
     {
         $request->validate(['ticket_id' => 'required|string']);
 
+        // Strip # jika ada (user mungkin copy dari tampilan tabel yang ada prefix #)
+        $ticketId = ltrim(trim($request->ticket_id), '#');
+
         $booking = ExperienceBooking::with('experience')
-            ->where('ticket_id', $request->ticket_id)
+            ->where('ticket_id', $ticketId)
             ->first();
 
         if (!$booking) {
