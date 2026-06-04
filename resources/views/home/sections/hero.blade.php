@@ -237,22 +237,25 @@
 
         <div class="hero-booking-field">
             <label for="hero-checkout">Check-Out</label>
-            <input type="date" id="hero-checkout" name="checkout" value="{{ date('Y-m-d', strtotime('+4 days')) }}">
+            <input type="date" id="hero-checkout" name="checkout" value="{{ date('Y-m-d', strtotime('+6 days')) }}">
         </div>
 
         <div class="hero-booking-field" style="border-right:none;">
             <label for="hero-guests">Guests</label>
-            <select id="hero-guests" name="guests">
-                <option value="2a0c">2 Adults, 0 Children</option>
-                <option value="2a1c">2 Adults, 1 Child</option>
-                <option value="2a2c">2 Adults, 2 Children</option>
-                <option value="1a0c">1 Adult, 0 Children</option>
+                <select id="hero-guests" name="guests">
+                <option value="1a0c" selected>1 Male Adult, 0 Children</option>
+                <option value="1f0c">1 Female Adult, 0 Children</option>
+                <option value="2a1c">2 Male Adults, 1 Child</option>
+                <option value="2f1c">2 Female Adults, 1 Child</option>
+                <option value="2a2c">2 Male Adults, 2 Children</option>
+                <option value="2f2c">2 Female Adults, 2 Children</option>
+                
             </select>
         </div>
 
         <div class="hero-booking-btn-wrap">
             <button class="hero-booking-btn" type="button"
-                    onclick="window.location.href='/rooms'">
+                    onclick="window.location.href='/room-selection'">
                 Check Availability
             </button>
         </div>

@@ -731,28 +731,49 @@
     });
 
     // KIRIM SEMUA TITIK PIN KE DATABASE 
-    btnSaveConfig.addEventListener('click', async function() {
+   btnSaveConfig.addEventListener('click', async function() {
         if(!roomId) return;
 
-        const bedIdByPinLabel = {};
+        const payload = [];
+        
+        // 1. Ambil semua koordinat pin yang ada di atas gambar denah
+        const pinsOnMap = {};
+        document.querySelectorAll('.pin').forEach(pinElem => {
+            const pinLabel = (pinElem.dataset.label || pinElem.textContent || '').trim();
+            pinsOnMap[pinLabel] = {
+                left: pinElem.style.left,
+                top: pinElem.style.top
+            };
+        });
+
+        // 2. Loop SEMUA kasur (bed) untuk mendata mereka menempel di pin nomor berapa
+        const processedPins = new Set();
         document.querySelectorAll('.config-card').forEach(card => {
             const bedId = card.dataset.bedId;
             const assignedPin = card.querySelector('.bed-number')?.textContent?.trim();
 
-            if (assignedPin && assignedPin !== '?') {
-                bedIdByPinLabel[assignedPin] = bedId;
+            // Jika kasur ini memilih pin (dan pinnya benar-benar ada di map)
+            if (assignedPin && assignedPin !== '?' && pinsOnMap[assignedPin]) {
+                payload.push({
+                    bed_id: bedId, // Bisa banyak kasur memakai point_label yang sama!
+                    point_label: assignedPin,
+                    position_left: pinsOnMap[assignedPin].left,
+                    position_top: pinsOnMap[assignedPin].top
+                });
+                processedPins.add(assignedPin); // Tandai bahwa pin ini sudah terpakai
             }
         });
 
-        const payload = Array.from(document.querySelectorAll('.pin')).map(pinElem => {
-            const pinLabel = (pinElem.dataset.label || pinElem.textContent || '').trim();
-
-            return {
-                bed_id: bedIdByPinLabel[pinLabel] || null,
-                point_label: pinLabel || null,
-                position_left: pinElem.style.left,
-                position_top: pinElem.style.top,
-            };
+        // 3. Masukkan juga pin yang "menganggur" (ada di map tapi belum dipilih kasur manapun)
+        Object.keys(pinsOnMap).forEach(label => {
+            if (!processedPins.has(label)) {
+                payload.push({
+                    bed_id: null,
+                    point_label: label,
+                    position_left: pinsOnMap[label].left,
+                    position_top: pinsOnMap[label].top
+                });
+            }
         });
 
         if(payload.length === 0) {
@@ -790,7 +811,6 @@
             
             alert('Floor Plan dan Pin berhasil disimpan ke Database!');
             closeModal();
-            // Opsional: Reload halaman agar tabel utama ter-refresh
             window.location.reload(); 
         } catch (err) {
             console.error("Save config error:", err);

@@ -10,6 +10,8 @@ class Guest extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $guarded = [];
+
     protected $fillable = [
         'booking_code',
         'status',

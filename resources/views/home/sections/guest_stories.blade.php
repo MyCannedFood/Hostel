@@ -16,7 +16,7 @@
     }
 
     $defaultStoryImages = [
-        'images/guest-edward-claire.jpg',
+        'images/guest.png',
         'images/guest-2.jpg',
         'images/guest-3.jpg',
     ];
@@ -193,7 +193,7 @@
                         <img src="{{ asset('storage/' . $story['image_path']) }}"
                              alt="{{ $story['name'] ?? '' }}" loading="lazy">
                     @else
-                        <img src="{{ asset($defaultStoryImages[$i] ?? 'images/guest-edward-claire.jpg') }}"
+                        <img src="{{ asset($defaultStoryImages[$i] ?? 'images/guest.png') }}"
                              alt="{{ $story['name'] ?? '' }}" loading="lazy">
                     @endif
                 </div>

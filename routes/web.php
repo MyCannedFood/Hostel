@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Room; 
+use App\Models\Guest;
+use App\Models\Booking;
+use Illuminate\Http\Request;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
@@ -10,6 +14,8 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Admin\BedController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingReceiptMail;
 use App\Http\Controllers\ContactLocationController;
 use App\Http\Controllers\Admin\AdminContactLocationSettingController;
 
@@ -53,14 +59,94 @@ Route::get('/journal/{article}', [\App\Http\Controllers\JournalController::class
 
 // Book now routes
 Route::get('/calendar', fn () => view('pages.calendar'));
-Route::get('/room-selection', fn () => view('pages.room-selection'));
-Route::get('/bed-shared-room', fn () => view('pages.bed-shared-room'));
+
+
+
+Route::get('/room-selection', function (Request $request) {
+    // Ambil data kamar dari database
+    $rooms = Room::with('beds')->where('status', 'Available')->get();
+    
+    // Ambil parameter tanggal dari URL
+    $checkIn = $request->query('check_in');
+    $checkOut = $request->query('check_out');
+    
+    // Kirim data ke view
+    return view('pages.room-selection', compact('rooms', 'checkIn', 'checkOut'));
+})->name('booking.select-room');
+
+Route::get('/bed-shared-room/{id}', function ($id) {
+    // Panggil relasi beds DAN bedPin-nya
+    $room = \App\Models\Room::with('beds.bedPin')->findOrFail($id);
+    return view('pages.bed-shared-room', compact('room'));
+});
+
 Route::get('/guest-details', fn () => view('pages.guest-details'));
 Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 
-// Guest Story
-Route::get('/guest-story', [PageController::class, 'guestStory'])->name('guest-story');
+Route::post('/api/create-booking', function (Request $request) {
+    // 1. Simpan Data Tamu
+    $guest = Guest::create([
+        'booking_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
+        'status' => 'save',
+        'first_name' => $request->first_name,
+        'last_name' => $request->last_name,
+        'email' => $request->email,
+        'phone' => $request->phone,
+        'age' => $request->age,
+        'occupation' => $request->occupation,
+        'country' => $request->country,
+        'self_description' => $request->self_description,
+    ]);
 
+    // 2. Simpan Data Booking dengan Status PENDING
+    $booking = Booking::create([
+        'booking_code' => $guest->booking_code,
+        'guest_id' => $guest->id,
+        'room_id' => $request->room_id,
+        'bed_id' => $request->bed_id,
+        'check_in_date' => $request->check_in,
+        'check_out_date' => $request->check_out,
+        'total_nights' => $request->nights,
+        'total_price' => $request->grand_total,
+        'payment_method' => $request->payment_method,
+        'status' => 'PENDING', 
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'booking_code' => $booking->booking_code,
+        'booking_id' => $booking->id
+    ]);
+});
+
+Route::post('/api/confirm-booking/{id}', function ($id) {
+    // Ambil data booking beserta data tamunya
+    $booking = Booking::find($id);
+    
+    if($booking) {
+        // 1. Ubah status menjadi lunas/terkonfirmasi
+        $booking->update(['status' => 'CONFIRMED']);
+        
+        // 2. Ambil data tamu berdasarkan guest_id
+        $guest = Guest::find($booking->guest_id);
+
+        if($guest) {
+            // 3. Kirim Email Notanya!
+            try {
+                Mail::to($guest->email)->send(new BookingReceiptMail($booking, $guest));
+            } catch (\Exception $e) {
+                // Tangkap error jika email gagal terkirim (misal internet putus / smtp salah)
+                // Tapi biarkan transaksi tetap dianggap sukses di mata user
+                \Log::error('Email gagal dikirim ke ' . $guest->email . ' Error: ' . $e->getMessage());
+            }
+        }
+
+        return response()->json(['success' => true]);
+    }
+    return response()->json(['success' => false], 404);
+});
+
+Route::get('/guest-story', [PageController::class, 'guestStory'])->name('guest-story');
 
 // Admin Auth Routes
 Route::get('/admin/login', [AdminAuthController::class, 'showLogin'])->name('admin.login');
