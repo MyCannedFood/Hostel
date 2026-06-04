@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\Admin\BedController;
+use App\Http\Controllers\Admin\AddonController;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingReceiptMail;
 use App\Http\Controllers\ContactLocationController;
@@ -199,6 +200,16 @@ Route::middleware(['is_admin'])->group(function () {
     Route::get('/admin/add-new-room-popup', function () {
         return view('admin.add-new-room-full');
     })->name('admin.add_new_room_popup');
+
+    Route::get('/admin/add-additional-popup', function () {
+        return view('admin.add-additional-full');
+    })->name('admin.add_additional_popup');
+
+    // Add-ons CRUD API
+    Route::get('/admin/add-ons', [AddonController::class, 'index'])->name('admin.add-ons.index');
+    Route::post('/admin/add-ons', [AddonController::class, 'store'])->name('admin.add-ons.store');
+    Route::put('/admin/add-ons/{addon}', [AddonController::class, 'update'])->name('admin.add-ons.update');
+    Route::delete('/admin/add-ons/{addon}', [AddonController::class, 'destroy'])->name('admin.add-ons.destroy');
 
     Route::get('add-new-room-popup', [AdminRoomController::class, 'addNewRoomPopup']);
     Route::post('rooms', [AdminRoomController::class, 'store']);

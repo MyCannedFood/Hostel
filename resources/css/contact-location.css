@@ -154,6 +154,27 @@
     outline: none;
 }
 
+.contact-form-card button[type="submit"] {
+    margin-top: 8px;
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 2px;
+    background: var(--contact-green);
+    color: #fff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.contact-form-card button[type="submit"]:hover {
+    background: #2a5a10;
+}
+
 .contact-form-card textarea {
     min-height: 126px;
     resize: vertical;

@@ -17,6 +17,8 @@ export default defineConfig({
                 'resources/css/settings.css',
                 'resources/css/experience.css',
                 'resources/css/admin-experience.css',
+                'resources/css/admin-add-additional.css',
+                'resources/js/admin/add-additional.js',
                 'resources/js/app.js',
                 'resources/css/admin/settings/general-settings/hostel-information.css',
                 'resources/js/admin/settings/general-settings/hostel-information.js',

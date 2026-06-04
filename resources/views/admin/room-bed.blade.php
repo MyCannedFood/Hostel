@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Manage Rooms & Beds</title>
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/css/admin-add-additional.css', 'resources/js/admin/add-additional.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=EB+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
@@ -792,13 +792,22 @@
                     Manage Rooms & Beds
                 </h1>
                 
-                <button id="openRoomModal" type="button" style="display: inline-flex; align-items: center; gap: 8px; background-color: #D9864A; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; font-family: 'DM Sans', sans-serif; border-radius: 4px; cursor: pointer;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    Add a New Room
-                </button>
+                <div style="display: flex; gap: 16px;">
+                    <button id="openRoomModal" type="button" style="display: inline-flex; align-items: center; gap: 8px; background-color: #D9864A; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; font-family: 'DM Sans', sans-serif; border-radius: 4px; cursor: pointer;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add a New Room
+                    </button>
+                    <button id="openAddAdditionalModal" type="button" style="display: inline-flex; align-items: center; gap: 8px; background-color: #D9864A; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; font-family: 'DM Sans', sans-serif; border-radius: 4px; cursor: pointer;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Additional
+                    </button>
+                </div>
                 
             </div>
 
@@ -966,7 +975,7 @@
 (function(){
     // Fungsi untuk menutup semua tipe modal
     function closeInjectedModal() {
-        ['addNewRoomContainer', 'editNewRoomContainer', 'addNewBedContainer', 'addNewFloorContainer'].forEach(id => {
+        ['addNewRoomContainer', 'editNewRoomContainer', 'addNewBedContainer', 'addNewFloorContainer', 'addAdditionalContainer'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.remove();
         });
@@ -1028,6 +1037,8 @@
 
     // BUNGKUSAN FUNGSI PEMANGGIL
     window.openAddNewRoom = () => fetchAndInjectModal('/admin/add-new-room-popup', 'addNewRoomContainer', 'roomModal');
+
+    window.openAddAdditional = () => fetchAndInjectModal('/admin/add-additional-popup', 'addAdditionalContainer', 'additionalModal');
     
     window.openEditRoom = (roomId) => fetchAndInjectModal(`/admin/rooms/${roomId}/edit-popup`, 'editNewRoomContainer', 'roomModal');
     
@@ -1055,6 +1066,7 @@
 
     // TRIGGER TOMBOL DI HALAMAN UTAMA
     document.getElementById('openRoomModal')?.addEventListener('click', window.openAddNewRoom);
+    document.getElementById('openAddAdditionalModal')?.addEventListener('click', window.openAddAdditional);
     document.getElementById('openBedModal')?.addEventListener('click', window.openAddNewBed);
 
     document.querySelectorAll('.edit-room-btn').forEach(btn => {
