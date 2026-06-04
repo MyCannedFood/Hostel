@@ -5,38 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Confirm & Payment - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
 
 @include('components.navbar')
 
+@php
+    use Carbon\Carbon;
+
+    // 1. Tangkap semua data dari URL GET Request
+    $checkInParam = request()->query('check_in');
+    $checkOutParam = request()->query('check_out');
+    $nightsParam = (int) request()->query('nights', 1);
+    $roomIdParam = request()->query('room_id');
+    $bedIdParam = request()->query('bed_id');
+    $addonsParam = request()->query('addons', '');
+    $promoParam = request()->query('promo', '');
+    $paymentMethod = request()->query('payment_method', 'QRIS / E-Wallet');
+
+    // Data Tamu
+    $guestName = request()->query('first_name', '') . ' ' . request()->query('last_name', '');
+    $guestEmail = request()->query('email', '');
+    $guestPhone = request()->query('country_code', '') . ' ' . request()->query('phone', '');
+
+    // 2. Ambil data Room dan Bed dari Database
+    $room = \App\Models\Room::find($roomIdParam);
+    $bed = \App\Models\Bed::find($bedIdParam);
+    
+    $roomName = $room ? $room->name : 'Unknown Room';
+    $bedName = $bed ? $bed->name : 'Unknown Bed';
+
+    // 3. Kalkulasi Harga Kamar
+    $basePrice = $bed && $bed->base_price > 0 ? $bed->base_price : ($room->base_price ?? 125000);
+    $totalBedCost = $basePrice * max(1, $nightsParam);
+    
+    // 4. Kalkulasi Addons & Diskon Promo
+    $addonIds = array_filter(explode(',', $addonsParam));
+    $selectedAddons = \App\Models\Addon::whereIn('id', $addonIds)->get();
+    
+    $checkInDayName = $checkInParam ? Carbon::parse($checkInParam)->format('l') : Carbon::now()->format('l');
+
+    $addonTotal = 0;
+    $addonDetails = [];
+    foreach($selectedAddons as $addon) {
+        $isFree = $addon->is_auto_include && is_array($addon->include_days) && in_array($checkInDayName, $addon->include_days);
+        $cost = $isFree ? 0 : $addon->price;
+        $addonTotal += $cost;
+
+        $addonDetails[] = [
+            'name' => $addon->name,
+            'note' => $isFree ? ($addon->note ?? '(For free)') : '',
+            'cost' => $cost
+        ];
+    }
+
+    $subTotal = $totalBedCost + $addonTotal;
+    
+    // Asumsi Promo Diskon 10% jika diisi (Bisa diganti dari database promo kamu)
+    $promoDiscount = $promoParam ? ($subTotal * 0.10) : 0; 
+    
+    // Asumsi Pajak & Servis 10%
+    $tax = ($subTotal - $promoDiscount) * 0.10;
+    
+    $grandTotal = ($subTotal - $promoDiscount) + $tax;
+
+    // Format Tanggal Display
+    $displayCheckInDate = $checkInParam ? Carbon::parse($checkInParam)->format('d M Y') : '-';
+    $displayCheckOutDate = $checkOutParam ? Carbon::parse($checkOutParam)->format('d M Y') : '-';
+    $displayCheckInModal = $checkInParam ? Carbon::parse($checkInParam)->translatedFormat('d F Y') : '-';
+    $displayCheckOutModal = $checkOutParam ? Carbon::parse($checkOutParam)->translatedFormat('d F Y') : '-';
+
+    // Link kembali dengan membawa parameter utuh
+    $queryParams = http_build_query(request()->all());
+    $backToGuestDetailsUrl = url('/guest-details') . '?' . $queryParams;
+@endphp
+
 <main class="confirm-payment-page">
     
-    {{-- Booking Stepper --}}
+    {{-- Booking Stepper Aktif (Bisa Diklik) --}}
     <nav class="booking-stepper">
-        <div class="step completed">
-            <span class="step-icon">✓</span>
-            <span>Calendar</span>
-        </div>
+        <a href="{{ url('/calendar') }}?{{ $queryParams }}" class="step completed" style="text-decoration:none; color:inherit;">
+            <span class="step-icon">✓</span> <span>Calendar</span>
+        </a>
         <div class="step-divider"></div>
-        <div class="step completed">
-            <span class="step-icon">✓</span>
-            <span>Room Selection</span>
-        </div>
+        <a href="{{ url('/room-selection') }}?{{ $queryParams }}" class="step completed" style="text-decoration:none; color:inherit;">
+            <span class="step-icon">✓</span> <span>Room Selection</span>
+        </a>
         <div class="step-divider"></div>
-        <div class="step completed">
-            <span class="step-icon">✓</span>
-            <span>Bed & Shared Room</span>
-        </div>
+        <a href="{{ url('/bed-shared-room/' . ($roomIdParam ?? 1)) }}?{{ $queryParams }}" class="step completed" style="text-decoration:none; color:inherit;">
+            <span class="step-icon">✓</span> <span>Bed & Shared Room</span>
+        </a>
         <div class="step-divider"></div>
-        <div class="step completed">
-            <span class="step-icon">✓</span>
-            <span>Guest Details</span>
-        </div>
+        <a href="{{ $backToGuestDetailsUrl }}" class="step completed" style="text-decoration:none; color:inherit;">
+            <span class="step-icon">✓</span> <span>Guest Details</span>
+        </a>
         <div class="step-divider"></div>
         <div class="step active">
-            <span class="step-number">5</span>
-            <span>Confirm & Payment</span>
+            <span class="step-number">5</span> <span>Confirm & Payment</span>
         </div>
     </nav>
 
@@ -52,37 +118,22 @@
             
             <section class="confirm-card">
                 <h2>Review Booking Details</h2>
-                
                 <div class="room-review-card">
                     <div class="room-review-image-wrapper">
-                        <img src="{{ asset('images/rooms/room_1.png') }}" alt="Serene Haven" onerror="this.src='https://placehold.co/400x300?text=Serene+Haven'">
-                        <span class="room-review-tag">Male Only</span>
+                        <img src="{{ $room && $room->photo ? asset('storage/' . $room->photo) : asset('images/default-room.png') }}" alt="{{ $roomName }}">
+                        @if($room && strtolower($room->gender_type) != 'mixed')
+                            <span class="room-review-tag">{{ strtoupper($room->gender_type) }} ONLY</span>
+                        @endif
                     </div>
                     <div class="room-review-details">
-                        <h3>Serene Haven</h3>
-                        <div class="room-review-bed">B1 - Bottom Bed</div>
-                        <p class="room-review-desc">A functional and minimalist space designed for maximum comfort and simplicity.</p>
+                        <h3>{{ $roomName }}</h3>
+                        <div class="room-review-bed">{{ $bedName }}</div>
+                        <p class="room-review-desc">{{ $room ? $room->description : '' }}</p>
                         
                         <div class="room-review-features">
                             <div class="review-feature">
                                 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                                <span>8-Person Capacity</span>
-                            </div>
-                            <div class="review-feature">
-                                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                <span>External Shared Bathroom</span>
-                            </div>
-                            <div class="review-feature">
-                                <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-                                <span>Wi-Fi</span>
-                            </div>
-                            <div class="review-feature">
-                                <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                                <span>Personal Locker</span>
-                            </div>
-                            <div class="review-feature">
-                                <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                                <span>AC</span>
+                                <span>{{ $room ? $room->capacity : '-' }} Person Capacity</span>
                             </div>
                         </div>
                     </div>
@@ -93,46 +144,45 @@
                 <h2>Your Stay</h2>
                 <div class="stay-duration-box">
                     <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                    <span>15 - 20 May 2026 (5 day)</span>
+                    <span>{{ $displayCheckInDate }} - {{ $displayCheckOutDate }} ({{ $nightsParam }} day)</span>
                 </div>
             </section>
 
             <section class="confirm-card">
                 <div class="confirm-card-header">
                     <h2>Guest Details</h2>
-                    <a href="/guest-details" class="confirm-link">Edit</a>
+                    <a href="{{ $backToGuestDetailsUrl }}" class="confirm-link">Edit</a>
                 </div>
                 <div class="guest-info-display">
-                    <strong>Julian Walters</strong>
-                    <span>julian@email.com</span>
-                    <span>+44 7700 900XXX</span>
+                    <strong style="text-transform: capitalize;">{{ $guestName }}</strong>
+                    <span>{{ $guestEmail }}</span>
+                    <span>{{ $guestPhone }}</span>
                 </div>
             </section>
 
-            <section class="confirm-card">
-                <h2>Promotion</h2>
-                <div class="promo-badge-card">
-                    <div class="promo-badge-left">
-                        <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                        <div class="promo-badge-info">
-                            <h4>ALASARE2026</h4>
-                            <p>10% Discount Applied</p>
+            @if($promoParam)
+                <section class="confirm-card">
+                    <h2>Promotion</h2>
+                    <div class="promo-badge-card">
+                        <div class="promo-badge-left">
+                            <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            <div class="promo-badge-info">
+                                <h4 style="text-transform: uppercase;">{{ $promoParam }}</h4>
+                                <p>10% Discount Applied</p>
+                            </div>
                         </div>
                     </div>
-                    <button class="promo-badge-remove" onclick="this.closest('.promo-badge-card').style.display='none';">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                    </button>
-                </div>
-            </section>
+                </section>
+            @endif
 
             <section class="confirm-card" style="margin-bottom: 0;">
                 <div class="confirm-card-header">
                     <h2>Payment Method</h2>
-                    <a href="/guest-details" class="confirm-link">Change</a>
+                    <a href="{{ $backToGuestDetailsUrl }}" class="confirm-link">Change</a>
                 </div>
                 <div class="payment-method-box">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px;"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M12 11h4v4h-4zM6 7v10M18 7v10M6 12h12"/></svg>
-                    <span>QRIS / E-Wallet</span>
+                    <span style="text-transform: capitalize;">{{ str_replace('_', ' ', $paymentMethod) }}</span>
                 </div>
             </section>
 
@@ -141,51 +191,47 @@
         {{-- Right Column: Payment Summary --}}
         <div class="confirm-column-right">
             
-            <div class="payment-summary-card">
+            <h2 id="columnHeaderLabel" style="margin-bottom: 16px; color: #082600; font-family: var(--font-serif);">Payment Summary</h2>
+            
+            <div class="payment-summary-card" id="paymentSummaryCard">
                 <h3>Payment Summary</h3>
                 
                 <div class="summary-details-list">
+                    {{-- Kamar --}}
                     <div class="summary-item-row">
                         <div class="summary-item-label">
-                            <span>Serene Haven (5 day)</span>
-                            <span class="summary-item-sublabel">1 - Bottom Bed</span>
+                            <span>{{ $roomName }} ({{ $nightsParam }} day)</span>
+                            <span class="summary-item-sublabel">{{ $bedName }}</span>
                         </div>
-                        <span class="summary-item-value">IDR 625.000</span>
+                        <span class="summary-item-value">IDR {{ number_format($totalBedCost, 0, ',', '.') }}</span>
                     </div>
 
-                    <div class="summary-item-row">
-                        <div class="summary-item-label">
-                            <span>AlaSare Breakfast</span>
+                    {{-- Addons --}}
+                    @foreach($addonDetails as $addon)
+                        <div class="summary-item-row">
+                            <div class="summary-item-label">
+                                <span>{{ $addon['name'] }} <span style="color: #6CA16C; font-size: 11px;">{{ $addon['note'] }}</span></span>
+                            </div>
+                            <span class="summary-item-value">{{ $addon['cost'] > 0 ? 'IDR '.number_format($addon['cost'], 0, ',', '.') : 'IDR 0' }}</span>
                         </div>
-                        <span class="summary-item-value">IDR 35.000</span>
-                    </div>
+                    @endforeach
 
-                    <div class="summary-item-row">
-                        <div class="summary-item-label">
-                            <span>Promo Monday Only</span>
+                    {{-- Diskon Promo --}}
+                    @if($promoDiscount > 0)
+                        <div class="summary-item-row">
+                            <div class="summary-item-label">
+                                <span>Promo Discount (10%)</span>
+                            </div>
+                            <span class="summary-item-value discount">- IDR {{ number_format($promoDiscount, 0, ',', '.') }}</span>
                         </div>
-                        <span class="summary-item-value discount">- IDR 35.000</span>
-                    </div>
+                    @endif
 
-                    <div class="summary-item-row">
-                        <div class="summary-item-label">
-                            <span>Dinner Feast AlaSare (1 pack)</span>
-                        </div>
-                        <span class="summary-item-value">IDR 35.000</span>
-                    </div>
-
-                    <div class="summary-item-row">
-                        <div class="summary-item-label">
-                            <span>Promo Discount (10%)</span>
-                        </div>
-                        <span class="summary-item-value discount">- IDR 75.000</span>
-                    </div>
-
+                    {{-- Pajak & Service --}}
                     <div class="summary-item-row">
                         <div class="summary-item-label">
                             <span>Tax & Service (10%)</span>
                         </div>
-                        <span class="summary-item-value">IDR 58.500</span>
+                        <span class="summary-item-value">IDR {{ number_format($tax, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
@@ -193,44 +239,77 @@
 
                 <div class="summary-total-row">
                     <span class="summary-total-label">Total Payment</span>
-                    <span class="summary-total-value">IDR 643.500</span>
+                    <span class="summary-total-value">IDR {{ number_format($grandTotal, 0, ',', '.') }}</span>
                 </div>
 
-                <button class="btn-pay-now">
-                    <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-                    PAY NOW
-                </button>
-
                 <div class="agreement-container">
-                    <input type="checkbox" id="agree-check" class="agreement-checkbox" checked>
+                    <input type="checkbox" id="agree-check" class="agreement-checkbox">
                     <label for="agree-check" class="agreement-text">
                         I confirm that the personal information provided is accurate and valid.
                     </label>
                 </div>
                 
+                <button class="btn-pay-now" id="btnPayNow" disabled style="opacity: 0.5; cursor: not-allowed;">
+                    <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+                    PAY NOW
+                </button>
+
                 <div class="agreement-subtext">
                     By clicking Pay Now, you agree to AlaSare's <a href="#">Terms of Service</a> and <a href="#">Cancellation Policy</a>.
                 </div>
             </div>
 
+            {{-- QRIS Scan Payment Card (Muncul setelah Pay Now di klik) --}}
+            <div class="qris-payment-card" id="qrisPaymentCard" style="display: none; background-color: #ffffff; flex-direction: column; justify-content: center; align-items: center; padding: 24px; border-radius: 8px; box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05); border: 1px solid rgba(195, 201, 186, 0.30);">
+                <div style="padding-bottom: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex; width: 100%;">
+                    <div style="width: 100%; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
+                        <div style="text-align: center; justify-content: center; display: flex; flex-direction: column; color: #082600; font-size: 18.75px; font-family: var(--font-serif); font-weight: 600; line-height: 24px; word-wrap: break-word; margin-bottom: 16px;">
+                            Complete your payment via {{ strtoupper(str_replace('_', ' ', $paymentMethod)) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 100%; padding-bottom: 24px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
+                    <div style="width: 100%; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
+                        <div style="padding-bottom: 12px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex; width: 100%;">
+                            <div style="text-align: center; color: #C3C9BA; font-size: 14px; font-family: var(--font-body); font-weight: 500; line-height: 18px;">SCAN TO PAY</div>
+                        </div>
+                        <div style="width: 100%; max-width: 192px; padding-bottom: 16px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex; margin: 0 auto;">
+                            <div style="width: 192px; height: 192px; padding: 12px; background: white; box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05); border-radius: 8px; border: 1px solid rgba(195, 201, 186, 0.30); flex-direction: column; justify-content: center; align-items: center; display: flex;">
+                                <img style="width: 100%; height: 100%;" src="{{ asset('images/qr.png') }}" alt="QRIS Payment Code" onerror="this.src='https://placehold.co/192?text=QRIS+CODE'" />
+                            </div>
+                        </div>
+                        <div style="padding: 8px 16px; background: rgba(217, 134, 74, 0.10); border-radius: 4px; justify-content: center; align-items: center; gap: 8px; display: inline-flex;">
+                            <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+                            <div style="text-align: center; color: #D9864A; font-size: 13px; font-family: var(--font-body); font-weight: 600;">Awaiting Payment... <span id="paymentTimer">14:59</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 100%; padding-bottom: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex;">
+                    <button class="btn-payment-completed" id="btnPaymentCompleted" style="width: 100%; padding: 16px 24px; background: #D9864A; border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; text-transform: uppercase; cursor: pointer; transition: background 0.2s;">
+                        I HAVE COMPLETED PAYMENT
+                    </button>
+                </div>
+
+                <div style="justify-content: center; align-items: center; gap: 8px; display: flex; width: 100%;">
+                    <div><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(67, 73, 62, 0.80)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+                    <div style="text-align: center; color: rgba(67, 73, 62, 0.80); font-size: 12px; font-weight: 400;">SECURED BY ALASARE PAYMENT GATEWAY</div>
+                </div>
+            </div>
+
         </div>
-
     </div>
-
 </main>
 
-{{-- Footer Actions - DI LUAR main agar full width --}}
-<div class="confirm-footer-wrapper">
-    <div class="confirm-footer-actions">
-        <a href="/guest-details" class="btn-back-details" style="background-color: #4B9960; color: white;">
+{{-- Footer Navigation Back (Statis) --}}
+<div class="confirm-footer-wrapper" style="position: fixed; bottom: 0; left: 0; width: 100%; background: #FFFFFF; border-top: 1px solid #E5E5E5; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 990; padding: 20px;">
+    <div style="max-width: 600px; margin: 0 auto; display: flex; justify-content: center;">
+        <a href="{{ $backToGuestDetailsUrl }}" class="btn-back-details" style="background-color: #6CA16C; color: white; padding: 12px 24px; border-radius: 6px; font-weight: bold; text-decoration: none; font-size: 15px;">
             Back To Guest Details
         </a>
     </div>
 </div>
-
-<a href="https://wa.me/..." class="whatsapp-float">
-    <svg width="32" height="32" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
-</a>
 
 {{-- Payment Success Popup Modal --}}
 <div class="payment-success-overlay" id="paymentSuccessOverlay">
@@ -242,95 +321,64 @@
                 </svg>
             </div>
             <h2>payment success</h2>
-            <div class="booking-id-badge">BOOKING ID: #BK-2026-1042</div>
+            <div class="booking-id-badge" id="modalBookingId">BOOKING ID: #LOADING...</div>
         </div>
 
         <div class="success-modal-body">
             <ul class="success-details-list">
                 <li>
                     <div class="detail-label">
-                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                        </svg>
-                        <span>Villa</span>
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                        <span>Room</span>
                     </div>
-                    <div class="detail-value">Serene Haven</div>
+                    <div class="detail-value">{{ $roomName }}</div>
                 </li>
                 <li>
                     <div class="detail-label">
-                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"></path>
-                            <path d="M5 10V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4"></path>
-                            <path d="M2 18h20"></path>
-                        </svg>
-                        <span>Tipe</span>
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20v-8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8"></path></svg>
+                        <span>Bed</span>
                     </div>
-                    <div class="detail-value">1 — Bottom Bed</div>
+                    <div class="detail-value">{{ $bedName }}</div>
                 </li>
                 <li>
                     <div class="detail-label">
-                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                            <polyline points="10 17 15 12 10 7"></polyline>
-                            <line x1="15" y1="12" x2="3" y2="12"></line>
-                        </svg>
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline></svg>
                         <span>Check-in</span>
                     </div>
-                    <div class="detail-value">11 Mei 2026</div>
+                    <div class="detail-value">{{ $displayCheckInModal }}</div>
                 </li>
                 <li>
                     <div class="detail-label">
-                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                            <polyline points="10 7 5 12 10 17"></polyline>
-                            <line x1="5" y1="12" x2="21" y2="12"></line>
-                        </svg>
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 7 5 12 10 17"></polyline></svg>
                         <span>Check-out</span>
                     </div>
-                    <div class="detail-value">30 Mei 2026</div>
+                    <div class="detail-value">{{ $displayCheckOutModal }}</div>
                 </li>
                 <li>
                     <div class="detail-label">
-                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                            <line x1="12" y1="4" x2="12" y2="20"></line>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
+                        <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><circle cx="12" cy="12" r="3"></circle></svg>
                         <span>Metode bayar</span>
                     </div>
-                    <div class="detail-value">QRIS / E-Wallet</div>
+                    <div class="detail-value" style="text-transform: capitalize;">{{ str_replace('_', ' ', $paymentMethod) }}</div>
                 </li>
             </ul>
 
             <div class="total-price-box">
                 <span class="price-label">TOTAL PRICE</span>
-                <span class="price-value">IDR 643.500</span>
+                <span class="price-value">IDR {{ number_format($grandTotal, 0, ',', '.') }}</span>
             </div>
 
             <div class="modal-actions">
                 <a href="/calendar" class="btn-modal-outline">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    booking details
+                    Booking Details
                 </a>
                 <button class="btn-modal-outline" id="downloadReceipt">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
                     Download proof of payment
                 </button>
             </div>
 
             <div class="confirmation-sent-text">
-                confirmation has been sent to julian@email.com
+                confirmation has been sent to {{ $guestEmail }}
             </div>
         </div>
     </div>
@@ -338,31 +386,170 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const payButton = document.querySelector('.btn-pay-now');
+        const agreeCheck = document.getElementById('agree-check');
+        const btnPayNow = document.getElementById('btnPayNow');
+        
+        const paymentSummaryCard = document.getElementById('paymentSummaryCard');
+        const qrisPaymentCard = document.getElementById('qrisPaymentCard');
+        const btnPaymentCompleted = document.getElementById('btnPaymentCompleted');
         const overlay = document.getElementById('paymentSuccessOverlay');
-        const downloadReceipt = document.getElementById('downloadReceipt');
+        const columnHeaderLabel = document.getElementById('columnHeaderLabel');
+        const modalBookingId = document.getElementById('modalBookingId');
+        
+        let paymentTimerInterval;
+        let createdBookingId = null;
 
-        if (payButton && overlay) {
-            payButton.addEventListener('click', function (e) {
-                e.preventDefault();
-                overlay.classList.add('is-active');
-                document.body.style.overflow = 'hidden';
-            });
-        }
+        // 1. Validasi Checkbox
+        agreeCheck.addEventListener('change', function() {
+            if(this.checked) {
+                btnPayNow.removeAttribute('disabled');
+                btnPayNow.style.opacity = '1';
+                btnPayNow.style.cursor = 'pointer';
+            } else {
+                btnPayNow.setAttribute('disabled', 'true');
+                btnPayNow.style.opacity = '0.5';
+                btnPayNow.style.cursor = 'not-allowed';
+            }
+        });
 
-        if (overlay) {
-            overlay.addEventListener('click', function (e) {
-                if (e.target === overlay) {
-                    overlay.classList.remove('is-active');
-                    document.body.style.overflow = '';
+        // 2. Klik PAY NOW -> Simpan data PENDING ke Backend via AJAX
+        btnPayNow.addEventListener('click', async function (e) {
+            e.preventDefault();
+            
+            const originalText = btnPayNow.innerHTML;
+            btnPayNow.innerHTML = 'PROCESSING...';
+            btnPayNow.setAttribute('disabled', 'true');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.append('grand_total', "{{ $grandTotal }}");
+            
+            const payload = {};
+            for(let [key, value] of urlParams.entries()) {
+                payload[key] = value;
+            }
+
+            try {
+                const response = await fetch('/api/create-booking', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // TANGKAP TEKS MENTAH DARI LARAVEL (Biar ketahuan kalau ada error HTML)
+                const rawText = await response.text(); 
+                let data;
+
+                try {
+                    data = JSON.parse(rawText); // Coba ubah ke JSON
+                } catch (parseError) {
+                    console.error("SERVER ERROR HTML RESPONSE:", rawText);
+                    alert("Terjadi error di sistem (Database/PHP). Silakan tekan F12, buka tab 'Console' untuk melihat detail error aslinya!");
+                    btnPayNow.innerHTML = originalText;
+                    btnPayNow.removeAttribute('disabled');
+                    return; // Hentikan proses
                 }
-            });
-        }
+                
+                if(data.success) {
+                    createdBookingId = data.booking_id;
+                    
+                    paymentSummaryCard.style.display = 'none';
+                    qrisPaymentCard.style.display = 'flex';
+                    columnHeaderLabel.textContent = 'Awaiting Payment';
+                    startPaymentTimer();
+                    
+                    document.querySelector('.confirm-footer-wrapper').style.display = 'none';
+                } else {
+                    alert('Gagal membuat booking. Silakan coba lagi.');
+                    btnPayNow.innerHTML = originalText;
+                    btnPayNow.removeAttribute('disabled');
+                }
 
-        if (downloadReceipt) {
-            downloadReceipt.addEventListener('click', function() {
-                alert('Receipt downloaded successfully!');
-            });
+            } catch (err) {
+                console.error("NETWORK ERROR:", err);
+                alert('Terjadi kesalahan jaringan atau server tidak merespon.');
+                btnPayNow.innerHTML = originalText;
+                btnPayNow.removeAttribute('disabled');
+            }
+        });
+
+        // 3. I HAVE COMPLETED PAYMENT -> Konfirmasi Status Booking via AJAX
+        btnPaymentCompleted.addEventListener('click', async function (e) {
+            e.preventDefault();
+            
+            if(!createdBookingId) {
+                alert('Booking ID tidak ditemukan!');
+                return;
+            }
+
+            const originalBtnText = btnPaymentCompleted.textContent;
+            btnPaymentCompleted.textContent = 'VERIFYING...';
+            
+            try {
+                const res = await fetch(`/api/confirm-booking/${createdBookingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                });
+                
+                const data = await res.json();
+                
+                if(data.success) {
+                    qrisPaymentCard.style.display = 'none';
+                    columnHeaderLabel.textContent = 'Payment Completed';
+                    
+                    // Ambil kode booking asli dari server atau URL jika ada
+                    modalBookingId.textContent = "BOOKING ID: #BK-" + new Date().getFullYear() + "-" + createdBookingId.toString().padStart(4, '0');
+                    
+                    overlay.classList.add('is-active');
+                    document.body.style.overflow = 'hidden';
+                    clearInterval(paymentTimerInterval);
+                } else {
+                    alert('Gagal konfirmasi pembayaran.');
+                }
+            } catch(err) {
+                alert('Gagal menghubungi server.');
+            } finally {
+                btnPaymentCompleted.textContent = originalBtnText;
+            }
+        });
+
+        // Close Modal & Redirect (Opsional)
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) {
+                overlay.classList.remove('is-active');
+                document.body.style.overflow = '';
+                // Arahkan ke halaman utama/dashboard setelah sukses
+                window.location.href = "/calendar";
+            }
+        });
+
+        document.getElementById('downloadReceipt').addEventListener('click', function() {
+            alert('Receipt will be downloaded shortly...');
+        });
+
+        function startPaymentTimer() {
+            let timeLeft = 15 * 60; // 15 menit
+            const timerEl = document.getElementById('paymentTimer');
+            clearInterval(paymentTimerInterval);
+            
+            paymentTimerInterval = setInterval(function() {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerEl.textContent = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+                
+                if (timeLeft <= 0) {
+                    clearInterval(paymentTimerInterval);
+                    timerEl.textContent = '00:00';
+                    alert("Waktu pembayaran telah habis. Silakan ulangi booking.");
+                    window.location.reload();
+                }
+            }, 1000);
         }
     });
 </script>
