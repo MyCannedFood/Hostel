@@ -171,26 +171,26 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <div class="policy-time-content">
                             <div style="color: #AAA;">CHECK-IN</div>
-                            <div style="color: #FFF;">14:00 - 21:00</div>
+                            <div style="color: #FFF;">{{ $policies['checkin_time'] ?? '14:00' }}</div>
                         </div>
                     </div>
                     <div class="policy-time">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <div class="policy-time-content">
                             <div style="color: #AAA;">CHECK-OUT</div>
-                            <div style="color: #FFF;">Before 12:00</div>
+                            <div style="color: #FFF;">Before {{ $policies['checkout_time'] ?? '12:00' }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="house-rules">
                     <h4 style="color: #FFF;">House Rules</h4>
                     <ul style="color: #DDD; font-size: 12px; line-height: 1.8;">
-                        <li>Quiet hours are observed from 22:00 to 07:00 to maintain a peaceful and comfortable environment for all guests.</li>
-                        <li>Smoking is strictly prohibited inside rooms and all indoor common areas.</li>
-                        <li>Please keep shared spaces clean and tidy after use.</li>
-                        <li>Any form of criminal activity, violence, harassment, illegal substances, or behavior that may endanger others is strictly prohibited.</li>
-                        <li>Guests are expected to respect fellow guests, staff, and property at all times.</li>
-                        <li>All guests are required to provide valid identification and accurate personal information during check-in for security and registration purposes.</li>
+                        @php $rules = explode("\n", $policies['house_rules'] ?? "No smoking inside rooms\nQuiet hours after 22:00\nGuests must register at reception"); @endphp
+                        @foreach ($rules as $rule)
+                            @if (trim($rule))
+                                <li>{{ trim($rule) }}</li>
+                            @endif
+                        @endforeach
                     </ul>
                 </div>
                 <div class="accept-checkbox">

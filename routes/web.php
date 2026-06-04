@@ -55,7 +55,10 @@ Route::get('/journal/{article}', [\App\Http\Controllers\JournalController::class
 Route::get('/calendar', fn () => view('pages.calendar'));
 Route::get('/room-selection', fn () => view('pages.room-selection'));
 Route::get('/bed-shared-room', fn () => view('pages.bed-shared-room'));
-Route::get('/guest-details', fn () => view('pages.guest-details'));
+Route::get('/guest-details', function () {
+    $policies = \App\Models\GeneralSetting::getSection('operational_policies');
+    return view('pages.guest-details', ['policies' => $policies->data]);
+});
 Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 
 // Guest Story
