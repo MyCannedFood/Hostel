@@ -157,7 +157,30 @@ class AdminExperienceController extends Controller
 
     public function checkIn(ExperienceBooking $booking): \Illuminate\Http\JsonResponse
     {
+        // Prevent double check-in
+        if ($booking->status === 'Checked In') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket already checked in.'
+            ], 409);
+        }
+
+        // Update booking status
         $booking->update(['status' => 'Checked In']);
+
+        // Create cash-in entry to Master General Ledger (idempotent via trans_code)
+        $transCode = 'TR-EXP-' . $booking->id;
+
+        if (!\App\Models\GeneralLedger::where('trans_code', $transCode)->exists()) {
+            \App\Models\GeneralLedger::create([
+                'trans_code'     => $transCode,
+                'lpj_report_id'  => null,
+                'description'    => 'Experience Ticket Check In - #' . $booking->ticket_id,
+                'category'       => 'Experience',
+                'type'           => 'In',
+                'amount'         => (int) ($booking->total_amount ?? 0),
+            ]);
+        }
 
         return response()->json(['success' => true]);
     }
