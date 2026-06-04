@@ -32,7 +32,7 @@ class Bed extends Model
      */
     public function bedPin()
     {
-        return $this->hasOne(BedPin::class);
+        return $this->hasOne(BedPin::class, 'bed_id');
     }
 
     public function bookings()

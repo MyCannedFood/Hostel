@@ -523,4 +523,14 @@ class BookingController extends Controller
 
         return $bookingCode;
     }
+    
+    public function selectRoom(Request $request)
+    {
+        // Mengambil kamar yang tersedia beserta relasi kasurnya
+        $rooms = Room::with('beds')
+            ->where('status', 'Available')
+            ->get();
+
+        return view('booking.select-room', compact('rooms'));
+    }
 }

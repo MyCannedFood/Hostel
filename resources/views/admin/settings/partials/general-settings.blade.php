@@ -31,10 +31,10 @@
     </div>
 
 @elseif($sub === 'hostel-info')
-    @include('admin.settings.partials.general-settings.hostel-information')
+    @include('admin.settings.partials.General.hostel-information')
 
 @elseif($sub === 'operational-policies')
-    @include('admin.settings.partials.general-settings.operational-policies')
+    @include('admin.settings.partials.General.operational-policies')
 
 @elseif($sub === 'payment-methods')
     @include('admin.settings.partials.General.payment-methods')

@@ -428,6 +428,14 @@
     opacity: 1;
 }
 
+/* Visible state controlled by JS (keeps popup open while pointer moves) */
+.hotspot-popup-container.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(-50%) scale(1);
+}
+
 .popup-right { left: 115%; }
 .popup-left { right: 115%; }
 
@@ -584,6 +592,16 @@
     margin-top: 2px;
 }
 
+.custom-bed-popup .checkbox-checked.is-active {
+    background-color: #c67139;
+    opacity: 1;
+}
+
+.custom-bed-popup .checkbox-checked:not(.is-active) {
+    background-color: #d9d9d9;
+    opacity: 0.35;
+}
+
 .custom-bed-popup .checkbox-checked svg {
     width: 10px;
     height: 10px;
@@ -595,6 +613,38 @@
 .custom-bed-popup .addon-price { font-size: 11.5px; color: #444; margin-top: 2px; }
 .custom-bed-popup .addon-price.has-discount { text-decoration: line-through; color: #1b3d22; }
 .custom-bed-popup .addon-discount { font-size: 11.5px; color: #c46830; margin-top: 2px; }
+
+.custom-bed-popup .addon-row.is-inactive {
+    opacity: 0.55;
+}
+
+.custom-bed-popup .popup-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.custom-bed-popup .btn-select-popup {
+    background: var(--color-accent);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.2s, transform 0.12s;
+}
+.custom-bed-popup .btn-select-popup:hover { background: #A6653A; transform: translateY(-2px); }
+
+.custom-bed-popup .btn-select-popup[disabled],
+.custom-bed-popup .btn-select-popup.disabled {
+    background: #B0B0B0;
+    cursor: not-allowed;
+    transform: none;
+}
 
 @media (max-width: 768px) {
     .hotspot-popup-container {
