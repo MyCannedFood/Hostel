@@ -333,7 +333,12 @@ a.menu-item:hover { background-color: #e5e7eb; }
     <div class="sidebar-footer">
         <div class="admin-profile">
             <div class="admin-info">
-                <img src="{{ asset('images/admin/profile.png') }}" alt="{{ $admin->name }} profile picture">
+                <img
+                    src="{{ $admin->avatar
+                        ? asset('storage/' . $admin->avatar)
+                        : asset('images/admin/profile.png') }}"
+                    alt="{{ $admin->name }} profile picture"
+                >
                 {{-- Tampilkan nama admin yang login, bukan hardcoded --}}
                 <span class="admin-name">{{ $admin->name }}</span>
             </div>

@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingReceiptMail;
 use App\Http\Controllers\ContactLocationController;
 use App\Http\Controllers\Admin\AdminContactLocationSettingController;
+use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\PaymentSettingsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -174,6 +177,61 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // Admin Routes (Protected)
 Route::middleware(['is_admin'])->group(function () {
 
+    // Profile Update
+     Route::put(
+        '/admin/settings/profile',
+        [\App\Http\Controllers\SettingsController::class, 'profileUpdate']
+    )->name('admin.settings.profile.update');
+
+    // Footer
+    Route::put(
+        '/admin/settings/footer',
+        [\App\Http\Controllers\SettingsController::class, 'footerUpdate']
+    )->name('admin.settings.footer.update');
+
+    // ── Payment (GET + POST form) ────────────────────────────────────
+    Route::get('/settings/payment-methods',
+        [PaymentSettingsController::class, 'index']
+    )->name('admin.settings.payment-methods');
+    
+    Route::post('/settings/payment-methods',
+        [PaymentSettingsController::class, 'store']
+    )->name('admin.settings.payment-methods.store');
+    
+    // ── Bank Accounts AJAX CRUD ─────────────────────────────────────────────
+    Route::post('/settings/bank-accounts',
+        [BankAccountController::class, 'store']
+    )->name('admin.bank-accounts.store');
+    
+    Route::put('/settings/bank-accounts/{bankAccount}',
+        [BankAccountController::class, 'update']
+    )->name('admin.bank-accounts.update');
+    
+    Route::delete('/settings/bank-accounts/{bankAccount}',
+        [BankAccountController::class, 'destroy']
+    )->name('admin.bank-accounts.destroy');
+    
+    Route::patch('/settings/bank-accounts/{bankAccount}/toggle',
+        [BankAccountController::class, 'toggle']
+    )->name('admin.bank-accounts.toggle');
+    
+    // ── Custom Payment Methods AJAX CRUD ────────────────────────────────────
+    Route::post('/settings/payment-methods/custom',
+        [PaymentMethodController::class, 'store']
+    )->name('admin.payment-methods.store');
+    
+    Route::put('/settings/payment-methods/custom/{paymentMethod}',
+        [PaymentMethodController::class, 'update']
+    )->name('admin.payment-methods.update');
+    
+    Route::delete('/settings/payment-methods/custom/{paymentMethod}',
+        [PaymentMethodController::class, 'destroy']
+    )->name('admin.payment-methods.destroy');
+    
+    Route::patch('/settings/payment-methods/custom/{paymentMethod}/toggle',
+        [PaymentMethodController::class, 'toggle']
+    )->name('admin.payment-methods.toggle');
+ 
     // Dashboard
     Route::get('/admin/dashboard',
         [\App\Http\Controllers\AdminDashboardController::class, 'index'])
