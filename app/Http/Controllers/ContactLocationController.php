@@ -13,25 +13,51 @@ use Illuminate\View\View;
 
 class ContactLocationController extends Controller
 {
-    /**
-     * Show the public contact & location page.
-     */
+
     public function index(): View
     {
         $transports = TransportationInfo::orderBy('sort_order')->orderBy('id')->get();
+        $address    = SiteSetting::get('address', 'Jl. Prof. Dr. Sutami No 62, Bandung, Jawa Barat 40152');
 
         return view('pages.contact-location', [
-            'address'     => SiteSetting::get('address', 'Jl. Prof. Dr. Sutami No 62, Bandung, Jawa Barat 40152'),
+            'address'     => $address,
             'phone'       => SiteSetting::get('phone', ''),
             'publicEmail' => SiteSetting::get('public_email', ''),
-            'mapsLink'    => SiteSetting::get('maps_link', ''),
+            'mapsLink'    => static::toMapsEmbedUrl(SiteSetting::get('maps_link', ''), $address),
             'transports'  => $transports,
         ]);
     }
 
-    /**
-     * Handle the "Drop us a line" form submission.
-     */
+    private static function toMapsEmbedUrl(?string $url, string $fallbackAddress): string
+    {
+        if (empty($url)) {
+            return 'https://www.google.com/maps?q=' . urlencode($fallbackAddress) . '&output=embed';
+        }
+
+        if (str_contains($url, 'output=embed')) {
+            return $url;
+        }
+
+        $parsed = parse_url($url);
+
+        if (isset($parsed['host']) && str_contains($parsed['host'], 'google.com') && str_contains($parsed['path'] ?? '', '/maps/')) {
+            if (preg_match('#/maps/place/([^/@]+)#', $parsed['path'], $m)) {
+                return 'https://www.google.com/maps?q=' . urlencode(urldecode($m[1])) . '&output=embed';
+            }
+
+            parse_str($parsed['query'] ?? '', $qp);
+            if (!empty($qp['q'])) {
+                return 'https://www.google.com/maps?q=' . urlencode($qp['q']) . '&output=embed';
+            }
+
+            if (preg_match('#@(-?\d+\.\d+),(-?\d+\.\d+)#', $url, $m)) {
+                return 'https://www.google.com/maps?q=' . $m[1] . ',' . $m[2] . '&output=embed';
+            }
+        }
+
+        return $url;
+    }
+
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
