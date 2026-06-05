@@ -264,45 +264,56 @@
     opacity: 0.9;
 }
 
+.journal-body p:has(> img + img) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+}
+
 .journal-body img {
-    max-width: 100%;
+    width: 75%;
     height: auto;
     border-radius: 6px;
     display: block;
     margin: 20px auto;
 }
 
-/* Smart side-by-side styling for consecutive image paragraphs (robust to <br> or extra spaces) */
-.journal-body p:has(img):has(+ p:has(img)) {
+.journal-body img + img,
+.journal-body img:has(+ img) {
+    width: 25%;
     display: inline-block;
-    width: calc(50% - 16px);
-    margin-right: 28px;
+    margin: 4px;
+    vertical-align: middle;
+}
+
+.journal-body p:has(> img:only-child):has(+ p:has(> img:only-child)) {
+    display: inline-block;
+    width: 25%;
     vertical-align: top;
     margin-bottom: 30px;
 }
 
-.journal-body p:has(img) + p:has(img) {
+.journal-body p:has(> img:only-child) + p:has(> img:only-child) {
     display: inline-block;
-    width: calc(50% - 16px);
+    width: 25%;
     vertical-align: top;
     margin-bottom: 30px;
 }
 
-/* Force side-by-side images to have consistent widescreen aspect ratio and cover fit */
-.journal-body p:has(img):has(+ p:has(img)) img,
-.journal-body p:has(img) + p:has(img) img {
-    width: 100%;
-    aspect-ratio: 16/10;
-    object-fit: cover;
+.journal-body p:has(> img:only-child):has(+ p:has(> img:only-child)) img,
+.journal-body p:has(> img:only-child) + p:has(> img:only-child) img {
+    width: 50%;
+    height: auto;
+    display: block;
     margin: 0;
 }
 
 @media (max-width: 768px) {
-    .journal-body p:has(img):has(+ p:has(img)),
-    .journal-body p:has(img) + p:has(img) {
+    .journal-body p:has(> img:only-child):has(+ p:has(> img:only-child)),
+    .journal-body p:has(> img:only-child) + p:has(> img:only-child) {
         display: block;
         width: 100%;
-        margin-right: 0;
     }
 }
 
