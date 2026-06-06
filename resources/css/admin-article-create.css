@@ -167,6 +167,51 @@
     line-height: 1.75;
 }
 
+.ql-editor p:has(> img + img) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 32px;
+}
+
+.ql-editor img {
+    width: 50%;
+    height: auto;
+    border-radius: 4px;
+    display: block;
+    margin: 20px auto;
+}
+
+.ql-editor img + img,
+.ql-editor img:has(+ img) {
+    width: 25%;
+    display: inline-block;
+    margin: 4px;
+    vertical-align: middle;
+}
+
+.ql-editor p:has(> img:only-child):has(+ p:has(> img:only-child)) {
+    display: inline-block;
+    width: 25%;
+    vertical-align: top;
+    margin-bottom: 30px;
+}
+
+.ql-editor p:has(> img:only-child) + p:has(> img:only-child) {
+    display: inline-block;
+    width: 25%;
+    vertical-align: top;
+    margin-bottom: 30px;
+}
+
+.ql-editor p:has(> img:only-child):has(+ p:has(> img:only-child)) img,
+.ql-editor p:has(> img:only-child) + p:has(> img:only-child) img {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 0;
+}
+
 .ql-editor.ql-blank::before {
     font-style: normal;
     color: rgba(26, 61, 10, 0.35);

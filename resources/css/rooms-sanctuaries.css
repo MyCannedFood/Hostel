@@ -335,6 +335,11 @@
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+.icon-btn img {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+}
 
 .btn-select {
     background: var(--color-accent);
