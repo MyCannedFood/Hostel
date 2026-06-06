@@ -32,10 +32,11 @@ class ProfileUpdateRequest extends FormRequest
                 'unique:admins,email,' . $adminId,
             ],
 
-            'phone' => [
+'phone' => [
                 'required',
                 'string',
                 'max:20',
+                'regex:/^\d+$/',
             ],
 
             'avatar_data' => [

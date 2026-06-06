@@ -177,8 +177,10 @@
         <div>
             <div class="prof-field @error('phone') error @enderror" id="field-phone">
                 <label class="prof-field-label" for="prof-phone">Phone Number</label>
-                <input class="prof-field-input" id="prof-phone" name="phone" type="tel"
-                    value="{{ old('phone', $user->phone) }}" placeholder="+62 8xx xxxx xxxx">
+<input class="prof-field-input" id="prof-phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]*"
+placeholder="Masukkan nomor telepon"
+
+
                 <span class="prof-error-msg">@error('phone'){{ $message }}@else Phone number is required. @enderror</span>
             </div>
         </div>
@@ -295,6 +297,16 @@
 
 <script>
 (function () {
+
+    // Phone only numbers (no character besides digits)
+    const phoneInput = document.getElementById('prof-phone');
+    if (phoneInput) {
+        phoneInput.addEventListener('input', function () {
+            const original = this.value || '';
+            this.value = original.replace(/\D+/g, '');
+        });
+    }
+
 
     /* ══ CROP ══════════════════════════════════════════════ */
     var cropImg = null, cropScale = 1, cropX = 0, cropY = 0;
