@@ -36,7 +36,8 @@ class AdminFinanceController extends Controller
         $totalCashOut = (int) $ledgerEntries->where('type', 'Out')->sum('amount');
         $netProfit    = $totalCashIn - $totalCashOut;
 
-        // ── Revenue Statistics: paid_at per hari 7 hari terakhir ──
+        // ── Revenue Statistics (cash in): general_ledger per hari 7 hari terakhir ──
+        // Biar match dengan cash-in card dan filter cash-in di Financial Trend.
         $revenueLabels = [];
         $revenueData   = [];
 
@@ -44,13 +45,14 @@ class AdminFinanceController extends Controller
             $day = $today->copy()->subDays($i);
             $revenueLabels[] = $day->format('D'); // Mon, Tue, ...
 
-            $dayTotal = DB::table('payments')
-                ->where('status', 'settlement')
-                ->whereDate('paid_at', $day)
+            $dayTotal = DB::table('general_ledger')
+                ->where('type', 'In')
+                ->whereDate('created_at', $day)
                 ->sum('amount');
 
             $revenueData[] = (int) $dayTotal;
         }
+
 
         // ── Financial Trend: Cash In vs Cash Out per minggu (4 minggu) ──
         $trendLabels  = [];
@@ -63,11 +65,12 @@ class AdminFinanceController extends Controller
 
             $trendLabels[] = 'Week ' . $weekStart->format('W');
 
-            // Cash In minggu ini dari payments
-            $weekCashIn = DB::table('payments')
-                ->where('status', 'settlement')
-                ->whereBetween('paid_at', [$weekStart, $weekEnd])
+            // Cash In minggu ini dari general_ledger (samakan dengan KPI "Total Cash In")
+            $weekCashIn = DB::table('general_ledger')
+                ->where('type', 'In')
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
                 ->sum('amount');
+
 
             // Cash Out minggu ini dari general_ledger
             $weekCashOut = DB::table('general_ledger')

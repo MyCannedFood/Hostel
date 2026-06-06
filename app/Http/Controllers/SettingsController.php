@@ -13,6 +13,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\SiteSetting;
 use App\Models\TransportationInfo;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\FooterSettingsRequest;
+use App\Models\PaymentSetting;
+use App\Models\BankAccount;
+use App\Models\PaymentMethod;
 
 class SettingsController extends Controller
 {
@@ -51,11 +59,37 @@ class SettingsController extends Controller
         }
 
         /* ── General Settings ── */
-        if ($section === 'general') {
+         if ($section === 'general') {
             $sub = $request->get('sub');
-            $sectionKey = $sub === 'hostel-info' ? 'hostel_info'
-                : ($sub === 'operational-policies' ? 'operational_policies' : null);
-
+            $data['user'] = Auth::guard('admin')->user();
+ 
+            if ($sub === 'payment-methods') {
+                $data['settings'] = PaymentSetting::instance();
+                $data['banks']    = BankAccount::ordered()->get();
+                $data['methods']  = PaymentMethod::ordered()->get();
+            }
+            
+ 
+            if ($sub === 'footer') {
+                $data['footer'] = [
+                    'brand_desc'      => SiteSetting::get('footer_brand_desc',      'A sanctuary where Javanese heritage meets modern ecological luxury.'),
+                    'newsletter_text' => SiteSetting::get('footer_newsletter_text', 'Subscribe for seasonal updates and exclusive retreat offers.'),
+                    'instagram_url'   => SiteSetting::get('footer_instagram_url',   ''),
+                    'facebook_url'    => SiteSetting::get('footer_facebook_url',    ''),
+                    'pinterest_url'   => SiteSetting::get('footer_pinterest_url',   ''),
+                    'copyright_text'  => SiteSetting::get('footer_copyright_text',  '© 2026 ALASARE ECO-SANCTUARY. ALL RIGHTS RESERVED.'),
+                    'privacy_url'     => SiteSetting::get('footer_privacy_url',     '/legal/privacy-policy'),
+                    'terms_url'       => SiteSetting::get('footer_terms_url',       '/legal/terms'),
+                ];
+            }
+ 
+            // Hostel info / operational policies
+            $sectionKey = match ($sub) {
+                'hostel-info'           => 'hostel_info',
+                'operational-policies'  => 'operational_policies',
+                default                 => null,
+            };
+ 
             if ($sectionKey) {
                 $setting = GeneralSetting::getSection($sectionKey);
                 $data['settings'] = array_merge(
@@ -63,9 +97,10 @@ class SettingsController extends Controller
                     $setting->data ?? []
                 );
                 $data['settings']['_section'] = Str::slug($sub);
-            } else {
-                $data['settings'] = [];
             }
+ 
+            
+        
         }
 
         /* ── Landing Page ── */
@@ -176,4 +211,66 @@ class SettingsController extends Controller
 
         return null;
     }
+
+     public function profileUpdate(ProfileUpdateRequest $request)
+    {
+        /** @var \App\Models\Admin $admin */
+        $admin = Auth::guard('admin')->user();
+        $data  = $request->validated();
+ 
+        // ── Basic info ────────────────────────────────────────────────────
+        $admin->name  = $data['full_name'];
+        $admin->email = $data['email'];
+        $admin->phone = $data['phone'] ?? $admin->phone;
+ 
+        // ── Avatar (base64 dari crop modal) ───────────────────────────────
+        if (!empty($data['avatar_data'])) {
+            // Hapus avatar lama
+            if ($admin->avatar && Storage::disk('public')->exists($admin->avatar)) {
+                Storage::disk('public')->delete($admin->avatar);
+            }
+ 
+            $base64   = preg_replace('/^data:image\/\w+;base64,/', '', $data['avatar_data']);
+            $decoded  = base64_decode($base64);
+            $filename = 'avatars/' . $admin->id . '_' . Str::random(8) . '.png';
+            Storage::disk('public')->put($filename, $decoded);
+ 
+            $admin->avatar = $filename;
+        }
+ 
+        // ── Password ──────────────────────────────────────────────────────
+        if (!empty($data['new_password'])) {
+            if (!Hash::check($data['current_password'], $admin->password)) {
+                return back()
+                    ->withErrors(['current_password' => 'Password lama tidak sesuai.'])
+                    ->withInput($request->except(['current_password', 'new_password', 'new_password_confirmation']));
+            }
+            $admin->password = Hash::make($data['new_password']);
+        }
+ 
+        $admin->save();
+ 
+        return redirect()
+            ->route('admin.settings', ['section' => 'general', 'sub' => 'profile'])
+            ->with('success', 'Profil berhasil disimpan.');
+    }
+
+     public function footerUpdate(FooterSettingsRequest $request)
+    {
+        $d = $request->validated();
+ 
+        SiteSetting::set('footer_brand_desc',      $d['brand_desc']      ?? '');
+        SiteSetting::set('footer_newsletter_text', $d['newsletter_text'] ?? '');
+        SiteSetting::set('footer_instagram_url',   $d['instagram_url']   ?? '');
+        SiteSetting::set('footer_facebook_url',    $d['facebook_url']    ?? '');
+        SiteSetting::set('footer_pinterest_url',   $d['pinterest_url']   ?? '');
+        SiteSetting::set('footer_copyright_text',  $d['copyright_text']  ?? '');
+        SiteSetting::set('footer_privacy_url',     $d['privacy_url']     ?? '');
+        SiteSetting::set('footer_terms_url',       $d['terms_url']       ?? '');
+ 
+        return redirect()
+            ->route('admin.settings', ['section' => 'general', 'sub' => 'footer'])
+            ->with('success', 'Footer settings berhasil disimpan.');
+    }
+ 
 }

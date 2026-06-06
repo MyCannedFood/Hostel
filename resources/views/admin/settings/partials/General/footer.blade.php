@@ -1,106 +1,93 @@
 {{-- resources/views/admin/settings/partials/General/footer.blade.php --}}
-{{-- Pure Frontend — self-contained, semua footer-* style ada di sini --}}
 
 <style>
-/* ════════════════════════════════════════════════
-   PM-* BASE STYLES (sama persis dengan profile.blade.php)
-   ════════════════════════════════════════════════ */
+.pm-back-link { display:inline-flex;align-items:center;gap:5px;font-size:13px;color:#4a7c3f;text-decoration:none;margin-bottom:20px;font-weight:500;transition:color .15s; }
+.pm-back-link:hover { color:#2d4a1e; }
+.pm-back-link svg { flex-shrink:0; }
+.pm-page-header { display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:6px; }
+.pm-page-title  { font-size:26px;font-weight:700;color:#1a3a2a;margin:0; }
+.pm-page-subtitle { color:#7a857f;font-size:13.5px;margin:0 0 24px; }
+.pm-card { background:#fff;border:1px solid #e5e9e6;border-radius:8px;padding:24px 28px;margin-bottom:16px; }
+.pm-footer-actions { display:flex;justify-content:flex-end;gap:10px;margin-top:28px; }
+.pm-btn-cancel { padding:10px 24px;border-radius:2px;border:none;background:#D9864A;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit;text-decoration:none;display:inline-flex;align-items:center; }
+.pm-btn-cancel:hover { background:#c4733a; }
+.pm-btn-save { padding:10px 24px;border-radius:2px;border:none;background:#1A3D0A;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit; }
+.pm-btn-save:hover { background:#2d5a1a; }
 
-.pm-back-link {
-    display: inline-flex; align-items: center; gap: 5px;
-    font-size: 13px; color: #4a7c3f; text-decoration: none;
-    margin-bottom: 20px; font-weight: 500; transition: color 0.15s;
-}
-.pm-back-link:hover { color: #2d4a1e; }
-.pm-back-link svg { flex-shrink: 0; }
+/* Footer-specific */
+.footer-info-box { display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#5e655f;line-height:1.5; }
+.footer-info-icon { width:20px;height:20px;flex-shrink:0;border-radius:50%;border:1.5px solid #4B9960;color:#4B9960;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px; }
+.footer-section-title { font-size:11.5px;font-weight:700;letter-spacing:.14em;color:#5a6b62;margin-bottom:22px;text-transform:uppercase; }
 
-.pm-page-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 6px; }
-.pm-page-title  { font-size: 26px; font-weight: 700; color: #1a3a2a; margin: 0; }
-.pm-page-subtitle { color: #7a857f; font-size: 13.5px; margin: 0 0 24px; }
-
-.pm-card { background: #fff; border: 1px solid #e5e9e6; border-radius: 8px; padding: 24px 28px; margin-bottom: 16px; }
-
-.pm-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 28px; }
-.pm-btn-cancel {
-    padding: 10px 24px; border-radius: 2px; border: none;
-    background: #D9864A; color: #fff; font-size: 13.5px; font-weight: 600;
-    cursor: pointer; transition: background .15s; font-family: inherit;
-}
-.pm-btn-cancel:hover { background: #c4733a; }
-.pm-btn-save {
-    padding: 10px 24px; border-radius: 2px; border: none;
-    background: #1A3D0A; color: #fff; font-size: 13.5px; font-weight: 600;
-    cursor: pointer; transition: background .15s; font-family: inherit;
-}
-.pm-btn-save:hover { background: #2d5a1a; }
-
-/* ════════════════════════════════════════════════
-   FOOTER-SPECIFIC STYLES
-   ════════════════════════════════════════════════ */
-
-/* Info box */
-.footer-info-box {
-    display: flex; align-items: flex-start; gap: 10px;
-    font-size: 13.5px; color: #5e655f; line-height: 1.5;
-}
-.footer-info-icon {
-    width: 20px; height: 20px; flex-shrink: 0;
-    border-radius: 50%; border: 1.5px solid #4B9960; color: #4B9960;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 700; margin-top: 1px;
-}
-
-/* Section title */
-.footer-section-title {
-    font-size: 11.5px; font-weight: 700; letter-spacing: .14em;
-    color: #5a6b62; margin-bottom: 22px; text-transform: uppercase;
-}
-
-/* Fields — sama persis dengan prof-field */
-.footer-field { padding: 12px 0 14px; border-bottom: 1.5px solid #e0e6e2; margin-bottom: 16px; }
-.footer-field:last-child { margin-bottom: 0; }
-.footer-field-label { font-size: 12px; color: #8a9690; font-weight: 500; margin-bottom: 6px; display: block; }
+/* Base field */
+.footer-field { padding:12px 0 14px;border-bottom:1.5px solid #e0e6e2;margin-bottom:16px; }
+.footer-field:last-child {margin-bottom:0; }
+.footer-field-label { font-size:12px;color:#8a9690;font-weight:500;margin-bottom:6px;display:block; }
 .footer-field-input,
-.footer-field-textarea {
-    width: 100%; border: none; outline: none;
-    font-size: 14.5px; color: #1a3d0a; background: transparent;
-    font-family: inherit; padding: 0;
-}
+.footer-field-textarea { width:100%;border:none;outline:none;font-size:14.5px;color:#1a3d0a;background:transparent;font-family:inherit;padding:0; }
 .footer-field-input::placeholder,
-.footer-field-textarea::placeholder { color: #c0ccc5; }
-.footer-field-textarea { resize: vertical; min-height: 60px; line-height: 1.55; }
+.footer-field-textarea::placeholder { color:#c0ccc5; }
+.footer-field-textarea { resize:vertical;min-height:60px;line-height:1.55; }
 
-/* Grid untuk Privacy & Terms */
-.footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 32px; }
-.footer-grid .footer-field { margin-bottom: 0; }
-@media (max-width: 600px) { .footer-grid { grid-template-columns: 1fr; } }
+/* ── Grid fix: 2 kolom, border bawah hanya di antara baris ── */
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 32px;
+    margin-top: 8px;
+}
+.footer-grid .footer-field {
+    margin-bottom: 0;
+    border-bottom: 1.5px solid #e0e6e2;
+    padding-bottom: 14px;
+}
+.footer-grid-wrap {
+    padding-top: 14px;
+    margin-top: 0;
+}
+@media (max-width:600px) {
+    .footer-grid { grid-template-columns:1fr; gap:0; }
+    .footer-grid .footer-field { border-bottom:1.5px solid #e0e6e2; padding-bottom:14px; margin-bottom:16px; }
+    .footer-grid .footer-field:last-child { border-bottom:none; margin-bottom:0; }
+}
 
 /* Social item */
-.footer-social-item { display: flex; align-items: flex-start; gap: 14px; }
-.footer-social-icon {
-    width: 38px; height: 38px; border-radius: 50%;
-    background: #f5f6f3; border: 1px solid #e5e9e6;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; margin-top: 14px;
-}
-.footer-social-icon svg { color: #5a6b62; }
-.footer-social-content { flex: 1; }
+.footer-social-item { display:flex;align-items:flex-start;gap:14px; }
+.footer-social-icon { width:38px;height:38px;border-radius:50%;background:#f5f6f3;border:1px solid #e5e9e6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:14px; }
+.footer-social-icon svg { color:#5a6b62; }
+.footer-social-content { flex:1; }
 
-@media (max-width: 600px) {
-    .pm-footer { flex-direction: column-reverse; }
-    .pm-btn-cancel, .pm-btn-save { width: 100%; }
-}
+/* Alert */
+.footer-alert { display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;font-size:13.5px;font-weight:500;margin-bottom:20px; }
+.footer-alert-success { background:#eef7f0;color:#276c42;border:1px solid #b6dfc4; }
+.footer-alert-error   { background:#fdecea;color:#c0392b;border:1px solid #f5c6c2; }
+
+/* Validation */
+.footer-field.error .footer-field-input,
+.footer-field.error .footer-field-textarea { color:#c0392b; }
+.footer-field.error { border-bottom-color:#e57373; }
+.footer-error-msg { font-size:11.5px;color:#c0392b;margin-top:4px;display:none; }
+.footer-field.error .footer-error-msg { display:block; }
 </style>
 
-{{-- ── Back link ── --}}
+@if(session('success'))
+<div class="footer-alert footer-alert-success">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+    {{ session('success') }}
+</div>
+@endif
+@if($errors->any())
+<div class="footer-alert footer-alert-error">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+    {{ $errors->first() }}
+</div>
+@endif
+
 <a href="{{ route('admin.settings', ['section' => 'general']) }}" class="pm-back-link">
-    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M19 12H5M5 12l7-7M5 12l7 7"/>
-    </svg>
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M5 12l7-7M5 12l7 7"/></svg>
     Back to General Settings
 </a>
 
-{{-- ── Page heading ── --}}
 <div class="pm-page-header">
     <div>
         <h2 class="pm-page-title">Footer Settings</h2>
@@ -108,34 +95,37 @@
     </div>
 </div>
 
-{{-- ══════════════════════════════════
-     INFO CARD
-══════════════════════════════════ --}}
+<form method="POST" action="{{ route('admin.settings.footer.update') }}">
+@csrf
+@method('PUT')
+
+{{-- Info --}}
 <div class="pm-card">
     <div class="footer-info-box">
         <div class="footer-info-icon">i</div>
-        <span>Contact details in the footer are automatically synced from the 'Location &amp; Contact' settings.</span>
+        <span>Contact details in the footer are automatically synced from the <strong>Location &amp; Contact</strong> settings.</span>
     </div>
 </div>
 
-{{-- ══════════════════════════════════
-     CARD 1 — Brand & Newsletter
-══════════════════════════════════ --}}
+{{-- Card 1: Brand & Newsletter --}}
 <div class="pm-card">
-    <div class="footer-field">
+    <div class="footer-field @error('brand_desc') error @enderror">
         <label class="footer-field-label" for="footer-brand-desc">Brand Description (Under Logo)</label>
-        <textarea class="footer-field-textarea" id="footer-brand-desc">A sanctuary where Javanese heritage meets modern ecological luxury, offering an immersive escape into the rhythmic beauty of Indonesia's nature.</textarea>
+        <textarea class="footer-field-textarea" id="footer-brand-desc" name="brand_desc"
+            placeholder="Short tagline or description under your logo...">{{ old('brand_desc', $footer['brand_desc']) }}</textarea>
+        <span class="footer-error-msg">@error('brand_desc'){{ $message }}@enderror</span>
     </div>
 
-    <div class="footer-field">
+    <div class="footer-field @error('newsletter_text') error @enderror" >
         <label class="footer-field-label" for="footer-newsletter">Journal / Newsletter Text</label>
-        <input type="text" class="footer-field-input" id="footer-newsletter" value="Subscribe for seasonal updates and exclusive retreat offers.">
+        <input type="text" class="footer-field-input" id="footer-newsletter" name="newsletter_text"
+            placeholder="e.g. Subscribe for seasonal updates..."
+            value="{{ old('newsletter_text', $footer['newsletter_text']) }}">
+        <span class="footer-error-msg">@error('newsletter_text'){{ $message }}@enderror</span>
     </div>
 </div>
 
-{{-- ══════════════════════════════════
-     CARD 2 — Social Media
-══════════════════════════════════ --}}
+{{-- Card 2: Social Media --}}
 <div class="pm-card">
     <div class="footer-section-title">Social Media Presence</div>
 
@@ -148,9 +138,12 @@
             </svg>
         </div>
         <div class="footer-social-content">
-            <div class="footer-field" style="margin-bottom:0">
+            <div class="footer-field @error('instagram_url') error @enderror">
                 <label class="footer-field-label" for="footer-instagram">Instagram URL</label>
-                <input type="text" class="footer-field-input" id="footer-instagram" value="https://instagram.com/alasare.eco">
+                <input type="text" class="footer-field-input" id="footer-instagram" name="instagram_url"
+                    placeholder="https://instagram.com/yourhandle"
+                    value="{{ old('instagram_url', $footer['instagram_url']) }}">
+                <span class="footer-error-msg">@error('instagram_url'){{ $message }}@enderror</span>
             </div>
         </div>
     </div>
@@ -162,9 +155,12 @@
             </svg>
         </div>
         <div class="footer-social-content">
-            <div class="footer-field" style="margin-bottom:0">
+            <div class="footer-field @error('facebook_url') error @enderror">
                 <label class="footer-field-label" for="footer-facebook">Facebook URL</label>
-                <input type="text" class="footer-field-input" id="footer-facebook" value="https://facebook.com/alasarehostel">
+                <input type="text" class="footer-field-input" id="footer-facebook" name="facebook_url"
+                    placeholder="https://facebook.com/yourpage"
+                    value="{{ old('facebook_url', $footer['facebook_url']) }}">
+                <span class="footer-error-msg">@error('facebook_url'){{ $message }}@enderror</span>
             </div>
         </div>
     </div>
@@ -176,73 +172,51 @@
             </svg>
         </div>
         <div class="footer-social-content">
-            <div class="footer-field" style="margin-bottom:0">
+            <div class="footer-field @error('pinterest_url') error @enderror" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
                 <label class="footer-field-label" for="footer-pinterest">Pinterest URL</label>
-                <input type="text" class="footer-field-input" id="footer-pinterest" value="https://pinterest.com/alasaredesign">
+                <input type="text" class="footer-field-input" id="footer-pinterest" name="pinterest_url"
+                    placeholder="https://pinterest.com/yourprofile"
+                    value="{{ old('pinterest_url', $footer['pinterest_url']) }}">
+                <span class="footer-error-msg">@error('pinterest_url'){{ $message }}@enderror</span>
             </div>
         </div>
     </div>
 </div>
 
-{{-- ══════════════════════════════════
-     CARD 3 — Copyright & Legal
-══════════════════════════════════ --}}
+{{-- Card 3: Copyright & Legal ── GRID FIXED ── --}}
 <div class="pm-card">
-    <div class="footer-field">
+    <div class="footer-field @error('copyright_text') error @enderror">
         <label class="footer-field-label" for="footer-copyright">Copyright Text</label>
-        <input type="text" class="footer-field-input" id="footer-copyright" value="© 2026 ALASARE ECO-SANCTUARY. ALL RIGHTS RESERVED.">
+        <input type="text" class="footer-field-input" id="footer-copyright" name="copyright_text"
+            placeholder="© 2026 Your Company. All rights reserved."
+            value="{{ old('copyright_text', $footer['copyright_text']) }}">
+        <span class="footer-error-msg">@error('copyright_text'){{ $message }}@enderror</span>
     </div>
 
-    <div class="footer-grid">
-        <div class="footer-field">
-            <label class="footer-field-label" for="footer-privacy">Privacy Policy URL</label>
-            <input type="text" class="footer-field-input" id="footer-privacy" value="/legal/privacy-policy">
-        </div>
-        <div class="footer-field">
-            <label class="footer-field-label" for="footer-terms">Terms &amp; Conditions URL</label>
-            <input type="text" class="footer-field-input" id="footer-terms" value="/legal/terms">
+    {{-- wrapper dengan border-top sebagai pemisah, lalu grid di dalamnya --}}
+    <div class="footer-grid-wrap">
+        <div class="footer-grid">
+            <div class="footer-field @error('privacy_url') error @enderror">
+                <label class="footer-field-label" for="footer-privacy">Privacy Policy URL</label>
+                <input type="text" class="footer-field-input" id="footer-privacy" name="privacy_url"
+                    placeholder="/legal/privacy-policy"
+                    value="{{ old('privacy_url', $footer['privacy_url']) }}">
+                <span class="footer-error-msg">@error('privacy_url'){{ $message }}@enderror</span>
+            </div>
+            <div class="footer-field @error('terms_url') error @enderror">
+                <label class="footer-field-label" for="footer-terms">Terms &amp; Conditions URL</label>
+                <input type="text" class="footer-field-input" id="footer-terms" name="terms_url"
+                    placeholder="/legal/terms"
+                    value="{{ old('terms_url', $footer['terms_url']) }}">
+                <span class="footer-error-msg">@error('terms_url'){{ $message }}@enderror</span>
+            </div>
         </div>
     </div>
 </div>
 
-{{-- ── Footer ── --}}
-<div class="pm-footer">
-    <button class="pm-btn-cancel" onclick="footerHandleCancel()">Cancel</button>
-    <button class="pm-btn-save" onclick="footerHandleSave()">Save Footer</button>
+<div class="pm-footer-actions">
+    <a href="{{ route('admin.settings', ['section' => 'general']) }}" class="pm-btn-cancel">Cancel</a>
+    <button type="submit" class="pm-btn-save">Save Footer</button>
 </div>
 
-
-{{-- ════════════════════════════════
-     JAVASCRIPT
-════════════════════════════════ --}}
-<script>
-(function () {
-
-    /* ── Cancel / Back ── */
-    window.footerHandleCancel = function () {
-        window.location.href = '{{ route("admin.settings", ["section" => "general"]) }}';
-    };
-
-    /* ── Save ── */
-    window.footerHandleSave = function () {
-        var brandDesc     = document.getElementById('footer-brand-desc').value.trim();
-        var newsletterTxt = document.getElementById('footer-newsletter').value.trim();
-        var instagramUrl  = document.getElementById('footer-instagram').value.trim();
-        var facebookUrl   = document.getElementById('footer-facebook').value.trim();
-        var pinterestUrl  = document.getElementById('footer-pinterest').value.trim();
-        var copyrightTxt  = document.getElementById('footer-copyright').value.trim();
-        var privacyUrl    = document.getElementById('footer-privacy').value.trim();
-        var termsUrl      = document.getElementById('footer-terms').value.trim();
-
-        var payload = {
-            brandDesc, newsletterTxt,
-            social: { instagram: instagramUrl, facebook: facebookUrl, pinterest: pinterestUrl },
-            copyright: { text: copyrightTxt, privacyUrl, termsUrl }
-        };
-
-        console.log('Footer save payload:', payload);
-        alert('Footer saved! (FE-only — lihat console untuk payload)');
-    };
-
-})();
-</script>
+</form>
