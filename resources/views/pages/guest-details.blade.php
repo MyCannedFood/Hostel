@@ -186,7 +186,7 @@
                             <option value="+1">+1</option>
                             <option value="+44">+44</option>
                         </select>
-                        <input type="text" id="phone" name="phone" value="{{ $guestData['phone'] }}" placeholder="WhatsApp number preferred" required>
+                        <input type="text" id="phone" name="phone" value="{{ $guestData['phone'] }}" placeholder="WhatsApp number preferred" required inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'');">
                     </div>
                 </div>
                 <div class="form-group">

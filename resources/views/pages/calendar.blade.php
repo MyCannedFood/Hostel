@@ -31,7 +31,6 @@
             <div class="divider"></div>
             <div class="summary-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                {{-- Dropdown Tamu --}}
                 <select id="guestSelect" style="border: none; outline: none; background: transparent; font-weight: 600; color: inherit; font-size: 14px; cursor: pointer; max-width: 200px;">
                     <option value="1a0c" selected>1 Male Adult, 0 Children</option>
                     <option value="1f0c">1 Female Adult, 0 Children</option>
@@ -48,13 +47,13 @@
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D37D4F" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
                 <input type="text" id="promoCode" placeholder="Apply Promo Code">
             </div>
-           <a href="#" id="btnApplyPromo" class="apply-btn">Apply</a>
+            <a href="#" id="btnApplyPromo" class="apply-btn">Apply</a>
         </div>
     </div>
 
     {{-- Controls --}}
     <div class="calendar-controls">
-        <div class="filter-tabs">
+        <div class="filter-tabs" style="display:none;">
             <button class="filter-tab active">All Rooms</button>
             <button class="filter-tab">Female Only Dorm</button>
             <button class="filter-tab">Male Only Dorm</button>
@@ -78,6 +77,9 @@
             $baseMonth->copy(),
             $baseMonth->copy()->addMonth()
         ];
+
+        // Simpan hari ini untuk perbandingan
+        $today = Carbon::today();
 
         $prevMonthUrl = url()->current() . '?month=' . $baseMonth->copy()->subMonth()->format('Y-m');
         $nextMonthUrl = url()->current() . '?month=' . $baseMonth->copy()->addMonth()->format('Y-m');
@@ -104,19 +106,21 @@
                 <div class="calendar-grid">
                     <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div><div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
                     
-                    {{-- Empty slots for start of month --}}
                     @for($i = 0; $i < $startOffset; $i++)
                         <div class="day empty"></div>
                     @endfor
 
-                    {{-- Days of month --}}
                     @for($d = 1; $d <= $daysInMonth; $d++)
                         @php
                             $date = $month->copy()->day($d);
-                            $class = 'available';
-                            $fullDate = $date->format('Y-m-d'); 
+                            // Cek apakah hari sudah lewat
+                            $isPast = $date->lt($today);
+                            $class = $isPast ? 'past' : 'available';
+                            $fullDate = $date->format('Y-m-d');
                         @endphp
-                        <div class="day {{ $class }}" data-date="{{ $fullDate }}">{{ $d }}</div>
+                        <div class="day {{ $class }}"
+                            data-date="{{ $fullDate }}"
+                            @if($isPast) aria-disabled="true" @endif>{{ $d }}</div>
                     @endfor
                 </div>
             </div>
@@ -147,16 +151,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const checkoutEl = document.getElementById('checkoutDate');
     const totalNightsEl = document.getElementById('totalNights');
     const btnNext = document.getElementById('btnNext');
+    const btnApplyPromo = document.getElementById('btnApplyPromo');
     const guestSelect = document.getElementById('guestSelect');
     const promoCode = document.getElementById('promoCode');
+
+    // ✅ PERBAIKAN: hanya pilih hari yang available (bukan past/unavailable)
     const allDays = document.querySelectorAll('.calendar-grid .day.available');
 
     let checkinDate = null;
     let checkoutDate = null;
     let nightsCount = 0;
+    let appliedPromoCode = '';
 
+    // Ambil data dari URL jika ada (fungsi Back)
     try {
-        // AMBIL DATA DARI URL JIKA ADA (Fungsi Back)
         const cleanSearch = window.location.search.replace(/&amp;/g, '&');
         const urlParams = new URLSearchParams(cleanSearch);
         
@@ -168,14 +176,14 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Gagal membaca URL:", e);
     }
 
-    // Fungsi format tanggal untuk tampilan
+    // Format tanggal untuk tampilan
     function formatDisplayDate(dateString) {
         if (!dateString) return '--/--/----';
         const [year, month, day] = dateString.split('-');
         return `${day}/${month}/${year}`;
     }
 
-    // Fungsi hitung selisih hari (malam)
+    // Hitung selisih hari (malam)
     function calculateNights(start, end) {
         if (!start || !end) return 0;
         const startDate = new Date(start);
@@ -188,13 +196,12 @@ document.addEventListener('DOMContentLoaded', function () {
         checkinEl.textContent = formatDisplayDate(checkinDate);
         checkoutEl.textContent = formatDisplayDate(checkoutDate);
 
-        if(checkinDate) checkinEl.classList.add('selected-date');
+        if (checkinDate) checkinEl.classList.add('selected-date');
         else checkinEl.classList.remove('selected-date');
 
-        if(checkoutDate) checkoutEl.classList.add('selected-date');
+        if (checkoutDate) checkoutEl.classList.add('selected-date');
         else checkoutEl.classList.remove('selected-date');
 
-        // Hitung dan update text Malam
         nightsCount = calculateNights(checkinDate, checkoutDate);
         totalNightsEl.textContent = nightsCount + (nightsCount > 1 ? ' Nights' : ' Night');
 
@@ -214,7 +221,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        // Kontrol tampilan tombol Lanjut
         if (checkinDate && checkoutDate) {
             btnNext.style.opacity = '1';
             btnNext.style.pointerEvents = 'auto';
@@ -227,10 +233,23 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // ✅ Dapatkan tanggal hari ini (format YYYY-MM-DD, timezone lokal)
+    function getTodayString() {
+        const now = new Date();
+        const y = now.getFullYear();
+        const m = String(now.getMonth() + 1).padStart(2, '0');
+        const d = String(now.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
     // Klik Kalender
     allDays.forEach(day => {
-        day.addEventListener('click', function() {
+        day.addEventListener('click', function () {
             const clickedDate = this.getAttribute('data-date');
+
+            // ✅ GUARD: tolak tanggal masa lalu (double protection di JS)
+            const todayStr = getTodayString();
+            if (clickedDate < todayStr) return;
 
             if (!checkinDate || (checkinDate && checkoutDate)) {
                 checkinDate = clickedDate;
@@ -238,6 +257,9 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (checkinDate && !checkoutDate) {
                 if (clickedDate < checkinDate) {
                     checkinDate = clickedDate;
+                } else if (clickedDate === checkinDate) {
+                    // ✅ Klik tanggal yang sama → reset
+                    checkinDate = null;
                 } else {
                     checkoutDate = clickedDate;
                 }
@@ -245,32 +267,29 @@ document.addEventListener('DOMContentLoaded', function () {
             updateUI();
         });
     });
+
+    // Apply Promo
     if (btnApplyPromo) {
-        btnApplyPromo.addEventListener('click', function(e) {
+        btnApplyPromo.addEventListener('click', function (e) {
             e.preventDefault();
             const rawValue = promoCode.value.trim();
 
             if (rawValue !== '') {
-                // Simpan ke state
                 appliedPromoCode = rawValue;
-                
-                // Ubah tampilan tombol jadi "Applied"
                 btnApplyPromo.textContent = 'Applied';
                 btnApplyPromo.style.color = '#D37D4F';
-                
-                // Opsional: Beri alert ke user
                 alert(`Promo Code "${appliedPromoCode}" has been applied!`);
             } else {
-                // Jika input kosong lalu diklik Apply (Reset)
                 appliedPromoCode = '';
                 btnApplyPromo.textContent = 'Apply';
-                btnApplyPromo.style.color = ''; 
+                btnApplyPromo.style.color = '';
             }
         });
     }
-    // Aksi Klik Tombol "Choose these dates" (Menggunakan BUTTON)
+
+    // Tombol "Choose these dates"
     if (btnNext) {
-        btnNext.addEventListener('click', function(e) {
+        btnNext.addEventListener('click', function (e) {
             e.preventDefault();
             
             if (!checkinDate || !checkoutDate) {
@@ -278,7 +297,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
 
-            // Ubah teks tombol jadi loading biar interaktif
             btnNext.textContent = "Processing...";
             btnNext.style.opacity = '0.7';
             btnNext.style.pointerEvents = 'none';
@@ -286,18 +304,13 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const guestVal = guestSelect ? guestSelect.value : '1a0c';
                 const promoVal = promoCode ? promoCode.value : '';
-                const targetMonth = checkinDate.substring(0, 7); 
+                const targetMonth = checkinDate.substring(0, 7);
 
-                // Rakit URL
                 const targetUrl = `/room-selection?check_in=${checkinDate}&check_out=${checkoutDate}&nights=${nightsCount}&guests=${guestVal}&promo=${promoVal}&month=${targetMonth}`;
-                
-                // Langsung tembak ke URL tujuan
                 window.location.href = targetUrl;
             } catch (error) {
                 console.error("Terjadi kesalahan:", error);
                 alert("Gagal memproses, silakan coba lagi.");
-                
-                // Kembalikan tombol seperti semula
                 btnNext.textContent = "Choose these dates";
                 btnNext.style.opacity = '1';
                 btnNext.style.pointerEvents = 'auto';
