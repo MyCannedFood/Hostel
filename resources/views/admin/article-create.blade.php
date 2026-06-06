@@ -9,7 +9,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css" rel="stylesheet">
     <title>Write New Article - AlaSare</title>
-    @vite(['resources/css/dashboard.css', 'resources/css/admin-article.css', 'resources/css/admin-article-create.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/admin-article.css', 'resources/css/admin-article-create.css', 'resources/js/app.js'])
 </head>
 <body>
     <div class="dashboard-container">

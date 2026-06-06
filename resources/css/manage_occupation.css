@@ -59,6 +59,14 @@
     background: #1a3d0a;
 }
 
+.occ-progress-fill.orange {
+    background: #D9864A;
+}
+
+.occ-progress-fill.light {
+    background: #b8d9a0;
+}
+
 /* Avg Room Occupation Section */
 .occ-avg-section {
     background: #fff;

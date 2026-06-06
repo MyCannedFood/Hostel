@@ -57,6 +57,7 @@
   text-align: center;
   color: #082600;
   margin: 0;
+  font-family: 'EB Garamond', serif;
 }
 
 @media (min-width: 768px) {
@@ -71,6 +72,7 @@
   text-align: center;
   color: #43493e;
   margin-left: 6px;
+  font-family: 'EB Garamond', serif;
 }
 
 @media (min-width: 768px) {
@@ -118,6 +120,7 @@ a.menu-item:hover { background-color: #e5e7eb; }
   line-height: 25px;
   color: #1a3d0a;
   margin-left: 10px;
+  font-family: 'EB Garamond', serif;
 }
 
 @media (min-width: 768px) {
@@ -166,6 +169,7 @@ a.menu-item:hover { background-color: #e5e7eb; }
   line-height: 25px;
   color: #1a3d0a;
   margin-bottom: 8px;
+  font-family: 'EB Garamond', serif;
 }
 
 @media (min-width: 768px) {
@@ -188,6 +192,7 @@ a.menu-item:hover { background-color: #e5e7eb; }
   font-weight: 700;
   color: #D9864A;
   margin-left: 10px;
+  font-family: 'EB Garamond', serif;
 }
 </style>
 
