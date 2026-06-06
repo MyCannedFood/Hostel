@@ -162,48 +162,69 @@
                                         <th>Booking ID</th>
                                         <th>Guest Name</th>
                                         <th>Country</th>
+                                        <th>Age</th>
+                                        <th>Gender</th>
+                                        <th>Booking Place</th>
+                                        <th>Status</th>
+                                        <th>Duration</th>
+                                        <th>Check In</th>
+                                        <th>Check Out</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="guestListTbody">
                                     @foreach($guests ?? [] as $guest)
+                                        @php
+                                            $duration = $guest->check_in_date && $guest->check_out_date
+                                                ? $guest->check_in_date->diffInDays($guest->check_out_date) . ' nights'
+                                                : ($guest->check_in_date ? 'In Progress' : '-');
+                                        @endphp
                                         <tr>
                                             <td>{{ $guest->booking_code }}</td>
                                             <td>{{ $guest->first_name }} {{ $guest->last_name }}</td>
                                             <td>{{ $guest->country }}</td>
+                                            <td>{{ $guest->age ?? '-' }}</td>
+                                            <td>{{ $guest->gender ?? '-' }}</td>
+                                            <td>{{ $guest->booking_place ?? '-' }}</td>
+                                            <td>
+                                                <span class="guest-status {{ $guest->status === 'block' ? 'status-block' : 'status-save' }}">
+                                                    {{ $guest->status === 'block' ? 'Blacklist' : 'Active' }}
+                                                </span>
+                                            </td>
+                                            <td>{{ $duration }}</td>
+                                            <td>{{ $guest->check_in_date ? $guest->check_in_date->format('d M Y') : '-' }}</td>
+                                            <td>{{ $guest->check_out_date ? $guest->check_out_date->format('d M Y') : '-' }}</td>
+                                            <td>
+                                                <button class="btn-action btn-edit" title="Edit">✎</button>
+                                                <button class="btn-action btn-delete" title="Delete">✕</button>
+                                            </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="guest-pagination">
+                            {{ $guests->links('vendor.pagination.arrows') }}
                         </div>
                     </div>
 
                     <!-- Guests per Room -->
                     <div class="guests-room-card">
                         <div class="guests-room-title">Guests per Room</div>
-                        
-                        <div class="room-item">
-                            <div>
-                                <div class="room-info-name">Serene Heaven</div>
-                                <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
-                            </div>
-                            <div class="room-count">7</div>
-                        </div>
 
-                        <div class="room-item">
-                            <div>
-                                <div class="room-info-name">Botanice</div>
-                                <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
+                        @forelse($roomsWithGuests as $rg)
+                            <div class="room-item">
+                                <div>
+                                    <div class="room-info-name">{{ $rg['name'] }}</div>
+                                    @foreach($rg['beds'] as $bed)
+                                        <div class="room-info-details">{{ $bed['position'] }} {{ $bed['occupied'] }}/{{ $bed['total'] }}</div>
+                                    @endforeach
+                                </div>
+                                <div class="room-count">{{ $rg['total_guests'] }}</div>
                             </div>
-                            <div class="room-count">7</div>
-                        </div>
-
-                        <div class="room-item">
-                            <div>
-                                <div class="room-info-name">The Heritage</div>
-                                <div class="room-info-details">Top 3/4<br>Bottom 4/4</div>
-                            </div>
-                            <div class="room-count">7</div>
-                        </div>
+                        @empty
+                            <div style="padding:18px 0;color:#7a857f;font-size:13px;">No active guests.</div>
+                        @endforelse
                     </div>
 
                     <!-- Guest Trend -->
@@ -353,6 +374,13 @@
                 .guest-add-btn-cancel{background:#4ca761;color:#fff;}
                 .guest-add-btn-add{background:#D9864A;color:#fff;}
                 .guest-add-btn-cancel:hover,.guest-add-btn-add:hover{opacity:.9;}
+                .guest-status{display:inline-block;padding:3px 10px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:.3px;}
+                .status-save{background:#e6f4e0;color:#2d6a1e;}
+                .status-block{background:#fce4e4;color:#b71c1c;}
+                .btn-action{background:none;border:1px solid #ddd;border-radius:4px;padding:4px 8px;cursor:pointer;font-size:13px;transition:.15s;}
+                .btn-action:hover{border-color:#999;}
+                .btn-edit:hover{background:#f0f7ee;border-color:#4a7c3f;color:#4a7c3f;}
+                .btn-delete:hover{background:#fdeaea;border-color:#c62828;color:#c62828;}
                 @media(max-width:600px){.guest-add-modal{padding:24px;max-width:100%;}.guest-add-modal-title{font-size:28px;}.guest-add-form-grid{grid-template-columns:1fr;}.guest-add-form-full{grid-column:span 1;}.guest-add-form-footer{flex-direction:column;}.guest-add-btn-cancel,.guest-add-btn-add{width:100%;text-align:center;}}
             `;
             document.head.appendChild(style);

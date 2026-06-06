@@ -847,11 +847,10 @@ body.guest-action-open {
     width: 100%;
     border: 1px solid rgba(26, 61, 10, 0.2);
     border-radius: 8px;
-    padding: 24px;
+    padding: 24px 24px 16px;
     grid-row: 1 / -1;
     box-sizing: border-box;
     min-width: 0;
-    min-height: 781px;
     display: flex;
     flex-direction: column;
 }
@@ -861,6 +860,10 @@ body.guest-action-open {
     overflow-y: auto;
     overflow-x: auto;
     min-height: 0;
+}
+
+.guest-pagination {
+    flex-shrink: 0;
 }
 
 .guest-list-header {
@@ -919,17 +922,17 @@ body.guest-action-open {
     white-space: nowrap;
 }
 
-.guest-table th:nth-child(1) {
-    width: 28%;
-}
-
-.guest-table th:nth-child(2) {
-    width: 32%;
-}
-
-.guest-table th:nth-child(3) {
-    width: 20%;
-}
+.guest-table th:nth-child(1) { width: 12%; }
+.guest-table th:nth-child(2) { width: 14%; }
+.guest-table th:nth-child(3) { width: 10%; }
+.guest-table th:nth-child(4) { width: 6%; }
+.guest-table th:nth-child(5) { width: 7%; }
+.guest-table th:nth-child(6) { width: 10%; }
+.guest-table th:nth-child(7) { width: 8%; }
+.guest-table th:nth-child(8) { width: 9%; }
+.guest-table th:nth-child(9) { width: 10%; }
+.guest-table th:nth-child(10) { width: 10%; }
+.guest-table th:nth-child(11) { width: 4%; }
 
 .guest-table td {
     padding: 10px 16px;
@@ -963,7 +966,7 @@ body.guest-action-open {
 .room-item {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     padding-top: 18px;
     padding-bottom: 18px;
     min-height: 88px;
@@ -982,6 +985,11 @@ body.guest-action-open {
 .room-info-details {
     font-size: 12px;
     color: var(--color-primary);
+    margin-top: 4px;
+}
+
+.room-info-details:first-of-type {
+    margin-top: 6px;
 }
 
 .room-count {
@@ -1172,4 +1180,50 @@ body.guest-action-open {
 
 .guest-table tbody tr:hover {
     background: rgba(26, 61, 10, 0.02);
+}
+
+/* Pagination */
+.guest-pagination {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 16px;
+}
+
+.guest-pagination nav[role="navigation"] {
+    display: flex;
+    gap: 4px;
+}
+
+.guest-pagination nav[role="navigation"] a,
+.guest-pagination nav[role="navigation"] span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 13px;
+    font-family: 'EB Garamond', serif;
+    color: #1a3d0a;
+    background: #f7f7f2;
+    border: 1px solid rgba(26, 61, 10, 0.15);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: .15s;
+}
+
+.guest-pagination nav[role="navigation"] a:hover {
+    background: #e6f0e0;
+    border-color: #4a7c3f;
+}
+
+.guest-pagination nav[role="navigation"] span[aria-current="page"] {
+    background: #1a3d0a;
+    color: #fff;
+    border-color: #1a3d0a;
+}
+
+.guest-pagination nav[role="navigation"] span.disabled {
+    opacity: .4;
+    cursor: default;
 }

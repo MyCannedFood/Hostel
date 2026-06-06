@@ -12,6 +12,11 @@ class Guest extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'check_in_date' => 'date',
+        'check_out_date' => 'date',
+    ];
+
     protected $fillable = [
         'booking_code',
         'status',
@@ -22,6 +27,8 @@ class Guest extends Model
         'age',
         'occupation',
         'country',
+        'gender',
+        'booking_place',
         'city',
         'address',
         'id_number',

@@ -10,7 +10,8 @@ class BookingSeeder extends Seeder
 {
     public function run(): void
     {
-        $now = Carbon::now();
+        $now   = Carbon::now();
+        $today = Carbon::today();
 
         // Kosongkan tabel sebelum diisi agar tidak error duplikat
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
@@ -88,6 +89,67 @@ class BookingSeeder extends Seeder
                 'check_in_date' => '2026-06-05', 'check_out_date' => '2026-06-07', 'total_nights' => 2, 
                 'total_price' => 250000, 'payment_method' => 'QRIS', 'status' => 'CANCELLED', // Dibatalkan lagi oleh sistem
                 'personal_notes' => 'Guest berstatus BLOCK. Otomatis batal.', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+
+            // ==========================================
+            // NEW GUESTS (Active - Currently Checked In)
+            // ==========================================
+
+            [
+                'booking_code' => 'BK-2026-1011', 'guest_id' => 6, 'room_id' => 1, 'bed_id' => 9,
+                'check_in_date' => $today->copy()->subDay()->toDateString(), 'check_out_date' => $today->copy()->addDays(2)->toDateString(), 'total_nights' => 3,
+                'total_price' => 352500, 'payment_method' => 'QRIS', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Vacation', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1012', 'guest_id' => 7, 'room_id' => 2, 'bed_id' => 17,
+                'check_in_date' => $today->toDateString(), 'check_out_date' => $today->copy()->addDays(4)->toDateString(), 'total_nights' => 4,
+                'total_price' => 470000, 'payment_method' => 'Credit/Debit Card', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Writing retreat', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1013', 'guest_id' => 8, 'room_id' => 1, 'bed_id' => 10,
+                'check_in_date' => $today->toDateString(), 'check_out_date' => $today->copy()->addDays(3)->toDateString(), 'total_nights' => 3,
+                'total_price' => 375000, 'payment_method' => 'E-Wallet', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Conference attendee', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1014', 'guest_id' => 9, 'room_id' => 3, 'bed_id' => 1,
+                'check_in_date' => $today->copy()->subDays(2)->toDateString(), 'check_out_date' => $today->copy()->addDays(2)->toDateString(), 'total_nights' => 4,
+                'total_price' => 470000, 'payment_method' => 'Bank Transfer', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Culinary tour', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1015', 'guest_id' => 10, 'room_id' => 3, 'bed_id' => 2,
+                'check_in_date' => $today->copy()->subDays(4)->toDateString(), 'check_out_date' => $today->copy()->addDays(1)->toDateString(), 'total_nights' => 5,
+                'total_price' => 625000, 'payment_method' => 'QRIS', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Local guide taking a break', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1016', 'guest_id' => 11, 'room_id' => 2, 'bed_id' => 18,
+                'check_in_date' => $today->toDateString(), 'check_out_date' => $today->copy()->addDays(5)->toDateString(), 'total_nights' => 5,
+                'total_price' => 625000, 'payment_method' => 'Credit/Debit Card', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Backpacking trip', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1017', 'guest_id' => 12, 'room_id' => 1, 'bed_id' => 11,
+                'check_in_date' => $today->toDateString(), 'check_out_date' => $today->copy()->addDays(3)->toDateString(), 'total_nights' => 3,
+                'total_price' => 352500, 'payment_method' => 'E-Wallet', 'status' => 'CONFIRMED',
+                'personal_notes' => 'Vacation with family', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+
+            // Recently checked out (today)
+            [
+                'booking_code' => 'BK-2026-1018', 'guest_id' => 13, 'room_id' => 2, 'bed_id' => 19,
+                'check_in_date' => $today->copy()->subDays(7)->toDateString(), 'check_out_date' => $today->toDateString(), 'total_nights' => 7,
+                'total_price' => 822500, 'payment_method' => 'Bank Transfer', 'status' => 'COMPLETED',
+                'personal_notes' => 'Art residency', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
+            ],
+            [
+                'booking_code' => 'BK-2026-1019', 'guest_id' => 14, 'room_id' => 3, 'bed_id' => 3,
+                'check_in_date' => $today->copy()->subDays(3)->toDateString(), 'check_out_date' => $today->toDateString(), 'total_nights' => 3,
+                'total_price' => 352500, 'payment_method' => 'QRIS', 'status' => 'COMPLETED',
+                'personal_notes' => 'Business meeting', 'policy_accepted' => 1, 'created_at' => $now, 'updated_at' => $now
             ],
         ];
 

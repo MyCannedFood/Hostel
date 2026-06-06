@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guest;
+use App\Models\Booking;
+use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
@@ -13,7 +15,8 @@ class AdminGuestController extends Controller
     {
         $guests = Guest::query()
             ->orderByDesc('id')
-            ->get(['id', 'booking_code', 'first_name', 'last_name', 'country',
+            ->paginate(10, ['id', 'booking_code', 'first_name', 'last_name', 'country',
+                   'gender', 'age', 'booking_place', 'status',
                    'check_in_date', 'check_out_date']);
 
         $now   = Carbon::now();
@@ -63,11 +66,42 @@ class AdminGuestController extends Controller
             $trendData[]   = Guest::whereDate('check_in_date', $day)->count();
         }
 
+        // --- Guests per Room ---
+        $activeGuestIds = Guest::whereNull('check_out_date')->pluck('id');
+
+        $roomsWithGuests = Room::with('beds')->get()->map(function ($room) use ($activeGuestIds) {
+            $bookings = Booking::whereIn('room_id', [$room->id])
+                ->whereIn('guest_id', $activeGuestIds)
+                ->get();
+
+            $bedsByPosition = $room->beds->map(function ($bed) use ($bookings) {
+                $normalized = str_contains($bed->position, 'Bottom') ? 'Bottom' : 'Top';
+                $occupied = $bookings->where('bed_id', $bed->id)->count();
+                return [
+                    'position' => $normalized,
+                    'occupied' => $occupied,
+                ];
+            })->groupBy('position')->map(function ($beds, $position) {
+                return [
+                    'position' => $position,
+                    'total'    => $beds->count(),
+                    'occupied' => $beds->sum('occupied'),
+                ];
+            })->values();
+
+            return [
+                'name'          => $room->name,
+                'beds'          => $bedsByPosition,
+                'total_guests'  => $bookings->count(),
+            ];
+        });
+
         return view('admin.manage_guests', compact(
             'guests',
             'guestStats',
             'trendLabels',
-            'trendData'
+            'trendData',
+            'roomsWithGuests'
         ));
     }
 

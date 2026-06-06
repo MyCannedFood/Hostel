@@ -95,21 +95,19 @@
                                 @foreach($facilities as $facility)
                                     @php
                                         $facilityName = strtolower(trim($facility));
-                                        $icon = '';
+                                        $iconFile = 'images/icon/walk-svgrepo-com.svg';
                                         if(str_contains($facilityName, 'wi-fi') || str_contains($facilityName, 'wifi')) {
-                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>';
+                                            $iconFile = 'images/icon/wifi-svgrepo-com-1.svg';
                                         } elseif(str_contains($facilityName, 'ac') || str_contains($facilityName, 'air')) {
-                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M2 12h20"/><path d="M2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6"/><path d="M12 2v2"/><path d="M12 12v4"/><path d="M8 12h8"/></svg>';
+                                            $iconFile = 'images/icon/snow-svgrepo-com.svg';
                                         } elseif(str_contains($facilityName, 'locker') || str_contains($facilityName, 'lock')) {
-                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
+                                            $iconFile = 'images/icon/lock-svgrepo-com.svg';
                                         } elseif(str_contains($facilityName, 'en-suite bath') || str_contains($facilityName, 'bath') || str_contains($facilityName, 'shower')) {
-                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><path d="M9 12h6"/><path d="M12 3v18"/><path d="M4 12h16"/><path d="M4 16h16"/></svg>';
-                                        } else {
-                                            $icon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h6"/></svg>';
+                                            $iconFile = 'images/icon/shower-svgrepo-com.svg';
                                         }
                                     @endphp
                                     <div style="display:flex;align-items:center;gap:4px;">
-                                        {!! $icon !!}
+                                        <img src="{{ asset($iconFile) }}" alt="{{ trim($facility) }}" style="width:14px;height:14px;object-fit:contain;">
                                         <span title="{{ trim($facility) }}">{{ strtolower(trim($facility)) }}</span>
                                     </div>
                                 @endforeach
