@@ -30,7 +30,7 @@ use App\Http\Controllers\PaymentSettingsController;
 */
 
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
-Route::get('/rooms', [RoomController::class, 'index']);
+Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 
 Route::get('/profile', fn () => view('pages.profile'));
 Route::get('/journal', [\App\Http\Controllers\JournalController::class, 'index'])->name('journal.index');
