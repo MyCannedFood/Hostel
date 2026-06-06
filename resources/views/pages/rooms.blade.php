@@ -12,7 +12,18 @@
 
 <main>
     {{-- Sanctuaries Section --}}
-    <section id="home-sanctuaries" class="sanctuaries-section">
+<section id="home-sanctuaries" class="sanctuaries-section">
+
+        <style>
+            /* rooms filter */
+            .filter-btn{display:flex;align-items:center;gap:8px;border:1.5px solid #2d4a3e;background:transparent;color:#2d4a3e;font-weight:500;font-size:15px;cursor:pointer;padding:10px 22px;border-radius:999px;}
+            .filter-btn:focus{outline:none;}
+            .filter-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #ddd;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:99;min-width:180px;overflow:hidden;}
+            .filter-dropdown button{display:block;width:100%;text-align:left;background:none;border:none;padding:12px 20px;font-size:14px;cursor:pointer;color:#2d4a3e;}
+            .filter-dropdown button:hover{background:#f5f0eb;}
+            .filter-dropdown button.active{font-weight:600;color:#D9864A;}
+            .filter-wrapper{position:relative;display:inline-block;}
+        </style>
         
         <!-- Intro Banner -->
         <div class="sanctuaries-intro">
@@ -43,10 +54,18 @@
                 <h3>Available Rooms</h3>
                 <p>Find your peaceful corner among the ferns and teakwood.</p>
             </div>
-            <button class="filter-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
-                Filter
-            </button>
+
+            <div class="filter-wrapper">
+                <button class="filter-btn" id="filterToggle" type="button">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+                    Filter
+                </button>
+                <div class="filter-dropdown" id="filterDropdown" style="display:none;">
+                    <button data-filter="all" class="active" type="button">All</button>
+                    <button data-filter="female" type="button">Female Only Dorm</button>
+                    <button data-filter="male" type="button">Male Only Dorm</button>
+                </div>
+            </div>
         </div>
 
         <!-- Grid -->
@@ -128,9 +147,11 @@
                                 @endif
                             </div>
                             @if($room['is_sold_out'])
-                                <button class="btn-select" style="background:#B0B0B0;cursor:not-allowed;">Sold Out</button>
+                                <button class="btn-select" style="background:#B0B0B0;cursor:not-allowed;" disabled>Sold Out</button>
                             @else
-                                <button class="btn-select">Select Bed</button>
+                                <a class="btn-select" href="{{ url('/bed-shared-room/' . $room['id']) }}" style="text-decoration:none; display:inline-block;">
+                                    Select Bed
+                                </a>
                             @endif
                         </div>
                     </div>
@@ -142,6 +163,37 @@
             @endforelse
         </div>
     </section>
+<script>
+document.addEventListener('DOMContentLoaded', ()=>{
+  const toggle = document.getElementById('filterToggle');
+  const dropdown = document.getElementById('filterDropdown');
+  const cards = document.querySelectorAll('.room-card');
+
+  toggle.addEventListener('click', ()=>{
+    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+  });
+
+  document.addEventListener('click', (e)=>{
+    if(!toggle.contains(e.target) && !dropdown.contains(e.target)){
+      dropdown.style.display = 'none';
+    }
+  });
+
+  dropdown.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      dropdown.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.getAttribute('data-filter');
+      cards.forEach(card=>{
+        const tag = (card.querySelector('.room-tag')?.textContent||'').toLowerCase();
+        const gender = tag.includes('female') ? 'female' : tag.includes('male') ? 'male' : 'mixed';
+        card.style.display = (filter==='all' || filter===gender) ? '' : 'none';
+      });
+      dropdown.style.display = 'none';
+    });
+  });
+});
+</script>
 </main>
 
 @include('components.footer')
