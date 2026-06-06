@@ -840,7 +840,7 @@
 
     padding:24px;
 
-    z-index:999;
+    z-index:1000;
 }
 
 .overlay.open{
@@ -877,6 +877,14 @@
 
     max-height:75vh;
     overflow-y:auto;
+    overflow-x:hidden;
+}
+
+.modal-body .table-scroll-wrap{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    margin:0 -4px;
+    padding:0 4px;
 }
 
 .modal-footer{
@@ -982,3 +990,33 @@
     background: #4b9960;
     color: #fff;
 }
+
+body.modal-open {
+    overflow: hidden;
+}
+
+/* =========================================================
+   VIEW FIELD — read-only version of form inputs
+========================================================= */
+
+.view-field {
+    min-height: 46px;
+    padding: 0 16px;
+
+    border: 1px solid var(--clr-border);
+    border-radius: 14px;
+
+    background: #fafbf9;
+
+    display: flex;
+    align-items: center;
+
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+
+    color: var(--clr-text);
+
+    box-sizing: border-box;
+}
+

@@ -178,7 +178,7 @@
                             <div class="card-title">Top Requestors</div>
                             <div class="requestors-sub">This month</div>
                         </div>
-                        <a href="#" class="view-all-link">
+                        <a href="#" class="view-all-link" onclick="event.preventDefault(); openModal('overlayAllRequestors')">
                             View All <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i>
                         </a>
                     </div>
@@ -267,6 +267,148 @@
 {{-- ===== MODALS ===== --}}
 @include('admin.modal-expense')
 @include('admin.modal-lpj')
+
+{{-- ===== MODAL: ALL REQUESTORS ===== --}}
+<div class="overlay" id="overlayAllRequestors">
+    <div class="modal" style="max-width:600px;">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h3 style="font-family:'Libre Caslon Text',serif; font-size:28px; font-weight:400; color:#17350f; margin:0;">All Requestors</h3>
+                <p style="font-size:12px; color:#7a857f; margin:6px 0 0;">Complete list of budget requestors this month</p>
+            </div>
+            <button onclick="closeModal('overlayAllRequestors')" style="background:none; border:none; cursor:pointer; width:36px; height:36px; border-radius:10px; background:#f5f5f2; display:flex; align-items:center; justify-content:center;">
+                <i class="fa-solid fa-xmark" style="color:#1f2b23;"></i>
+            </button>
+        </div>
+        <div class="modal-body" style="padding:0; max-height:70vh; overflow-y:auto;">
+            {{-- Search bar --}}
+            <div style="padding:18px 28px; border-bottom:1px solid #e7ece7; position:sticky; top:0; background:#fff; z-index:1;">
+                <div style="display:flex; align-items:center; gap:10px; background:#fafbf9; border:1px solid #e7ece7; border-radius:14px; padding:0 16px; height:44px;">
+                    <i class="fa-solid fa-magnifying-glass" style="color:#7a857f; font-size:13px;"></i>
+                    <input type="text" id="requestorSearchInput" placeholder="Search by name or department..."
+                        style="flex:1; border:none; outline:none; background:transparent; font-family:'Be Vietnam Pro',sans-serif; font-size:13px;">
+                </div>
+            </div>
+
+            {{-- Stats row --}}
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0; border-bottom:1px solid #e7ece7;">
+                <div style="padding:18px 24px; text-align:center; border-right:1px solid #e7ece7;">
+                    <div id="reqModalTotal" style="font-family:'Libre Caslon Text',serif; font-size:26px; color:#17350f;">0</div>
+                    <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:#7a857f; margin-top:4px;">Total Requestors</div>
+                </div>
+                <div style="padding:18px 24px; text-align:center; border-right:1px solid #e7ece7;">
+                    <div id="reqModalTotalRequests" style="font-family:'Libre Caslon Text',serif; font-size:26px; color:#4b9960;">0</div>
+                    <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:#7a857f; margin-top:4px;">Total Requests</div>
+                </div>
+                <div style="padding:18px 24px; text-align:center;">
+                    <div id="reqModalTopName" style="font-family:'Libre Caslon Text',serif; font-size:16px; color:#17350f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">—</div>
+                    <div style="font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:#7a857f; margin-top:4px;">Top Requestor</div>
+                </div>
+            </div>
+
+            {{-- List --}}
+            <div id="allRequestorsList" style="padding:8px 0;">
+                <div style="padding:32px; text-align:center; color:#7a857f; font-size:14px;">Loading...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- ===== MODAL: VIEW BUDGET REQUEST ===== --}}
+<div class="overlay" id="overlayViewRequest">
+    <div class="modal">
+
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+                <h3 style="font-family:'Libre Caslon Text',serif; font-size:28px; font-weight:400; color:#17350f; margin:0;">Budgeting</h3>
+                <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+                    <span id="viewRequestCode" style="font-size:12px; color:#7a857f; font-family:'Work Sans',sans-serif;"></span>
+                    <span id="viewRequestStatusBadge"></span>
+                </div>
+            </div>
+            <button onclick="closeModal('overlayViewRequest')"
+                style="background:#f5f5f2; border:none; cursor:pointer; width:36px; height:36px; border-radius:10px;
+                       display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                <i class="fa-solid fa-xmark" style="color:#1f2b23;"></i>
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            {{-- ROW 1: Title + Category + Type --}}
+            <div class="row-title-cat">
+                <div class="form-group fg-title">
+                    <label class="field-label">Expense Title</label>
+                    <div class="view-field" id="viewRequestTitle">—</div>
+                </div>
+                <div class="form-group fg-cat">
+                    <label class="field-label">Category</label>
+                    <div class="view-field" id="viewRequestCategory">—</div>
+                </div>
+                <div class="form-group fg-cat">
+                    <label class="field-label">Type</label>
+                    <div class="view-field" id="viewRequestType">—</div>
+                </div>
+            </div>
+
+            {{-- ROW 2: Item rows --}}
+            <div id="viewRequestItemRows">
+                {{-- Diisi JS --}}
+            </div>
+
+            {{-- Requested By --}}
+            <div class="form-group row-requested">
+                <label class="field-label">Requested By</label>
+                <div class="view-field" id="viewRequestRequestorField">—</div>
+            </div>
+
+            {{-- Grand Total --}}
+            <div class="grand-total-wrap">
+                <span class="gt-label">Grand Total</span>
+                <span class="gt-amount">Total Estimated Amount: IDR <span id="viewGrandTotalVal">0</span></span>
+            </div>
+
+        </div>
+
+        <div class="modal-footer" style="justify-content:space-between; align-items:center;">
+            <div style="font-size:12px; color:#7a857f;">
+                Submitted on <span id="viewRequestDate">—</span>
+            </div>
+            <button class="btn-cancel" onclick="closeModal('overlayViewRequest')">Close</button>
+        </div>
+
+    </div>
+</div>
+
+{{-- ===== MODAL: INVOICE VIEWER ===== --}}
+<div class="overlay" id="overlayInvoice" style="z-index:9999; position:fixed;">
+    <div class="modal" style="max-width:780px; display:flex; flex-direction:column; max-height:90vh;">
+        <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+            <div>
+                <h3 style="font-family:'Libre Caslon Text',serif; font-size:22px; font-weight:400; color:#17350f; margin:0;">Invoice</h3>
+                <p id="invoiceViewerName" style="font-size:12px; color:#7a857f; margin:4px 0 0;"></p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <a id="invoiceDownloadBtn" href="#" download
+                    style="height:38px; padding:0 16px; border-radius:12px; background:#17350f; color:#fff;
+                           display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600;
+                           text-decoration:none;">
+                    <i class="fa-solid fa-download"></i> Download
+                </a>
+                <button onclick="closeModal('overlayInvoice')"
+                    style="background:#f5f5f2; border:none; cursor:pointer; width:36px; height:36px;
+                           border-radius:10px; display:flex; align-items:center; justify-content:center;">
+                    <i class="fa-solid fa-xmark" style="color:#1f2b23;"></i>
+                </button>
+            </div>
+        </div>
+        <div style="flex:1; overflow:hidden; padding:0; background:#f0f0eb; display:flex; align-items:center; justify-content:center; min-height:400px;">
+            <iframe id="invoiceViewerFrame" src="" style="width:100%; height:520px; border:none; display:none;"></iframe>
+            <img    id="invoiceViewerImg"   src="" style="max-width:100%; max-height:520px; object-fit:contain; display:none;">
+            <div    id="invoiceViewerError" style="color:#7a857f; font-size:14px; display:none;">Cannot preview this file.</div>
+        </div>
+    </div>
+</div>
 
 @if(session('success'))
 <script>
@@ -409,15 +551,14 @@
                 <td><strong>${Number(r.estimated_total_amount || 0).toLocaleString('id-ID')}</strong></td>
                 <td>${statusBadge}</td>
                 <td class="action-cell">
-                    <button class="action-btn edit" type="button" onclick="alert('Detail: ${r.title}')">
-                        <i class="fa-solid fa-eye"></i> View
+                    <button class="action-btn" type="button" data-request-id="${r.id}" onclick="fetchAndViewRequest(this)">
+                        <i class="fa-solid fa-eye"></i>
                     </button>
                 </td>
             `;
             tbody.appendChild(tr);
         });
     }
-
     function renderPagination(pagination) {
         const meta        = document.getElementById('budgetRequestsMeta');
         const pageNumbers = document.getElementById('budgetPageNumbers');
@@ -538,6 +679,247 @@
 
     window.loadStats    = loadStats;
     window.loadRequests = loadRequests;
+
+/* ── View Budget Request Modal ── */
+window.openViewRequest = function(row) {
+    // Header
+    document.getElementById('viewRequestCode').textContent = row.request_code ? '#' + row.request_code : '';
+    document.getElementById('viewRequestDate').textContent = (row.created_at || '').slice(0, 10) || '—';
+
+    const statusBadge = document.getElementById('viewRequestStatusBadge');
+    const statusClass = row.status === 'Approved' ? 'status-approved'
+                      : row.status === 'Pending'  ? 'status-pending'
+                      : 'status-rejected';
+    statusBadge.className = 'status-badge ' + statusClass;
+    statusBadge.innerHTML = `<i class="fa-solid fa-circle" style="font-size:7px;"></i> ${row.status || '—'}`;
+
+    // Row 1 fields
+    document.getElementById('viewRequestTitle').textContent    = row.title    || '—';
+    document.getElementById('viewRequestCategory').textContent = row.category || '—';
+    document.getElementById('viewRequestType').textContent     = row.type     || '—';
+
+    // Requested By
+    document.getElementById('viewRequestRequestorField').textContent = row.requested_by || '—';
+
+    // Items
+    const container = document.getElementById('viewRequestItemRows');
+    container.innerHTML = '';
+
+    const items = row.items || [];
+    if (!items.length) {
+        container.innerHTML = `
+            <div style="padding:20px; text-align:center; color:#7a857f; font-size:13px;
+                        border:1px dashed #dde3de; border-radius:14px; margin-bottom:16px;">
+                No items found.
+            </div>`;
+    } else {
+        items.forEach((item, idx) => {
+            const invoiceFile = item.invoice_url || item.invoice_path || item.invoice || null;
+
+            // Laravel menyimpan sebagai "public/budgeting/invoices/xxx"
+            // symlink storage → public/storage, jadi strip prefix "public/"
+            const invoiceSrc = invoiceFile
+                ? '/storage/' + invoiceFile.replace(/^public\//, '')
+                : null;
+
+            const invoiceHtml = invoiceSrc
+                            ? `<a href="javascript:void(0)"
+                                onclick="openInvoiceViewer('${invoiceSrc}')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#f0f3f0;
+                                    border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600;
+                                    color:#17350f; text-decoration:none; pointer-events:auto; cursor:pointer;">
+                                <i class="fa-solid fa-file-arrow-down" style="font-size:11px;"></i> View Invoice
+                            </a>`
+                            : `<div class="view-field" style="color:#b0bab5; font-style:italic;">No invoice</div>`;
+
+            const paymentHtml = item.payment_method
+                ? `<div class="view-field">${item.payment_method}</div>`
+                : `<div class="view-field" style="color:#b0bab5; font-style:italic;">—</div>`;
+
+            const entry = document.createElement('div');
+            entry.className = 'item-entry';
+            entry.style.cssText = 'opacity:0.92;';
+            entry.innerHTML = `
+                <div class="form-group fg-title-item">
+                    <label class="field-label">Item Description</label>
+                    <div class="view-field">${item.title || '—'}</div>
+                </div>
+                <div class="form-group fg-amount">
+                    <label class="field-label">Estimated Amount (IDR)</label>
+                    <div class="view-field" style="font-weight:700; color:#17350f;">
+                        ${Number(item.estimated_amount || 0).toLocaleString('id-ID')}
+                    </div>
+                </div>
+                <div class="form-group fg-notes">
+                    <label class="field-label">Notes</label>
+                    <div class="view-field">${item.notes || '—'}</div>
+                </div>
+                <div class="form-group fg-invoice">
+                    <label class="field-label">Invoice</label>
+                    ${invoiceHtml}
+                </div>
+                <div class="form-group fg-payment">
+                    <label class="field-label">Payment Method</label>
+                    ${paymentHtml}
+                </div>
+                <div class="fg-del">
+                    <div style="width:36px; height:36px;"></div>
+                </div>
+            `;
+            container.appendChild(entry);
+        });
+    }
+
+    // Grand Total
+    const total = items.reduce((s, i) => s + Number(i.estimated_amount || 0), 0);
+    document.getElementById('viewGrandTotalVal').textContent = total.toLocaleString('id-ID');
+
+    openModal('overlayViewRequest');
+};
+
+window.openInvoiceViewer = function(src) {
+    const frame  = document.getElementById('invoiceViewerFrame');
+    const img    = document.getElementById('invoiceViewerImg');
+    const err    = document.getElementById('invoiceViewerError');
+    const dlBtn  = document.getElementById('invoiceDownloadBtn');
+    const name   = document.getElementById('invoiceViewerName');
+
+    // Reset
+    frame.style.display = 'none';
+    img.style.display   = 'none';
+    err.style.display   = 'none';
+    frame.src = '';
+    img.src   = '';
+
+    // Set download
+    dlBtn.href = src;
+    dlBtn.setAttribute('download', src.split('/').pop());
+    name.textContent   = src.split('/').pop();
+
+    // Detect type
+    const ext = src.split('.').pop().toLowerCase();
+    if (ext === 'pdf') {
+        frame.src           = src;
+        frame.style.display = 'block';
+    } else if (['jpg','jpeg','png','gif','webp'].includes(ext)) {
+        img.src           = src;
+        img.style.display = 'block';
+    } else {
+        err.style.display = 'block';
+    }
+
+    openModal('overlayInvoice');
+};
+
+window.fetchAndViewRequest = async function(btn) {
+    const id = btn.dataset.requestId;
+    if (!id) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+        const res  = await fetch(`/admin/budgeting/requests?id=${id}&with_items=1`);
+        const json = await res.json();
+        const row  = (json.data || [])[0];
+        if (row) {
+            openViewRequest(row);
+        } else {
+            alert('Data not found.');
+        }
+    } catch (e) {
+        console.warn(e);
+        alert('Failed to load request detail.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+    }
+};
+
+/* ── All Requestors Modal ── */
+(function initAllRequestorsModal() {
+    let allRequestors = [];
+
+    function renderRequestorsList(list) {
+        const container = document.getElementById('allRequestorsList');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (!list.length) {
+            container.innerHTML = '<div style="padding:32px; text-align:center; color:#7a857f; font-size:14px;">No requestors found.</div>';
+            return;
+        }
+
+        list.forEach((r, idx) => {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex; align-items:center; gap:16px; padding:16px 28px; border-bottom:1px solid #eef1ee; transition:background .15s;';
+            row.onmouseenter = () => row.style.background = '#fafbf9';
+            row.onmouseleave = () => row.style.background = 'transparent';
+
+            const rankColors = ['#f0c060', '#b0bec5', '#cd7f32'];
+            const rankColor  = rankColors[idx] || '#e7ece7';
+            const rankBg     = idx < 3 ? rankColor : '#f0f3f0';
+            const rankText   = idx < 3 ? '#17350f' : '#7a857f';
+
+            row.innerHTML = `
+                <div style="width:28px; height:28px; border-radius:8px; background:${rankBg}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:${rankText}; flex-shrink:0;">${idx + 1}</div>
+                <div style="width:44px; height:44px; border-radius:50%; background:#eaf3eb; display:flex; align-items:center; justify-content:center; font-family:'Work Sans',sans-serif; font-size:13px; font-weight:700; color:#4b9960; flex-shrink:0;">${r.initials || '??'}</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="font-family:'Work Sans',sans-serif; font-size:15px; font-weight:600; color:#17350f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${r.name || '—'}</div>
+                    <div style="font-size:12px; color:#7a857f; margin-top:2px;">${r.role || '—'}</div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                    <div style="text-align:right;">
+                        <div style="font-family:'Libre Caslon Text',serif; font-size:22px; color:#4b9960; line-height:1;">${r.count || 0}</div>
+                        <div style="font-size:9px; letter-spacing:2px; text-transform:uppercase; color:#88938c; margin-top:3px;">Requests</div>
+                    </div>
+                    <div style="width:8px; height:${Math.max(8, Math.min(48, (r.count || 0) * 6))}px; background:#4b9960; border-radius:4px; opacity:0.35;"></div>
+                </div>
+            `;
+            container.appendChild(row);
+        });
+    }
+
+    function updateModalStats(list) {
+        const totalReqs = list.reduce((s, r) => s + (r.count || 0), 0);
+        const elTotal        = document.getElementById('reqModalTotal');
+        const elTotalReqs    = document.getElementById('reqModalTotalRequests');
+        const elTopName      = document.getElementById('reqModalTopName');
+        elTotal     && (elTotal.textContent     = list.length);
+        elTotalReqs && (elTotalReqs.textContent = totalReqs);
+        elTopName   && (elTopName.textContent   = list[0]?.name || '—');
+    }
+
+    document.getElementById('requestorSearchInput')?.addEventListener('input', e => {
+        const q = e.target.value.toLowerCase();
+        const filtered = allRequestors.filter(r =>
+            (r.name || '').toLowerCase().includes(q) ||
+            (r.role || '').toLowerCase().includes(q)
+        );
+        renderRequestorsList(filtered);
+    });
+
+    const overlay = document.getElementById('overlayAllRequestors');
+    if (overlay) {
+        new MutationObserver(mutations => {
+            mutations.forEach(m => {
+                if (m.target.classList.contains('open') && allRequestors.length === 0) {
+                    fetch('/admin/budgeting/stats', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                        .then(r => r.json())
+                        .then(json => {
+                            allRequestors = json.requestors || [];
+                            updateModalStats(allRequestors);
+                            renderRequestorsList(allRequestors);
+                        })
+                        .catch(() => {
+                            const c = document.getElementById('allRequestorsList');
+                            if (c) c.innerHTML = '<div style="padding:32px; text-align:center; color:#7a857f;">Failed to load data.</div>';
+                        });
+                }
+            });
+        }).observe(overlay, { attributes: true });
+    }
+})();
 })();
 
 /* ── Sidebar ── */

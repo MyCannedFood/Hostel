@@ -64,19 +64,38 @@
 
                     <div class="article-toolbar">
                         <nav class="article-tabs" aria-label="Article filters">
-                            <button type="button" class="active">All Content</button>
-                            <button type="button">Published</button>
-                            <button type="button">Drafts</button>
+                            <button type="button" class="active" data-filter="all">All Content</button>
+                            <button type="button" data-filter="published">Published</button>
+                            <button type="button" data-filter="draft">Drafts</button>
                         </nav>
-                        <div class="article-tools">
+                        <div class="article-tools" style="position: relative;">
                             <label class="article-search">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
-                                <input type="search" placeholder="Search articles...">
+                                <input type="search" id="articleSearch" placeholder="Search articles...">
                             </label>
-                            <button type="button" class="article-filter-btn">
+                            <button type="button" class="article-filter-btn" id="filterBtn">
                                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"></path></svg>
                                 Filter
                             </button>
+                            <div id="filterDropdown" style="display:none; position:absolute; top:100%; right:0; background:#fff; border:1px solid rgba(26,61,10,0.15); border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,0.10); min-width:210px; z-index:100; padding:8px 0; margin-top:4px;">
+                                <div style="padding:8px 16px; font-size:11px; font-weight:600; color:#888; letter-spacing:0.08em;">CATEGORY</div>
+                                <button type="button" class="filter-category-btn active" data-category="all"
+                                    style="display:block;width:100%;text-align:left;padding:8px 16px;border:none;cursor:pointer;font-size:14px;background:#1a6ea8;color:#fff;">
+                                    All Categories
+                                </button>
+                                <button type="button" class="filter-category-btn" data-category="Culture & Serenity"
+                                    style="display:block;width:100%;text-align:left;padding:8px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:inherit;">
+                                    Culture & Serenity
+                                </button>
+                                <button type="button" class="filter-category-btn" data-category="Wellness & Nature"
+                                    style="display:block;width:100%;text-align:left;padding:8px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:inherit;">
+                                    Wellness & Nature
+                                </button>
+                                <button type="button" class="filter-category-btn" data-category="Eco & Discovery"
+                                    style="display:block;width:100%;text-align:left;padding:8px 16px;background:none;border:none;cursor:pointer;font-size:14px;color:inherit;">
+                                    Eco & Discovery
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -93,9 +112,11 @@
                                     <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="articleTableBody">
                                 @forelse($articles as $art)
-                                    <tr>
+                                    <tr data-status="{{ strtolower($art->status) }}"
+                                        data-title="{{ strtolower($art->title) }}"
+                                        data-category="{{ $art->category ?? '' }}">
                                         <td>
                                             @if($art->thumbnail)
                                                 <img src="{{ asset($art->thumbnail) }}" alt="Article thumbnail">
@@ -129,7 +150,7 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <tr>
+                                    <tr id="emptyRow">
                                         <td colspan="7" style="text-align: center; padding: 32px; color: #888;">
                                             No articles found. Write a new article to get started!
                                         </td>
@@ -140,7 +161,7 @@
                     </div>
 
                     <div class="article-table-foot">
-                        <span>Showing 1 to {{ $articles->count() }} of {{ $articles->count() }} entries</span>
+                        <span id="articleCount">Showing 1 to {{ $articles->count() }} of {{ $articles->count() }} entries</span>
                         <div class="article-pagination">
                             <button type="button" disabled>Previous</button>
                             <button type="button" class="active">1</button>
@@ -153,8 +174,9 @@
     </div>
 
     <script>
-        const sidebar = document.getElementById('adminSidebar');
-        const sidebarToggle = document.getElementById('sidebarToggle');
+        // ── Sidebar toggle ───────────────────────────────────────────
+        const sidebar        = document.getElementById('adminSidebar');
+        const sidebarToggle  = document.getElementById('sidebarToggle');
         const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 
         function setSidebarOpen(isOpen) {
@@ -180,6 +202,98 @@
                 if (window.innerWidth >= 1024) setSidebarOpen(false);
             });
         }
+
+        // ── Filter, Search & Category ────────────────────────────────
+        let activeFilter   = 'all';
+        let searchQuery    = '';
+        let activeCategory = 'all';
+
+        const allRows = () => document.querySelectorAll('#articleTableBody tr[data-status]');
+
+        function applyFilters() {
+            let visible = 0;
+            const total = allRows().length;
+
+            allRows().forEach(row => {
+                const matchTab      = activeFilter === 'all' || row.dataset.status === activeFilter;
+                const matchSearch   = row.dataset.title.includes(searchQuery);
+                const matchCategory = activeCategory === 'all' || row.dataset.category === activeCategory;
+
+                if (matchTab && matchSearch && matchCategory) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update footer counter
+            const countEl = document.getElementById('articleCount');
+            if (countEl) countEl.textContent = `Showing ${visible} of ${total} entries`;
+
+            // No results row
+            let noResultRow = document.getElementById('noResultRow');
+            if (visible === 0 && total > 0) {
+                if (!noResultRow) {
+                    noResultRow = document.createElement('tr');
+                    noResultRow.id = 'noResultRow';
+                    noResultRow.innerHTML = `<td colspan="7" style="text-align:center;padding:32px;color:#888;">No articles match your search.</td>`;
+                    document.getElementById('articleTableBody').appendChild(noResultRow);
+                }
+                noResultRow.style.display = '';
+            } else if (noResultRow) {
+                noResultRow.style.display = 'none';
+            }
+        }
+
+        // Tab buttons
+        document.querySelectorAll('.article-tabs button').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.article-tabs button').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                activeFilter = this.dataset.filter;
+                applyFilters();
+            });
+        });
+
+        // Search input
+        document.getElementById('articleSearch')?.addEventListener('input', function () {
+            searchQuery = this.value.trim().toLowerCase();
+            applyFilters();
+        });
+
+        // Filter dropdown toggle
+        const filterBtn      = document.getElementById('filterBtn');
+        const filterDropdown = document.getElementById('filterDropdown');
+
+        filterBtn?.addEventListener('click', function (e) {
+            e.stopPropagation();
+            filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Close dropdown on outside click
+        document.addEventListener('click', function () {
+            if (filterDropdown) filterDropdown.style.display = 'none';
+        });
+
+        filterDropdown?.addEventListener('click', function (e) {
+            e.stopPropagation();
+        });
+
+        // Category buttons
+        document.querySelectorAll('.filter-category-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.filter-category-btn').forEach(b => {
+                    b.style.background = 'none';
+                    b.style.color = 'inherit';
+                });
+                this.style.background = '#1a6ea8';
+                this.style.color = '#fff';
+                activeCategory = this.dataset.category;
+                filterDropdown.style.display = 'none';
+                applyFilters();
+            });
+        });
     </script>
 </body>
 </html>

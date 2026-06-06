@@ -71,7 +71,7 @@ class AdminBudgetingController extends Controller
 
         $perPage   = (int) $request->input('per_page', 10);
         $perPage   = max(1, min(50, $perPage));
-        $paginator = $query->orderByDesc('created_at')->paginate($perPage);
+        $paginator = $query->with('items')->orderByDesc('created_at')->paginate($perPage);
 
         return response()->json([
             'data' => $paginator->items(),
@@ -116,7 +116,6 @@ class AdminBudgetingController extends Controller
             ->select('requested_by', DB::raw('COUNT(*) as cnt'))
             ->groupBy('requested_by')
             ->orderByDesc('cnt')
-            ->limit(4)
             ->get();
 
         return response()->json([
