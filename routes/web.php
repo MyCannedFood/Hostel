@@ -251,7 +251,7 @@ Route::middleware(['is_admin'])->group(function () {
         ->name('admin.manage_guests.checkout');
 
     Route::get('/admin/manage-occupation',
-        fn () => view('admin.manage_occupation'))
+        [\App\Http\Controllers\AdminOccupationController::class, 'index'])
         ->name('admin.manage_occupation');
 
     Route::get('/admin/manage-revenue',

@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Experience Management - AlaSare</title>
-    @vite(['resources/css/dashboard.css', 'resources/css/admin-experience.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/css/admin-experience.css', 'resources/js/app.js'])
 </head>
 <body>
     <div class="dashboard-container">
