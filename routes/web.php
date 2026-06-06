@@ -550,4 +550,8 @@ Route::middleware(['is_admin'])->group(function () {
         [AdminContactLocationSettingController::class, 'destroyTransport'])
         ->name('admin.settings.location.transport.destroy');
 
+    
+        Route::get('/admin/notification', function () {
+            return view('admin.notification');
+        })->name('admin.notifications');
 });
