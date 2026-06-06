@@ -1,8 +1,9 @@
-    .guest-details-page {
+.guest-details-page {
         padding: 40px 24px 0;
         max-width: 1000px;
         margin: 0 auto;
         font-family: var(--font-sans);
+        background: #F6F6F1;
     }
 
     .guest-header {

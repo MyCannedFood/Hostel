@@ -4,6 +4,7 @@
     margin: 0 auto;
     font-family: var(--font-sans);
     color: #333;
+    background: #F6F6F1;
 }
 
 .calendar-header {

@@ -3,6 +3,7 @@
     max-width: 1000px;
     margin: 0 auto;
     font-family: var(--font-body);
+    background: #F6F6F1;
 }
 
 .booking-stepper {
