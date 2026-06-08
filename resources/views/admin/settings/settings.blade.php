@@ -26,7 +26,7 @@
                 </button>
                 <div class="header-actions">
                     <img src="{{ asset('images/admin/img_button_trailing.svg') }}" alt="Menu" width="34" height="28">
-                    <a href="{{ route('admin.notifications') }}">
+                    <a href="{{ route('admin.notification.index') }}">
                         <img src="{{ asset('images/admin/img_button_white_a700.svg') }}" alt="Notifications" width="32" height="36">
                     </a>
                     <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('images/admin/profile.png') }}" alt="User profile" width="40" height="40">
