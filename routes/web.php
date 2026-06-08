@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\AdminContactLocationSettingController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\PaymentSettingsController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -550,8 +551,15 @@ Route::middleware(['is_admin'])->group(function () {
         [AdminContactLocationSettingController::class, 'destroyTransport'])
         ->name('admin.settings.location.transport.destroy');
 
-    
-        Route::get('/admin/notification', function () {
-            return view('admin.notification');
-        })->name('admin.notifications');
+        // Notification
+    Route::prefix('admin/notification')
+        ->name('admin.notification.')
+        ->controller(NotificationController::class)
+        ->group(function () {
+            Route::get('/',              'index')->name('index');
+            Route::patch('read-all',     'markAllRead')->name('readAll');
+            Route::patch('{id}/read',    'markRead')->name('read');
+            Route::delete('{id}',        'dismiss')->name('dismiss');
+            Route::patch('{id}/confirm', 'confirm')->name('confirm');
+        });
 });

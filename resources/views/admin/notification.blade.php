@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Notifications - AlaSare</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/dashboard.css', 'resources/js/app.js'])
     <style>
         .notif-page { padding: 2.5rem 2.75rem; }
 
@@ -93,8 +93,7 @@
         .btn-dismiss {
             padding: 0.38rem 0.9rem; border-radius: 2px;
             background: transparent; color: #1a3d0a; font-size: 0.775rem;
-            opacity: 0.7;
-            font-weight: 500; border: none; cursor: pointer; transition: color 0.18s;
+            opacity: 0.7; font-weight: 500; border: none; cursor: pointer; transition: color 0.18s;
         }
         .btn-dismiss:hover { color: #C0392B; }
         .badge-processed {
@@ -173,8 +172,8 @@
             </button>
             <div class="header-actions">
                 <img src="{{ asset('images/admin/img_button_trailing.svg') }}" alt="Menu" width="34" height="28">
-                <a href="{{ route('admin.notifications') }}">
-                    <img src="{{ asset('images/admin/img_button_white_a700.svg') }}" alt="Notifications" width="32" height="36">
+                <a href="{{ route('admin.notification.index') }}">
+                    <img src="{{ asset('images/admin/img_button_white_a700.svg') }}" alt="Notification" width="32" height="36">
                 </a>
                 <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('images/admin/profile.png') }}"
                     alt="User profile" width="40" height="40">
@@ -212,58 +211,60 @@
 
                 <div class="notif-list" id="notifList">
 
-                    <div class="notif-card is-unread" data-type="bookings" data-id="booking-1">
+                    @forelse ($notification as $notif)
+                    @php
+                        $card  = $notif->card;
+                        $modal = $card['modal'];
+                        $isBooking = $notif->type === 'booking';
+                    @endphp
+
+                    <div class="notif-card {{ !$notif->is_read ? 'is-unread' : '' }}"
+                         data-type="{{ $isBooking ? 'bookings' : 'experiences' }}"
+                         data-id="{{ $notif->id }}"
+                         data-modal='@json($modal)'
+                         data-notif-type="{{ $notif->type }}">
+
                         <div class="notif-card-row">
-                            <div class="notif-icon booking">
+                            <div class="notif-icon {{ $isBooking ? 'booking' : 'experience' }}">
+                                @if ($isBooking)
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                                     <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
                                     <line x1="3" y1="10" x2="21" y2="10"/>
                                 </svg>
-                            </div>
-                            <div class="notif-body">
-                                <div class="notif-body-top">
-                                    <p class="notif-title">New Room Booking: Sarah J.</p>
-                                    <div class="notif-meta">
-                                        <span class="notif-time">2 minutes ago</span>
-                                        <span class="notif-dot"></span>
-                                    </div>
-                                </div>
-                                <p class="notif-desc">Herbal Garden Dorm (3 nights) — Check-in: Oct 24, 2024. Waiting for initial welcome confirmation.</p>
-                                <div class="notif-actions">
-                                    <button class="btn-view-details" onclick="openModal('booking')">View Details</button>
-                                    <button class="btn-dismiss" onclick="dismissNotif(this)">Dismiss</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="notif-card" data-type="experiences" data-id="exp-1">
-                        <div class="notif-card-row">
-                            <div class="notif-icon experience">
+                                @else
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
                                 </svg>
+                                @endif
                             </div>
+
                             <div class="notif-body">
                                 <div class="notif-body-top">
-                                    <p class="notif-title">Experience Booking: David L.</p>
+                                    <p class="notif-title">{{ $card['title'] }}</p>
                                     <div class="notif-meta">
-                                        <span class="notif-time">2 hours ago</span>
+                                        <span class="notif-time">{{ $card['time'] }}</span>
+                                        @if (!$notif->is_read)
+                                            <span class="notif-dot"></span>
+                                        @endif
                                     </div>
                                 </div>
-                                <p class="notif-desc">Batik Tulis Ritual session booked for tomorrow at 10:00 AM. Instructor notified.</p>
+                                <p class="notif-desc">{{ $card['desc'] }}</p>
                                 <div class="notif-actions">
-                                    <button class="btn-view-details" onclick="openModal('experience')">View Details</button>
-                                    <button class="btn-dismiss" onclick="dismissNotif(this)">Dismiss</button>
+                                    <button class="btn-view-details js-view-details">View Details</button>
+                                    <button class="btn-dismiss js-dismiss">Dismiss</button>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    @empty
+                    {{-- Kosong dari server — empty state langsung tampil --}}
+                    @endforelse
 
                 </div>
 
-                <div class="notif-empty" id="notifEmpty">
+                <div class="notif-empty" id="notifEmpty"
+                     @if($notification->isEmpty()) style="display:block;" @endif>
                     <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
@@ -276,67 +277,69 @@
     </main>
 </div>
 
-{{-- Booking Modal --}}
+{{-- Single Booking Modal --}}
 <div class="modal-overlay" id="modalBooking">
     <div class="modal-box">
-        <button class="modal-close" onclick="closeModal('booking')">
+        <button class="modal-close" id="closeModalBooking">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
         <h2 class="modal-title">Booking Detail</h2>
         <div class="modal-grid">
-            <div class="modal-field"><label>Guest Name</label><p>Sarah J.</p></div>
-            <div class="modal-field"><label>Booking Type</label><p>Herbal Garden Dorm</p></div>
-            <div class="modal-field"><label>Dates</label><p>Oct 24 – 27, 2024</p></div>
-            <div class="modal-field"><label>Duration</label><p>3 Nights</p></div>
+            <div class="modal-field"><label>Guest Name</label><p id="mGuestName">—</p></div>
+            <div class="modal-field"><label>Booking Type</label><p id="mBookingType">—</p></div>
+            <div class="modal-field"><label>Dates</label><p id="mDates">—</p></div>
+            <div class="modal-field"><label>Duration</label><p id="mDuration">—</p></div>
         </div>
         <div class="modal-grid" style="grid-template-columns:1fr;margin-bottom:0;">
-            <div class="modal-field"><label>Total Price</label><p class="price">IDR 400.000</p></div>
+            <div class="modal-field"><label>Total Price</label><p class="price" id="mPrice">—</p></div>
         </div>
         <div class="modal-note" style="margin-top:1.2rem;">
             <label>Special Notes</label>
-            <p>Arriving late (around 9 PM). Requests a bottom bunk if possible. Allergic to peanuts.</p>
+            <p id="mNotes">—</p>
         </div>
         <div class="modal-actions">
-            <button class="btn-modal-confirm" onclick="confirmBooking()">Confirm Booking</button>
-            <button class="btn-modal-close" onclick="closeModal('booking')">Dismiss</button>
+            <button class="btn-modal-confirm" id="btnConfirmBooking">Confirm Booking</button>
+            <button class="btn-modal-close" id="closeModalBooking2">Dismiss</button>
         </div>
     </div>
 </div>
 
-{{-- Experience Modal --}}
+{{-- Single Experience Modal --}}
 <div class="modal-overlay" id="modalExperience">
     <div class="modal-box">
-        <button class="modal-close" onclick="closeModal('experience')">
+        <button class="modal-close" id="closeModalExp">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
         <h2 class="modal-title">Experience Detail</h2>
         <div class="modal-grid">
-            <div class="modal-field"><label>Guest Name</label><p>David L.</p></div>
-            <div class="modal-field"><label>Experience</label><p>Batik Tulis Ritual</p></div>
-            <div class="modal-field"><label>Date &amp; Time</label><p>Oct 25, 10:00 AM</p></div>
-            <div class="modal-field"><label>Participants</label><p>2 People</p></div>
+            <div class="modal-field"><label>Guest Name</label><p id="eGuestName">—</p></div>
+            <div class="modal-field"><label>Experience</label><p id="eExperience">—</p></div>
+            <div class="modal-field"><label>Date &amp; Time</label><p id="eDateTime">—</p></div>
+            <div class="modal-field"><label>Participants</label><p id="eParticipants">—</p></div>
         </div>
         <div class="modal-grid" style="grid-template-columns:1fr;margin-bottom:0;">
-            <div class="modal-field"><label>Status</label><p class="status-notified">Instructor Notified</p></div>
+            <div class="modal-field"><label>Status</label><p class="status-notified" id="eStatus">—</p></div>
         </div>
         <div class="modal-note" style="margin-top:1.2rem;">
             <label>Internal Note</label>
-            <p>Ensure all materials are prepared in the garden pavillion. Guest requested extra wax.</p>
+            <p id="eNotes">—</p>
         </div>
         <div class="modal-actions">
-            <button class="btn-modal-confirm" onclick="confirmExperience()">Confirm</button>
-            <button class="btn-modal-close" onclick="closeModal('experience')">Close</button>
+            <button class="btn-modal-confirm" id="btnConfirmExp">Confirm</button>
+            <button class="btn-modal-close" id="closeModalExp2">Close</button>
         </div>
     </div>
 </div>
 
 <script>
 (function () {
-    // Sidebar
+    const CSRF = document.querySelector('meta[name="csrf-token"]').content;
+
+    // ── Sidebar ─────────────────────────────────────────
     const sidebar         = document.getElementById('adminSidebar');
     const sidebarToggle   = document.getElementById('sidebarToggle');
     const sidebarBackdrop = document.getElementById('sidebarBackdrop');
@@ -352,17 +355,20 @@
     window.addEventListener('keydown', e => { if (e.key === 'Escape') setSidebarOpen(false); });
     window.addEventListener('resize', () => { if (window.innerWidth >= 1024) setSidebarOpen(false); });
 
-    // Filter Tabs
+    // ── Filter & Search ─────────────────────────────────
     const tabs   = document.querySelectorAll('.tab-btn');
-    const cards  = document.querySelectorAll('.notif-card');
     const empty  = document.getElementById('notifEmpty');
     const search = document.getElementById('notifSearch');
+
+    function visibleCards() {
+        return document.querySelectorAll('.notif-card');
+    }
 
     function applyFilters() {
         const activeFilter = document.querySelector('.tab-btn.active').dataset.filter;
         const q = search.value.toLowerCase().trim();
         let visible = 0;
-        cards.forEach(card => {
+        visibleCards().forEach(card => {
             const show = (activeFilter === 'all' || card.dataset.type === activeFilter)
                       && (!q || card.textContent.toLowerCase().includes(q));
             card.style.display = show ? '' : 'none';
@@ -378,40 +384,129 @@
     }));
     search.addEventListener('input', applyFilters);
 
-    document.getElementById('btnMarkAllRead').addEventListener('click', () => {
+    // ── Mark All Read ────────────────────────────────────
+    document.getElementById('btnMarkAllRead').addEventListener('click', async () => {
+        await fetch('{{ route("admin.notification.readAll") }}', {
+            method: 'PATCH',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        });
         document.querySelectorAll('.notif-card.is-unread').forEach(card => {
             card.classList.remove('is-unread');
             card.querySelector('.notif-dot')?.remove();
         });
     });
 
-    window.dismissNotif = function (btn) {
+    // ── Dismiss ──────────────────────────────────────────
+    document.getElementById('notifList').addEventListener('click', async e => {
+        const btn = e.target.closest('.js-dismiss');
+        if (!btn) return;
+
         const card = btn.closest('.notif-card');
+        const id   = card.dataset.id;
+
+        await fetch(`/admin/notification/${id}`, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        });
+
         card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
         card.style.opacity    = '0';
         card.style.transform  = 'translateX(12px)';
         setTimeout(() => { card.remove(); applyFilters(); }, 300);
-    };
+    });
 
+    // ── View Details → populate & open modal ────────────
+    let activeCard = null; // referensi card yang sedang dibuka modalnya
+
+    document.getElementById('notifList').addEventListener('click', async e => {
+        const btn = e.target.closest('.js-view-details');
+        if (!btn) return;
+
+        const card  = btn.closest('.notif-card');
+        const type  = card.dataset.notifType;  // 'booking' | 'experience'
+        const modal = JSON.parse(card.dataset.modal);
+        activeCard  = card;
+
+        // Tandai sudah dibaca
+        const notifId = card.dataset.id;
+        if (card.classList.contains('is-unread')) {
+            fetch(`/admin/notification/${notifId}/read`, {
+                method: 'PATCH',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            });
+            card.classList.remove('is-unread');
+            card.querySelector('.notif-dot')?.remove();
+        }
+
+        if (type === 'booking') {
+            document.getElementById('mGuestName').textContent   = modal.guest_name;
+            document.getElementById('mBookingType').textContent = modal.booking_type;
+            document.getElementById('mDates').textContent       = modal.dates;
+            document.getElementById('mDuration').textContent    = modal.duration;
+            document.getElementById('mPrice').textContent       = modal.total_price;
+            document.getElementById('mNotes').textContent       = modal.special_notes;
+            openModal('booking');
+        } else {
+            document.getElementById('eGuestName').textContent   = modal.guest_name;
+            document.getElementById('eExperience').textContent  = modal.experience;
+            document.getElementById('eDateTime').textContent    = modal.datetime;
+            document.getElementById('eParticipants').textContent = modal.participants;
+            document.getElementById('eStatus').textContent      = modal.status;
+            document.getElementById('eNotes').textContent       = modal.notes;
+            openModal('experience');
+        }
+    });
+
+    // ── Confirm ──────────────────────────────────────────
+    document.getElementById('btnConfirmBooking').addEventListener('click', async () => {
+        if (!activeCard) return;
+        await confirmNotif(activeCard);
+        closeModal('booking');
+    });
+
+    document.getElementById('btnConfirmExp').addEventListener('click', async () => {
+        if (!activeCard) return;
+        await confirmNotif(activeCard);
+        closeModal('experience');
+    });
+
+    async function confirmNotif(card) {
+        const id = card.dataset.id;
+        await fetch(`/admin/notification/${id}/confirm`, {
+            method: 'PATCH',
+            headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+        });
+        card.classList.remove('is-unread');
+        card.querySelector('.notif-dot')?.remove();
+        card.querySelector('.notif-actions').innerHTML =
+            '<span class="badge-processed">Confirmed</span>';
+    }
+
+    // ── Modal Helpers ────────────────────────────────────
     const overlays = {
         booking:    document.getElementById('modalBooking'),
         experience: document.getElementById('modalExperience'),
     };
-    window.openModal  = type => { overlays[type]?.classList.add('open'); document.body.style.overflow = 'hidden'; };
-    window.closeModal = type => { overlays[type]?.classList.remove('open'); document.body.style.overflow = ''; };
-    Object.values(overlays).forEach(o => o.addEventListener('click', e => { if (e.target === o) { o.classList.remove('open'); document.body.style.overflow = ''; } }));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { Object.values(overlays).forEach(o => o.classList.remove('open')); document.body.style.overflow = ''; } });
+    function openModal(type)  { overlays[type]?.classList.add('open');    document.body.style.overflow = 'hidden'; }
+    function closeModal(type) { overlays[type]?.classList.remove('open'); document.body.style.overflow = ''; }
 
-    window.confirmBooking = function () {
-        const card = document.querySelector('[data-id="booking-1"]');
-        if (card) { card.classList.remove('is-unread'); card.querySelector('.notif-dot')?.remove(); card.querySelector('.notif-actions').innerHTML = '<span class="badge-processed">Confirmed</span>'; }
-        closeModal('booking');
-    };
-    window.confirmExperience = function () {
-        const card = document.querySelector('[data-id="exp-1"]');
-        if (card) card.querySelector('.notif-actions').innerHTML = '<span class="badge-processed">Confirmed</span>';
-        closeModal('experience');
-    };
+    document.getElementById('closeModalBooking').addEventListener('click',  () => closeModal('booking'));
+    document.getElementById('closeModalBooking2').addEventListener('click', () => closeModal('booking'));
+    document.getElementById('closeModalExp').addEventListener('click',      () => closeModal('experience'));
+    document.getElementById('closeModalExp2').addEventListener('click',     () => closeModal('experience'));
+
+    Object.values(overlays).forEach(o =>
+        o.addEventListener('click', e => {
+            if (e.target === o) { o.classList.remove('open'); document.body.style.overflow = ''; }
+        })
+    );
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            Object.values(overlays).forEach(o => o.classList.remove('open'));
+            document.body.style.overflow = '';
+        }
+    });
+
 })();
 </script>
 </body>
