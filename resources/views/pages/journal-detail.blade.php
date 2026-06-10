@@ -38,5 +38,6 @@
 
 @include('components.footer')
 
+<x-whatsapp_floating />
 </body>
 </html>

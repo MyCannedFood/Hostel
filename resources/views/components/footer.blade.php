@@ -43,11 +43,13 @@
         <div class="footer-nav">
             <h4>Discover</h4>
             <ul class="footer-links">
-                <li><a href="#">Our Story</a></li>
-                <li><a href="#">Villas &amp; Rates</a></li>
-                <li><a href="#">Botanical Spa</a></li>
-                <li><a href="#">Dining</a></li>
-                <li><a href="#">Sustainability</a></li>
+                <li><a href="/">Home</a></li>
+                <li><a href="/rooms">Villas</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/experience">Experience</a></li>
+                <li><a href="/journal">Journal</a></li>
+                <li><a href="/guest-story">Guest Story</a></li>
+                <li><a href="/contact">Contact</a></li>
             </ul>
         </div>
 

@@ -255,7 +255,7 @@
 
         <div class="hero-booking-btn-wrap">
             <button class="hero-booking-btn" type="button"
-                    onclick="window.location.href='/room-selection'">
+                    onclick="window.location.href='/calendar'">
                 Check Availability
             </button>
         </div>

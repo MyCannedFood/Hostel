@@ -12,7 +12,7 @@
 
 <main>
     {{-- Hero Section --}}
-    <section class="experience-hero">
+    <section class="experience-hero" style="background-image: url('{{ asset('images/heroex.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
         <div class="experience-hero-content">
             <h1 class="experience-hero-title">Find Meaning at AlaSare</h1>
             <p class="experience-hero-subtitle">Absorb the essence of the place, discover new passions, grow step by step.</p>

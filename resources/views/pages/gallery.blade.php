@@ -154,8 +154,9 @@
  
 @include('components.footer')
  
+ <x-whatsapp_floating />
  
-{{-- ═══════ LIGHTBOX ═══════ --}}
+ {{-- ═══════ LIGHTBOX ═══════ --}}
 <div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true">
     <div class="lightbox-inner">
         <button class="lightbox-close" id="lbClose" aria-label="Tutup">&times;</button>

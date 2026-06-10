@@ -114,5 +114,7 @@ $pageUrl     = fn($p) => $baseUrl . '?page=' . $p;
 
 @include('components.footer')
 
+<x-whatsapp_floating />
+
 </body>
 </html>

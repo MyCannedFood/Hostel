@@ -95,7 +95,7 @@
 
     {{-- CTA Button --}}
     <div class="sanctuaries-cta">
-        <a href="#" class="btn-view-all">View All Accommodations</a>
+        <a href="{{ url('/rooms') }}" class="btn-view-all">View All Accommodations</a>
     </div>
 
 </section>
