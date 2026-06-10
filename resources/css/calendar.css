@@ -4,6 +4,7 @@
     margin: 0 auto;
     font-family: var(--font-sans);
     color: #333;
+    background: #F6F6F1;
 }
 
 .calendar-header {
@@ -248,14 +249,31 @@
     cursor: default;
 }
 
+/* ✅ TAMBAHAN: Style hari yang sudah lewat */
+.day.past {
+    background: #F0F0F0;
+    color: #BBBBBB;
+    cursor: not-allowed;
+    pointer-events: none;
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
 .day.unavailable {
     background: #EAEAEA;
     color: #999;
+    cursor: not-allowed;
+    pointer-events: none;
 }
 
 .day.available {
     background: #419662;
     color: #FFF;
+}
+
+.day.available:hover {
+    background: #2d7a4f;
+    transform: scale(1.05);
 }
 
 .day.selected {

@@ -145,9 +145,9 @@
                             @if($room['is_sold_out'])
                                 <button class="btn-select" style="background:#B0B0B0;cursor:not-allowed;" disabled>Sold Out</button>
                             @else
-                                <a class="btn-select" href="{{ url('/bed-shared-room/' . $room['id']) }}" style="text-decoration:none; display:inline-block;">
-                                    Select Bed
-                                </a>
+                                    <a class="btn-select" href="{{ url('/calendar') }}" style="text-decoration:none; display:inline-block;">
+                                    	Select Bed
+                                    </a>
                             @endif
                         </div>
                     </div>
