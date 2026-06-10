@@ -45,7 +45,6 @@
         }
         .serif { font-family: 'EB Garamond', serif; }
 
-
         /* === Main Content === */
         .main-content {
             flex: 1;
@@ -53,7 +52,6 @@
             flex-direction: column;
             background-color: var(--light-bg);
             overflow-y: auto;
-            /* Use responsive offset matching the fixed sidebar */
             margin-left: max(18%, 250px);
             width: calc(100% - max(18%, 250px));
             position: relative;
@@ -316,35 +314,74 @@
         .action-btn:hover { background: var(--table-header); }
 
         /* === Pagination === */
-        .pagination {
+        .pagination-wrapper {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
-            background-color: var(--table-header);
-            border-top: 1px solid var(--primary-dark);
+            padding: 16px 24px;
+            background-color: var(--white);
+            border-top: 2px solid var(--table-header);
+            flex-wrap: wrap;
+            gap: 12px;
         }
         .page-info {
-            font-size: 14px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .page-info span {
+            font-weight: 700;
             color: var(--primary-dark);
         }
         .page-numbers {
             display: flex;
-            gap: 5px;
+            align-items: center;
+            gap: 4px;
         }
-        .page-btn {
-            padding: 6px 12px;
-            border: 1px solid var(--primary-dark);
-            background: var(--white);
+        .page-numbers a.page-btn,
+        .page-numbers span.page-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
             color: var(--primary-dark);
-            border-radius: 4px;
+            background: var(--white);
+            text-decoration: none;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+            line-height: 1;
             cursor: pointer;
         }
-        .page-btn.active {
+        .page-numbers a.page-btn:hover {
+            background: var(--table-header);
+            border-color: var(--primary-dark);
+        }
+        .page-numbers span.page-btn.is-active {
             background: var(--primary-dark);
             color: var(--white);
+            border-color: var(--primary-dark);
+        }
+        .page-numbers span.page-btn.is-disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .page-numbers span.page-dots {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 36px;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: default;
         }
 
+        /* === Modal === */
         .reservation-modal {
             position: fixed;
             inset: 0;
@@ -387,162 +424,215 @@
 
         <main class="main-content">
             <header class="header">
-                    <button type="button" class="hamburger mobile-only" id="sidebarToggle" aria-label="Open sidebar" aria-controls="adminSidebar" aria-expanded="false">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <div class="header-actions">
-                        <img src="{{ asset('images/admin/img_button_trailing.svg') }}" alt="Menu" width="34" height="28">
+                <button type="button" class="hamburger mobile-only" id="sidebarToggle" aria-label="Open sidebar" aria-controls="adminSidebar" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="header-actions">
+                    <img src="{{ asset('images/admin/img_button_trailing.svg') }}" alt="Menu" width="34" height="28">
                     <a href="{{ route('admin.notification.index') }}">
                         <img src="{{ asset('images/admin/img_button_white_a700.svg') }}" alt="Notifications" width="32" height="36">
                     </a>
-                        <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('images/admin/profile.png') }}" alt="User profile" width="40" height="40">
-
-                    </div>
+                    <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('images/admin/profile.png') }}" alt="User profile" width="40" height="40">
+                </div>
             </header>
 
             <div class="content-wrapper">
-                
+
                 <div class="page-header">
                     <h2>Reservations Management</h2>
                     <button class="btn-add" type="button" id="openReservationModal">+ Add New Reservation</button>
                 </div>
 
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <i class="fa-solid fa-user-plus stat-icon"></i> DAILY ARRIVALS
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <i class="fa-solid fa-user-plus stat-icon"></i> DAILY ARRIVALS
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number">{{ $dailyArrivals ?? 0 }}</span>
+                            <span class="stat-label">guests</span>
+                        </div>
                     </div>
-                    <div class="stat-body">
-                        <span class="stat-number">{{ $dailyArrivals ?? 0 }}</span> <span class="stat-label">guests</span>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <i class="fa-solid fa-wallet stat-icon orange"></i> PENDING PAYMENTS
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number orange">{{ $pendingPayments ?? 0 }}</span>
+                            <span class="stat-label">bookings</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <i class="fa-solid fa-arrow-right-from-bracket stat-icon"></i> CHECK-OUT TODAY
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number">{{ $checkoutToday ?? 0 }}</span>
+                            <span class="stat-label">guests</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <i class="fa-solid fa-arrow-right-to-bracket stat-icon"></i> CHECK-IN TODAY
+                        </div>
+                        <div class="stat-body">
+                            <span class="stat-number">{{ $checkinToday ?? 0 }}</span>
+                            <span class="stat-label">guests</span>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <i class="fa-solid fa-wallet stat-icon orange"></i> PENDING PAYMENTS
-                    </div>
-                    <div class="stat-body">
-                        <span class="stat-number orange">{{ $pendingPayments ?? 0 }}</span> <span class="stat-label">bookings</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <i class="fa-solid fa-arrow-right-from-bracket stat-icon"></i> CHECK-OUT TODAY
-                    </div>
-                    <div class="stat-body">
-                        <span class="stat-number">{{ $checkoutToday ?? 0 }}</span> <span class="stat-label">guests</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <i class="fa-solid fa-arrow-right-to-bracket stat-icon"></i> CHECK-IN TODAY
-                    </div>
-                    <div class="stat-body">
-                        <span class="stat-number">{{ $checkinToday ?? 0 }}</span> <span class="stat-label">guests</span>
-                    </div>
-                </div>
-            </div>
 
-            <form class="filters" method="GET" action="{{ route('admin.booking') }}">
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Booking ID, Guest, or Contact...">
-                </div>
-                <select class="filter-select" name="room_id">
-                    <option value="">All Room Types</option>
-                    @foreach(($rooms ?? []) as $room)
-                        <option value="{{ $room->id }}" @selected((string) request('room_id') === (string) $room->id)>{{ $room->name }}</option>
-                    @endforeach
-                </select>
-                <select class="filter-select" name="status">
-                    <option value="all" @selected(request('status', 'all') === 'all')>All Statuses</option>
-                    <option value="PENDING" @selected(request('status') === 'PENDING')>Pending</option>
-                    <option value="CONFIRMED" @selected(request('status') === 'CONFIRMED')>Confirmed</option>
-                    <option value="CANCELLED" @selected(request('status') === 'CANCELLED')>Cancelled</option>
-                    <option value="COMPLETED" @selected(request('status') === 'COMPLETED')>Completed</option>
-                </select>
-                <input class="filter-select" type="date" name="date_from" value="{{ request('date_from') }}" aria-label="Date from">
-                <input class="filter-select" type="date" name="date_to" value="{{ request('date_to') }}" aria-label="Date to">
-                <button class="btn-add" type="submit" style="padding: 12px 18px;">Apply</button>
-                <a class="btn-add" href="{{ route('admin.booking') }}" style="padding: 12px 18px; text-decoration: none; display: inline-flex; align-items: center;">Reset</a>
-            </form>
+                <form class="filters" method="GET" action="{{ route('admin.booking') }}">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Booking ID, Guest, or Contact...">
+                    </div>
+                    <select class="filter-select" name="room_id">
+                        <option value="">All Room Types</option>
+                        @foreach(($rooms ?? []) as $room)
+                            <option value="{{ $room->id }}" @selected((string) request('room_id') === (string) $room->id)>{{ $room->name }}</option>
+                        @endforeach
+                    </select>
+                    <select class="filter-select" name="status">
+                        <option value="all" @selected(request('status', 'all') === 'all')>All Statuses</option>
+                        <option value="PENDING" @selected(request('status') === 'PENDING')>Pending</option>
+                        <option value="CONFIRMED" @selected(request('status') === 'CONFIRMED')>Confirmed</option>
+                        <option value="CANCELLED" @selected(request('status') === 'CANCELLED')>Cancelled</option>
+                        <option value="COMPLETED" @selected(request('status') === 'COMPLETED')>Completed</option>
+                    </select>
+                    <input class="filter-select" type="date" name="date_from" value="{{ request('date_from') }}" aria-label="Date from">
+                    <input class="filter-select" type="date" name="date_to" value="{{ request('date_to') }}" aria-label="Date to">
+                    <button class="btn-add" type="submit" style="padding: 12px 18px;">Apply</button>
+                    <a class="btn-add" href="{{ route('admin.booking') }}" style="padding: 12px 18px; text-decoration: none; display: inline-flex; align-items: center;">Reset</a>
+                </form>
 
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Booking ID</th>
-                            <th>Guest Info</th>
-                            <th>Room & Bed</th>
-                            <th>Dates & Stay</th>
-                            <th>Payment</th>
-                            <th>Payment Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse (($bookings ?? collect()) as $booking)
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Guest Info</th>
+                                <th>Room & Bed</th>
+                                <th>Dates & Stay</th>
+                                <th>Payment</th>
+                                <th>Payment Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse (($bookings ?? collect()) as $booking)
+                                @php
+                                    $status = strtoupper((string) $booking->status);
+                                    $statusClass = match ($status) {
+                                        'PENDING' => 'pending',
+                                        'CANCELLED' => 'cancelled',
+                                        default => 'confirmed',
+                                    };
+                                    $guest = $booking->guest;
+                                    $room = $booking->room;
+                                    $bed = $booking->bed;
+                                    $bookingId = $booking->id;
+                                @endphp
+                                <tr>
+                                    <td class="booking-id">#{{ $booking->booking_code }}</td>
+                                    <td>
+                                        <div class="guest-name">{{ trim(($guest?->first_name ?? '') . ' ' . ($guest?->last_name ?? '')) ?: 'Guest' }}</div>
+                                        <div class="text-muted">{{ $guest?->phone ?: $guest?->email ?: '-' }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="room-name">{{ $room?->name ?? '-' }}</div>
+                                        <div class="text-sub">{{ $bed?->name ?? '-' }}{{ $bed?->position ? ' | ' . $bed->position : '' }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{{ optional($booking->check_in_date)->format('d M Y') }} - {{ optional($booking->check_out_date)->format('d M Y') }}</div>
+                                        <div class="text-sub">{{ $booking->total_nights }} Nights</div>
+                                    </td>
+                                    <td>
+                                        <div>IDR {{ number_format((float) $booking->total_price, 0, ',', '.') }}</div>
+                                        <div class="text-sub">{{ $booking->payment_method ?: '-' }}</div>
+                                    </td>
+                                    <td><span class="badge {{ $statusClass }}">{{ $status }}</span></td>
+                                    <td>
+                                        <div class="actions">
+                                            <button class="action-btn" type="button" title="Confirm" aria-label="Confirm booking" data-booking-status-action="CONFIRMED" data-booking-id="{{ $bookingId }}">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            <button class="action-btn" type="button" title="Edit" aria-label="Edit booking" data-booking-edit-action data-booking-edit-url="{{ route('admin.booking.edit_popup', $bookingId) }}">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button class="action-btn" type="button" title="Cancel" aria-label="Cancel booking" data-booking-status-action="CANCELLED" data-booking-id="{{ $bookingId }}">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="padding: 40px 24px; text-align: center; color: var(--text-muted);">
+                                        <i class="fa-solid fa-calendar-xmark" style="font-size: 32px; margin-bottom: 10px; display: block; opacity: 0.4;"></i>
+                                        No bookings found.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+
+                    {{-- Pagination --}}
+                    <div class="pagination-wrapper">
+                        <div class="page-info">
+                            Showing
+                            <span>{{ $bookings->firstItem() ?? 0 }}</span>–<span>{{ $bookings->lastItem() ?? 0 }}</span>
+                            of <span>{{ $bookings->total() ?? 0 }}</span> bookings
+                        </div>
+
+                        <div class="page-numbers">
                             @php
-                                $status = strtoupper((string) $booking->status);
-                                $statusClass = match ($status) {
-                                    'PENDING' => 'pending',
-                                    'CANCELLED' => 'cancelled',
-                                    default => 'confirmed',
-                                };
-                                $guest = $booking->guest;
-                                $room = $booking->room;
-                                $bed = $booking->bed;
+                                $current = $bookings->currentPage();
+                                $last    = $bookings->lastPage();
                             @endphp
-                            <tr>
-                                @php $bookingId = $booking->id; @endphp
-                                <td class="booking-id">#{{ $booking->booking_code }}</td>
-                                <td>
-                                    <div class="guest-name">{{ trim(($guest?->first_name ?? '') . ' ' . ($guest?->last_name ?? '')) ?: 'Guest' }}</div>
-                                    <div class="text-muted">{{ $guest?->phone ?: $guest?->email ?: '-' }}</div>
-                                </td>
-                                <td>
-                                    <div class="room-name">{{ $room?->name ?? '-' }}</div>
-                                    <div class="text-sub">{{ $bed?->name ?? '-' }}{{ $bed?->position ? ' | ' . $bed->position : '' }}</div>
-                                </td>
-                                <td>
-                                    <div>{{ optional($booking->check_in_date)->format('d M Y') }} - {{ optional($booking->check_out_date)->format('d M Y') }}</div>
-                                    <div class="text-sub">{{ $booking->total_nights }} Nights</div>
-                                </td>
-                                <td>
-                                    <div>IDR {{ number_format((float) $booking->total_price, 0, ',', '.') }}</div>
-                                    <div class="text-sub">{{ $booking->payment_method ?: '-' }}</div>
-                                </td>
-                                <td><span class="badge {{ $statusClass }}">{{ $status }}</span></td>
-                                <td>
-                                    <div class="actions">
-                                        <button class="action-btn" type="button" title="Confirm" aria-label="Confirm booking" data-booking-status-action="CONFIRMED" data-booking-id="{{ $bookingId }}"><i class="fa-solid fa-check"></i></button>
-                                        <button class="action-btn" type="button" title="Edit" aria-label="Edit booking" data-booking-edit-action data-booking-edit-url="{{ route('admin.booking.edit_popup', $bookingId) }}"><i class="fa-solid fa-pen"></i></button>
-                                        <button class="action-btn" type="button" title="Cancel" aria-label="Cancel booking" data-booking-status-action="CANCELLED" data-booking-id="{{ $bookingId }}"><i class="fa-solid fa-xmark"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" style="padding: 24px; text-align: center; color: var(--text-muted);">
-                                    No bookings found.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-                
-                <div class="pagination">
-                    <div class="page-info">
-                        Showing {{ $bookings->firstItem() ?? 0 }} to {{ $bookings->lastItem() ?? 0 }} of {{ $bookings->total() ?? 0 }} entries
-                    </div>
-                    <div class="page-numbers">
-                        {{ $bookings->links() }}
-                    </div>
-                </div>
-            </div>
 
-            </div>
+                            {{-- Prev button --}}
+                            @if ($bookings->onFirstPage())
+                                <span class="page-btn is-disabled">
+                                    <i class="fa-solid fa-chevron-left" style="font-size:11px;"></i>
+                                </span>
+                            @else
+                                <a class="page-btn" href="{{ $bookings->previousPageUrl() }}">
+                                    <i class="fa-solid fa-chevron-left" style="font-size:11px;"></i>
+                                </a>
+                            @endif
+
+                            {{-- Page numbers with ellipsis --}}
+                            @for ($p = 1; $p <= $last; $p++)
+                                @if ($p === 1 || $p === $last || abs($p - $current) <= 1)
+                                    @if ($p === $current)
+                                        <span class="page-btn is-active">{{ $p }}</span>
+                                    @else
+                                        <a class="page-btn" href="{{ $bookings->url($p) }}">{{ $p }}</a>
+                                    @endif
+                                @elseif ($p === $current - 2 || $p === $current + 2)
+                                    <span class="page-dots">…</span>
+                                @endif
+                            @endfor
+
+                            {{-- Next button --}}
+                            @if ($bookings->hasMorePages())
+                                <a class="page-btn" href="{{ $bookings->nextPageUrl() }}">
+                                    <i class="fa-solid fa-chevron-right" style="font-size:11px;"></i>
+                                </a>
+                            @else
+                                <span class="page-btn is-disabled">
+                                    <i class="fa-solid fa-chevron-right" style="font-size:11px;"></i>
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+
+                </div>{{-- end .table-container --}}
+
+            </div>{{-- end .content-wrapper --}}
         </main>
     </div>
 
@@ -550,21 +640,16 @@
         <iframe class="reservation-modal__frame" id="reservationFrame" src="{{ route('admin.booking.create') }}" title="New Reservation Form"></iframe>
     </div>
 
-
-
     <script>
         const openReservationModal = document.getElementById('openReservationModal');
-        const reservationModal = document.getElementById('reservationModal');
-        const reservationFrame = document.getElementById('reservationFrame');
+        const reservationModal     = document.getElementById('reservationModal');
+        const reservationFrame     = document.getElementById('reservationFrame');
         const bookingStatusButtons = document.querySelectorAll('[data-booking-status-action]');
-        const bookingEditButtons = document.querySelectorAll('[data-booking-edit-action]');
-        const csrfToken = @json(csrf_token());
+        const bookingEditButtons   = document.querySelectorAll('[data-booking-edit-action]');
+        const csrfToken            = @json(csrf_token());
 
         function setReservationModalOpen(isOpen) {
-            if (!reservationModal) {
-                return;
-            }
-
+            if (!reservationModal) return;
             reservationModal.hidden = !isOpen;
             reservationModal.setAttribute('aria-hidden', String(!isOpen));
             document.body.classList.toggle('modal-open', isOpen);
@@ -573,7 +658,7 @@
         if (openReservationModal && reservationModal) {
             openReservationModal.addEventListener('click', function () {
                 if (reservationFrame) {
-                    reservationFrame.src = @json(route('admin.booking.create'));
+                    reservationFrame.src   = @json(route('admin.booking.create'));
                     reservationFrame.title = 'New Reservation Form';
                 }
                 setReservationModalOpen(true);
@@ -592,22 +677,12 @@
             });
 
             window.addEventListener('message', function (event) {
-                if (event.origin !== window.location.origin) {
-                    return;
-                }
+                if (event.origin !== window.location.origin) return;
 
                 if (event.data && event.data.type === 'close-reservation-modal') {
-                    // Close the modal first
                     setReservationModalOpen(false);
-
-                    // If iframe provided a message, show it then reload parent so table updates
                     if (event.data.success && event.data.message) {
-                        try {
-                            alert(event.data.message);
-                        } catch (e) {
-                            // ignore
-                        }
-                        // reload to refresh bookings list
+                        try { alert(event.data.message); } catch (e) { /* ignore */ }
                         window.location.reload();
                     } else if (event.data.success) {
                         window.location.reload();
@@ -619,12 +694,8 @@
         bookingEditButtons.forEach((button) => {
             button.addEventListener('click', function () {
                 const editUrl = this.getAttribute('data-booking-edit-url');
-
-                if (!editUrl || !reservationModal || !reservationFrame) {
-                    return;
-                }
-
-                reservationFrame.src = editUrl;
+                if (!editUrl || !reservationModal || !reservationFrame) return;
+                reservationFrame.src   = editUrl;
                 reservationFrame.title = 'Edit Reservation Form';
                 setReservationModalOpen(true);
             });
@@ -633,15 +704,9 @@
         bookingStatusButtons.forEach((button) => {
             button.addEventListener('click', async function () {
                 const bookingId = this.getAttribute('data-booking-id');
-                const status = this.getAttribute('data-booking-status-action');
-
-                if (!bookingId || !status) {
-                    return;
-                }
-
-                if (status === 'CANCELLED' && !window.confirm('Cancel booking ini?')) {
-                    return;
-                }
+                const status    = this.getAttribute('data-booking-status-action');
+                if (!bookingId || !status) return;
+                if (status === 'CANCELLED' && !window.confirm('Cancel booking ini?')) return;
 
                 this.disabled = true;
 
@@ -659,7 +724,6 @@
 
                     const rawText = await response.text();
                     let json = {};
-
                     try {
                         json = rawText ? JSON.parse(rawText) : {};
                     } catch (parseError) {
