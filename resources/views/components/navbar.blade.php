@@ -1,10 +1,18 @@
 {{-- resources/views/components/navbar.blade.php --}}
 
-@php
-    $currentLang = request('lang', 'en');
-@endphp
-
 <style>
+    /* ── Google Translate: hide UI elements ── */
+    .goog-te-banner-frame,
+    #goog-gt-tt,
+    .goog-te-balloon-frame,
+    .skiptranslate {
+        display: none !important;
+    }
+    body { top: 0 !important; }
+
+    /* ── Google Translate init holder ── */
+    #gt_holder { display: none; }
+
     /* ── Desktop nav links ── */
     .alas-nav-links {
         display: flex;
@@ -265,19 +273,19 @@
         <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
 
             {{-- Language Switcher --}}
-            <div class="alas-lang-btn" style="display:flex; align-items:center; gap:6px;">
+            <div class="alas-lang-btn notranslate" style="display:flex; align-items:center; gap:6px;">
 
-                <a href="?lang=id"
-                   class="{{ $currentLang === 'id' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
+                <a href="javascript:void(0)" onclick="changeLanguage('id')"
+                   class="inactive-lang-nav notranslate" id="langIdDesktop">
                     ID
                 </a>
 
-                <span style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">
+                <span class="notranslate" style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">
                     |
                 </span>
 
-                <a href="?lang=en"
-                   class="{{ $currentLang === 'en' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
+                <a href="javascript:void(0)" onclick="changeLanguage('en')"
+                   class="active-lang-nav notranslate" id="langEnDesktop">
                     EN
                 </a>
 
@@ -377,17 +385,17 @@
         </a>
 
         {{-- Mobile Language --}}
-        <div class="drawer-lang">
+        <div class="drawer-lang notranslate">
 
-            <a href="?lang=id"
-               class="{{ $currentLang === 'id' ? 'active-lang' : '' }}">
+            <a href="javascript:void(0)" onclick="changeLanguage('id')"
+               class="notranslate" id="langIdMobile">
                 ID
             </a>
 
-            <span>|</span>
+            <span class="notranslate">|</span>
 
-            <a href="?lang=en"
-               class="{{ $currentLang === 'en' ? 'active-lang' : '' }}">
+            <a href="javascript:void(0)" onclick="changeLanguage('en')"
+               class="notranslate active-lang" id="langEnMobile">
                 EN
             </a>
 
@@ -401,9 +409,53 @@
 
     {{-- Global WhatsApp floating button --}}
     @include('components.whatsapp_floating')
+
+    <div id="gt_holder"></div>
 </nav>
 
 <script>
+function changeLanguage(lang) {
+    document.cookie = 'googtrans=/en/' + lang;
+    location.reload();
+}
+
+(function initLangUI() {
+    var match = document.cookie.match(/googtrans=.*\/([a-z]{2})/);
+    if (match) updateLangUI(match[1]);
+})();
+
+function hideGoogleTranslateBar() {
+    document.querySelectorAll('iframe.goog-te-banner-frame, .goog-te-banner-frame, .skiptranslate iframe, .skiptranslate').forEach(function(el) {
+        el.style.setProperty('display', 'none', 'important');
+    });
+    document.body.style.setProperty('top', '0', 'important');
+    document.body.style.setProperty('position', 'static', 'important');
+}
+
+var observer = new MutationObserver(function() {
+    hideGoogleTranslateBar();
+});
+observer.observe(document.body, { childList: true, subtree: true });
+
+hideGoogleTranslateBar();
+
+function updateLangUI(lang) {
+    document.querySelectorAll('[id^="langId"]').forEach(function(el) {
+        el.className = lang === 'id' ? (el.id.includes('Mobile') ? 'active-lang' : 'active-lang-nav') : (el.id.includes('Mobile') ? '' : 'inactive-lang-nav');
+    });
+    document.querySelectorAll('[id^="langEn"]').forEach(function(el) {
+        el.className = lang === 'en' ? (el.id.includes('Mobile') ? 'active-lang' : 'active-lang-nav') : (el.id.includes('Mobile') ? '' : 'inactive-lang-nav');
+    });
+}
+
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,id',
+        autoDisplay: false
+    }, 'gt_holder');
+}
+
 (function () {
 
 
@@ -444,3 +496,5 @@
 
 })();
 </script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>

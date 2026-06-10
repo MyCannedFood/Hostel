@@ -82,9 +82,9 @@
                             </div>
                             <div class="stat-body">
                                 <p class="stat-label">% Occupancy</p>
-                                <p class="stat-value">75%</p>
-                                <p class="stat-detail">88% (week)</p>
-                                <p class="stat-detail">97% (month)</p>
+                                <p class="stat-value">{{ $occupancyToday ?? 0 }}%</p>
+                                <p class="stat-detail">{{ $occupancyWeek ?? 0 }}% (week)</p>
+                                <p class="stat-detail">{{ $occupancyMonth ?? 0 }}% (month)</p>
                             </div>
                             <p class="stat-footer"><img src="{{ asset('images/admin/img_margin.svg') }}" alt="Occupation trend visualization" class="occupation-bar"></p>
                             

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guest;
+use App\Models\Bed;
+use App\Models\Booking;
 use App\Models\GeneralLedger;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -64,6 +66,42 @@ class AdminDashboardController extends Controller
             ? round(($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth * 100)
             : 0;
 
+        $totalBeds = Bed::count();
+
+        $activeGuestIds = Guest::whereNull('check_out_date')->pluck('id');
+        $activeBookings = Booking::with('guest')->whereIn('guest_id', $activeGuestIds)
+            ->whereIn('status', ['CONFIRMED', 'PENDING'])
+            ->get();
+        $occupiedBedIds = $activeBookings->pluck('bed_id')->filter()->unique();
+
+        $occupancyToday = $totalBeds > 0 ? round($occupiedBedIds->count() / $totalBeds * 100) : 0;
+
+        $weekDays = 0;
+        $weekSum  = 0;
+        for ($i = 6; $i >= 0; $i--) {
+            $day = $today->copy()->subDays($i);
+            $dayBookings = Booking::whereIn('status', ['CONFIRMED', 'PENDING'])
+                ->whereDate('check_in_date', '<=', $day)
+                ->whereDate('check_out_date', '>=', $day)
+                ->count();
+            $weekSum  += $dayBookings;
+            $weekDays++;
+        }
+        $occupancyWeek = $totalBeds > 0 ? round($weekSum / $weekDays / $totalBeds * 100) : 0;
+
+        $daysInMonth = $now->daysInMonth;
+        $monthSum    = 0;
+        for ($d = 1; $d <= $daysInMonth; $d++) {
+            $day = Carbon::create($now->year, $now->month, $d);
+            if ($day->gt($today)) break;
+            $dayBookings = Booking::whereIn('status', ['CONFIRMED', 'PENDING'])
+                ->whereDate('check_in_date', '<=', $day)
+                ->whereDate('check_out_date', '>=', $day)
+                ->count();
+            $monthSum += $dayBookings;
+        }
+        $occupancyMonth = $totalBeds > 0 ? round($monthSum / max($d - 1, 1) / $totalBeds * 100) : 0;
+
         for ($i = 6; $i >= 0; $i--) {
             $day = $today->copy()->subDays($i);
             $bookingStats['day']['labels'][] = $day->format('D');
@@ -89,7 +127,8 @@ class AdminDashboardController extends Controller
 
         return view('admin.dashboard', compact(
             'guestStats', 'bookingStats',
-            'totalRevenue', 'revenueThisWeek', 'revenueThisMonth', 'revenueGrowth'
+            'totalRevenue', 'revenueThisWeek', 'revenueThisMonth', 'revenueGrowth',
+            'occupancyToday', 'occupancyWeek', 'occupancyMonth'
         ));
     }
 }
