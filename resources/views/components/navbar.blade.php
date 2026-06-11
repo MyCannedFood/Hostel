@@ -226,6 +226,8 @@
             <div class="alas-lang-btn" style="display:flex; align-items:center; gap:6px;">
 
                 <a href="{{ route('locale.switch', 'id') }}"
+                   onclick="AlasLang.set('id')"
+                   id="langIdDesktop"
                    class="{{ $currentLocale === 'id' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
                     ID
                 </a>
@@ -235,12 +237,11 @@
                 </span>
 
                 <a href="{{ route('locale.switch', 'en') }}"
+                   onclick="AlasLang.set('en')"
+                   id="langEnDesktop"
                    class="{{ $currentLocale === 'en' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
                     EN
                 </a>
-
-                <a href="javascript:void(0)" onclick="AlasLang.set('en')"
-                   id="langEnDesktop">EN</a>
             </div>
 
             {{-- Book Now --}}
@@ -311,6 +312,8 @@
         <div class="drawer-lang">
 
             <a href="{{ route('locale.switch', 'id') }}"
+               onclick="AlasLang.set('id')"
+               id="langIdMobile"
                class="{{ $currentLocale === 'id' ? 'active-lang' : '' }}">
                 ID
             </a>
@@ -318,6 +321,8 @@
             <span>|</span>
 
             <a href="{{ route('locale.switch', 'en') }}"
+               onclick="AlasLang.set('en')"
+               id="langEnMobile"
                class="{{ $currentLocale === 'en' ? 'active-lang' : '' }}">
                 EN
             </a>
@@ -339,6 +344,72 @@
          pada elemen yang ingin ditranslate.
        • Tidak perlu JS tambahan — engine ini jalan otomatis.
      ============================================================ --}}
+<script>
+window.AlasLang = (function () {
+
+    const STORAGE_KEY = 'alas_lang';
+    const DEFAULT     = 'en';
+
+    // ── Baca bahasa tersimpan ──────────────────────────────────
+    function current() {
+        return localStorage.getItem(STORAGE_KEY) || DEFAULT;
+    }
+
+    // ── Terapkan terjemahan ke seluruh DOM ─────────────────────
+    function apply(lang) {
+        document.querySelectorAll('[data-en][data-id]').forEach(function (el) {
+            // Simpan inner HTML asli sebelum pertama kali diubah
+            if (!el.dataset.enSet) {
+                el.dataset.enSet  = el.dataset.en;
+                el.dataset.idSet  = el.dataset.id;
+            }
+            el.textContent = lang === 'id' ? el.dataset.idSet : el.dataset.enSet;
+        });
+
+        // Update tampilan tombol aktif — desktop
+        var dId = document.getElementById('langIdDesktop');
+        var dEn = document.getElementById('langEnDesktop');
+        if (dId && dEn) {
+            dId.className = lang === 'id' ? 'active-lang-nav'   : 'inactive-lang-nav';
+            dEn.className = lang === 'en' ? 'active-lang-nav'   : 'inactive-lang-nav';
+        }
+
+        // Update tampilan tombol aktif — mobile
+        var mId = document.getElementById('langIdMobile');
+        var mEn = document.getElementById('langEnMobile');
+        if (mId && mEn) {
+            mId.className = lang === 'id' ? 'active-lang' : '';
+            mEn.className = lang === 'en' ? 'active-lang' : '';
+        }
+
+        // Simpan pilihan
+        localStorage.setItem(STORAGE_KEY, lang);
+
+        // Broadcast ke komponen lain yang ingin tahu
+        document.dispatchEvent(new CustomEvent('alas:langchange', { detail: { lang: lang } }));
+    }
+
+    // ── Set bahasa baru ────────────────────────────────────────
+    function set(lang) {
+        apply(lang);
+    }
+
+    // ── Init saat DOM siap ─────────────────────────────────────
+    function init() {
+        apply(current());
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    return { set: set, current: current, apply: apply };
+
+})();
+</script>
+
 <script>
 (function () {
     const hamburger = document.getElementById('alasHamburger');
