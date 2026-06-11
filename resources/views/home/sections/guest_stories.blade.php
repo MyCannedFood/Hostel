@@ -8,8 +8,9 @@
         \App\Models\LandingPageSetting::DEFAULTS['guest_stories'],
         $guestStoriesData
     );
-    $sectionTitle = $guestStoriesData['title']   ?? 'Guest Stories';
-    $stories      = $guestStoriesData['stories'] ?? [];
+    $sectionTitle   = $guestStoriesData['title']    ?? 'Guest Stories';
+    $sectionTitleId = $guestStoriesData['title_id'] ?? 'Cerita Tamu';
+    $stories        = $guestStoriesData['stories']  ?? [];
 
     if (count($stories) === 0) {
         $stories = \App\Models\LandingPageSetting::DEFAULTS['guest_stories']['stories'];
@@ -45,10 +46,10 @@
     // Kalau DB kosong, pakai hardcoded defaults
     if ($visibleAwards->isEmpty()) {
         $visibleAwards = collect([
-            ['icon_path' => null, 'title' => 'EarthCheck',        'sub' => 'Gold Certified'],
-            ['icon_path' => null, 'title' => "Traveler's Choice", 'sub' => 'TripAdvisor 2025'],
-            ['icon_path' => null, 'title' => 'Local Heritage',    'sub' => 'Preservation'],
-            ['icon_path' => null, 'title' => 'Zero Waste',        'sub' => 'Initiative'],
+            ['icon_path' => null, 'title' => 'EarthCheck',        'title_id' => 'EarthCheck',        'sub' => 'Gold Certified',      'sub_id' => 'Sertifikasi Emas'],
+            ['icon_path' => null, 'title' => "Traveler's Choice", 'title_id' => 'Pilihan Wisatawan', 'sub' => 'TripAdvisor 2025',    'sub_id' => 'TripAdvisor 2025'],
+            ['icon_path' => null, 'title' => 'Local Heritage',    'title_id' => 'Warisan Lokal',     'sub' => 'Preservation',        'sub_id' => 'Pelestarian'],
+            ['icon_path' => null, 'title' => 'Zero Waste',        'title_id' => 'Bebas Limbah',      'sub' => 'Initiative',          'sub_id' => 'Inisiatif'],
         ]);
     }
 @endphp
@@ -198,11 +199,27 @@
                     @endif
                 </div>
                 <div class="stories-content">
-                    <p class="stories-eyebrow">{{ $sectionTitle }}</p>
+
+                    {{-- Eyebrow: "Guest Stories" / "Cerita Tamu" --}}
+                    <p class="stories-eyebrow"
+                       data-en="{{ $sectionTitle }}"
+                       data-id="{{ $sectionTitleId }}">{{ $sectionTitle }}</p>
+
                     <span class="stories-quote-mark">"</span>
-                    <p class="stories-quote">"{{ $story['quote'] ?? '' }}"</p>
+
+                    {{-- Quote --}}
+                    <p class="stories-quote"
+                       data-en="&quot;{{ $story['quote'] ?? '' }}&quot;"
+                       data-id="&quot;{{ $story['quote_id'] ?? $story['quote'] ?? '' }}&quot;">"{{ $story['quote'] ?? '' }}"</p>
+
+                    {{-- Author name (tidak ditranslate — nama orang) --}}
                     <p class="stories-author-name">— {{ $story['name'] ?? '' }}</p>
-                    <p class="stories-author-origin">{{ $story['origin'] ?? '' }}</p>
+
+                    {{-- Origin / asal --}}
+                    <p class="stories-author-origin"
+                       data-en="{{ $story['origin'] ?? '' }}"
+                       data-id="{{ $story['origin_id'] ?? $story['origin'] ?? '' }}">{{ $story['origin'] ?? '' }}</p>
+
                 </div>
             </div>
             @endforeach
@@ -225,9 +242,15 @@
                 <img src="{{ asset($defaultBadgeIcons[$j] ?? 'images/badge-earthcheck.png') }}"
                      alt="{{ $award['title'] ?? '' }}">
             @endif
-            <p class="stories-badge-label">{{ $award['title'] ?? '' }}</p>
+
+            <p class="stories-badge-label"
+               data-en="{{ $award['title'] ?? '' }}"
+               data-id="{{ $award['title_id'] ?? $award['title'] ?? '' }}">{{ $award['title'] ?? '' }}</p>
+
             @if(!empty($award['sub']))
-                <p class="stories-badge-sub">{{ $award['sub'] }}</p>
+                <p class="stories-badge-sub"
+                   data-en="{{ $award['sub'] }}"
+                   data-id="{{ $award['sub_id'] ?? $award['sub'] }}">{{ $award['sub'] }}</p>
             @endif
         </div>
         @endforeach
@@ -270,5 +293,25 @@
     var slider = document.getElementById('storiesSlider');
     slider.addEventListener('mouseenter', function() { clearInterval(timer); timer = null; });
     slider.addEventListener('mouseleave', startTimer);
+})();
+</script>
+
+{{-- ── LANG SYNC ── --}}
+<script>
+document.addEventListener('alas:langchange', function (e) {
+    applyStoriesLang(e.detail.lang);
+});
+
+function applyStoriesLang(lang) {
+    document.querySelectorAll('#home-stories [data-en][data-id]').forEach(function (el) {
+        el.textContent = lang === 'id' ? el.dataset.id : el.dataset.en;
+    });
+}
+
+(function () {
+    var lang = (window.AlasLang ? window.AlasLang.current() : null)
+               || localStorage.getItem('alas_lang')
+               || 'en';
+    applyStoriesLang(lang);
 })();
 </script>

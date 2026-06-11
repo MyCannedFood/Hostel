@@ -1,14 +1,19 @@
 {{-- resources/views/home/sections/living_ecosystem.blade.php --}}
-{{-- Data: $floraData array dari PageController --}}
 
 @php
     $floraData   ??= \App\Models\LandingPageSetting::DEFAULTS['flora'];
     $floraData   = array_merge(\App\Models\LandingPageSetting::DEFAULTS['flora'], $floraData);
 
+    // English (dari DB)
     $eyebrow     = $floraData['eyebrow']     ?? 'Living Ecosystem';
     $title       = $floraData['title']       ?? 'The Flora Concept';
-    $description = $floraData['description'] ?? '';
+    $description = $floraData['description'] ?? 'Every plant, tree, and herb at AlaSare is chosen with intention — to nourish, to heal, and to shelter the life that surrounds us.';
     $cards       = $floraData['cards']       ?? [];
+
+    // Indonesian (dari DB, fallback ke hardcode)
+    $eyebrowId     = $floraData['eyebrow_id']     ?? 'Ekosistem Hidup';
+    $titleId       = $floraData['title_id']       ?? 'Konsep Flora';
+    $descriptionId = $floraData['description_id'] ?? 'Setiap tanaman, pohon, dan herba di AlaSare dipilih dengan penuh kesadaran — untuk memberi nutrisi, menyembuhkan, dan melindungi kehidupan di sekitar kita.';
 
     // Default fallback images per card-index
     $defaultImages = [
@@ -16,6 +21,39 @@
         'images/flora-aromatherapy.png',
         'images/flora-architecture.png',
     ];
+
+    // Default cards jika DB kosong
+    if (empty($cards)) {
+        $cards = [
+            [
+                'eyebrow'         => 'Nourishment',
+                'eyebrow_id'      => 'Nutrisi',
+                'title'           => 'Edible Gardens',
+                'title_id'        => 'Kebun Edibel',
+                'description'     => 'Herbs, vegetables, and fruits grown on-site feed our kitchen and guests directly from the soil.',
+                'description_id'  => 'Rempah, sayuran, dan buah-buahan yang ditanam di lokasi langsung memasok dapur dan tamu kami dari tanah.',
+                'image_path'      => '',
+            ],
+            [
+                'eyebrow'         => 'Aromatherapy',
+                'eyebrow_id'      => 'Aromaterapi',
+                'title'           => 'Scented Pathways',
+                'title_id'        => 'Jalur Beraroma',
+                'description'     => 'Lavender, lemongrass, and ylang-ylang line every walkway, turning each stroll into a sensory journey.',
+                'description_id'  => 'Lavender, serai, dan kenanga menghiasi setiap jalur, mengubah setiap langkah menjadi perjalanan indrawi.',
+                'image_path'      => '',
+            ],
+            [
+                'eyebrow'         => 'Architecture',
+                'eyebrow_id'      => 'Arsitektur',
+                'title'           => 'Living Walls',
+                'title_id'        => 'Dinding Hidup',
+                'description'     => 'Vertical gardens integrated into villa structures provide natural insulation and a living canvas.',
+                'description_id'  => 'Taman vertikal yang terintegrasi ke dalam struktur vila memberikan insulasi alami dan kanvas yang hidup.',
+                'image_path'      => '',
+            ],
+        ];
+    }
 @endphp
 
 <style>
@@ -146,11 +184,19 @@
     {{-- ── HEADER ── --}}
     <div class="eco-header">
         @if($eyebrow)
-            <p class="eco-eyebrow">{{ $eyebrow }}</p>
+            <p class="eco-eyebrow"
+               data-en="{{ $eyebrow }}"
+               data-id="{{ $eyebrowId }}">{{ $eyebrow }}</p>
         @endif
-        <h2 class="eco-heading">{{ $title }}</h2>
+
+        <h2 class="eco-heading"
+            data-en="{{ $title }}"
+            data-id="{{ $titleId }}">{{ $title }}</h2>
+
         @if($description)
-            <p class="eco-subheading">{{ $description }}</p>
+            <p class="eco-subheading"
+               data-en="{{ $description }}"
+               data-id="{{ $descriptionId }}">{{ $description }}</p>
         @endif
     </div>
 
@@ -165,7 +211,6 @@
                          alt="{{ $card['title'] ?? '' }}"
                          loading="lazy">
                 @else
-                    {{-- Fallback ke default image berdasarkan urutan card --}}
                     <img src="{{ asset($defaultImages[$i] ?? 'images/flora-nourishment.png') }}"
                          alt="{{ $card['title'] ?? '' }}"
                          loading="lazy">
@@ -173,15 +218,27 @@
             </div>
 
             @if(!empty($card['eyebrow']))
-                <p class="eco-card-eyebrow">{{ $card['eyebrow'] }}</p>
+                <p class="eco-card-eyebrow"
+                   data-en="{{ $card['eyebrow'] }}"
+                   data-id="{{ $card['eyebrow_id'] ?? $card['eyebrow'] }}">
+                    {{ $card['eyebrow'] }}
+                </p>
             @endif
 
             @if(!empty($card['title']))
-                <h3 class="eco-card-title">{{ $card['title'] }}</h3>
+                <h3 class="eco-card-title"
+                    data-en="{{ $card['title'] }}"
+                    data-id="{{ $card['title_id'] ?? $card['title'] }}">
+                    {{ $card['title'] }}
+                </h3>
             @endif
 
             @if(!empty($card['description']))
-                <p class="eco-card-body">{{ $card['description'] }}</p>
+                <p class="eco-card-body"
+                   data-en="{{ $card['description'] }}"
+                   data-id="{{ $card['description_id'] ?? $card['description'] }}">
+                    {{ $card['description'] }}
+                </p>
             @endif
         </div>
         @endforeach
@@ -189,3 +246,5 @@
     @endif
 
 </section>
+
+
