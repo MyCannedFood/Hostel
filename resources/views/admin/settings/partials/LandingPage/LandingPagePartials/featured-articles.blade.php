@@ -30,17 +30,30 @@
       id="featuredArticlesForm">
     @csrf @method('PUT')
 
-    {{-- ── Section Info ── --}}
+    {{-- ── Section Info (Bilingual) ── --}}
     <div class="lp-card">
         <div class="lp-field">
-            <label class="lp-field-label">Section Title</label>
+            <label class="lp-field-label">Section Title (EN)</label>
             <input type="text" class="lp-input lp-heading-input" name="section_title"
-                   value="{{ old('section_title', $d['section_title']) }}" maxlength="200">
+                   value="{{ old('section_title', $d['section_title'] ?? '') }}" maxlength="200">
         </div>
-        <div class="lp-field" style="margin-bottom:0;">
-            <label class="lp-field-label">Section Description</label>
+        
+        <div class="lp-field">
+            <label class="lp-field-label">Section Title (ID)</label>
+            <input type="text" class="lp-input lp-heading-input" name="section_title_id"
+                   value="{{ old('section_title_id', $d['section_title_id'] ?? '') }}" maxlength="200">
+        </div>
+
+        <div class="lp-field">
+            <label class="lp-field-label">Section Description (EN)</label>
             <input type="text" class="lp-input" name="section_description"
-                   value="{{ old('section_description', $d['section_description']) }}" maxlength="500">
+                   value="{{ old('section_description', $d['section_description'] ?? '') }}" maxlength="500">
+        </div>
+
+        <div class="lp-field" style="margin-bottom:0;">
+            <label class="lp-field-label">Section Description (ID)</label>
+            <input type="text" class="lp-input" name="section_description_id"
+                   value="{{ old('section_description_id', $d['section_description_id'] ?? '') }}" maxlength="500">
         </div>
     </div>
 
@@ -281,7 +294,7 @@ const articleData = @json($articleJsData);
 const MAX_SLOTS   = 3;
 
 /* ─────────────────────────────
-   Modal open / close
+    Modal open / close
 ───────────────────────────── */
 function openModal(id) {
     const modal = document.getElementById(id);
@@ -307,8 +320,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /* ─────────────────────────────
-   Filter article picker
-   — selalu set display:'flex' (bukan '') agar layout tidak pecah
+    Filter article picker
 ───────────────────────────── */
 function filterArticlePicker(q) {
     const keyword    = (q || '').toLowerCase().trim();
@@ -320,12 +332,10 @@ function filterArticlePicker(q) {
         const matchCat   = !activeCat || (row.dataset.cat || '') === activeCat;
         const show       = matchTitle && matchCat;
 
-        // Pakai 'flex' eksplisit — bukan '' — supaya layout selalu benar
         row.style.display = show ? 'flex' : 'none';
         if (show) visCount++;
     });
 
-    // Tampilkan empty state jika tidak ada hasil
     const emptyEl = document.getElementById('articlePickerEmpty');
     if (emptyEl) emptyEl.style.display = visCount === 0 ? 'block' : 'none';
 }
@@ -336,7 +346,7 @@ function filterByCat(cat) {
 }
 
 /* ─────────────────────────────
-   Add selected article
+    Add selected article
 ───────────────────────────── */
 function addSelectedArticle() {
     const radio = document.querySelector('input[name="picker_article"]:checked');
@@ -399,7 +409,7 @@ function addSelectedArticle() {
 }
 
 /* ─────────────────────────────
-   Remove article
+    Remove article
 ───────────────────────────── */
 function removeArticle(id) {
     const row = document.getElementById(`articleRow_${id}`);
@@ -408,7 +418,7 @@ function removeArticle(id) {
 }
 
 /* ─────────────────────────────
-   Update slots counter & button state
+    Update slots counter & button state
 ───────────────────────────── */
 function updateSlotsCount() {
     const count   = document.querySelectorAll('input[name="article_ids[]"]').length;

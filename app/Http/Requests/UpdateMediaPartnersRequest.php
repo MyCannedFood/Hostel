@@ -12,6 +12,7 @@ class UpdateMediaPartnersRequest extends FormRequest
     {
         return [
             'title'                => ['required', 'string', 'max:100'],
+            'title_id'             => ['required', 'string', 'max:100'], // 👈 Tambahkan ini
             
             // Partners array
             'partners'             => ['nullable', 'array'],
@@ -26,7 +27,8 @@ class UpdateMediaPartnersRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'title.required'                => 'Judul section wajib diisi.',
+            'title.required'                => 'Judul section (EN) wajib diisi.',
+            'title_id.required'             => 'Judul section (ID) wajib diisi.', // 👈 Tambahkan ini
             'partners.*.name.required_with' => 'Nama partner wajib diisi.',
             'partners.*.url.url'            => 'URL harus format yang valid.',
             'partners.*.logo.max'           => 'Ukuran logo maksimal 2MB.',

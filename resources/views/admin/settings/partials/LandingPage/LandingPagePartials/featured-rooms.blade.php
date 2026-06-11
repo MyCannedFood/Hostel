@@ -3,7 +3,9 @@
 @php
     $featuredRoomsData = $featuredRoomsData ?? [
         'title' => 'Sanctuaries',
+        'title_id' => '',
         'description' => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
+        'description_id' => '',
         'room_ids' => [],
     ];
     $selectedRooms = collect($selectedRooms ?? []);
@@ -47,17 +49,30 @@
         @endforeach
     </div>
 
-    {{-- ── Section Info ── --}}
+    {{-- ── Section Info (Bilingual) ── --}}
     <div class="lp-card">
         <div class="lp-field">
-            <label class="lp-field-label">Section Title</label>
+            <label class="lp-field-label">Section Title (EN)</label>
             <input type="text" class="lp-input lp-heading-input" name="title"
-                   value="{{ old('title', $featuredRoomsData['title']) }}" required>
+                   value="{{ old('title', $featuredRoomsData['title'] ?? '') }}" required>
         </div>
+        
         <div class="lp-field">
-            <label class="lp-field-label">Section Description</label>
+            <label class="lp-field-label">Section Title (ID)</label>
+            <input type="text" class="lp-input lp-heading-input" name="title_id"
+                   value="{{ old('title_id', $featuredRoomsData['title_id'] ?? '') }}">
+        </div>
+
+        <div class="lp-field" style="margin-top: 16px;">
+            <label class="lp-field-label">Section Description (EN)</label>
             <input type="text" class="lp-input" name="description"
-                   value="{{ old('description', $featuredRoomsData['description']) }}">
+                   value="{{ old('description', $featuredRoomsData['description'] ?? '') }}">
+        </div>
+
+        <div class="lp-field">
+            <label class="lp-field-label">Section Description (ID)</label>
+            <input type="text" class="lp-input" name="description_id"
+                   value="{{ old('description_id', $featuredRoomsData['description_id'] ?? '') }}">
         </div>
     </div>
 
@@ -133,6 +148,13 @@
                 <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/>
             </svg>
             Select Room from Database
+        </button>
+    </div>
+
+    {{-- ── FORM ACTIONS (Tombol Save Baru) ── --}}
+    <div style="display: flex; justify-content: flex-end; margin-top: 24px;">
+        <button type="submit" class="btn btn-dark" style="padding: 12px 32px; font-weight: 600; font-size: 14px; border-radius: 8px; cursor: pointer;">
+            Save Changes
         </button>
     </div>
 

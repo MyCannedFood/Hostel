@@ -14,18 +14,20 @@ class UpdateFeaturedRoomsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'       => ['required', 'string', 'max:150'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'room_ids'    => ['nullable', 'array', 'max:6'],
-            'room_ids.*'  => ['integer', 'distinct', 'exists:rooms,id'],
+            'title'          => ['required', 'string', 'max:150'],
+            'title_id'       => ['nullable', 'string', 'max:150'], // 👈 Tambahkan ini
+            'description'    => ['nullable', 'string', 'max:500'],
+            'description_id' => ['nullable', 'string', 'max:500'], // 👈 Tambahkan ini
+            'room_ids'       => ['nullable', 'array', 'max:6'],
+            'room_ids.*'     => ['integer', 'distinct', 'exists:rooms,id'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'title.required' => 'Judul Featured Rooms wajib diisi.',
-            'room_ids.max'  => 'Maksimal 6 room bisa ditampilkan di homepage.',
+            'title.required' => 'Judul Featured Rooms (EN) wajib diisi.',
+            'room_ids.max'   => 'Maksimal 6 room bisa ditampilkan di homepage.',
         ];
     }
 }

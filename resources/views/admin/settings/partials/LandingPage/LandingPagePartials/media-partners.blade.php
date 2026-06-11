@@ -37,10 +37,18 @@
     @csrf @method('PUT')
 
     <div class="lp-card">
+        {{-- Input Title (EN) --}}
         <div class="lp-field">
-            <label class="lp-field-label">Section Title</label>
+            <label class="lp-field-label">Section Title (EN)</label>
             <input type="text" class="lp-input lp-heading-input" name="title"
                    value="{{ old('title', $d['title']) }}" maxlength="100">
+        </div>
+
+        {{-- Input Title (ID) 👈 Tambahkan blok ini --}}
+        <div class="lp-field" style="margin-top:16px;">
+            <label class="lp-field-label">Section Title (ID)</label>
+            <input type="text" class="lp-input lp-heading-input" name="title_id"
+                   value="{{ old('title_id', $d['title_id'] ?? '') }}" maxlength="100">
         </div>
 
         <p class="lp-card-label" style="margin-top:20px;">Added Partners</p>
@@ -387,6 +395,7 @@ document.getElementById('mediaPartnersForm')?.addEventListener('submit', async f
     
     const formData = new FormData();
     formData.append('title', document.querySelector('input[name="title"]').value);
+    formData.append('title_id', document.querySelector('input[name="title_id"]').value); // 👈 Tambahkan ini
     formData.append('_method', 'PUT');
     formData.append('_token', document.querySelector('input[name="_token"]').value);
 
