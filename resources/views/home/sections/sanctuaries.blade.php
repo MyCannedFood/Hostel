@@ -3,24 +3,39 @@
 <section id="home-sanctuaries">
     @php
         $featuredRoomsData = $featuredRoomsData ?? [
-            'title' => 'Sanctuaries',
-            'description' => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
+            'title'          => 'Sanctuaries',
+            'title_id'       => 'Tempat Peristirahatan',
+            'description'    => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
+            'description_id' => 'Setiap vila memiliki jiwa yang unik, dibuat dari kayu jati daur ulang dan dirancang untuk membingkai hutan.',
         ];
+
         $featuredRooms = collect($featuredRooms ?? []);
+
         $roomPhoto = function ($room) {
             if (!$room->photo) return asset('images/rooms/room_1.png');
             return str_starts_with($room->photo, 'images/')
                 ? asset($room->photo)
                 : asset('storage/' . $room->photo);
         };
+
+        $sectionTitle      = $featuredRoomsData['title']          ?? 'Sanctuaries';
+        $sectionTitleId    = $featuredRoomsData['title_id']        ?? 'Tempat Peristirahatan';
+        $sectionDesc       = $featuredRoomsData['description']     ?? 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.';
+        $sectionDescId     = $featuredRoomsData['description_id']  ?? 'Setiap vila memiliki jiwa yang unik, dibuat dari kayu jati daur ulang dan dirancang untuk membingkai hutan.';
+
+        $defaultCardDesc   = 'A quiet shared sanctuary designed for comfort, rest, and simple daily rituals.';
+        $defaultCardDescId = 'Tempat peristirahatan bersama yang tenang, dirancang untuk kenyamanan, istirahat, dan ritual harian yang sederhana.';
     @endphp
 
     {{-- Header --}}
     <div class="sanctuaries-header">
-        <h2 class="sanctuaries-title">{{ $featuredRoomsData['title'] ?? 'Sanctuaries' }}</h2>
-        <p class="sanctuaries-subtitle">
-            {{ $featuredRoomsData['description'] ?? 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.' }}
-        </p>
+        <h2 class="sanctuaries-title"
+            data-en="{{ $sectionTitle }}"
+            data-id="{{ $sectionTitleId }}">{{ $sectionTitle }}</h2>
+
+        <p class="sanctuaries-subtitle"
+           data-en="{{ $sectionDesc }}"
+           data-id="{{ $sectionDescId }}">{{ $sectionDesc }}</p>
     </div>
 
     {{-- Carousel Wrapper --}}
@@ -37,17 +52,28 @@
                 <div class="sanctuary-card">
                     <div class="card-image-wrapper">
                         @if($room->gender_type)
-                            <span class="card-badge">{{ $room->gender_type }} Only</span>
+                            <span class="card-badge"
+                                  data-en="{{ $room->gender_type }} Only"
+                                  data-id="{{ $room->gender_type }} Saja">
+                                {{ $room->gender_type }} Only
+                            </span>
                         @endif
                         <img src="{{ $roomPhoto($room) }}" alt="{{ $room->name }}" class="card-image">
                     </div>
                     <div class="card-body">
                         <div class="card-top-row">
                             <h3 class="card-title">{{ $room->name }}</h3>
-                            <div class="card-price">{{ $room->beds_count ?: $room->capacity }}<span class="price-per"> beds</span></div>
+                            <div class="card-price">
+                                {{ $room->beds_count ?: $room->capacity }}
+                                <span class="price-per"
+                                      data-en="beds"
+                                      data-id="kasur"> beds</span>
+                            </div>
                         </div>
-                        <p class="card-desc">
-                            {{ $room->description ?: 'A quiet shared sanctuary designed for comfort, rest, and simple daily rituals.' }}
+                        <p class="card-desc"
+                           data-en="{{ $room->description ?: $defaultCardDesc }}"
+                           data-id="{{ $room->description_id ?? ($room->description ?: $defaultCardDescId) }}">
+                            {{ $room->description ?: $defaultCardDesc }}
                         </p>
                         <div class="card-footer">
                             <div class="card-amenities">
@@ -71,15 +97,23 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <a href="{{ url('/rooms') }}" class="card-reserve">RESERVE</a>
+                            <a href="{{ url('/rooms') }}" class="card-reserve"
+                               data-en="RESERVE"
+                               data-id="PESAN">RESERVE</a>
                         </div>
                     </div>
                 </div>
             @empty
                 <div class="sanctuary-card">
                     <div class="card-body">
-                        <h3 class="card-title">No featured rooms yet</h3>
-                        <p class="card-desc">Select rooms from the admin settings to show them here.</p>
+                        <h3 class="card-title"
+                            data-en="No featured rooms yet"
+                            data-id="Belum ada kamar unggulan">No featured rooms yet</h3>
+                        <p class="card-desc"
+                           data-en="Select rooms from the admin settings to show them here."
+                           data-id="Pilih kamar dari pengaturan admin untuk ditampilkan di sini.">
+                            Select rooms from the admin settings to show them here.
+                        </p>
                     </div>
                 </div>
             @endforelse
@@ -95,7 +129,9 @@
 
     {{-- CTA Button --}}
     <div class="sanctuaries-cta">
-        <a href="{{ url('/rooms') }}" class="btn-view-all">View All Accommodations</a>
+        <a href="{{ url('/rooms') }}" class="btn-view-all"
+           data-en="View All Accommodations"
+           data-id="Lihat Semua Akomodasi">View All Accommodations</a>
     </div>
 
 </section>
@@ -103,13 +139,12 @@
 
 {{-- ===================== STYLES ===================== --}}
 <style>
-#home-sanctuaries {
+    #home-sanctuaries {
         background-color: #ffffff;
         padding: 72px 0 80px;
         font-family: 'Georgia', 'Times New Roman', serif;
     }
 
-    /* Header */
     .sanctuaries-header {
         text-align: center;
         margin-bottom: 48px;
@@ -135,7 +170,6 @@
         font-family: 'Georgia', serif;
     }
 
-    /* Carousel Outer */
     .sanctuaries-carousel-outer {
         position: relative;
         display: flex;
@@ -146,7 +180,6 @@
         margin: 0 auto;
     }
 
-    /* Carousel Track */
     .sanctuaries-carousel {
         display: flex;
         gap: 24px;
@@ -159,11 +192,8 @@
         scrollbar-width: none;
     }
 
-    .sanctuaries-carousel::-webkit-scrollbar {
-        display: none;
-    }
+    .sanctuaries-carousel::-webkit-scrollbar { display: none; }
 
-    /* Arrow Buttons */
     .carousel-arrow {
         position: relative;
         top: 200px;
@@ -189,15 +219,9 @@
         border-color: #2D4A2D;
     }
 
-    .carousel-arrow--left {
-        margin-right: 12px;
-    }
+    .carousel-arrow--left  { margin-right: 12px; }
+    .carousel-arrow--right { margin-left: 12px; }
 
-    .carousel-arrow--right {
-        margin-left: 12px;
-    }
-
-    /* Card */
     .sanctuary-card {
         flex: 0 0 420px;
         scroll-snap-align: start;
@@ -209,7 +233,6 @@
         flex-direction: column;
     }
 
-    /* Card Image */
     .card-image-wrapper {
         position: relative;
         width: 100%;
@@ -225,11 +248,8 @@
         transition: transform 0.4s ease;
     }
 
-    .sanctuary-card:hover .card-image {
-        transform: scale(1.03);
-    }
+    .sanctuary-card:hover .card-image { transform: scale(1.03); }
 
-    /* Badge */
     .card-badge {
         position: absolute;
         top: 18px;
@@ -244,7 +264,6 @@
         letter-spacing: 0.03em;
     }
 
-    /* Card Body */
     .card-body {
         padding: 22px 24px 20px;
         display: flex;
@@ -292,7 +311,6 @@
         font-family: 'Georgia', serif;
     }
 
-    /* Card Footer */
     .card-footer {
         display: flex;
         align-items: center;
@@ -324,11 +342,8 @@
         transition: color 0.2s;
     }
 
-    .card-reserve:hover {
-        color: #2D4A2D;
-    }
+    .card-reserve:hover { color: #2D4A2D; }
 
-    /* CTA */
     .sanctuaries-cta {
         text-align: center;
         margin-top: 48px;
@@ -346,48 +361,52 @@
         transition: background 0.2s;
     }
 
-    .btn-view-all:hover {
-        background: #1e3320;
-    }
+    .btn-view-all:hover { background: #1e3320; }
 
-    /* Responsive */
     @media (max-width: 768px) {
-        .sanctuaries-carousel-outer {
-            padding: 0 16px;
-        }
-
-        .sanctuary-card {
-            flex: 0 0 320px;
-        }
-
-        .card-image-wrapper {
-            height: 230px;
-        }
-
-        .carousel-arrow {
-            display: none;
-        }
+        .sanctuaries-carousel-outer { padding: 0 16px; }
+        .sanctuary-card             { flex: 0 0 320px; }
+        .card-image-wrapper         { height: 230px; }
+        .carousel-arrow             { display: none; }
     }
 </style>
 
 
 {{-- ===================== SCRIPTS ===================== --}}
 <script>
-    (function () {
-        const carousel  = document.getElementById('sanctuariesCarousel');
-        const btnPrev   = document.getElementById('sanctuariesPrev');
-        const btnNext   = document.getElementById('sanctuariesNext');
+(function () {
+    const carousel    = document.getElementById('sanctuariesCarousel');
+    const btnPrev     = document.getElementById('sanctuariesPrev');
+    const btnNext     = document.getElementById('sanctuariesNext');
 
-        if (!carousel || !btnPrev || !btnNext) return;
+    if (!carousel || !btnPrev || !btnNext) return;
 
-        const scrollAmount = 444; // card width (420) + gap (24)
+    const scrollAmount = 444;
 
-        btnPrev.addEventListener('click', function () {
-            carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        });
+    btnPrev.addEventListener('click', function () {
+        carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
 
-        btnNext.addEventListener('click', function () {
-            carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        });
-    })();
+    btnNext.addEventListener('click', function () {
+        carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+})();
+
+// ── Translate ──────────────────────────────────────────────
+document.addEventListener('alas:langchange', function (e) {
+    applySanctuariesLang(e.detail.lang);
+});
+
+function applySanctuariesLang(lang) {
+    document.querySelectorAll('#home-sanctuaries [data-en][data-id]').forEach(function (el) {
+        el.textContent = lang === 'id' ? el.dataset.id : el.dataset.en;
+    });
+}
+
+(function () {
+    var lang = (window.AlasLang ? window.AlasLang.current() : null)
+               || localStorage.getItem('alas_lang')
+               || 'en';
+    applySanctuariesLang(lang);
+})();
 </script>

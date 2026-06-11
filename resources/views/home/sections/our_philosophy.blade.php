@@ -1,21 +1,49 @@
 {{-- resources/views/home/sections/our_philosophy.blade.php --}}
-{{-- Data: $philosophyData array dari PageController --}}
 
 @php
     $philosophyData ??= \App\Models\LandingPageSetting::DEFAULTS['philosophy'];
+
+    // English (dari DB)
     $tagline     = $philosophyData['tagline']     ?? 'OUR PHILOSOPHY';
     $heading     = $philosophyData['heading']     ?? 'Breathing with the Earth';
-    $body1       = $philosophyData['body_1']      ?? '';
-    $body2       = $philosophyData['body_2']      ?? '';
+    $body1       = $philosophyData['body_1']      ?? 'At AlaSare, we believe a retreat should leave the land better than it found it. Every structure, every path, every choice is guided by one question: does this serve the forest?';
+    $body2       = $philosophyData['body_2']      ?? 'We work alongside local Javanese craftsmen, use materials harvested within 40 km, and return 30% of revenue to active reforestation. Staying here is an act of care.';
     $features    = $philosophyData['features']    ?? [];
     $badgeLabel  = $philosophyData['badge_label'] ?? 'Conservation';
     $badgeValue  = $philosophyData['badge_value'] ?? '80% Forest Cover';
+
+    // Indonesian (dari DB, fallback ke hardcode)
+    $taglineId    = $philosophyData['tagline_id']     ?? 'FILOSOFI KAMI';
+    $headingId    = $philosophyData['heading_id']     ?? 'Bernafas Bersama Bumi';
+    $body1Id      = $philosophyData['body_1_id']      ?? 'Di AlaSare, kami percaya bahwa sebuah retreat seharusnya meninggalkan alam dalam kondisi lebih baik dari sebelumnya. Setiap struktur, setiap jalur, setiap keputusan dipandu oleh satu pertanyaan: apakah ini bermanfaat bagi hutan?';
+    $body2Id      = $philosophyData['body_2_id']      ?? 'Kami bekerja bersama pengrajin Jawa lokal, menggunakan bahan-bahan yang dipanen dalam radius 40 km, dan mengalokasikan 30% pendapatan untuk penghijauan aktif. Menginap di sini adalah sebuah tindakan kepedulian.';
+    $badgeLabelId = $philosophyData['badge_label_id'] ?? 'Konservasi';
+
     $sideImgUrl  = !empty($philosophyData['side_image'])
                    ? asset('storage/' . $philosophyData['side_image'])
                    : asset('images/Philosophy.png');
 
-    // Default icon fallbacks per feature (jika icon_path belum diupload)
     $defaultIcons = ['images/Footprint.png', 'images/Rewilding.png'];
+
+    // Default features jika DB kosong
+    if (empty($features)) {
+        $features = [
+            [
+                'title'          => 'Zero Carbon Footprint',
+                'title_id'       => 'Nol Jejak Karbon',
+                'description'    => 'Solar-powered villas, composting kitchens, and zero single-use plastics across the entire property.',
+                'description_id' => 'Vila bertenaga surya, dapur kompos, dan bebas plastik sekali pakai di seluruh properti.',
+                'icon_path'      => '',
+            ],
+            [
+                'title'          => 'Active Rewilding',
+                'title_id'       => 'Penghijauan Aktif',
+                'description'    => 'Each stay funds the planting of native Javanese species, restoring biodiversity one tree at a time.',
+                'description_id' => 'Setiap kunjungan mendanai penanaman spesies asli Jawa, memulihkan keanekaragaman hayati satu pohon demi satu pohon.',
+                'icon_path'      => '',
+            ],
+        ];
+    }
 @endphp
 
 <style>
@@ -224,10 +252,10 @@
         .phil-right { order: 1; }
         .phil-left  { order: 2; padding: 40px 24px 0; }
 
-        .phil-heading       { font-size: 42px; }
-        .phil-body          { max-width: 100%; font-size: 14px; line-height: 1.9; }
+        .phil-heading         { font-size: 42px; }
+        .phil-body            { max-width: 100%; font-size: 14px; line-height: 1.9; }
         .phil-feature-text h4 { font-size: 22px; }
-        .phil-img-wrap img  { height: 420px; }
+        .phil-img-wrap img    { height: 420px; }
 
         .phil-badge {
             left: 10px;
@@ -248,19 +276,26 @@
         {{-- ── LEFT ── --}}
         <div class="phil-left">
 
-            <p class="phil-eyebrow">{{ $tagline }}</p>
+            <p class="phil-eyebrow"
+               data-en="{{ $tagline }}"
+               data-id="{{ $taglineId }}">{{ $tagline }}</p>
 
-            <h2 class="phil-heading">{{ $heading }}</h2>
+            <h2 class="phil-heading"
+                data-en="{{ $heading }}"
+                data-id="{{ $headingId }}">{{ $heading }}</h2>
 
             @if($body1)
-                <p class="phil-body">{{ $body1 }}</p>
+                <p class="phil-body"
+                   data-en="{{ $body1 }}"
+                   data-id="{{ $body1Id }}">{{ $body1 }}</p>
             @endif
 
             @if($body2)
-                <p class="phil-body">{{ $body2 }}</p>
+                <p class="phil-body"
+                   data-en="{{ $body2 }}"
+                   data-id="{{ $body2Id }}">{{ $body2 }}</p>
             @endif
 
-            {{-- Features from DB --}}
             @if(count($features) > 0)
             <div class="phil-features">
                 @foreach($features as $i => $feat)
@@ -270,15 +305,20 @@
                             <img src="{{ asset('storage/' . $feat['icon_path']) }}"
                                  alt="{{ $feat['title'] ?? '' }}">
                         @else
-                            {{-- Fallback ke default PNG berdasarkan urutan --}}
                             <img src="{{ asset($defaultIcons[$i] ?? 'images/Footprint.png') }}"
                                  alt="{{ $feat['title'] ?? '' }}">
                         @endif
                     </div>
                     <div class="phil-feature-text">
-                        <h4>{{ $feat['title'] }}</h4>
+                        <h4 data-en="{{ $feat['title'] ?? '' }}"
+                            data-id="{{ $feat['title_id'] ?? $feat['title'] ?? '' }}">
+                            {{ $feat['title'] ?? '' }}
+                        </h4>
                         @if(!empty($feat['description']))
-                            <p>{{ $feat['description'] }}</p>
+                            <p data-en="{{ $feat['description'] }}"
+                               data-id="{{ $feat['description_id'] ?? $feat['description'] }}">
+                                {{ $feat['description'] }}
+                            </p>
                         @endif
                     </div>
                 </div>
@@ -291,7 +331,7 @@
         {{-- ── RIGHT ── --}}
         <div class="phil-right">
             <div class="phil-img-wrap">
-                <img src="{{ $sideImgUrl }}" alt="AlasAre Forest View">
+                <img src="{{ $sideImgUrl }}" alt="AlaSare Forest View">
 
                 @if($badgeLabel || $badgeValue)
                 <div class="phil-badge">
@@ -300,7 +340,9 @@
                     </div>
                     <div class="phil-badge-text">
                         @if($badgeLabel)
-                            <span class="badge-label">{{ $badgeLabel }}</span>
+                            <span class="badge-label"
+                                  data-en="{{ $badgeLabel }}"
+                                  data-id="{{ $badgeLabelId }}">{{ $badgeLabel }}</span>
                         @endif
                         @if($badgeValue)
                             <span class="badge-value">{{ $badgeValue }}</span>

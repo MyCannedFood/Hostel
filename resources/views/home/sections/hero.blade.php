@@ -1,11 +1,11 @@
 {{-- resources/views/home/sections/hero.blade.php --}}
-{{-- Data: $heroData array dari PageController --}}
 
 @php
-    // Fallback ke default kalau $heroData belum dipass (e.g. saat preview langsung)
     $heroData    ??= \App\Models\LandingPageSetting::DEFAULTS['hero'];
     $headline    = $heroData['headline']    ?? 'A Javanese Sanctuary, Woven by Nature';
     $subheadline = $heroData['subheadline'] ?? 'Immerse yourself in the deep tranquility of Nusantara culture, where architecture breathes with the forest.';
+    $headlineId    = $heroData['headline_id']    ?? 'Surga Jawa, Terjalin oleh Alam';
+    $subheadlineId = $heroData['subheadline_id'] ?? 'Benamkan diri Anda dalam ketenangan mendalam budaya Nusantara, di mana arsitektur menyatu dengan hutan.';
     $bgImageUrl  = !empty($heroData['bg_image'])
                    ? asset('storage/' . $heroData['bg_image'])
                    : asset('images/hero.png');
@@ -15,11 +15,11 @@
     @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
 
     :root {
-        --green-dark:   #1a3d0a;
-        --green-mid:    #4b9960;
-        --green-light:  #b8d9a0;
-        --white-soft:   #f6f6f1;
-        --terracotta:   #d9864a;
+        --green-dark:  #1a3d0a;
+        --green-mid:   #4b9960;
+        --green-light: #b8d9a0;
+        --white-soft:  #f6f6f1;
+        --terracotta:  #d9864a;
     }
 
     #home-hero {
@@ -217,47 +217,113 @@
 </style>
 
 <section id="home-hero">
-    {{-- Background image di-inject via inline style supaya URL dari DB bisa dipakai --}}
-    <div class="hero-bg"
-         style="background-image: url('{{ $bgImageUrl }}');">
-    </div>
+    <div class="hero-bg" style="background-image: url('{{ $bgImageUrl }}');"></div>
     <div class="hero-overlay"></div>
 
     <div class="hero-content">
-        {{-- Headline dan sub-headline dari DB, dengan fallback --}}
-        <h1>{!! nl2br(e($headline)) !!}</h1>
-        <p>{{ $subheadline }}</p>
+        {{-- Headline: data-en dari DB, data-id dari DB (atau fallback hardcode) --}}
+        <h1 id="hero-headline"
+            data-en="{{ $headline }}"
+            data-id="{{ $headlineId }}">
+            {!! nl2br(e($headline)) !!}
+        </h1>
+
+        <p id="hero-subheadline"
+           data-en="{{ $subheadline }}"
+           data-id="{{ $subheadlineId }}">
+            {{ $subheadline }}
+        </p>
     </div>
 
     <div class="hero-booking">
         <div class="hero-booking-field">
-            <label for="hero-checkin">Check-In</label>
-            <input type="date" id="hero-checkin" name="checkin" value="{{ date('Y-m-d', strtotime('+1 day')) }}">
+            <label for="hero-checkin"
+                   data-en="Check-In" data-id="Tgl Masuk">Check-In</label>
+            <input type="date" id="hero-checkin" name="checkin"
+                   value="{{ date('Y-m-d', strtotime('+1 day')) }}">
         </div>
 
         <div class="hero-booking-field">
-            <label for="hero-checkout">Check-Out</label>
-            <input type="date" id="hero-checkout" name="checkout" value="{{ date('Y-m-d', strtotime('+6 days')) }}">
+            <label for="hero-checkout"
+                   data-en="Check-Out" data-id="Tgl Keluar">Check-Out</label>
+            <input type="date" id="hero-checkout" name="checkout"
+                   value="{{ date('Y-m-d', strtotime('+6 days')) }}">
         </div>
 
         <div class="hero-booking-field" style="border-right:none;">
-            <label for="hero-guests">Guests</label>
-                <select id="hero-guests" name="guests">
-                <option value="1a0c" selected>1 Male Adult, 0 Children</option>
-                <option value="1f0c">1 Female Adult, 0 Children</option>
-                <option value="2a1c">2 Male Adults, 1 Child</option>
-                <option value="2f1c">2 Female Adults, 1 Child</option>
-                <option value="2a2c">2 Male Adults, 2 Children</option>
-                <option value="2f2c">2 Female Adults, 2 Children</option>
-                
+            <label for="hero-guests"
+                   data-en="Guests" data-id="Tamu">Guests</label>
+            <select id="hero-guests" name="guests">
+                {{-- Teks option ditranslate via JS --}}
+                <option value="1a0c"
+                        data-en="1 Male Adult, 0 Children"
+                        data-id="1 Dewasa Pria, 0 Anak" selected>
+                    1 Male Adult, 0 Children
+                </option>
+                <option value="1f0c"
+                        data-en="1 Female Adult, 0 Children"
+                        data-id="1 Dewasa Wanita, 0 Anak">
+                    1 Female Adult, 0 Children
+                </option>
+                <option value="2a1c"
+                        data-en="2 Male Adults, 1 Child"
+                        data-id="2 Dewasa Pria, 1 Anak">
+                    2 Male Adults, 1 Child
+                </option>
+                <option value="2f1c"
+                        data-en="2 Female Adults, 1 Child"
+                        data-id="2 Dewasa Wanita, 1 Anak">
+                    2 Female Adults, 1 Child
+                </option>
+                <option value="2a2c"
+                        data-en="2 Male Adults, 2 Children"
+                        data-id="2 Dewasa Pria, 2 Anak">
+                    2 Male Adults, 2 Children
+                </option>
+                <option value="2f2c"
+                        data-en="2 Female Adults, 2 Children"
+                        data-id="2 Dewasa Wanita, 2 Anak">
+                    2 Female Adults, 2 Children
+                </option>
             </select>
         </div>
 
         <div class="hero-booking-btn-wrap">
             <button class="hero-booking-btn" type="button"
+                    data-en="Check Availability" data-id="Cek Ketersediaan"
                     onclick="window.location.href='/calendar'">
                 Check Availability
             </button>
         </div>
     </div>
 </section>
+
+<script>
+// Hero: re-apply terjemahan setiap kali bahasa berubah dari navbar
+// (AlasLang sudah di-load oleh navbar sebelum section ini)
+document.addEventListener('alas:langchange', function (e) {
+    applyHeroLang(e.detail.lang);
+});
+
+function applyHeroLang(lang) {
+    // Headline & subheadline pakai textContent biasa
+    // (data-en / data-id sudah di-set di atribut elemen)
+    var h1 = document.getElementById('hero-headline');
+    var p  = document.getElementById('hero-subheadline');
+    if (h1) h1.textContent = lang === 'id' ? h1.dataset.id : h1.dataset.en;
+    if (p)  p.textContent  = lang === 'id' ? p.dataset.id  : p.dataset.en;
+
+    // Option select tidak ditangani AlasLang (karena textContent-nya bukan teks murni)
+    document.querySelectorAll('#hero-guests option').forEach(function (opt) {
+        opt.textContent = lang === 'id' ? opt.dataset.id : opt.dataset.en;
+    });
+}
+
+// Jalankan saat halaman load sesuai bahasa tersimpan
+(function () {
+    var lang = (window.AlasLang ? window.AlasLang.current() : null)
+               || localStorage.getItem('alas_lang')
+               || 'en';
+    applyHeroLang(lang);
+})();
+</script>

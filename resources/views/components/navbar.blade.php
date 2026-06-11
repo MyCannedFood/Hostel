@@ -1,18 +1,6 @@
 {{-- resources/views/components/navbar.blade.php --}}
 
 <style>
-    /* ── Google Translate: hide UI elements ── */
-    .goog-te-banner-frame,
-    #goog-gt-tt,
-    .goog-te-balloon-frame,
-    .skiptranslate {
-        display: none !important;
-    }
-    body { top: 0 !important; }
-
-    /* ── Google Translate init holder ── */
-    #gt_holder { display: none; }
-
     /* ── Desktop nav links ── */
     .alas-nav-links {
         display: flex;
@@ -43,9 +31,7 @@
         opacity: 0.65;
     }
 
-    .alas-nav-links a.inactive-nav:hover {
-        opacity: 1;
-    }
+    .alas-nav-links a.inactive-nav:hover { opacity: 1; }
 
     /* ── Desktop language switcher ── */
     .active-lang-nav {
@@ -69,14 +55,10 @@
         transition: opacity 0.2s;
     }
 
-    .inactive-lang-nav:hover {
-        opacity: 1;
-    }
+    .inactive-lang-nav:hover { opacity: 1; }
 
     /* ── Mobile hamburger ── */
-    .alas-hamburger {
-        display: none;
-    }
+    .alas-hamburger { display: none; }
 
     /* ── Mobile drawer ── */
     .alas-drawer {
@@ -154,25 +136,11 @@
     }
 
     @media (max-width: 768px) {
-        .alas-nav-links {
-            display: none !important;
-        }
-
-        .alas-lang-btn {
-            display: none !important;
-        }
-
-        .alas-book-btn {
-            display: none !important;
-        }
-
-        .alas-hamburger {
-            display: flex !important;
-        }
-
-        .alas-drawer.open {
-            display: flex;
-        }
+        .alas-nav-links  { display: none !important; }
+        .alas-lang-btn   { display: none !important; }
+        .alas-book-btn   { display: none !important; }
+        .alas-hamburger  { display: flex !important; }
+        .alas-drawer.open { display: flex; }
     }
 </style>
 
@@ -203,16 +171,9 @@
             {{-- Logo --}}
             <a href="/"
                style="text-decoration:none; display:flex; align-items:center; gap:8px; flex-shrink:0;">
-
                 <img src="{{ asset('images/logo_only.png') }}"
                      alt="AlaSare Logo"
-                     style="
-                        width:26px;
-                        height:26px;
-                        border-radius:50%;
-                        object-fit:cover;
-                     ">
-
+                     style="width:26px; height:26px; border-radius:50%; object-fit:cover;">
                 <span style="
                     font-family: 'Georgia', 'Times New Roman', serif;
                     font-size: 16px;
@@ -222,50 +183,38 @@
                     line-height: 1;
                     display: inline-flex;
                     align-items: center;
-                ">
-                    AlaSare
-                </span>
+                ">AlaSare</span>
             </a>
 
             {{-- Desktop Nav Links --}}
             <div class="alas-nav-links">
-
                 <a href="/"
-                   class="{{ request()->is('/') ? 'active-nav' : 'inactive-nav' }}">
-                    Home
-                </a>
+                   class="{{ request()->is('/') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Home" data-id="Beranda">Home</a>
 
                 <a href="/rooms"
-                   class="{{ request()->is('rooms') ? 'active-nav' : 'inactive-nav' }}">
-                    Villas
-                </a>
+                   class="{{ request()->is('rooms') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Villas" data-id="Vila">Villas</a>
 
                 <a href="/gallery"
-                   class="{{ request()->is('gallery') ? 'active-nav' : 'inactive-nav' }}">
-                    Gallery
-                </a>
+                   class="{{ request()->is('gallery') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Gallery" data-id="Galeri">Gallery</a>
 
                 <a href="/experience"
-                   class="{{ request()->is('experience') ? 'active-nav' : 'inactive-nav' }}">
-                    Experiences
-                </a>
+                   class="{{ request()->is('experience') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Experiences" data-id="Pengalaman">Experiences</a>
 
                 <a href="/journal"
-                   class="{{ request()->is('journal') ? 'active-nav' : 'inactive-nav' }}">
-                    Journal
-                </a>
+                   class="{{ request()->is('journal') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Journal" data-id="Jurnal">Journal</a>
 
                 <a href="/guest-story"
-                   class="{{ request()->is('guest-story') ? 'active-nav' : 'inactive-nav' }}">
-                    Guest Story
-                </a>
+                   class="{{ request()->is('guest-story') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Guest Story" data-id="Cerita Tamu">Guest Story</a>
 
                 <a href="/contact"
-                   class="{{ request()->is('contact') ? 'active-nav' : 'inactive-nav' }}">
-                    Contact
-                </a>
-
-
+                   class="{{ request()->is('contact') ? 'active-nav' : 'inactive-nav' }}"
+                   data-en="Contact" data-id="Kontak">Contact</a>
             </div>
         </div>
 
@@ -273,27 +222,20 @@
         <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
 
             {{-- Language Switcher --}}
-            <div class="alas-lang-btn notranslate" style="display:flex; align-items:center; gap:6px;">
+            <div class="alas-lang-btn" style="display:flex; align-items:center; gap:6px;">
+                <a href="javascript:void(0)" onclick="AlasLang.set('id')"
+                   id="langIdDesktop">ID</a>
 
-                <a href="javascript:void(0)" onclick="changeLanguage('id')"
-                   class="inactive-lang-nav notranslate" id="langIdDesktop">
-                    ID
-                </a>
+                <span style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">|</span>
 
-                <span class="notranslate" style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">
-                    |
-                </span>
-
-                <a href="javascript:void(0)" onclick="changeLanguage('en')"
-                   class="active-lang-nav notranslate" id="langEnDesktop">
-                    EN
-                </a>
-
+                <a href="javascript:void(0)" onclick="AlasLang.set('en')"
+                   id="langEnDesktop">EN</a>
             </div>
 
             {{-- Book Now --}}
             <a href="/calendar"
                class="alas-book-btn"
+               data-en="Book Now" data-id="Pesan Sekarang"
                style="
                     text-decoration: none;
                     background: #d9864a;
@@ -311,37 +253,20 @@
                "
                onmouseover="this.style.background='#c4733a'; this.style.transform='translateY(-1px)'"
                onmouseout="this.style.background='#d9864a'; this.style.transform='translateY(0)'">
-
                 Book Now
             </a>
 
             {{-- Hamburger --}}
-            <button class="alas-hamburger"
-                    id="alasHamburger"
-                    type="button"
+            <button class="alas-hamburger" id="alasHamburger" type="button"
                     aria-label="Open menu"
                     style="
-                        border: none;
-                        background: transparent;
-                        cursor: pointer;
-                        padding: 6px;
-                        flex-direction: column;
-                        gap: 5px;
-                        align-items: center;
-                        justify-content: center;
+                        border: none; background: transparent; cursor: pointer;
+                        padding: 6px; flex-direction: column; gap: 5px;
+                        align-items: center; justify-content: center;
                     ">
-
-                <span id="alasBar1"
-                      style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;">
-                </span>
-
-                <span id="alasBar2"
-                      style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;">
-                </span>
-
-                <span id="alasBar3"
-                      style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;">
-                </span>
+                <span id="alasBar1" style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;"></span>
+                <span id="alasBar2" style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;"></span>
+                <span id="alasBar3" style="display:block; width:22px; height:2px; background:#1a3d0a; border-radius:2px; transition: transform 0.25s, opacity 0.25s;"></span>
             </button>
         </div>
     </div>
@@ -349,152 +274,141 @@
     {{-- Mobile Drawer --}}
     <div class="alas-drawer" id="alasDrawer">
 
-        <a href="/"
-           class="{{ request()->is('/') ? 'active-link' : '' }}">
-            Home
-        </a>
+        <a href="/" class="{{ request()->is('/') ? 'active-link' : '' }}"
+           data-en="Home" data-id="Beranda">Home</a>
 
-        <a href="/rooms"
-           class="{{ request()->is('rooms') ? 'active-link' : '' }}">
-            Villas
-        </a>
+        <a href="/rooms" class="{{ request()->is('rooms') ? 'active-link' : '' }}"
+           data-en="Villas" data-id="Vila">Villas</a>
 
-        <a href="/gallery"
-           class="{{ request()->is('gallery') ? 'active-link' : '' }}">
-            Gallery
-        </a>
+        <a href="/gallery" class="{{ request()->is('gallery') ? 'active-link' : '' }}"
+           data-en="Gallery" data-id="Galeri">Gallery</a>
 
-        <a href="/experience"
-           class="{{ request()->is('experience') ? 'active-link' : '' }}">
-            Experiences
-        </a>
+        <a href="/experience" class="{{ request()->is('experience') ? 'active-link' : '' }}"
+           data-en="Experiences" data-id="Pengalaman">Experiences</a>
 
-        <a href="/journal"
-           class="{{ request()->is('journal') ? 'active-link' : '' }}">
-            Journal
-        </a>
+        <a href="/journal" class="{{ request()->is('journal') ? 'active-link' : '' }}"
+           data-en="Journal" data-id="Jurnal">Journal</a>
 
-        <a href="/guest-story"
-           class="{{ request()->is('guest-story') ? 'active-link' : '' }}">
-            Guest Story
-        </a>
+        <a href="/guest-story" class="{{ request()->is('guest-story') ? 'active-link' : '' }}"
+           data-en="Guest Story" data-id="Cerita Tamu">Guest Story</a>
 
-        <a href="/contact"
-           class="{{ request()->is('contact') ? 'active-link' : '' }}">
-            Contact
-        </a>
+        <a href="/contact" class="{{ request()->is('contact') ? 'active-link' : '' }}"
+           data-en="Contact" data-id="Kontak">Contact</a>
 
         {{-- Mobile Language --}}
-        <div class="drawer-lang notranslate">
-
-            <a href="javascript:void(0)" onclick="changeLanguage('id')"
-               class="notranslate" id="langIdMobile">
-                ID
-            </a>
-
-            <span class="notranslate">|</span>
-
-            <a href="javascript:void(0)" onclick="changeLanguage('en')"
-               class="notranslate active-lang" id="langEnMobile">
-                EN
-            </a>
-
+        <div class="drawer-lang">
+            <a href="javascript:void(0)" onclick="AlasLang.set('id')" id="langIdMobile">ID</a>
+            <span>|</span>
+            <a href="javascript:void(0)" onclick="AlasLang.set('en')" id="langEnMobile">EN</a>
         </div>
 
-        <a href="/calendar" class="drawer-book">
-            Book Now
-        </a>
+        <a href="/calendar" class="drawer-book"
+           data-en="Book Now" data-id="Pesan Sekarang">Book Now</a>
     </div>
 
-
-    {{-- Global WhatsApp floating button --}}
     @include('components.whatsapp_floating')
-
-    <div id="gt_holder"></div>
 </nav>
 
+{{-- ============================================================
+     ALAS LANG — Global hardcode translate engine
+     Cara pakai di file lain:
+       • Tambahkan atribut  data-en="..."  data-id="..."
+         pada elemen yang ingin ditranslate.
+       • Tidak perlu JS tambahan — engine ini jalan otomatis.
+     ============================================================ --}}
 <script>
-function changeLanguage(lang) {
-    document.cookie = 'googtrans=/en/' + lang;
-    location.reload();
-}
+window.AlasLang = (function () {
 
-(function initLangUI() {
-    var match = document.cookie.match(/googtrans=.*\/([a-z]{2})/);
-    if (match) updateLangUI(match[1]);
+    const STORAGE_KEY = 'alas_lang';
+    const DEFAULT     = 'en';
+
+    // ── Baca bahasa tersimpan ──────────────────────────────────
+    function current() {
+        return localStorage.getItem(STORAGE_KEY) || DEFAULT;
+    }
+
+    // ── Terapkan terjemahan ke seluruh DOM ─────────────────────
+    function apply(lang) {
+        document.querySelectorAll('[data-en][data-id]').forEach(function (el) {
+            // Simpan inner HTML asli sebelum pertama kali diubah
+            if (!el.dataset.enSet) {
+                el.dataset.enSet  = el.dataset.en;
+                el.dataset.idSet  = el.dataset.id;
+            }
+            el.textContent = lang === 'id' ? el.dataset.idSet : el.dataset.enSet;
+        });
+
+        // Update tampilan tombol aktif — desktop
+        var dId = document.getElementById('langIdDesktop');
+        var dEn = document.getElementById('langEnDesktop');
+        if (dId && dEn) {
+            dId.className = lang === 'id' ? 'active-lang-nav'   : 'inactive-lang-nav';
+            dEn.className = lang === 'en' ? 'active-lang-nav'   : 'inactive-lang-nav';
+        }
+
+        // Update tampilan tombol aktif — mobile
+        var mId = document.getElementById('langIdMobile');
+        var mEn = document.getElementById('langEnMobile');
+        if (mId && mEn) {
+            mId.className = lang === 'id' ? 'active-lang' : '';
+            mEn.className = lang === 'en' ? 'active-lang' : '';
+        }
+
+        // Simpan pilihan
+        localStorage.setItem(STORAGE_KEY, lang);
+
+        // Broadcast ke komponen lain yang ingin tahu
+        document.dispatchEvent(new CustomEvent('alas:langchange', { detail: { lang: lang } }));
+    }
+
+    // ── Set bahasa baru ────────────────────────────────────────
+    function set(lang) {
+        apply(lang);
+    }
+
+    // ── Init saat DOM siap ─────────────────────────────────────
+    function init() {
+        apply(current());
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    return { set: set, current: current, apply: apply };
+
 })();
+</script>
 
-function hideGoogleTranslateBar() {
-    document.querySelectorAll('iframe.goog-te-banner-frame, .goog-te-banner-frame, .skiptranslate iframe, .skiptranslate').forEach(function(el) {
-        el.style.setProperty('display', 'none', 'important');
-    });
-    document.body.style.setProperty('top', '0', 'important');
-    document.body.style.setProperty('position', 'static', 'important');
-}
-
-var observer = new MutationObserver(function() {
-    hideGoogleTranslateBar();
-});
-observer.observe(document.body, { childList: true, subtree: true });
-
-hideGoogleTranslateBar();
-
-function updateLangUI(lang) {
-    document.querySelectorAll('[id^="langId"]').forEach(function(el) {
-        el.className = lang === 'id' ? (el.id.includes('Mobile') ? 'active-lang' : 'active-lang-nav') : (el.id.includes('Mobile') ? '' : 'inactive-lang-nav');
-    });
-    document.querySelectorAll('[id^="langEn"]').forEach(function(el) {
-        el.className = lang === 'en' ? (el.id.includes('Mobile') ? 'active-lang' : 'active-lang-nav') : (el.id.includes('Mobile') ? '' : 'inactive-lang-nav');
-    });
-}
-
-function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,id',
-        autoDisplay: false
-    }, 'gt_holder');
-}
-
+<script>
 (function () {
-
-
     const hamburger = document.getElementById('alasHamburger');
-    const drawer = document.getElementById('alasDrawer');
-
-    const bar1 = document.getElementById('alasBar1');
-    const bar2 = document.getElementById('alasBar2');
-    const bar3 = document.getElementById('alasBar3');
+    const drawer    = document.getElementById('alasDrawer');
+    const bar1      = document.getElementById('alasBar1');
+    const bar2      = document.getElementById('alasBar2');
+    const bar3      = document.getElementById('alasBar3');
 
     if (!hamburger || !drawer) return;
 
     let open = false;
 
     hamburger.addEventListener('click', function () {
-
         open = !open;
-
         drawer.classList.toggle('open', open);
 
         if (open) {
-
             bar1.style.transform = 'translateY(7px) rotate(45deg)';
-            bar2.style.opacity = '0';
+            bar2.style.opacity   = '0';
             bar3.style.transform = 'translateY(-7px) rotate(-45deg)';
-
             hamburger.setAttribute('aria-label', 'Close menu');
-
         } else {
-
             bar1.style.transform = '';
-            bar2.style.opacity = '1';
+            bar2.style.opacity   = '1';
             bar3.style.transform = '';
-
             hamburger.setAttribute('aria-label', 'Open menu');
         }
     });
-
 })();
 </script>
-
-<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
