@@ -58,9 +58,18 @@
         {{-- Booking Stepper --}}
         <x-booking-stepper :currentStep="3" />
 
+        {{--
+            data-en / data-id dipakai oleh AlasLang (engine di navbar).
+            Atribut ini cukup ditambahkan ke elemen teks — AlasLang akan
+            mengganti textContent secara otomatis saat bahasa berubah.
+        --}}
         <x-booking-header 
             title="Choose Your Private Space" 
-            subtitle="Kami menyediakan tempat tidur/kamar dengan fasilitas terbaik untuk kenyamanan Anda." 
+            subtitle="We provide beds/rooms with the best facilities for your comfort." 
+            data-en-title="Choose Your Private Space"
+            data-id-title="Pilih Ruang Pribadimu"
+            data-en-subtitle="We provide beds/rooms with the best facilities for your comfort."
+            data-id-subtitle="Kami menyediakan kasur/kamar dengan fasilitas terbaik untuk kenyamananmu."
         />
 
         @php
@@ -117,6 +126,7 @@
                     'id' => $addon->id,
                     'name' => $addon->name,
                     'note' => $isFreeToday ? ($addon->note ?? '(for free)') : $addon->note,
+                    'note_id' => $isFreeToday ? ($addon->note_id ?? '(gratis)') : $addon->note_id,
                     'price' => $addon->price, 
                     'display_price' => 'IDR ' . number_format($addon->price, 0, ',', '.'),
                     'discount' => $isFreeToday ? '- IDR ' . number_format($addon->discount ?? $addon->price, 0, ',', '.') : null,
@@ -187,7 +197,7 @@
                 <div class="summary-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <span style="display: flex; align-items: center; gap: 5px;">
-                        Check-in: 
+                        <span data-en="Check-in:" data-id="Tgl Masuk:">Check-in:</span>
                         <input type="date" id="checkinInput" value="{{ $checkInParam }}" style="border: none; outline: none; background: transparent; font-weight: 600; color: inherit; font-family: inherit; font-size: 14px; cursor: pointer;">
                     </span>
                 </div>
@@ -195,7 +205,7 @@
                 <div class="summary-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                     <span style="display: flex; align-items: center; gap: 5px;">
-                        Check-out: 
+                        <span data-en="Check-out:" data-id="Tgl Keluar:">Check-out:</span>
                         <input type="date" id="checkoutInput" value="{{ $checkOutParam }}" style="border: none; outline: none; background: transparent; font-weight: 600; color: inherit; font-family: inherit; font-size: 14px; cursor: pointer;">
                     </span>
                 </div>
@@ -203,12 +213,19 @@
                 <div class="summary-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                     <select id="guestSelect" style="border: none; outline: none; background: transparent; font-weight: 600; color: inherit; font-size: 14px; cursor: pointer; max-width: 200px;">
-                        <option value="1a0c" {{ $guestsParam == '1a0c' ? 'selected' : '' }}>1 Male Adult, 0 Children</option>
-                        <option value="1f0c" {{ $guestsParam == '1f0c' ? 'selected' : '' }}>1 Female Adult, 0 Children</option>
-                        <option value="2a1c" {{ $guestsParam == '2a1c' ? 'selected' : '' }}>2 Male Adults, 1 Child</option>
-                        <option value="2f1c" {{ $guestsParam == '2f1c' ? 'selected' : '' }}>2 Female Adults, 1 Child</option>
-                        <option value="2a2c" {{ $guestsParam == '2a2c' ? 'selected' : '' }}>2 Male Adults, 2 Children</option>
-                        <option value="2f2c" {{ $guestsParam == '2f2c' ? 'selected' : '' }}>2 Female Adults, 2 Children</option>
+                        {{-- Teks option diterjemahkan via JS (lihat bagian <script> di bawah) --}}
+                        <option value="1a0c" {{ $guestsParam == '1a0c' ? 'selected' : '' }}
+                            data-en="1 Male Adult, 0 Children" data-id="1 Dewasa Pria, 0 Anak">1 Male Adult, 0 Children</option>
+                        <option value="1f0c" {{ $guestsParam == '1f0c' ? 'selected' : '' }}
+                            data-en="1 Female Adult, 0 Children" data-id="1 Dewasa Wanita, 0 Anak">1 Female Adult, 0 Children</option>
+                        <option value="2a1c" {{ $guestsParam == '2a1c' ? 'selected' : '' }}
+                            data-en="2 Male Adults, 1 Child" data-id="2 Dewasa Pria, 1 Anak">2 Male Adults, 1 Child</option>
+                        <option value="2f1c" {{ $guestsParam == '2f1c' ? 'selected' : '' }}
+                            data-en="2 Female Adults, 1 Child" data-id="2 Dewasa Wanita, 1 Anak">2 Female Adults, 1 Child</option>
+                        <option value="2a2c" {{ $guestsParam == '2a2c' ? 'selected' : '' }}
+                            data-en="2 Male Adults, 2 Children" data-id="2 Dewasa Pria, 2 Anak">2 Male Adults, 2 Children</option>
+                        <option value="2f2c" {{ $guestsParam == '2f2c' ? 'selected' : '' }}
+                            data-en="2 Female Adults, 2 Children" data-id="2 Dewasa Wanita, 2 Anak">2 Female Adults, 2 Children</option>
                     </select>
                 </div>
             </div>
@@ -216,9 +233,11 @@
             <div class="promo-section">
                 <div class="promo-input-wrapper">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D37D4F" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                    <input type="text" id="promoCode" placeholder="Apply Promo Code" value="{{ $promoParam }}">
+                    <input type="text" id="promoCode" placeholder="Apply Promo Code" data-placeholder-en="Apply Promo Code" data-placeholder-id="Masukkan Kode Promo" value="{{ $promoParam }}">
                 </div>
-                <a href="#" id="btnApplyPromo" class="apply-btn" style="{{ $promoParam ? 'color: #D37D4F;' : '' }}">
+                <a href="#" id="btnApplyPromo" class="apply-btn" style="{{ $promoParam ? 'color: #D37D4F;' : '' }}"
+                   data-en="{{ $promoParam ? 'Applied' : 'Apply' }}"
+                   data-id="{{ $promoParam ? 'Diterapkan' : 'Terapkan' }}">
                     {{ $promoParam ? 'Applied' : 'Apply' }}
                 </a>
             </div>
@@ -226,8 +245,13 @@
 
         {{-- Room Detail Card --}}
         <div class="room-section-header">
-            <h2 class="room-section-title">Room &nbsp;{{ $room->name }}</h2>
-            <span class="room-type-tag">Room Type: {{ $room->gender_type == 'Mixed' ? 'Mixed Dorm' : $room->gender_type . ' Only' }}</span>
+            <h2 class="room-section-title">
+                <span data-en="Room" data-id="Kamar">Room</span>&nbsp;{{ $room->name }}
+            </h2>
+            <span class="room-type-tag">
+                <span data-en="Room Type:" data-id="Tipe Kamar:">Room Type:</span>
+                {{ $room->gender_type == 'Mixed' ? 'Mixed Dorm' : $room->gender_type . ' Only' }}
+            </span>
         </div>
 
         <div class="room-detail-card">
@@ -245,7 +269,10 @@
                 <div class="room-detail-features">
                     <div class="feature-item">
                         <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        <span>{{ $room->capacity }} Person Capacity</span>
+                        <span>
+                            {{ $room->capacity }}
+                            <span data-en="Person Capacity" data-id="Kapasitas Orang">Person Capacity</span>
+                        </span>
                     </div>
                     @php $facilities = $room->main_facilities ? explode(',', $room->main_facilities) : []; @endphp
                     @foreach($facilities as $facility)
@@ -283,8 +310,12 @@
                         <div class="hotspot-popup-container popup-right">
                             <div class="custom-bed-popup">
                                 <div style="background: #F2F5EB; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E5E5E5;">
-                                    <h3 style="margin:0; font-size:16px; color:#1A3D0A;">BED UNIT {{ $label }}</h3>
-                                    <span style="background: {{ $isAnyAvailable ? '#1A3D0A' : '#C3C9BA' }}; color: white; padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 4px;">
+                                    <h3 style="margin:0; font-size:16px; color:#1A3D0A;">
+                                        <span data-en="BED UNIT" data-id="UNIT KASUR">BED UNIT</span> {{ $label }}
+                                    </h3>
+                                    <span style="background: {{ $isAnyAvailable ? '#1A3D0A' : '#C3C9BA' }}; color: white; padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 4px;"
+                                          data-en="{{ $isAnyAvailable ? 'AVAILABLE' : 'FULL' }}"
+                                          data-id="{{ $isAnyAvailable ? 'TERSEDIA' : 'PENUH' }}">
                                         {{ $isAnyAvailable ? 'AVAILABLE' : 'FULL' }}
                                     </span>
                                 </div>
@@ -307,31 +338,38 @@
                                                     <span style="font-weight:bold; color:#1A3D0A; font-size:15px;">{{ $bed->name }}</span>
                                                     
                                                     @if($isMaintenance)
-                                                        <button type="button" class="bed-select-btn state-maintenance" disabled>MAINTENANCE</button>
+                                                        <button type="button" class="bed-select-btn state-maintenance" disabled
+                                                                data-en="MAINTENANCE" data-id="PERBAIKAN">MAINTENANCE</button>
                                                     @elseif($isBooked)
-                                                        <button type="button" class="bed-select-btn state-occupied" disabled>OCCUPIED</button>
+                                                        <button type="button" class="bed-select-btn state-occupied" disabled
+                                                                data-en="OCCUPIED" data-id="TERISI">OCCUPIED</button>
                                                     @else
                                                         <button type="button" 
                                                                 class="bed-select-btn state-select" 
                                                                 data-bed-id="{{ $bed->id }}" 
                                                                 data-bed-name="{{ $bed->name }}" 
-                                                                data-bed-price="{{ $price }}">
+                                                                data-bed-price="{{ $price }}"
+                                                                data-en="SELECT" data-id="PILIH">
                                                             SELECT
                                                         </button>
                                                     @endif
                                                 </div>
                                                 
                                                 @if($isMaintenance)
-                                                    <div style="font-size:12px; color:#dc3545; margin-top:4px;">Currently unavailable</div>
+                                                    <div style="font-size:12px; color:#dc3545; margin-top:4px;"
+                                                         data-en="Currently unavailable" data-id="Saat ini tidak tersedia">Currently unavailable</div>
                                                 @elseif($isAvailToBook)
-                                                    <div style="font-size:12px; color:#43493E; margin-top:4px;">{{ $formattedPrice }} /nights</div>
+                                                    <div style="font-size:12px; color:#43493E; margin-top:4px;">
+                                                        {{ $formattedPrice }} <span data-en="/nights" data-id="/malam">/nights</span>
+                                                    </div>
                                                 @elseif($isBooked)
                                                     @php $guest = $occupiedBeds[$bed->id]; @endphp
                                                     <div style="display:flex; align-items:center; margin-top:8px;">
                                                         <img src="{{ asset('images/sharedroom/' . ($guest->id % 2 == 0 ? 'liam.png' : 'julian.png')) }}" style="width:36px; height:36px; border-radius:50%; margin-right:10px; object-fit:cover;">
                                                         <div>
                                                             <div style="font-size:14px; font-weight:bold; color:#1A3D0A;">{{ $guest->first_name . ' ' . $guest->last_name }}</div>
-                                                            <div style="font-size:12px; color:#6CA16C;">Occupied</div>
+                                                            <div style="font-size:12px; color:#6CA16C;"
+                                                                 data-en="Occupied" data-id="Terisi">Occupied</div>
                                                         </div>
                                                     </div>
                                                 @endif
@@ -344,16 +382,26 @@
                                     <hr style="border:none; border-top:1px solid #E5E5E5; margin:0;">
                                     <div style="padding: 16px;">
                                         @foreach($formattedAddons as $addon)
-                                            <div class="addon-row-wrapper" data-addon-id="{{ $addon['id'] }}" data-addon-name="{{ $addon['name'] }}" data-addon-cost="{{ $addon['actual_cost'] }}" data-addon-note="{{ $addon['note'] }}">
+                                            <div class="addon-row-wrapper" 
+                                                 data-addon-id="{{ $addon['id'] }}" 
+                                                 data-addon-name="{{ $addon['name'] }}" 
+                                                 data-addon-cost="{{ $addon['actual_cost'] }}" 
+                                                 data-addon-note="{{ $addon['note'] }}"
+                                                 data-addon-note-id="{{ $addon['note_id'] ?? $addon['note'] }}">
                                                 <div class="alasare-box {{ $addon['checked'] ? 'is-on' : 'is-off' }}" style="margin-right:12px;">
                                                     <svg class="check-icon" style="display: {{ $addon['checked'] ? 'block' : 'none' }}; width: 14px; height: 14px;" viewBox="0 0 24 24" fill="none" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                                 </div>
                                                 <div>
-                                                    <div style="font-weight:bold; color:#1A3D0A; font-size:14px;">{{ $addon['name'] }} <span style="font-weight:normal; color:#B8D9A0;">{{ $addon['note'] }}</span></div>
+                                                    <div style="font-weight:bold; color:#1A3D0A; font-size:14px;">
+                                                        {{ $addon['name'] }}
+                                                        <span class="addon-note-text" style="font-weight:normal; color:#B8D9A0;"
+                                                              data-en="{{ $addon['note'] }}"
+                                                              data-id="{{ $addon['note_id'] ?? $addon['note'] }}">{{ $addon['note'] }}</span>
+                                                    </div>
                                                     <div style="font-size:12px; color:#43493E; margin-top:2px;">
-                                                        {{ $addon['display_price'] }} /pack
+                                                        {{ $addon['display_price'] }} <span data-en="/pack" data-id="/paket">/pack</span>
                                                         @if(isset($addon['discount']))
-                                                            <br><span style="color:#D9864A;">{{ $addon['discount'] }} /pack</span>
+                                                            <br><span style="color:#D9864A;">{{ $addon['discount'] }} <span data-en="/pack" data-id="/paket">/pack</span></span>
                                                         @endif
                                                     </div>
                                                 </div>
@@ -372,14 +420,23 @@
         <div class="room-rules-section">
             <div class="rules-banner-wrap">
                 <img src="{{ asset('images/sharedroom/locker.png') }}" alt="Secure storage locker" class="rules-banner">
-                <span class="rules-secure-badge">Secure Storage</span>
+                <span class="rules-secure-badge" data-en="Secure Storage" data-id="Penyimpanan Aman">Secure Storage</span>
             </div>
             <div class="rules-content">
-                <h3 class="rules-title">Room Rules</h3>
+                <h3 class="rules-title" data-en="Room Rules" data-id="Peraturan Kamar">Room Rules</h3>
                 <ul class="rules-list">
-                    <li class="rule-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg><span>Quiet hours (22:00 - 07:00)</span></li>
-                    <li class="rule-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg><span>Strictly no smoking</span></li>
-                    <li class="rule-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>One person per bed</span></li>
+                    <li class="rule-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+                        <span data-en="Quiet hours (22:00 - 07:00)" data-id="Jam tenang (22:00 - 07:00)">Quiet hours (22:00 - 07:00)</span>
+                    </li>
+                    <li class="rule-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                        <span data-en="Strictly no smoking" data-id="Dilarang keras merokok">Strictly no smoking</span>
+                    </li>
+                    <li class="rule-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span data-en="One person per bed" data-id="Satu orang per kasur">One person per bed</span>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -387,7 +444,7 @@
         {{-- ROOMMATES SECTION --}}
         @if(count($roommatesData) > 0)
             <div class="roommates-section">
-                <h3 class="section-title">Kenali Calon Teman Sekamar</h3>
+                <h3 class="section-title" data-en="Meet Your Future Roommates" data-id="Kenali Calon Teman Sekamar">Meet Your Future Roommates</h3>
                 <div class="roommates-row-container">
                     @foreach($roommatesData as $mate)
                         <div class="roommate-card">
@@ -395,9 +452,13 @@
                             <div class="roommate-info">
                                 <div class="roommate-header-row">
                                     <h4 class="roommate-name">{{ $mate['name'] }}</h4>
-                                    <span class="roommate-bed-tag">Bed: {{ $mate['bed_name'] }}</span>
+                                    <span class="roommate-bed-tag">
+                                        <span data-en="Bed:" data-id="Kasur:">Bed:</span> {{ $mate['bed_name'] }}
+                                    </span>
                                 </div>
-                                <p class="roommate-role">{{ $mate['age'] }} years old &bull; {{ $mate['occupation'] }}</p>
+                                <p class="roommate-role">
+                                    {{ $mate['age'] }} <span data-en="years old" data-id="tahun">years old</span> &bull; {{ $mate['occupation'] }}
+                                </p>
                                 <p class="roommate-desc">{{ $mate['desc'] }}</p>
                                 <div class="roommate-tags">
                                     @foreach($mate['tags'] as $tag)
@@ -420,8 +481,10 @@
         <!-- JS Mengisi Rincian Harga Disini -->
     </div>
     <div class="footer-actions">
-        <a href="{!! $backToRoomUrl !!}" class="btn-footer back" id="btnBackFooter">Back To Calender</a>
-        <a href="#" class="btn-footer continue" id="btnContinueFooter" disabled>Continue To Details</a>
+        <a href="{!! $backToRoomUrl !!}" class="btn-footer back" id="btnBackFooter"
+           data-en="Back To Calendar" data-id="Kembali ke Kalender">Back To Calendar</a>
+        <a href="#" class="btn-footer continue" id="btnContinueFooter" disabled
+           data-en="Continue To Details" data-id="Lanjut ke Detail">Continue To Details</a>
     </div>
 </div>
 
@@ -454,13 +517,65 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const formatRp = (angka) => 'IDR ' + new Intl.NumberFormat('id-ID').format(angka);
 
+    // ─── Helper: teks berdasarkan bahasa aktif ────────────────────────────
+    function t(en, id) {
+        return (window.AlasLang && window.AlasLang.current() === 'id') ? id : en;
+    }
+
+    // ─── Terjemahan teks tombol kasur berdasarkan state ──────────────────
+    const BED_BTN_TEXT = {
+        select:   { en: 'SELECT',      id: 'PILIH' },
+        selected: { en: 'SELECTED',    id: 'DIPILIH' },
+    };
+
+    // ─── Terjemahan teks footer breakdown ────────────────────────────────
+    const FOOTER_TEXT = {
+        estTotal: { en: 'EST.TOTAL', id: 'ESTIMASI TOTAL' },
+        nights:   { en: '/night',    id: '/malam' },
+    };
+
+    // ─── Terjemahan alert ────────────────────────────────────────────────
+    const ALERTS = {
+        selectBedFirst:    { en: 'Please select a bed (SELECT) from the floor plan first!',          id: 'Silakan pilih salah satu kasur (PILIH) terlebih dahulu dari denah kamar!' },
+        checkoutBeforeIn:  { en: 'Oops! Check-out date must be after Check-in!',                     id: 'Ups! Tanggal Check-out harus lebih besar dari Check-in!' },
+        promoApplied:      { en: `Promo Code "${appliedPromoCode}" has been applied!`,               id: `Kode Promo "${appliedPromoCode}" telah diterapkan!` },
+        promoRemoved:      { en: 'Promo Code removed.',                                              id: 'Kode Promo dihapus.' },
+        promoAppliedBtn:   { en: 'Applied',   id: 'Diterapkan' },
+        promoApplyBtn:     { en: 'Apply',     id: 'Terapkan' },
+    };
+
+    // ─── Sinkronkan placeholder input promo ──────────────────────────────
+    function syncPromoPlaceholder() {
+        if (promoCode) {
+            promoCode.placeholder = t(
+                promoCode.getAttribute('data-placeholder-en') || 'Apply Promo Code',
+                promoCode.getAttribute('data-placeholder-id') || 'Masukkan Kode Promo'
+            );
+        }
+    }
+    syncPromoPlaceholder();
+
+    // ─── Dengarkan perubahan bahasa dari AlasLang ─────────────────────────
+    document.addEventListener('alas:langchange', function(e) {
+        syncPromoPlaceholder();
+        // Re-render footer breakdown agar teks "EST.TOTAL" ikut berubah
+        renderFooter();
+        // Update teks tombol kasur yang sudah dipilih
+        document.querySelectorAll('.bed-select-btn.state-selected').forEach(btn => {
+            btn.textContent = t(BED_BTN_TEXT.selected.en, BED_BTN_TEXT.selected.id);
+        });
+        document.querySelectorAll('.bed-select-btn.state-select').forEach(btn => {
+            btn.textContent = t(BED_BTN_TEXT.select.en, BED_BTN_TEXT.select.id);
+        });
+    });
+
     // KUNCI PERBAIKAN: AUTO-SELECT Kasur berdasarkan parameter URL
     if (selectedBedId) {
         const preSelectedBtn = document.querySelector(`.bed-select-btn[data-bed-id="${selectedBedId}"]`);
         if (preSelectedBtn && !preSelectedBtn.classList.contains('state-occupied') && !preSelectedBtn.classList.contains('state-maintenance')) {
             preSelectedBtn.classList.remove('state-select');
             preSelectedBtn.classList.add('state-selected');
-            preSelectedBtn.textContent = 'SELECTED';
+            preSelectedBtn.textContent = t(BED_BTN_TEXT.selected.en, BED_BTN_TEXT.selected.id);
             selectedBedName = preSelectedBtn.getAttribute('data-bed-name');
             selectedBedPrice = parseFloat(preSelectedBtn.getAttribute('data-bed-price'));
         } else {
@@ -493,12 +608,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 let actualCostNumber = parseFloat(addonObj.actual_cost) || 0;
                 grandTotal += actualCostNumber;
                 
+                // Gunakan note_id jika bahasa Indonesia
+                let noteText = (window.AlasLang && window.AlasLang.current() === 'id')
+                    ? (addonObj.note_id || addonObj.note || '')
+                    : (addonObj.note || '');
+
                 let priceText = actualCostNumber > 0 ? formatRp(actualCostNumber) : '';
                 html += `
                     <div class="breakdown-row">
                         <span style="text-transform: uppercase; font-weight: 500;">
                             ${addonObj.name} 
-                            <span style="color:#B8D9A0; font-size:12px; font-weight: bold; text-transform: lowercase;">${addonObj.note || ''}</span>
+                            <span style="color:#B8D9A0; font-size:12px; font-weight: bold; text-transform: lowercase;">${noteText}</span>
                         </span>
                         <span>${priceText}</span>
                     </div>
@@ -508,7 +628,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         html += `
             <div class="breakdown-row total-row">
-                <span style="text-transform: uppercase;">EST.TOTAL</span>
+                <span style="text-transform: uppercase;">${t(FOOTER_TEXT.estTotal.en, FOOTER_TEXT.estTotal.id)}</span>
                 <span>${formatRp(grandTotal)}</span>
             </div>
         `;
@@ -555,7 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const addonsQuery = selectedAddonsList.join(','); 
                 window.location.href = window.location.pathname + `?check_in=${currentCheckIn}&check_out=${currentCheckOut}&nights=${currentNights}&guests=${guestSelect.value}&promo=${appliedPromoCode}&month=${month}&room_id=${roomId}&bed_id=${selectedBedId || ''}&addons=${addonsQuery}`;
             } else {
-                alert('Oops! Tanggal Check-out harus lebih besar dari Check-in!');
+                alert(t(ALERTS.checkoutBeforeIn.en, ALERTS.checkoutBeforeIn.id));
                 checkoutInput.value = currentCheckOut;
             }
         }
@@ -571,16 +691,24 @@ document.addEventListener('DOMContentLoaded', function () {
             const rawValue = promoCode.value.trim();
             if (rawValue !== '') {
                 appliedPromoCode = rawValue;
-                btnApplyPromo.textContent = 'Applied';
+                btnApplyPromo.textContent = t(ALERTS.promoAppliedBtn.en, ALERTS.promoAppliedBtn.id);
                 btnApplyPromo.style.color = '#D37D4F';
+                // Sinkronkan atribut data agar AlasLang bisa menggantinya nanti
+                btnApplyPromo.setAttribute('data-en', ALERTS.promoAppliedBtn.en);
+                btnApplyPromo.setAttribute('data-id', ALERTS.promoAppliedBtn.id);
                 syncLinks(); 
-                alert(`Promo Code "${appliedPromoCode}" has been applied!`);
+                alert(t(
+                    `Promo Code "${appliedPromoCode}" has been applied!`,
+                    `Kode Promo "${appliedPromoCode}" telah diterapkan!`
+                ));
             } else {
                 appliedPromoCode = '';
-                btnApplyPromo.textContent = 'Apply';
+                btnApplyPromo.textContent = t(ALERTS.promoApplyBtn.en, ALERTS.promoApplyBtn.id);
                 btnApplyPromo.style.color = '';
+                btnApplyPromo.setAttribute('data-en', ALERTS.promoApplyBtn.en);
+                btnApplyPromo.setAttribute('data-id', ALERTS.promoApplyBtn.id);
                 syncLinks(); 
-                alert("Promo Code removed.");
+                alert(t(ALERTS.promoRemoved.en, ALERTS.promoRemoved.id));
             }
         });
     }
@@ -610,15 +738,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if(btn.classList.contains('state-occupied') || btn.classList.contains('state-maintenance')) return;
 
                 if(btn.classList.contains('state-select')){
+                    // Deselect semua tombol lain
                     document.querySelectorAll('.bed-select-btn.state-selected').forEach(b => {
                         b.classList.remove('state-selected');
                         b.classList.add('state-select');
-                        b.textContent = 'SELECT';
+                        b.textContent = t(BED_BTN_TEXT.select.en, BED_BTN_TEXT.select.id);
                     });
 
                     btn.classList.remove('state-select');
                     btn.classList.add('state-selected');
-                    btn.textContent = 'SELECTED';
+                    btn.textContent = t(BED_BTN_TEXT.selected.en, BED_BTN_TEXT.selected.id);
                     
                     selectedBedId = btn.getAttribute('data-bed-id');
                     selectedBedName = btn.getAttribute('data-bed-name');
@@ -627,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     btn.classList.remove('state-selected');
                     btn.classList.add('state-select');
-                    btn.textContent = 'SELECT';
+                    btn.textContent = t(BED_BTN_TEXT.select.en, BED_BTN_TEXT.select.id);
                     
                     selectedBedId = null; 
                     selectedBedName = "";
@@ -670,7 +799,7 @@ document.addEventListener('DOMContentLoaded', function () {
     btnContinueFooter.addEventListener('click', function(e) {
         if (!selectedBedId) {
             e.preventDefault(); 
-            alert('Silakan pilih salah satu kasur (SELECT) terlebih dahulu dari denah kamar!');
+            alert(t(ALERTS.selectBedFirst.en, ALERTS.selectBedFirst.id));
         }
     });
 });

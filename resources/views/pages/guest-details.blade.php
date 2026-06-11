@@ -120,33 +120,33 @@
     <nav class="booking-stepper">
         <a href="{!! $calendarUrl !!}" class="step completed" style="text-decoration: none; color: inherit;">
             <span class="step-icon">✓</span>
-            <span>Calendar</span>
+            <span data-en="Calendar" data-id="Kalender">Calendar</span>
         </a>
         <div class="step-divider"></div>
         <a href="{!! $roomSelectionUrl !!}" class="step completed" style="text-decoration: none; color: inherit;">
             <span class="step-icon">✓</span>
-            <span>Room Selection</span>
+            <span data-en="Room Selection" data-id="Pilih Kamar">Room Selection</span>
         </a>
         <div class="step-divider"></div>
         <a href="{!! $bedSelectionUrl !!}" class="step completed" style="text-decoration: none; color: inherit;">
             <span class="step-icon">✓</span>
-            <span>Bed & Shared Room</span>
+            <span data-en="Bed & Shared Room" data-id="Kasur & Kamar Berbagi">Bed & Shared Room</span>
         </a>
         <div class="step-divider"></div>
         <div class="step active">
             <span class="step-icon">4</span>
-            <span>Guest Details</span>
+            <span data-en="Guest Details" data-id="Detail Tamu">Guest Details</span>
         </div>
         <div class="step-divider"></div>
         <div class="step">
             <span class="step-icon">5</span>
-            <span>Confirm & Payment</span>
+            <span data-en="Confirm & Payment" data-id="Konfirmasi & Pembayaran">Confirm & Payment</span>
         </div>
     </nav>
 
     <header class="guest-header">
-        <h1>Guest Details</h1>
-        <p>Please complete your profile for a seamless check-in experience.</p>
+        <h1 data-en="Guest Details" data-id="Detail Tamu">Guest Details</h1>
+        <p data-en="Please complete your profile for a seamless check-in experience." data-id="Silakan lengkapi profil Anda untuk pengalaman check-in yang lancar.">Please complete your profile for a seamless check-in experience.</p>
     </header>
 
     <form action="/confirm-payment" method="GET" id="guestDetailsForm">
@@ -164,113 +164,113 @@
         
         {{-- Section 1: Who is checking in? --}}
         <section class="form-section">
-            <h2>Who is checking in?</h2>
+            <h2 data-en="Who is checking in?" data-id="Siapa yang akan menginap?">Who is checking in?</h2>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="first_name">First Name</label>
-                    <input type="text" id="first_name" name="first_name" value="{{ $guestData['first_name'] }}" placeholder="e.g. John" required>
+                    <label for="first_name" data-en="First Name" data-id="Nama Depan">First Name</label>
+                    <input type="text" id="first_name" name="first_name" value="{{ $guestData['first_name'] }}" data-en-ph="e.g. John" data-id-ph="misal: Budi" placeholder="e.g. John" required>
                 </div>
                 <div class="form-group">
-                    <label for="last_name">Last Name</label>
-                    <input type="text" id="last_name" name="last_name" value="{{ $guestData['last_name'] }}" placeholder="e.g. Doe" required>
+                    <label for="last_name" data-en="Last Name" data-id="Nama Belakang">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" value="{{ $guestData['last_name'] }}" data-en-ph="e.g. Doe" data-id-ph="misal: Santoso" placeholder="e.g. Doe" required>
                 </div>
                 <div class="form-group full-width">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" value="{{ $guestData['email'] }}" placeholder="For booking confirmation" required>
+                    <label for="email" data-en="Email Address" data-id="Alamat Email">Email Address</label>
+                    <input type="email" id="email" name="email" value="{{ $guestData['email'] }}" data-en-ph="For booking confirmation" data-id-ph="Untuk konfirmasi pesanan" placeholder="For booking confirmation" required>
                 </div>
                 <div class="form-group full-width">
-                    <label for="phone">Phone Number</label>
+                    <label for="phone" data-en="Phone Number" data-id="Nomor Telepon">Phone Number</label>
                     <div class="phone-input-group">
                         <select name="country_code">
                             <option value="+62">+62</option>
                             <option value="+1">+1</option>
                             <option value="+44">+44</option>
                         </select>
-                        <input type="text" id="phone" name="phone" value="{{ $guestData['phone'] }}" placeholder="WhatsApp number preferred" required inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'');">
+                        <input type="text" id="phone" name="phone" value="{{ $guestData['phone'] }}" data-en-ph="WhatsApp number preferred" data-id-ph="Diutamakan nomor WhatsApp" placeholder="WhatsApp number preferred" required inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/\D/g,'');">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="age">Age</label>
-                    <input type="number" id="age" name="age" value="{{ $guestData['age'] }}" placeholder="e.g. 28">
+                    <label for="age" data-en="Age" data-id="Umur">Age</label>
+                    <input type="number" id="age" name="age" value="{{ $guestData['age'] }}" data-en-ph="e.g. 28" data-id-ph="misal: 28" placeholder="e.g. 28">
                 </div>
                 <div class="form-group">
-                    <label for="occupation">Occupation</label>
-                    <input type="text" id="occupation" name="occupation" value="{{ $guestData['occupation'] }}" placeholder="e.g. Freelancer">
+                    <label for="occupation" data-en="Occupation" data-id="Pekerjaan">Occupation</label>
+                    <input type="text" id="occupation" name="occupation" value="{{ $guestData['occupation'] }}" data-en-ph="e.g. Freelancer" data-id-ph="misal: Mahasiswa" placeholder="e.g. Freelancer">
                 </div>
                 <div class="form-group">
-                    <label for="country">Country</label>
-                    <input type="text" id="country" name="country" value="{{ $guestData['country'] }}" placeholder="e.g. Indonesia">
+                    <label for="country" data-en="Country" data-id="Negara">Country</label>
+                    <input type="text" id="country" name="country" value="{{ $guestData['country'] }}" data-en-ph="e.g. Indonesia" data-id-ph="misal: Indonesia" placeholder="e.g. Indonesia">
                 </div>
                 <div class="form-group">
-                    <label for="city">City</label>
-                    <input type="text" id="city" name="city" value="{{ $guestData['city'] }}" placeholder="e.g. Jakarta">
+                    <label for="city" data-en="City" data-id="Kota">City</label>
+                    <input type="text" id="city" name="city" value="{{ $guestData['city'] }}" data-en-ph="e.g. Jakarta" data-id-ph="misal: Jakarta" placeholder="e.g. Jakarta">
                 </div>
                 <div class="form-group full-width">
-                    <label for="self_description">Self Description (Optional)</label>
-                    <textarea id="self_description" name="self_description" rows="3" placeholder="Tell us a bit about yourself...">{{ $guestData['self_description'] }}</textarea>
+                    <label for="self_description" data-en="Self Description (Optional)" data-id="Deskripsi Diri (Opsional)">Self Description (Optional)</label>
+                    <textarea id="self_description" name="self_description" rows="3" data-en-ph="Tell us a bit about yourself..." data-id-ph="Ceritakan sedikit tentang diri Anda..." placeholder="Tell us a bit about yourself...">{{ $guestData['self_description'] }}</textarea>
                 </div>
                 <div class="form-group full-width">
-                    <label for="personal_notes">Personal Notes (Optional)</label>
-                    <textarea id="personal_notes" name="personal_notes" rows="3" placeholder="Any additional notes for us?">{{ $guestData['personal_notes'] }}</textarea>
+                    <label for="personal_notes" data-en="Personal Notes (Optional)" data-id="Catatan Personal (Opsional)">Personal Notes (Optional)</label>
+                    <textarea id="personal_notes" name="personal_notes" rows="3" data-en-ph="Any additional notes for us?" data-id-ph="Ada catatan tambahan untuk kami?" placeholder="Any additional notes for us?">{{ $guestData['personal_notes'] }}</textarea>
                 </div>
             </div>
         </section>
 
         {{-- Section 2: Reservation Details --}}
         <section class="form-section">
-            <h2>Reservation Details</h2>
+            <h2 data-en="Reservation Details" data-id="Detail Reservasi">Reservation Details</h2>
             
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion('special-requests')">
-                    <span>Special Requests</span>
+                    <span data-en="Special Requests" data-id="Permintaan Khusus">Special Requests</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
                 <div id="special-requests" class="accordion-content">
-                    <textarea name="special_requests" class="special-requests-textarea" rows="4" placeholder="e.g. Dietary restrictions, room preference, late check-in...">{{ $guestData['special_requests'] }}</textarea>
+                    <textarea name="special_requests" class="special-requests-textarea" rows="4" data-en-ph="e.g. Dietary restrictions, room preference, late check-in..." data-id-ph="misal: Alergi makanan, preferensi kamar, check-in larut..." placeholder="e.g. Dietary restrictions, room preference, late check-in...">{{ $guestData['special_requests'] }}</textarea>
                 </div>
             </div>
 
             <div class="accordion-section">
                 <div class="accordion-header" onclick="toggleAccordion('transportation')">
-                    <span>Transportation (Optional)</span>
+                    <span data-en="Transportation (Optional)" data-id="Transportasi (Opsional)">Transportation (Optional)</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
                 <div id="transportation" class="accordion-content" style="display: none;">
                     <div class="transport-grid">
                         <div class="transport-card">
-                            <label class="transport-label">Arrival</label>
+                            <label class="transport-label" data-en="Arrival" data-id="Kedatangan">Arrival</label>
                             <div class="transport-input-group">
                                 <div class="custom-select">
                                     <select name="arrival_time">
-                                        <option value="">Estimated Arrival Time</option>
-                                        <option value="Morning" {{ $guestData['arrival_time'] == 'Morning' ? 'selected' : '' }}>Morning (06:00 - 12:00)</option>
-                                        <option value="Afternoon" {{ $guestData['arrival_time'] == 'Afternoon' ? 'selected' : '' }}>Afternoon (12:00 - 18:00)</option>
-                                        <option value="Night" {{ $guestData['arrival_time'] == 'Night' ? 'selected' : '' }}>Night (18:00 - 24:00)</option>
+                                        <option value="" data-en="Estimated Arrival Time" data-id="Estimasi Waktu Kedatangan">Estimated Arrival Time</option>
+                                        <option value="Morning" {{ $guestData['arrival_time'] == 'Morning' ? 'selected' : '' }} data-en="Morning (06:00 - 12:00)" data-id="Pagi (06:00 - 12:00)">Morning (06:00 - 12:00)</option>
+                                        <option value="Afternoon" {{ $guestData['arrival_time'] == 'Afternoon' ? 'selected' : '' }} data-en="Afternoon (12:00 - 18:00)" data-id="Siang/Sore (12:00 - 18:00)">Afternoon (12:00 - 18:00)</option>
+                                        <option value="Night" {{ $guestData['arrival_time'] == 'Night' ? 'selected' : '' }} data-en="Night (18:00 - 24:00)" data-id="Malam (18:00 - 24:00)">Night (18:00 - 24:00)</option>
                                     </select>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                                 </div>
-                                <input type="text" name="arrival_location" value="{{ $guestData['arrival_location'] }}" placeholder="Arriving Location (e.g. Airport, Train Station)">
+                                <input type="text" name="arrival_location" value="{{ $guestData['arrival_location'] }}" data-en-ph="Arriving Location (e.g. Airport, Train Station)" data-id-ph="Lokasi Kedatangan (misal: Bandara, Stasiun Kereta)" placeholder="Arriving Location (e.g. Airport, Train Station)">
                             </div>
                             <div class="transport-footer">
-                                <a href="#" class="clear-btn" onclick="clearTransport(this, event)">Clear</a>
+                                <a href="#" class="clear-btn" onclick="clearTransport(this, event)" data-en="Clear" data-id="Hapus">Clear</a>
                             </div>
                         </div>
                         <div class="transport-card">
-                            <label class="transport-label">Departure</label>
+                            <label class="transport-label" data-en="Departure" data-id="Keberangkatan">Departure</label>
                             <div class="transport-input-group">
                                 <div class="custom-select">
                                     <select name="departure_time">
-                                        <option value="">Estimated Departure Time</option>
-                                        <option value="Morning" {{ $guestData['departure_time'] == 'Morning' ? 'selected' : '' }}>Morning (06:00 - 12:00)</option>
-                                        <option value="Afternoon" {{ $guestData['departure_time'] == 'Afternoon' ? 'selected' : '' }}>Afternoon (12:00 - 18:00)</option>
-                                        <option value="Night" {{ $guestData['departure_time'] == 'Night' ? 'selected' : '' }}>Night (18:00 - 24:00)</option>
+                                        <option value="" data-en="Estimated Departure Time" data-id="Estimasi Waktu Keberangkatan">Estimated Departure Time</option>
+                                        <option value="Morning" {{ $guestData['departure_time'] == 'Morning' ? 'selected' : '' }} data-en="Morning (06:00 - 12:00)" data-id="Pagi (06:00 - 12:00)">Morning (06:00 - 12:00)</option>
+                                        <option value="Afternoon" {{ $guestData['departure_time'] == 'Afternoon' ? 'selected' : '' }} data-en="Afternoon (12:00 - 18:00)" data-id="Siang/Sore (12:00 - 18:00)">Afternoon (12:00 - 18:00)</option>
+                                        <option value="Night" {{ $guestData['departure_time'] == 'Night' ? 'selected' : '' }} data-en="Night (18:00 - 24:00)" data-id="Malam (18:00 - 24:00)">Night (18:00 - 24:00)</option>
                                     </select>
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
                                 </div>
-                                <input type="text" name="departure_location" value="{{ $guestData['departure_location'] }}" placeholder="Arriving Location (e.g. Airport, Train Station)">
+                                <input type="text" name="departure_location" value="{{ $guestData['departure_location'] }}" data-en-ph="Departure Location (e.g. Airport, Train Station)" data-id-ph="Lokasi Keberangkatan (misal: Bandara, Stasiun Kereta)" placeholder="Departure Location (e.g. Airport, Train Station)">
                             </div>
                             <div class="transport-footer">
-                                <a href="#" class="clear-btn" onclick="clearTransport(this, event)">Clear</a>
+                                <a href="#" class="clear-btn" onclick="clearTransport(this, event)" data-en="Clear" data-id="Hapus">Clear</a>
                             </div>
                         </div>
                     </div>
@@ -281,7 +281,7 @@
         {{-- Section 3: Policies --}}
         <section class="form-section policies-form-section" style="padding: 0; overflow: hidden;">
             <div class="accordion-header" onclick="toggleAccordion('policies')" style="background: #D18D60;">
-                <span>Policies</span>
+                <span data-en="Policies" data-id="Kebijakan">Policies</span>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
             </div>
             <div id="policies" class="accordion-content" style="background: #1A3D0A; color: #FFF; border: none; padding: 32px;">
@@ -289,56 +289,68 @@
                     <div class="policy-time" style="display: flex; gap: 12px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <div class="policy-time-content">
-                            <div style="color: #A5B8A2; font-size: 12px; font-weight: bold;">CHECK-IN</div>
+                            <div style="color: #A5B8A2; font-size: 12px; font-weight: bold;" data-en="CHECK-IN" data-id="CHECK-IN">CHECK-IN</div>
                             <div style="color: #FFF; font-size: 16px;">{{ $policies['checkin_time'] ?? '14:00' }}</div>
                         </div>
                     </div>
                     <div class="policy-time" style="display: flex; gap: 12px;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <div class="policy-time-content">
-                            <div style="color: #A5B8A2; font-size: 12px; font-weight: bold;">CHECK-OUT</div>
-                            <div style="color: #FFF; font-size: 16px;">Before {{ $policies['checkout_time'] ?? '12:00' }}</div>
+                            <div style="color: #A5B8A2; font-size: 12px; font-weight: bold;" data-en="CHECK-OUT" data-id="CHECK-OUT">CHECK-OUT</div>
+                            <div style="color: #FFF; font-size: 16px;"><span data-en="Before" data-id="Sebelum">Before</span> {{ $policies['checkout_time'] ?? '12:00' }}</div>
                         </div>
                     </div>
                 </div>
                 <div class="house-rules">
-                    <h4 style="color: #FFF; margin-bottom: 12px;">House Rules</h4>
-                    <ul style="color: #D1DCD1; font-size: 13px; line-height: 1.8; margin: 0; padding-left: 20px;">
-                        @php $rules = explode("\n", $policies['house_rules'] ?? "No smoking inside rooms\nQuiet hours after 22:00\nGuests must register at reception"); @endphp
-                        @foreach ($rules as $rule)
-                            @if (trim($rule))
-                                <li>{{ trim($rule) }}</li>
-                            @endif
-                        @endforeach
-                    </ul>
+                    <h4 style="color: #FFF; margin-bottom: 12px;" data-en="House Rules" data-id="Aturan Rumah">House Rules</h4>
+                        <ul style="color: #D1DCD1; font-size: 13px; line-height: 1.8; margin: 0; padding-left: 20px;">
+                            @php 
+                                $defaultRules = [
+                                    'No smoking inside rooms' => 'Dilarang merokok di dalam kamar',
+                                    'Quiet hours after 22:00' => 'Harap tenang setelah pukul 22:00',
+                                    'Guests must register at reception' => 'Tamu wajib melapor di resepsionis'
+                                ];
+                                $rawRules = $policies['house_rules'] ?? "No smoking inside rooms\nQuiet hours after 22:00\nGuests must register at reception";
+                                $rules = explode("\n", $rawRules);
+                            @endphp
+
+                            @foreach ($rules as $rule)
+                                @php $trimmedRule = trim($rule); @endphp
+                                @if ($trimmedRule)
+                                    <li data-en="{{ $trimmedRule }}" data-id="{{ $defaultRules[$trimmedRule] ?? $trimmedRule }}">
+                                        {{ $trimmedRule }}
+                                    </li>
+                                @endif
+                            @endforeach
+                        </ul>
                 </div>
                 <div class="accept-checkbox" style="margin-top: 24px; display: flex; align-items: center; gap: 12px;">
                     <input type="checkbox" name="accept_policies" id="accept_policies" required style="width: 18px; height: 18px; cursor: pointer;">
-                    <label for="accept_policies" style="color: #FFF; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; cursor: pointer;">I Accepted</label>
+                    <label for="accept_policies" style="color: #FFF; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; cursor: pointer;" data-en="I Accepted" data-id="Saya Setuju">I Accepted</label>
                 </div>
             </div>
         </section>
 
         {{-- Section 4: Payment Method --}}
         <section class="payment-section" style="background: white; padding: 32px; border-radius: 12px; border: 1px solid #E5E5E5; margin-top: 24px;">
-            <h2 style="font-size: 20px; color: #1A3D0A; margin-bottom: 20px;">Payment Method</h2>
+            <h2 style="font-size: 20px; color: #1A3D0A; margin-bottom: 20px;" data-en="Payment Method" data-id="Metode Pembayaran">Payment Method</h2>
             <div class="payment-options" style="display: flex; flex-direction: column; gap: 12px;">
                 <label class="payment-option" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #E5E5E5; border-radius: 8px; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <input type="radio" name="payment_method" value="qris" {{ $guestData['payment_method'] == 'qris' ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
                             <img src="{{ asset('images/icons/qris.png') }}" alt="QRIS" onerror="this.src='https://placehold.co/40x20?text=QRIS'" style="height: 20px;">
-                            <span>QRIS (Semua E-Wallet)</span>
+                            <span data-en="QRIS (All E-Wallets)" data-id="QRIS (Semua E-Wallet)">QRIS (Semua E-Wallet)</span>
                         </div>
                     </div>
-                    <span class="payment-tag" style="background: #FFF3E0; color: #D9864A; padding: 4px 8px; font-size: 11px; border-radius: 4px; font-weight: bold;">Recommended</span>
+                    <span class="payment-tag" style="background: #FFF3E0; color: #D9864A; padding: 4px 8px; font-size: 11px; border-radius: 4px; font-weight: bold;" data-en="Recommended" data-id="Rekomendasi">Recommended</span>
                 </label>
                 <label class="payment-option" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #E5E5E5; border-radius: 8px; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <input type="radio" name="payment_method" value="e-wallet" {{ $guestData['payment_method'] == 'e-wallet' ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                            <span>E-Wallet App</span>
+                            <span data-en="E-Wallet App" data-id="Aplikasi E-Wallet">E-Wallet App</span>
                         </div>
                     </div>
                     <div class="payment-icons" style="font-size: 12px; color: #7D8A74;">GoPay, OVO, ShopeePay</div>
@@ -348,7 +360,7 @@
                         <input type="radio" name="payment_method" value="bank_transfer" {{ $guestData['payment_method'] == 'bank_transfer' ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 10V21"/><path d="M19 10V21"/><path d="M9 10V21"/><path d="M15 10V21"/><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
-                            <span>Bank Transfer</span>
+                            <span data-en="Bank Transfer" data-id="Transfer Bank">Bank Transfer</span>
                         </div>
                     </div>
                     <div class="payment-icons" style="font-size: 12px; color: #7D8A74;">BCA, Mandiri, BRI</div>
@@ -358,7 +370,7 @@
                         <input type="radio" name="payment_method" value="card" {{ $guestData['payment_method'] == 'card' ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                            <span>Credit / Debit Card</span>
+                            <span data-en="Credit / Debit Card" data-id="Kartu Kredit / Debit">Credit / Debit Card</span>
                         </div>
                     </div>
                     <div class="payment-icons">
@@ -386,7 +398,10 @@
                     <div class="summary-label">
                         {{ $addon['name'] }} 
                         @if($addon['note'])
-                            <span style="color: #A5B8A2; font-size: 10px; margin-left: 4px;">{{ $addon['note'] }}</span>
+                            <span style="color: #A5B8A2; font-size: 10px; margin-left: 4px;">
+                                {{-- Jika teksnya dari sistem (For free), tambahkan tag translate --}}
+                                {!! $addon['note'] === '(For free)' ? '<span data-en="(For free)" data-id="(Gratis)">(For free)</span>' : $addon['note'] !!}
+                            </span>
                         @endif
                     </div>
                     <div class="summary-price">
@@ -396,15 +411,14 @@
             @endforeach
             
             <div class="summary-row total">
-                <div class="summary-label">EST. Total</div>
+                <div class="summary-label" data-en="EST. Total" data-id="Total Est.">EST. Total</div>
                 <div class="summary-price">IDR {{ number_format($grandTotal, 0, ',', '.') }}</div>
             </div>
         </div>
 
         <div class="summary-actions">
-            {{-- Tombol Back akan mengembalikan user ke halaman pilih kasur dengan state form utuh --}}
-            <a href="#" class="btn-back" id="btnBackToBed">Back To Bed Selection</a>
-            <button type="submit" form="guestDetailsForm" class="btn-pay">Continue To Pay</button>
+            <a href="#" class="btn-back" id="btnBackToBed" data-en="Back To Bed Selection" data-id="Kembali ke Pilihan Kasur">Back To Bed Selection</a>
+            <button type="submit" form="guestDetailsForm" class="btn-pay" data-en="Continue To Pay" data-id="Lanjut ke Pembayaran">Continue To Pay</button>
         </div>
     </div>
 </footer>
@@ -442,12 +456,10 @@
         const stepperLinks = document.querySelectorAll('.booking-stepper a');
         const btnBackFooter = document.getElementById('btnBackToBed');
 
-        // Fungsi untuk mengumpulkan semua data form menjadi URL Parameters
         function getFormStateAsQueryString() {
             const formData = new FormData(theForm);
             const params = new URLSearchParams();
             
-            // Loop semua input dan tambahkan ke param jika isinya tidak kosong
             for (const [key, value] of formData.entries()) {
                 if (value.trim() !== '') {
                     params.append(key, value);
@@ -456,30 +468,25 @@
             return params.toString();
         }
 
-        // Fungsi ajaib untuk mengupdate semua link navigasi secara live
         function updateAllLinks() {
             const currentFormState = getFormStateAsQueryString();
             
-            // Update Stepper Top Links
             stepperLinks.forEach(link => {
                 const baseUrl = link.getAttribute('href').split('?')[0];
                 link.setAttribute('href', baseUrl + '?' + currentFormState);
             });
 
-            // Update Tombol Back di Footer
             const baseBackUrl = "{!! $backUrl !!}".split('?')[0];
             btnBackFooter.setAttribute('href', baseBackUrl + '?' + currentFormState);
         }
 
-        // Tempelkan sensor pendeteksi ketikan di SEMUA input form
         theForm.querySelectorAll('input, select, textarea').forEach(input => {
             input.addEventListener('change', updateAllLinks);
             if(input.tagName === 'INPUT' && (input.type === 'text' || input.type === 'email' || input.type === 'number')) {
-                input.addEventListener('keyup', updateAllLinks); // Deteksi per huruf!
+                input.addEventListener('keyup', updateAllLinks);
             }
         });
 
-        // Jalankan sekali saat halaman pertama kali dimuat
         updateAllLinks();
     });
 
@@ -488,7 +495,9 @@
         const cb = document.getElementById('accept_policies');
         if(!cb.checked) {
             e.preventDefault();
-            alert('Please accept the House Rules & Policies to proceed.');
+            // Pesan alert responsif terhadap bahasa
+            const isIndo = window.AlasLang && window.AlasLang.current() === 'id';
+            alert(isIndo ? 'Harap setujui Aturan Rumah & Kebijakan untuk melanjutkan.' : 'Please accept the House Rules & Policies to proceed.');
             
             const policiesDiv = document.getElementById('policies');
             if (policiesDiv.style.display === 'none') {
@@ -496,6 +505,27 @@
             }
         }
     });
+
+    // === EXTENSION: ALAS LANG UNTUK PLACEHOLDER ===
+    // Listener ini menangkap custom event "alas:langchange" yang dikirim dari Navbar
+    document.addEventListener('alas:langchange', function(e) {
+        const lang = e.detail.lang;
+        
+        // Loop semua elemen yang punya atribut placeholder dinamis
+        document.querySelectorAll('[data-en-ph][data-id-ph]').forEach(function(el) {
+            if (!el.dataset.enPhSet) {
+                el.dataset.enPhSet = el.getAttribute('data-en-ph');
+                el.dataset.idPhSet = el.getAttribute('data-id-ph');
+            }
+            el.setAttribute('placeholder', lang === 'id' ? el.dataset.idPhSet : el.dataset.enPhSet);
+        });
+    });
+
+    // Agar placeholder langsung teraplikasi saat halaman pertama kali load (menyamakan dengan navbar)
+    if(window.AlasLang) {
+        // Trigger manual event untuk inisiasi
+        document.dispatchEvent(new CustomEvent('alas:langchange', { detail: { lang: window.AlasLang.current() } }));
+    }
 </script>
 
 </body>
