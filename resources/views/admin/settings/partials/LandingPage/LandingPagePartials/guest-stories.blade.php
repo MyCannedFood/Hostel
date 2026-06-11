@@ -32,7 +32,7 @@
     @csrf @method('PUT')
 
     {{-- ── Section Title (Bilingual) ── --}}
-    <div class="lp-card">
+    <div class="lp-card" style="margin-bottom:24px;">
         <h3 style="font-size:16px;font-weight:600;color:#1a3d0a;margin:0 0 16px;">Section Headings</h3>
         
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
@@ -58,6 +58,31 @@
         </div>
     </div>
 
+    {{-- ── Section Subtitle (Bilingual) ── --}}
+    <div class="lp-card" style="margin-bottom:24px;">
+        <h3 style="font-size:16px;font-weight:600;color:#1a3d0a;margin:0 0 16px;">Section Subtitles</h3>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:12px;">
+            <div class="lp-field" style="margin:0;">
+                <label class="lp-field-label">Subtitle (English)</label>
+                <textarea class="lp-input" name="subtitle" rows="3" style="resize:vertical; width:100%;">{{ old('subtitle', $d['subtitle'] ?? '') }}</textarea>
+            </div>
+            <div class="lp-field" style="margin:0;">
+                <label class="lp-field-label">Subtitle (Indonesia)</label>
+                <textarea class="lp-input" name="subtitle_id" rows="3" style="resize:vertical; width:100%;">{{ old('subtitle_id', $d['subtitle_id'] ?? '') }}</textarea>
+            </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+            <svg width="13" height="13" fill="none" stroke="#d97706" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            <span style="font-size:12px;color:#d97706;">
+                Provide a short description or welcome message below the main title.
+            </span>
+        </div>
+    </div>
+
     {{-- ── Current Stories List ── --}}
     <div class="lp-card">
         <div class="lp-flora-cards-header" style="margin-bottom:16px;">
@@ -79,7 +104,7 @@
                         <img src="{{ asset('storage/'.$story['image_path']) }}"
                              alt="{{ $story['name'] }}" id="storyThumb_{{ $i }}"
                              style="width:48px;height:48px;border-radius:50%;object-fit:cover;">
-                    @replace
+                    @else
                         <div id="storyThumb_{{ $i }}"
                              style="width:48px;height:48px;border-radius:50%;background:#e0e8dc;
                                     display:flex;align-items:center;justify-content:center;

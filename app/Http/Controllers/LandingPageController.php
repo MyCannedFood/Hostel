@@ -251,15 +251,22 @@ class LandingPageController extends Controller
     public function updateGuestStories(UpdateGuestStoriesRequest $request): RedirectResponse
     {
         $setting = LandingPageSetting::firstOrNew(['section' => 'guest_stories']);
+        // Menggabungkan dengan default untuk menjaga struktur data jika ada field baru
         $data    = array_merge(LandingPageSetting::DEFAULTS['guest_stories'], $setting->data ?? []);
 
-        // EN & ID Titles tingkat atas
-        $data['title']    = $request->title ?? $data['title'];
-        $data['title_id'] = $request->title_id ?? ($data['title_id'] ?? '');
+        // Simpan judul & subtitle (Bilingual)
+        $data['title']        = $request->title ?? $data['title'];
+        $data['title_id']     = $request->title_id ?? ($data['title_id'] ?? '');
+        $data['subtitle']     = $request->subtitle ?? ($data['subtitle'] ?? '');
+        $data['subtitle_id']  = $request->subtitle_id ?? ($data['subtitle_id'] ?? '');
 
-        $stories = []; $allFiles = $request->allFiles();
+        $stories = []; 
+        $allFiles = $request->allFiles();
+
         foreach ($request->stories ?? [] as $i => $story) {
             $imagePath = $story['image_path'] ?? null;
+            
+            // Handle file upload per item
             if (isset($allFiles['stories'][$i]['image'])) {
                 $file = $allFiles['stories'][$i]['image'];
                 if ($imagePath) Storage::disk('public')->delete($imagePath);
@@ -269,18 +276,19 @@ class LandingPageController extends Controller
             $stories[] = [
                 'image_path'   => $imagePath, 
                 'name'         => $story['name'] ?? '',
-                
-                // English Content
                 'origin'       => $story['origin'] ?? '', 
                 'quote'        => $story['quote'] ?? '',
-                
-                // Indonesian Content
                 'origin_id'    => $story['origin_id'] ?? '', 
                 'quote_id'     => $story['quote_id'] ?? '',
             ];
         }
+        
         $data['stories'] = $stories;
-        $setting->data = $data; $setting->updated_by = auth('admin')->id(); $setting->save();
+
+        // Simpan ke database
+        $setting->data = $data; 
+        $setting->updated_by = auth('admin')->id(); 
+        $setting->save();
 
         return redirect()->route('admin.settings', ['section' => 'landing', 'sub' => 'guest-stories'])
             ->with('success', 'Guest Stories berhasil diperbarui.');
