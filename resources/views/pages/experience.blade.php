@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Experiences - AlaSare</title>
+    <title>{{ __('experience.page_title') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="experience-page">
@@ -14,8 +14,8 @@
     {{-- Hero Section --}}
     <section class="experience-hero" style="background-image: url('{{ asset('images/heroex.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;">
         <div class="experience-hero-content">
-            <h1 class="experience-hero-title">Find Meaning at AlaSare</h1>
-            <p class="experience-hero-subtitle">Absorb the essence of the place, discover new passions, grow step by step.</p>
+            <h1 class="experience-hero-title">{{ __('experience.hero_title') }}</h1>
+            <p class="experience-hero-subtitle">{{ __('experience.hero_subtitle') }}</p>
         </div>
     </section>
 
@@ -24,10 +24,10 @@
 
         {{-- Filters --}}
         <div class="experience-filters">
-            <button class="filter-btn active" data-filter="all">ALL</button>
-            <button class="filter-btn" data-filter="Wellness">WELLNESS</button>
-            <button class="filter-btn" data-filter="Culture">CULTURAL</button>
-            <button class="filter-btn" data-filter="Nature">NATURE</button>
+            <button class="filter-btn active" data-filter="all">{{ strtoupper(__('experience.filter_all')) }}</button>
+            <button class="filter-btn" data-filter="Wellness">{{ strtoupper(__('experience.filter_wellness')) }}</button>
+            <button class="filter-btn" data-filter="Culture">{{ strtoupper(__('experience.filter_culture')) }}</button>
+            <button class="filter-btn" data-filter="Nature">{{ strtoupper(__('experience.filter_nature')) }}</button>
         </div>
 
         {{-- Grid --}}
@@ -44,7 +44,7 @@
                     @endif
                 </div>
                 <div class="card-content">
-                    <div class="card-meta">IDR {{ number_format($exp->price, 0, ',', '.') }} / person</div>
+                    <div class="card-meta">{{ __('experience.price_per_person', ['price' => number_format($exp->price, 0, ',', '.')]) }}</div>
                     <h3 class="card-title">{{ $exp->name }}</h3>
                     <p class="card-desc">
                         @if($exp->short_description)
@@ -52,21 +52,21 @@
                         @elseif($exp->inclusions && count($exp->inclusions) > 0)
                             {{ implode(', ', $exp->inclusions) }}
                         @else
-                            {{ $exp->name }} experience at AlaSare.
+                            {{ $exp->name }} {{ __('experience.experience_label') }} di AlaSare.
                         @endif
                     </p>
                     {{-- Book Now → ke booking detail experience ini --}}
-                    <a href="{{ route('experience.booking-detail', $exp->id) }}" class="card-btn">Book Now</a>
+                    <a href="{{ route('experience.booking-detail', $exp->id) }}" class="card-btn">{{ __('experience.book_now') }}</a>
                 </div>
             </div>
             @empty
-            <p style="color:rgba(0,0,0,0.4);font-size:14px;">No experiences available at the moment.</p>
+            <p style="color:rgba(0,0,0,0.4);font-size:14px;">{{ __('experience.no_experiences') }}</p>
             @endforelse
         </div>
 
         {{-- Discover More --}}
         <div class="discover-more">
-            <a href="#" class="discover-btn">Discover More Experiences</a>
+            <a href="#" class="discover-btn">{{ __('experience.discover_more') }}</a>
         </div>
 
     </section>

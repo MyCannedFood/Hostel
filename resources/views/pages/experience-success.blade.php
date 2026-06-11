@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Booking Confirmed - AlaSare</title>
+    <title>{{ __('experience.payment_successful') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="success-page">
@@ -15,19 +15,19 @@
     <section class="success-steps">
         <div class="steps-container">
             <div class="step step--done">
-                <span class="step-link">Detail</span>
+                <span class="step-link">{{ __('experience.step_detail') }}</span>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <span class="step-link">Payment Method</span>
+                <span class="step-link">{{ __('experience.step_payment_method') }}</span>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <span class="step-link">Payment</span>
+                <span class="step-link">{{ __('experience.step_payment') }}</span>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--active">
-                <span class="step-label">4. Success</span>
+                <span class="step-label">4. {{ __('experience.step_success') }}</span>
             </div>
         </div>
     </section>
@@ -40,9 +40,9 @@
                 <polyline points="20 6 9 17 4 12"/>
             </svg>
         </div>
-        <h1 class="success-title">Payment Successful</h1>
-        <p class="success-subtitle">Thank you, {{ $expBooking->guest_name }}. Your connection with nature is confirmed.</p>
-        <p class="success-note">Please present the e-ticket below upon arrival.</p>
+        <h1 class="success-title">{{ __('experience.payment_successful') }}</h1>
+        <p class="success-subtitle">{{ __('experience.thank_you_guest', ['name' => $expBooking->guest_name]) }}</p>
+        <p class="success-note">{{ __('experience.present_eticket') }}</p>
     </div>
 
     {{-- Ticket Card --}}
@@ -52,11 +52,11 @@
             {{-- Ticket Top: Booking ID + Status --}}
             <div class="ticket-top">
                 <div class="ticket-id-block">
-                    <span class="ticket-meta-label">Booking ID</span>
+                    <span class="ticket-meta-label">{{ __('experience.booking_id') }}</span>
                     <span class="ticket-id">{{ $expBooking->ticket_id }}</span>
                 </div>
                 <div class="ticket-status-block">
-                    <span class="ticket-meta-label">Status</span>
+                    <span class="ticket-meta-label">{{ __('experience.status') }}</span>
                     <span class="ticket-status">{{ $expBooking->status }}</span>
                 </div>
             </div>
@@ -67,38 +67,38 @@
             <div class="ticket-experience">
                 <h2 class="ticket-exp-name">{{ $expBooking->experience->name }}</h2>
                 <p class="ticket-exp-subtitle">
-                    {{ $expBooking->experience->short_description ?? 'Guided experience at AlaSare Sanctuary.' }}
+                    {{ $expBooking->experience->short_description }}
                 </p>
             </div>
 
             {{-- Detail Grid --}}
             <div class="ticket-grid">
                 <div class="ticket-field">
-                    <span class="ticket-field-label">Date</span>
+                    <span class="ticket-field-label">{{ __('experience.date') }}</span>
                     <span class="ticket-field-value">
                         {{ $expBooking->scheduled_date->format('F d, Y') }}
                     </span>
                 </div>
                 <div class="ticket-field">
-                    <span class="ticket-field-label">Session Time</span>
+                    <span class="ticket-field-label">{{ __('experience.session_time_label') }}</span>
                     <span class="ticket-field-value">{{ $expBooking->time_slot }}</span>
                 </div>
                 <div class="ticket-field">
-                    <span class="ticket-field-label">Guests</span>
+                    <span class="ticket-field-label">{{ __('experience.guests') }}</span>
                     <span class="ticket-field-value">
-                        {{ $expBooking->guest_count }} Adult{{ $expBooking->guest_count > 1 ? 's' : '' }}
+                        {{ $expBooking->guest_count }} {{ $expBooking->guest_count > 1 ? __('experience.adults') : __('experience.adult') }}
                     </span>
                 </div>
                 <div class="ticket-field">
-                    <span class="ticket-field-label">Guest Name</span>
+                    <span class="ticket-field-label">{{ __('experience.guest_name') }}</span>
                     <span class="ticket-field-value">{{ $expBooking->guest_name }}</span>
                 </div>
                 <div class="ticket-field">
-                    <span class="ticket-field-label">WhatsApp</span>
+                    <span class="ticket-field-label">{{ __('experience.whatsapp') }}</span>
                     <span class="ticket-field-value">{{ $expBooking->guest_whatsapp }}</span>
                 </div>
                 <div class="ticket-field">
-                    <span class="ticket-field-label">Payment</span>
+                    <span class="ticket-field-label">{{ __('experience.payment') }}</span>
                     <span class="ticket-field-value">
                         IDR {{ number_format($expBooking->total_amount, 0, ',', '.') }}
                         via {{ $expBooking->payment_method }}
@@ -108,7 +108,7 @@
 
             @if($expBooking->special_notes)
             <p class="ticket-address" style="margin-top:8px;">
-                <em>Notes: {{ $expBooking->special_notes }}</em>
+                <em>{{ __('experience.notes') }}: {{ $expBooking->special_notes }}</em>
             </p>
             @endif
 
@@ -118,11 +118,11 @@
             <div class="ticket-qr">
                 <div class="ticket-qr-frame">
                     <img src="{{ $qrCodeUrl }}"
-                         alt="QR Code Tiket {{ $expBooking->ticket_id }}"
+                         alt="{{ __('experience.booking_id') }} {{ $expBooking->ticket_id }}"
                          class="ticket-qr-img">
                 </div>
                 <p class="ticket-qr-note">
-                    Present at the {{ $expBooking->experience->name }} entrance
+                    {{ __('experience.present_at_entrance', ['name' => $expBooking->experience->name]) }}
                 </p>
                 <p style="font-size:11px;color:rgba(26,61,10,0.4);margin-top:4px;">
                     {{ $expBooking->ticket_id }}
@@ -134,10 +134,10 @@
         {{-- Actions --}}
         <div class="ticket-actions no-print">
             <button class="btn-download" onclick="printTicket()">
-                Download E-Ticket (PDF)
+                {{ __('experience.download_eticket') }}
             </button>
             <a href="{{ route('experience') }}" class="btn-home">
-                ← Back to Experiences
+                {{ __('experience.back_to_experiences') }}
             </a>
         </div>
     </div>

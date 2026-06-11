@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Payment Method - AlaSare</title>
+    <title>{{ __('experience.payment_method_title') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -15,24 +15,24 @@
     {{-- Stepper --}}
     <nav class="exp-stepper">
         <div class="exp-step exp-step--done">
-            <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="step-link">Detail</a>
+            <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="step-link">{{ __('experience.step_detail') }}</a>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--active">
             <span class="exp-step-number">2.</span>
-            <span class="exp-step-label">Payment Method</span>
+            <span class="exp-step-label">{{ __('experience.step_payment_method') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">Payment</span>
+            <span class="exp-step-label">{{ __('experience.step_payment') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">Success</span>
+            <span class="exp-step-label">{{ __('experience.step_success') }}</span>
         </div>
     </nav>
 
-    <h1 class="page-title">Payment Method</h1>
+    <h1 class="page-title">{{ __('experience.payment_method_title') }}</h1>
 
     <form action="{{ route('experience.payment-method.store') }}" method="POST">
         @csrf
@@ -64,8 +64,8 @@
                                 </svg>
                             </div>
                             <div class="option-text">
-                                <span class="option-label">E-WALLET & MOBILE BANKING</span>
-                                <span class="option-title">QRIS</span>
+                                <span class="option-label">{{ __('experience.ewallet_mobile_banking') }}</span>
+                                <span class="option-title">{{ __('experience.qris') }}</span>
                             </div>
                         </div>
                     </label>
@@ -82,8 +82,8 @@
                                 </svg>
                             </div>
                             <div class="option-text">
-                                <span class="option-label">BANK TRANSFER</span>
-                                <span class="option-title">VA (Virtual Account)</span>
+                                <span class="option-label">{{ __('experience.bank_transfer') }}</span>
+                                <span class="option-title">{{ __('experience.va') }}</span>
                             </div>
                         </div>
                     </label>
@@ -99,8 +99,8 @@
                                 </svg>
                             </div>
                             <div class="option-text">
-                                <span class="option-label">DEBIT / CREDIT CARD</span>
-                                <span class="option-title">Credit Card</span>
+                                <span class="option-label">{{ __('experience.debit_credit_card') }}</span>
+                                <span class="option-title">{{ __('experience.credit_card') }}</span>
                             </div>
                         </div>
                     </label>
@@ -108,10 +108,10 @@
 
                 {{-- Promo Code --}}
                 <div class="promo-section">
-                    <label class="promo-label">PROMO OR REFERRAL CODE</label>
+                    <label class="promo-label">{{ __('experience.promo_or_referral') }}</label>
                     <div class="promo-input-group">
-                        <input type="text" class="promo-input" name="promo_code" placeholder="Enter Promo/Referral Code">
-                        <button type="button" class="btn-apply">Apply</button>
+                        <input type="text" class="promo-input" name="promo_code" placeholder="{{ __('experience.promo_placeholder') }}">
+                        <button type="button" class="btn-apply">{{ __('experience.apply') }}</button>
                     </div>
                 </div>
             </div>
@@ -120,7 +120,7 @@
             <div class="summary-col">
                 <div class="summary-card">
                     <div class="summary-decor"></div>
-                    <h2>Summary</h2>
+                    <h2>{{ __('experience.summary') }}</h2>
 
                     <div class="summary-item">
                         @if($experience->cover_image)
@@ -132,38 +132,38 @@
                         <div class="item-info">
                             <h3 class="item-title">{{ $experience->name }}</h3>
                             <div class="item-meta">
-                                Date: {{ \Carbon\Carbon::parse($booking['scheduled_date'])->format('d/m/Y') }}
+                                {{ __('experience.date') }}: {{ \Carbon\Carbon::parse($booking['scheduled_date'])->format('d/m/Y') }}
                             </div>
                             <div class="item-meta">
-                                Guests: {{ $booking['guest_count'] }} {{ $booking['guest_count'] > 1 ? 'Adults' : 'Adult' }}
+                                {{ __('experience.guests') }}: {{ $booking['guest_count'] }} {{ $booking['guest_count'] > 1 ? __('experience.adults') : __('experience.adult') }}
                             </div>
                         </div>
                     </div>
 
                     <div class="summary-breakdown">
                         <div class="breakdown-row">
-                            <span>SUBTOTAL</span>
+                            <span>{{ __('experience.subtotal') }}</span>
                             <span class="val">IDR {{ number_format($booking['subtotal'], 0, ',', '.') }}</span>
                         </div>
                         <div class="breakdown-row discount">
-                            <span>PROMO DISCOUNT</span>
+                            <span>{{ __('experience.promo_discount') }}</span>
                             <span class="val">
                                 {{ $booking['promo_discount'] > 0 ? '- IDR ' . number_format($booking['promo_discount'], 0, ',', '.') : '-' }}
                             </span>
                         </div>
                         <div class="breakdown-row">
-                            <span>TAX & SERVICE (21%)</span>
-                            <span class="val">Included</span>
+                            <span>{{ __('experience.tax_service') }}</span>
+                            <span class="val">{{ __('experience.included') }}</span>
                         </div>
                     </div>
 
                     <div class="summary-total">
-                        <span class="lbl">Total</span>
+                        <span class="lbl">{{ __('experience.total') }}</span>
                         <span class="val">IDR {{ number_format($booking['total_amount'], 0, ',', '.') }}</span>
                     </div>
 
                     <button type="submit" class="btn-pay-now">
-                        PAY NOW
+                        {{ __('experience.pay_now') }}
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M5 12h14"/><path d="M12 5l7 7-7 7"/>
                         </svg>
@@ -171,7 +171,7 @@
                 </div>
 
                 <div class="help-text">
-                    Need help? <a href="{{ route('contact') }}">Contact our Wellness Concierge</a>
+                    {{ __('experience.need_help') }} <a href="{{ route('contact') }}">{{ __('experience.contact_concierge') }}</a>
                 </div>
             </div>
         </div>
@@ -181,7 +181,7 @@
 
 <footer class="bottom-bar">
     <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="btn-back-details">
-        Back To Details
+        {{ __('experience.back_to_details') }}
     </a>
 </footer>
 

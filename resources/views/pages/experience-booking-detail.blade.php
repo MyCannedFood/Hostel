@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Experience Reservation - AlaSare</title>
+    <title>{{ __('experience.reservation_title') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -16,19 +16,19 @@
     <nav class="exp-stepper">
         <div class="exp-step exp-step--active">
             <span class="exp-step-number">1.</span>
-            <span class="exp-step-label">Detail</span>
+            <span class="exp-step-label">{{ __('experience.step_detail') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">Payment Method</span>
+            <span class="exp-step-label">{{ __('experience.step_payment_method') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">Payment</span>
+            <span class="exp-step-label">{{ __('experience.step_payment') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">Success</span>
+            <span class="exp-step-label">{{ __('experience.step_success') }}</span>
         </div>
     </nav>
 
@@ -40,16 +40,16 @@
             <img src="https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800"
                  alt="{{ $experience->name }}">
         @endif
-        <div class="badge">{{ strtoupper($experience->category) }} EXPERIENCE</div>
+        <div class="badge">{{ strtoupper($experience->category) }} {{ strtoupper(__('experience.experience_label')) }}</div>
     </div>
 
     {{-- Header --}}
     <div class="exp-header">
         <span class="exp-header-tag">{{ strtoupper($experience->name) }}</span>
-        <h1>Experience Reservation</h1>
+        <h1>{{ __('experience.reservation_title') }}</h1>
         <div class="exp-header-line"></div>
         <p>
-            {{ $experience->short_description ?? 'Join us in this soulful experience. Rooted in local wisdom, reconnect with nature and contribute to the living legacy of our sanctuary.' }}
+            {{ $experience->short_description }}
         </p>
     </div>
 
@@ -70,7 +70,7 @@
 
         <div class="exp-form-row">
             <div class="exp-form-group">
-                <label class="exp-label">SELECT DATE</label>
+                <label class="exp-label">{{ __('experience.select_date') }}</label>
                 <input
                     type="date"
                     class="exp-input"
@@ -81,7 +81,7 @@
                 >
             </div>
             <div class="exp-form-group">
-                <label class="exp-label">SESSION TIME</label>
+                <label class="exp-label">{{ __('experience.session_time') }}</label>
                 <div class="session-buttons">
                     @php
                         $slots = $experience->time_slots && count($experience->time_slots)
@@ -103,7 +103,7 @@
 
         <div class="exp-form-row">
             <div class="exp-form-group">
-                <label class="exp-label">NUMBER OF GUESTS</label>
+                <label class="exp-label">{{ __('experience.number_of_guests') }}</label>
                 <div class="guest-counter">
                     <button type="button" class="counter-btn" onclick="decreaseGuests()">−</button>
                     <span class="counter-value" id="guestCount">{{ old('guest_count', $old['guest_count'] ?? 1) }}</span>
@@ -112,17 +112,17 @@
                 </div>
                 {{-- Harga per orang & total dinamis --}}
                 <p class="exp-price-hint" id="priceHint" style="margin-top:8px;font-size:12px;color:rgba(26,61,10,0.6);">
-                    IDR {{ number_format($experience->price, 0, ',', '.') }} / orang
+                    {{ __('experience.price_per_orang', ['price' => number_format($experience->price, 0, ',', '.')]) }}
                     &nbsp;→&nbsp;
                     <strong id="totalPrice">IDR {{ number_format($experience->price * (old('guest_count', $old['guest_count'] ?? 1)), 0, ',', '.') }}</strong>
                 </p>
             </div>
             <div class="exp-form-group">
-                <label class="exp-label">FULL NAME</label>
+                <label class="exp-label">{{ __('experience.full_name') }}</label>
                 <input
                     type="text"
                     class="exp-input"
-                    placeholder="Your Name"
+                    placeholder="{{ __('experience.full_name') }}"
                     name="guest_name"
                     value="{{ old('guest_name', $old['guest_name'] ?? '') }}"
                     required
@@ -132,11 +132,11 @@
 
         <div class="exp-form-row">
             <div class="exp-form-group">
-                <label class="exp-label">WHATSAPP NUMBER</label>
+                <label class="exp-label">{{ __('experience.whatsapp_number') }}</label>
                 <input
                     type="tel"
                     class="exp-input"
-                    placeholder="628..."
+                    placeholder="{{ __('experience.whatsapp_placeholder') }}"
                     name="guest_whatsapp"
                     value="{{ old('guest_whatsapp', $old['guest_whatsapp'] ?? '') }}"
                     inputmode="numeric"
@@ -146,11 +146,11 @@
                 >
             </div>
             <div class="exp-form-group">
-                <label class="exp-label">SPECIAL NOTES / ALLERGIES</label>
+                <label class="exp-label">{{ __('experience.special_notes') }}</label>
                 <input
                     type="text"
                     class="exp-input"
-                    placeholder="Dietary restrictions or special requests."
+                    placeholder="{{ __('experience.notes_placeholder') }}"
                     name="special_notes"
                     value="{{ old('special_notes', $old['special_notes'] ?? '') }}"
                 >
@@ -160,7 +160,7 @@
         {{-- What's Included --}}
         @if($experience->inclusions && count($experience->inclusions) > 0)
         <div class="exp-form-group" style="margin-top: 16px;">
-            <label class="exp-label">WHAT'S INCLUDED</label>
+            <label class="exp-label">{{ __('experience.whats_included') }}</label>
             <div class="includes-grid">
                 @foreach($experience->inclusions as $inclusion)
                 <div class="include-badge">
@@ -174,30 +174,33 @@
 
         {{-- Sanctuary Rules --}}
         <div class="exp-form-group" style="margin-top: 16px;">
-            <label class="exp-label">SANCTUARY RULES</label>
+            <label class="exp-label">{{ __('experience.sanctuary_rules') }}</label>
             <div class="rules-box">
                 <ol>
-                    <li>Respect the silence of the forest.</li>
-                    <li>No outside food or plastic allowed.</li>
-                    <li>Participate in the digital detox.</li>
-                    <li>Respect the local flora and fauna.</li>
+                    <li>{{ __('experience.rule_1') }}</li>
+                    <li>{{ __('experience.rule_2') }}</li>
+                    <li>{{ __('experience.rule_3') }}</li>
+                    <li>{{ __('experience.rule_4') }}</li>
                 </ol>
             </div>
         </div>
 
         <div class="exp-checkbox-group" style="margin-top: 16px;">
             <input type="checkbox" id="agree" name="agree" value="1" {{ old('agree') ? 'checked' : '' }} required>
-            <label for="agree">I have read and agree to the <a href="#">Sanctuary Rules</a> and <a href="#">Terms & Conditions</a>.</label>
+            <label for="agree">{!! __('experience.agree_rules', [
+                'rules' => '<a href="#">' . __('experience.sanctuary_rules_link') . '</a>',
+                'terms' => '<a href="#">' . __('experience.terms_conditions') . '</a>',
+            ]) !!}</label>
         </div>
 
         <div class="exp-footer">
-            <p>A brief digital detox begins with your intention.</p>
-            <button type="submit" class="btn-proceed">PROCEED TO PAYMENT</button>
+            <p>{{ __('experience.digital_detox_note') }}</p>
+            <button type="submit" class="btn-proceed">{{ __('experience.proceed_to_payment') }}</button>
             <div class="secure-badge">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
-                SECURE ECOLOGICAL TRANSACTION
+                {{ __('experience.secure_eco_transaction') }}
             </div>
         </div>
     </form>

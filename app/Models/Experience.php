@@ -8,7 +8,11 @@ class Experience extends Model
 {
     protected $fillable = [
         'name',
+        'name_en',
+        'name_id',
         'short_description',
+        'short_description_en',
+        'short_description_id',
         'category',
         'price',
         'inclusions',
@@ -21,6 +25,20 @@ class Experience extends Model
         'inclusions' => 'array',
         'time_slots' => 'array',
     ];
+
+    public function getNameAttribute($value)
+    {
+        $locale = app()->getLocale();
+        $localized = $this->{"name_{$locale}"};
+        return $localized ?? $value;
+    }
+
+    public function getShortDescriptionAttribute($value)
+    {
+        $locale = app()->getLocale();
+        $localized = $this->{"short_description_{$locale}"};
+        return $localized ?? $value;
+    }
 
     public function bookings()
     {

@@ -1,18 +1,6 @@
 {{-- resources/views/components/navbar.blade.php --}}
 
 <style>
-    /* ── Google Translate: hide UI elements ── */
-    .goog-te-banner-frame,
-    #goog-gt-tt,
-    .goog-te-balloon-frame,
-    .skiptranslate {
-        display: none !important;
-    }
-    body { top: 0 !important; }
-
-    /* ── Google Translate init holder ── */
-    #gt_holder { display: none; }
-
     /* ── Desktop nav links ── */
     .alas-nav-links {
         display: flex;
@@ -273,19 +261,20 @@
         <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
 
             {{-- Language Switcher --}}
-            <div class="alas-lang-btn notranslate" style="display:flex; align-items:center; gap:6px;">
+            @php $currentLocale = app()->getLocale(); @endphp
+            <div class="alas-lang-btn" style="display:flex; align-items:center; gap:6px;">
 
-                <a href="javascript:void(0)" onclick="changeLanguage('id')"
-                   class="inactive-lang-nav notranslate" id="langIdDesktop">
+                <a href="{{ route('locale.switch', 'id') }}"
+                   class="{{ $currentLocale === 'id' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
                     ID
                 </a>
 
-                <span class="notranslate" style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">
+                <span style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">
                     |
                 </span>
 
-                <a href="javascript:void(0)" onclick="changeLanguage('en')"
-                   class="active-lang-nav notranslate" id="langEnDesktop">
+                <a href="{{ route('locale.switch', 'en') }}"
+                   class="{{ $currentLocale === 'en' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
                     EN
                 </a>
 
@@ -385,17 +374,18 @@
         </a>
 
         {{-- Mobile Language --}}
-        <div class="drawer-lang notranslate">
+        @php $currentLocale = app()->getLocale(); @endphp
+        <div class="drawer-lang">
 
-            <a href="javascript:void(0)" onclick="changeLanguage('id')"
-               class="notranslate" id="langIdMobile">
+            <a href="{{ route('locale.switch', 'id') }}"
+               class="{{ $currentLocale === 'id' ? 'active-lang' : '' }}">
                 ID
             </a>
 
-            <span class="notranslate">|</span>
+            <span>|</span>
 
-            <a href="javascript:void(0)" onclick="changeLanguage('en')"
-               class="notranslate active-lang" id="langEnMobile">
+            <a href="{{ route('locale.switch', 'en') }}"
+               class="{{ $currentLocale === 'en' ? 'active-lang' : '' }}">
                 EN
             </a>
 
@@ -410,55 +400,10 @@
     {{-- Global WhatsApp floating button --}}
     @include('components.whatsapp_floating')
 
-    <div id="gt_holder"></div>
 </nav>
 
 <script>
-function changeLanguage(lang) {
-    document.cookie = 'googtrans=/en/' + lang;
-    location.reload();
-}
-
-(function initLangUI() {
-    var match = document.cookie.match(/googtrans=.*\/([a-z]{2})/);
-    if (match) updateLangUI(match[1]);
-})();
-
-function hideGoogleTranslateBar() {
-    document.querySelectorAll('iframe.goog-te-banner-frame, .goog-te-banner-frame, .skiptranslate iframe, .skiptranslate').forEach(function(el) {
-        el.style.setProperty('display', 'none', 'important');
-    });
-    document.body.style.setProperty('top', '0', 'important');
-    document.body.style.setProperty('position', 'static', 'important');
-}
-
-var observer = new MutationObserver(function() {
-    hideGoogleTranslateBar();
-});
-observer.observe(document.body, { childList: true, subtree: true });
-
-hideGoogleTranslateBar();
-
-function updateLangUI(lang) {
-    document.querySelectorAll('[id^="langId"]').forEach(function(el) {
-        el.className = lang === 'id' ? (el.id.includes('Mobile') ? 'active-lang' : 'active-lang-nav') : (el.id.includes('Mobile') ? '' : 'inactive-lang-nav');
-    });
-    document.querySelectorAll('[id^="langEn"]').forEach(function(el) {
-        el.className = lang === 'en' ? (el.id.includes('Mobile') ? 'active-lang' : 'active-lang-nav') : (el.id.includes('Mobile') ? '' : 'inactive-lang-nav');
-    });
-}
-
-function googleTranslateElementInit() {
-    new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,id',
-        autoDisplay: false
-    }, 'gt_holder');
-}
-
 (function () {
-
-
     const hamburger = document.getElementById('alasHamburger');
     const drawer = document.getElementById('alasDrawer');
 
@@ -496,5 +441,3 @@ function googleTranslateElementInit() {
 
 })();
 </script>
-
-<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
