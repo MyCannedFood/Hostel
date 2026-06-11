@@ -30,6 +30,13 @@ use App\Http\Controllers\NotificationController;
 |--------------------------------------------------------------------------
 */
 
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'id'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('locale.switch');
+
 Route::get('/', [PageController::class, 'show'])->defaults('page', 'Home');
 Route::get('/rooms', [RoomController::class, 'index'])->name('rooms.index');
 

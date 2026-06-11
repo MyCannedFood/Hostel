@@ -24,14 +24,16 @@ class AdminExperienceController extends Controller
     public function storeExperience(Request $request): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'name'              => 'required|string|max:255',
-            'short_description' => 'nullable|string|max:500',
-            'category'          => 'required|string|max:255',
-            'price'             => 'required|numeric|min:0',
-            'inclusions'        => 'nullable|array',
-            'time_slots'        => 'nullable|array',
-            'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'status'            => 'required|in:Active,Inactive',
+            'name_en'              => 'required|string|max:255',
+            'name_id'              => 'nullable|string|max:255',
+            'short_description_en' => 'nullable|string|max:500',
+            'short_description_id' => 'nullable|string|max:500',
+            'category'             => 'required|string|max:255',
+            'price'                => 'required|numeric|min:0',
+            'inclusions'           => 'nullable|array',
+            'time_slots'           => 'nullable|array',
+            'cover_image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'status'               => 'required|in:Active,Inactive',
         ]);
 
         $coverPath = null;
@@ -41,14 +43,16 @@ class AdminExperienceController extends Controller
         }
 
         $experience = Experience::create([
-            'name'              => $validated['name'],
-            'short_description' => $validated['short_description'] ?? null,
-            'category'          => $validated['category'],
-            'price'             => $validated['price'],
-            'inclusions'        => $validated['inclusions'] ?? [],
-            'time_slots'        => $validated['time_slots'] ?? [],
-            'cover_image'       => $coverPath,
-            'status'            => $validated['status'],
+            'name_en'              => $validated['name_en'],
+            'name_id'              => $validated['name_id'] ?? null,
+            'short_description_en' => $validated['short_description_en'] ?? null,
+            'short_description_id' => $validated['short_description_id'] ?? null,
+            'category'             => $validated['category'],
+            'price'                => $validated['price'],
+            'inclusions'           => $validated['inclusions'] ?? [],
+            'time_slots'           => $validated['time_slots'] ?? [],
+            'cover_image'          => $coverPath,
+            'status'               => $validated['status'],
         ]);
 
         return response()->json(['success' => true, 'experience' => $experience]);
@@ -57,14 +61,16 @@ class AdminExperienceController extends Controller
     public function updateExperience(Request $request, Experience $experience): \Illuminate\Http\JsonResponse
     {
         $validated = $request->validate([
-            'name'              => 'required|string|max:255',
-            'short_description' => 'nullable|string|max:500',
-            'category'          => 'required|string|max:255',
-            'price'             => 'required|numeric|min:0',
-            'inclusions'        => 'nullable|array',
-            'time_slots'        => 'nullable|array',
-            'cover_image'       => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
-            'status'            => 'required|in:Active,Inactive',
+            'name_en'              => 'required|string|max:255',
+            'name_id'              => 'nullable|string|max:255',
+            'short_description_en' => 'nullable|string|max:500',
+            'short_description_id' => 'nullable|string|max:500',
+            'category'             => 'required|string|max:255',
+            'price'                => 'required|numeric|min:0',
+            'inclusions'           => 'nullable|array',
+            'time_slots'           => 'nullable|array',
+            'cover_image'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'status'               => 'required|in:Active,Inactive',
         ]);
 
         $coverPath = $experience->cover_image;
@@ -77,14 +83,16 @@ class AdminExperienceController extends Controller
         }
 
         $experience->update([
-            'name'              => $validated['name'],
-            'short_description' => $validated['short_description'] ?? null,
-            'category'          => $validated['category'],
-            'price'             => $validated['price'],
-            'inclusions'        => $validated['inclusions'] ?? [],
-            'time_slots'        => $validated['time_slots'] ?? [],
-            'cover_image'       => $coverPath,
-            'status'            => $validated['status'],
+            'name_en'              => $validated['name_en'],
+            'name_id'              => $validated['name_id'] ?? null,
+            'short_description_en' => $validated['short_description_en'] ?? null,
+            'short_description_id' => $validated['short_description_id'] ?? null,
+            'category'             => $validated['category'],
+            'price'                => $validated['price'],
+            'inclusions'           => $validated['inclusions'] ?? [],
+            'time_slots'           => $validated['time_slots'] ?? [],
+            'cover_image'          => $coverPath,
+            'status'               => $validated['status'],
         ]);
 
         return response()->json(['success' => true, 'experience' => $experience]);

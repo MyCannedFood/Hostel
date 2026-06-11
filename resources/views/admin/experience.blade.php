@@ -243,14 +243,27 @@
                 {{-- Basic Information --}}
                 <div class="exp-modal-section">
                     <p class="exp-modal-section-label">BASIC INFORMATION</p>
-                    <div class="exp-modal-field">
-                        <label class="exp-field-label">Experience Name</label>
-                        <input type="text" class="exp-modal-input" id="expName" placeholder="e.g. Sacred Monkey Forest Dawn Walk">
+                    <div class="exp-modal-row">
+                        <div class="exp-modal-field">
+                            <label class="exp-field-label">Name (EN)</label>
+                            <input type="text" class="exp-modal-input" id="expNameEn" placeholder="e.g. Sacred Monkey Forest Dawn Walk">
+                        </div>
+                        <div class="exp-modal-field">
+                            <label class="exp-field-label">Name (ID)</label>
+                            <input type="text" class="exp-modal-input" id="expNameId" placeholder="Misal: Jalan Fajar di Hutan Monyet Sakral">
+                        </div>
                     </div>
-                    <div class="exp-modal-field">
-                        <label class="exp-field-label">Short Description</label>
-                        <textarea class="exp-modal-input" id="expShortDesc" rows="2"
-                            placeholder="e.g. A soulful journey to the heart of our teak forest..." style="resize:vertical;"></textarea>
+                    <div class="exp-modal-row">
+                        <div class="exp-modal-field">
+                            <label class="exp-field-label">Description (EN)</label>
+                            <textarea class="exp-modal-input" id="expShortDescEn" rows="2"
+                                placeholder="e.g. A soulful journey to the heart of our teak forest..." style="resize:vertical;"></textarea>
+                        </div>
+                        <div class="exp-modal-field">
+                            <label class="exp-field-label">Description (ID)</label>
+                            <textarea class="exp-modal-input" id="expShortDescId" rows="2"
+                                placeholder="Misal: Perjalanan spiritual ke jantung hutan jati kami..." style="resize:vertical;"></textarea>
+                        </div>
                     </div>
                     <div class="exp-modal-row">
                         <div class="exp-modal-field">
@@ -687,15 +700,17 @@
         ]]);
 
         $experiencePayload = $experiences->mapWithKeys(fn($e) => [$e->id => [
-            'id'                => $e->id,
-            'name'              => $e->name,
-            'short_description' => $e->short_description,
-            'category'          => $e->category,
-            'price'             => $e->price,
-            'inclusions'        => $e->inclusions ?? [],
-            'time_slots'        => $e->time_slots ?? [],
-            'cover_image'       => $e->cover_image,
-            'status'            => $e->status,
+            'id'                   => $e->id,
+            'name_en'              => $e->name_en,
+            'name_id'              => $e->name_id,
+            'short_description_en' => $e->short_description_en,
+            'short_description_id' => $e->short_description_id,
+            'category'             => $e->category,
+            'price'                => $e->price,
+            'inclusions'           => $e->inclusions ?? [],
+            'time_slots'           => $e->time_slots ?? [],
+            'cover_image'          => $e->cover_image,
+            'status'               => $e->status,
         ]]);
     @endphp
 
@@ -841,8 +856,10 @@
         editingExperienceId = null;
         document.querySelector('#addExpModal .exp-modal-title').textContent = 'Add New Experience';
         document.getElementById('expSubmitBtn').textContent = 'Add Experience';
-        document.getElementById('expName').value = '';
-        document.getElementById('expShortDesc').value = '';
+        document.getElementById('expNameEn').value = '';
+        document.getElementById('expNameId').value = '';
+        document.getElementById('expShortDescEn').value = '';
+        document.getElementById('expShortDescId').value = '';
         document.getElementById('expCategory').value = 'Wellness';
         document.getElementById('expPrice').value = '';
         document.getElementById('inclusionList').innerHTML = '';
@@ -865,8 +882,10 @@
 
     async function submitExperience() {
         const formData = new FormData();
-        formData.append('name',              document.getElementById('expName').value);
-        formData.append('short_description', document.getElementById('expShortDesc').value);
+        formData.append('name_en',           document.getElementById('expNameEn').value);
+        formData.append('name_id',           document.getElementById('expNameId').value);
+        formData.append('short_description_en', document.getElementById('expShortDescEn').value);
+        formData.append('short_description_id', document.getElementById('expShortDescId').value);
         formData.append('category',          document.getElementById('expCategory').value);
         formData.append('price',             document.getElementById('expPrice').value);
         formData.append('status',            document.getElementById('pubStatusToggle').checked ? 'Active' : 'Inactive');
@@ -904,10 +923,12 @@
         editingExperienceId = id;
         document.querySelector('#addExpModal .exp-modal-title').textContent = 'Edit Experience';
         document.getElementById('expSubmitBtn').textContent = 'Save Changes';
-        document.getElementById('expName').value        = exp.name || '';
-        document.getElementById('expShortDesc').value   = exp.short_description || '';
-        document.getElementById('expCategory').value    = exp.category || 'Wellness';
-        document.getElementById('expPrice').value       = parseInt(exp.price) || '';
+        document.getElementById('expNameEn').value       = exp.name_en || '';
+        document.getElementById('expNameId').value       = exp.name_id || '';
+        document.getElementById('expShortDescEn').value  = exp.short_description_en || '';
+        document.getElementById('expShortDescId').value  = exp.short_description_id || '';
+        document.getElementById('expCategory').value     = exp.category || 'Wellness';
+        document.getElementById('expPrice').value        = parseInt(exp.price) || '';
         document.getElementById('pubStatusToggle').checked = exp.status === 'Active';
         document.getElementById('pubStatusLabel').textContent = exp.status === 'Active' ? 'Activate Immediately' : 'Save as Draft';
         (exp.inclusions || []).forEach(addInclusionTag);

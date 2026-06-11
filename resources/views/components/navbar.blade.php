@@ -222,14 +222,26 @@
         <div style="display:flex; align-items:center; gap:16px; flex-shrink:0;">
 
             {{-- Language Switcher --}}
+            @php $currentLocale = app()->getLocale(); @endphp
             <div class="alas-lang-btn" style="display:flex; align-items:center; gap:6px;">
-                <a href="javascript:void(0)" onclick="AlasLang.set('id')"
-                   id="langIdDesktop">ID</a>
 
-                <span style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">|</span>
+                <a href="{{ route('locale.switch', 'id') }}"
+                   onclick="AlasLang.set('id')"
+                   id="langIdDesktop"
+                   class="{{ $currentLocale === 'id' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
+                    ID
+                </a>
 
-                <a href="javascript:void(0)" onclick="AlasLang.set('en')"
-                   id="langEnDesktop">EN</a>
+                <span style="color:#1a3d0a; opacity:0.3; font-size:13px; line-height:1;">
+                    |
+                </span>
+
+                <a href="{{ route('locale.switch', 'en') }}"
+                   onclick="AlasLang.set('en')"
+                   id="langEnDesktop"
+                   class="{{ $currentLocale === 'en' ? 'active-lang-nav' : 'inactive-lang-nav' }}">
+                    EN
+                </a>
             </div>
 
             {{-- Book Now --}}
@@ -296,10 +308,25 @@
            data-en="Contact" data-id="Kontak">Contact</a>
 
         {{-- Mobile Language --}}
+        @php $currentLocale = app()->getLocale(); @endphp
         <div class="drawer-lang">
-            <a href="javascript:void(0)" onclick="AlasLang.set('id')" id="langIdMobile">ID</a>
+
+            <a href="{{ route('locale.switch', 'id') }}"
+               onclick="AlasLang.set('id')"
+               id="langIdMobile"
+               class="{{ $currentLocale === 'id' ? 'active-lang' : '' }}">
+                ID
+            </a>
+
             <span>|</span>
-            <a href="javascript:void(0)" onclick="AlasLang.set('en')" id="langEnMobile">EN</a>
+
+            <a href="{{ route('locale.switch', 'en') }}"
+               onclick="AlasLang.set('en')"
+               id="langEnMobile"
+               class="{{ $currentLocale === 'en' ? 'active-lang' : '' }}">
+                EN
+            </a>
+
         </div>
 
         <a href="/calendar" class="drawer-book"
@@ -307,6 +334,7 @@
     </div>
 
     @include('components.whatsapp_floating')
+
 </nav>
 
 {{-- ============================================================
