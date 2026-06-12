@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ __('experience.experience_payment_title') }} - AlaSare</title>
+    <title data-en="Experience Payment - AlaSare" data-id="Pembayaran Pengalaman - AlaSare">{{ __('experience.experience_payment_title') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     {{--
@@ -29,20 +29,20 @@
     <section class="payment-steps">
         <div class="steps-container">
             <div class="step step--done">
-                <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="step-link">{{ __('experience.step_detail') }}</a>
+                <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="step-link" data-en="Detail" data-id="Detail">{{ __('experience.step_detail') }}</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--done">
-                <a href="{{ route('experience.payment-method') }}" class="step-link">{{ __('experience.step_payment_method') }}</a>
+                <a href="{{ route('experience.payment-method') }}" class="step-link" data-en="Payment Method" data-id="Metode Pembayaran">{{ __('experience.step_payment_method') }}</a>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--active">
                 <span class="step-number">3.</span>
-                <span class="step-label">{{ __('experience.step_payment') }}</span>
+                <span class="step-label" data-en="Payment" data-id="Pembayaran">{{ __('experience.step_payment') }}</span>
                 <span class="step-arrow">›</span>
             </div>
             <div class="step step--pending">
-                <span class="step-label">{{ __('experience.step_success') }}</span>
+                <span class="step-label" data-en="Success" data-id="Sukses">{{ __('experience.step_success') }}</span>
             </div>
         </div>
     </section>
@@ -56,8 +56,8 @@
 
     {{-- Page Header --}}
     <div class="payment-header">
-        <h1 class="payment-title">{{ __('experience.experience_payment_title') }}</h1>
-        <p class="payment-subtitle">{{ __('experience.payment_subtitle') }}</p>
+        <h1 class="payment-title" data-en="Experience Payment" data-id="Pembayaran Pengalaman">{{ __('experience.experience_payment_title') }}</h1>
+        <p class="payment-subtitle" data-en="Secure your moment of reconnection." data-id="Amankan momen rekoneksi Anda.">{{ __('experience.payment_subtitle') }}</p>
     </div>
 
     {{-- Main Content --}}
@@ -77,9 +77,7 @@
 
             <div class="detail-body">
                 <h2 class="detail-title">{{ $experience->name }}</h2>
-                <p class="detail-desc">
-                    {{ $experience->short_description ?? $experience->name . ' ' . __('experience.experience_label') . ' di AlaSare.' }}
-                </p>
+                <p class="detail-desc">{{ $experience->short_description ?? $experience->name . ' ' . __('experience.experience_label') . ' di AlaSare.' }}</p>
 
                 @if($experience->inclusions && count($experience->inclusions))
                 <div class="detail-inclusions">
@@ -99,21 +97,21 @@
 
                 <div class="detail-meta">
                     <div class="meta-item">
-                        <span class="meta-label">{{ __('experience.date') }}</span>
+                        <span class="meta-label" data-en="Date" data-id="Tanggal">{{ __('experience.date') }}</span>
                         <span class="meta-value">
                             {{ \Carbon\Carbon::parse($booking['scheduled_date'])->format('d/m/Y') }}
                         </span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">{{ __('experience.time_slot') }}</span>
+                        <span class="meta-label" data-en="Time Slot" data-id="Waktu Sesi">{{ __('experience.time_slot') }}</span>
                         <span class="meta-value">{{ $booking['time_slot'] }}</span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">{{ __('experience.guests') }}</span>
+                        <span class="meta-label" data-en="Guests" data-id="Tamu">{{ __('experience.guests') }}</span>
                         <span class="meta-value">{{ str_pad($booking['guest_count'], 2, '0', STR_PAD_LEFT) }}</span>
                     </div>
                     <div class="meta-item">
-                        <span class="meta-label">{{ __('experience.name') }}</span>
+                        <span class="meta-label" data-en="Name" data-id="Nama">{{ __('experience.name') }}</span>
                         <span class="meta-value">{{ $booking['guest_name'] }}</span>
                     </div>
                 </div>
@@ -122,42 +120,41 @@
 
         {{-- Right: Payment Summary --}}
         <div class="payment-summary">
-            <h3 class="summary-title">{{ __('experience.summary') }}</h3>
+            <h3 class="summary-title" data-en="Summary" data-id="Ringkasan">{{ __('experience.summary') }}</h3>
 
             <div class="summary-rows">
                 <div class="summary-row">
-                    <span class="summary-key">{{ __('experience.subtotal_label') }}</span>
+                    <span class="summary-key" data-en="Subtotal" data-id="Subtotal">{{ __('experience.subtotal_label') }}</span>
                     <span class="summary-val">IDR {{ number_format($booking['subtotal'], 0, ',', '.') }}</span>
                 </div>
                 @if(($booking['promo_discount'] ?? 0) > 0)
                 <div class="summary-row">
-                    <span class="summary-key">{{ __('experience.promo_discount_label') }}</span>
+                    <span class="summary-key" data-en="Promo Discount" data-id="Diskon Promo">{{ __('experience.promo_discount_label') }}</span>
                     <span class="summary-val summary-val--discount">
                         - IDR {{ number_format($booking['promo_discount'], 0, ',', '.') }}
                     </span>
                 </div>
                 @endif
                 <div class="summary-row">
-                    <span class="summary-key">{{ __('experience.taxes_service') }}</span>
-                    <span class="summary-val">{{ __('experience.included') }}</span>
+                    <span class="summary-key" data-en="Taxes & Service (21%)" data-id="Pajak & Layanan (21%)">{{ __('experience.taxes_service') }}</span>
+                    <span class="summary-val" data-en="Included" data-id="Termasuk">{{ __('experience.included') }}</span>
                 </div>
             </div>
 
             <div class="summary-total">
-                <span class="total-label">{{ __('experience.total_amount') }}</span>
+                <span class="total-label" data-en="Total Amount" data-id="Jumlah Total">{{ __('experience.total_amount') }}</span>
                 <span class="total-amount">IDR {{ number_format($booking['total_amount'], 0, ',', '.') }}</span>
             </div>
 
             <div class="summary-payment-method">
                 <p class="method-text">
-                    {{ __('experience.selected_payment', ['method' => $booking['payment_method']]) }}
+                    <span data-en="Selected Payment Method: " data-id="Metode Pembayaran: "></span>
+                    {{ $booking['payment_method'] }}
                 </p>
 
                 {{--
                 ══════════════════════════════════════════════════════
                 MIDTRANS SNAP — Uncomment saat akun siap
-                Hapus seluruh blok "QR Placeholder" di bawah ini,
-                dan uncomment blok ini sebagai gantinya.
                 ══════════════════════════════════════════════════════
 
                 @if($snapToken)
@@ -168,7 +165,6 @@
                         document.getElementById('pay-button').addEventListener('click', function () {
                             window.snap.pay('{{ $snapToken }}', {
                                 onSuccess: function (result) {
-                                    // Pembayaran berhasil → simpan booking ke DB
                                     fetch('{{ route("experience.payment.confirm") }}', {
                                         method: 'POST',
                                         headers: {
@@ -188,7 +184,6 @@
                                     console.error('Error:', result);
                                 },
                                 onClose: function () {
-                                    // User menutup popup tanpa bayar — tidak perlu action
                                 }
                             });
                         });
@@ -203,14 +198,14 @@
                 --}}
 
                 {{-- ── QR Placeholder (hapus blok ini saat Midtrans aktif) ── --}}
-                <p class="scan-label">{{ __('experience.scan_to_pay') }}</p>
+                <p class="scan-label" data-en="Scan to Pay" data-id="Scan untuk Bayar">{{ __('experience.scan_to_pay') }}</p>
                 <div class="qr-wrapper">
                     <img src="{{ $qrCodeUrl }}"
-                         alt="{{ __('experience.scan_to_pay') }}"
+                         alt="QR Code"
                          class="ticket-qr-img">
                 </div>
                 <p style="font-size:11px;color:rgba(26,61,10,0.45);text-align:center;margin-top:4px;">
-                    {{ __('experience.booking_id') }}: {{ $booking['pending_ticket_id'] }}
+                    <span data-en="Booking ID" data-id="ID Pemesanan">{{ __('experience.booking_id') }}</span>: {{ $booking['pending_ticket_id'] }}
                 </p>
 
                 <div class="awaiting-timer">
@@ -219,12 +214,13 @@
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    {{ __('experience.awaiting_payment') }} <span id="countdown">14:59</span>
+                    <span data-en="Awaiting Payment... " data-id="Menunggu Pembayaran... ">{{ __('experience.awaiting_payment') }}</span>
+                    <span id="countdown">14:59</span>
                 </div>
 
                 <form action="{{ route('experience.payment.confirm') }}" method="POST">
                     @csrf
-                    <button type="submit" class="confirm-btn">{{ __('experience.i_have_paid') }}</button>
+                    <button type="submit" class="confirm-btn" data-en="I Have Completed Payment" data-id="Saya Sudah Membayar">{{ __('experience.i_have_paid') }}</button>
                 </form>
                 {{-- ── End QR Placeholder ── --}}
 
@@ -234,7 +230,7 @@
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    {{ __('experience.secured_by') }}
+                    <span data-en="Secured by AlaSare Payment Gateway" data-id="Diamankan oleh AlaSare Payment Gateway">{{ __('experience.secured_by') }}</span>
                 </p>
             </div>
         </div>
@@ -246,13 +242,13 @@
              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
         </svg>
-        {{ __('experience.secured_encryption') }}
+        <span data-en="Secured by AlaSare Encryption" data-id="Diamankan oleh Enkripsi AlaSare">{{ __('experience.secured_encryption') }}</span>
     </div>
 
 </main>
 
 <div class="back-bar">
-    <a href="{{ route('experience.payment-method') }}" class="back-btn">{{ __('experience.back_to_payment_method') }}</a>
+    <a href="{{ route('experience.payment-method') }}" class="back-btn" data-en="Back To Payment Method" data-id="Kembali ke Metode Pembayaran">{{ __('experience.back_to_payment_method') }}</a>
 </div>
 
 <x-whatsapp_floating />
