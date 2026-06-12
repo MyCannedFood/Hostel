@@ -24,6 +24,7 @@
             ['key' => 'guest-stories',   'label' => 'Guest Stories'],
             ['key' => 'awards',          'label' => 'Awards & Recognition'],
             ['key' => 'media-partners',  'label' => 'Media & Partners'],
+            ['key' => 'gallery',         'label' => 'Gallery Text (EN/ID)'],
         ];
         @endphp
         @foreach($sections as $s)
@@ -67,5 +68,8 @@
 
 @elseif($sub === 'media-partners')
     @include('admin.settings.partials.LandingPage.LandingPagePartials.media-partners')
+
+@elseif($sub === 'gallery')
+    @include('admin.settings.partials.LandingPage.LandingPagePartials.gallery-section')
 
 @endif

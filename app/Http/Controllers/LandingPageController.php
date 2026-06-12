@@ -11,6 +11,7 @@ use App\Http\Requests\UpdateMapRequest;
 use App\Http\Requests\UpdateGuestStoriesRequest;
 use App\Http\Requests\UpdateAwardsRequest;
 use App\Http\Requests\UpdateMediaPartnersRequest;
+use App\Http\Requests\UpdateGalleryRequest;
 use App\Models\LandingPageSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,50 @@ use Illuminate\Http\Request;
 
 class LandingPageController extends Controller
 {
+    /* ═══════════════════════════════════════ GALLERY TEXT ══ */
+    public function updateGallery(UpdateGalleryRequest $request): RedirectResponse
+    {
+        $setting = LandingPageSetting::firstOrNew(['section' => 'gallery']);
+        $data    = array_merge(LandingPageSetting::DEFAULTS['gallery'], $setting->data ?? []);
+
+        // EN
+        $data['hero_title_line_1']    = $request->hero_title_line_1;
+        $data['hero_title_line_2']    = $request->hero_title_line_2;
+        $data['hero_description']     = $request->hero_description;
+
+        $data['intro_label']          = $request->intro_label;
+        $data['intro_title']          = $request->intro_title;
+        $data['intro_description']    = $request->intro_description;
+
+        $data['story_title']          = $request->story_title;
+        $data['story_paragraph_1']    = $request->story_paragraph_1;
+        $data['story_paragraph_2']    = $request->story_paragraph_2;
+        $data['story_signature_line'] = $request->story_signature_line;
+        $data['story_signature_title']= $request->story_signature_title;
+
+        // ID
+        $data['hero_title_line_1_id']    = $request->hero_title_line_1_id;
+        $data['hero_title_line_2_id']    = $request->hero_title_line_2_id;
+        $data['hero_description_id']    = $request->hero_description_id;
+
+        $data['intro_label_id']          = $request->intro_label_id;
+        $data['intro_title_id']          = $request->intro_title_id;
+        $data['intro_description_id']    = $request->intro_description_id;
+
+        $data['story_title_id']          = $request->story_title_id;
+        $data['story_paragraph_1_id']    = $request->story_paragraph_1_id;
+        $data['story_paragraph_2_id']    = $request->story_paragraph_2_id;
+        $data['story_signature_line_id'] = $request->story_signature_line_id;
+        $data['story_signature_title_id']= $request->story_signature_title_id;
+
+        $setting->data = $data;
+        $setting->updated_by = auth('admin')->id();
+        $setting->save();
+
+        return redirect()->route('admin.settings', ['section' => 'landing', 'sub' => 'gallery'])
+            ->with('success', 'Gallery section berhasil diperbarui.');
+    }
+
     /* ══════════════════════════════════════════ HERO ══ */
     public function updateHero(UpdateHeroRequest $request): RedirectResponse
     {

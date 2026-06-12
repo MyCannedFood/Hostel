@@ -18,52 +18,75 @@
  
 <main>
  
+    {{-- ═══════ DATA ═══════ --}}
+    @php
+        $gallerySettings = \App\Models\LandingPageSetting::getSection('gallery');
+        $g = array_merge(
+            \App\Models\LandingPageSetting::DEFAULTS['gallery'],
+            $gallerySettings->data ?? []
+        );
+    @endphp
+
     {{-- ═══════ HERO ═══════ --}}
     <header class="gallery-header"
             style="--hero-bg: url('{{ asset('images/gallery/hero-gallery.png') }}')">
         <div class="hero-content">
             <h1>
-                A Javanese Sanctuary,<br>
-                Woven by Nature
+                <span data-en="{{ $g['hero_title_line_1'] }}"
+                      data-id="{{ $g['hero_title_line_1_id'] }}"
+                >{{ $g['hero_title_line_1'] }}</span><br>
+                <span data-en="{{ $g['hero_title_line_2'] }}"
+                      data-id="{{ $g['hero_title_line_2_id'] }}"
+                >{{ $g['hero_title_line_2'] }}</span>
             </h1>
             <p>
-                Explore the textures, scents, and rhythms
-                of our sanctuary through a curated lens
-                of tropical elegance and Javanese heritage.
+                <span data-en="{{ $g['hero_description'] }}"
+                      data-id="{{ $g['hero_description_id'] }}"
+                >{{ $g['hero_description'] }}</span>
             </p>
         </div>
     </header>
+
  
     {{-- ═══════ FILTER ═══════ --}}
+    {{-- Label filter ditranslate via data-en / data-id, sama seperti elemen lain --}}
     <section class="gallery-filter-wrap">
         <div class="gallery-filters">
-            <button class="filter-btn active" data-filter="all">All</button>
-            <button class="filter-btn" data-filter="spaces">Spaces</button>
-            <button class="filter-btn" data-filter="nature">Nature</button>
-            <button class="filter-btn" data-filter="dining">Dining</button>
-            <button class="filter-btn" data-filter="wellness">Wellness</button>
-            <button class="filter-btn" data-filter="people">People</button>
+            <button class="filter-btn active" data-filter="all"
+                    data-en="All" data-id="Semua">All</button>
+            <button class="filter-btn" data-filter="spaces"
+                    data-en="Spaces" data-id="Ruangan">Spaces</button>
+            <button class="filter-btn" data-filter="nature"
+                    data-en="Nature" data-id="Alam">Nature</button>
+            <button class="filter-btn" data-filter="dining"
+                    data-en="Dining" data-id="Makan">Dining</button>
+            <button class="filter-btn" data-filter="wellness"
+                    data-en="Wellness" data-id="Kesehatan">Wellness</button>
+            <button class="filter-btn" data-filter="people"
+                    data-en="People" data-id="Orang">People</button>
         </div>
     </section>
  
     {{-- ═══════ INTRO ═══════ --}}
     <section class="gallery-intro">
-        <p class="gallery-intro-label reveal">VISUAL SANCTUARY</p>
-        <h2 class="gallery-intro-title reveal">
-            Moments of Zen, Woven in Nature.
-        </h2>
-        <p class="gallery-intro-desc reveal">
-            Explore the textures, scents, and rhythms of our sanctuary through a
-            curated lens of tropical elegance and Javanese heritage.
-        </p>
+        <p class="gallery-intro-label reveal"
+           data-en="{{ $g['intro_label'] }}"
+           data-id="{{ $g['intro_label_id'] }}"
+        >{{ $g['intro_label'] }}</p>
+
+        <h2 class="gallery-intro-title reveal"
+            data-en="{{ $g['intro_title'] }}"
+            data-id="{{ $g['intro_title_id'] }}"
+        >{{ $g['intro_title'] }}</h2>
+
+        <p class="gallery-intro-desc reveal"
+           data-en="{{ $g['intro_description'] }}"
+           data-id="{{ $g['intro_description_id'] }}"
+        >{{ $g['intro_description'] }}</p>
     </section>
+
  
-    {{-- ═══════ GALLERY ═══════ --}}
-    {{--
-        Foto dari DB dibagi dua kolom berdasarkan column_placement (left / right).
-        4 item pertama tiap kolom langsung tampil, sisanya jadi extra-item (View More).
-        Urutan ditentukan oleh order_number ASC (diatur di admin gallery settings).
-    --}}
+    {{-- ═══════ GALLERY GRID ═══════ --}}
     <section class="gallery-section">
  
         <div class="gallery-grid" id="galleryGrid">
@@ -80,9 +103,8 @@
                         <span class="gi-label">{{ $photo->title }}</span>
                     </div>
                 @empty
-                    {{-- Kolom kiri kosong: tidak tampilkan apa-apa --}}
                 @endforelse
-            </div>{{-- /colLeft --}}
+            </div>
  
             {{-- ── KOLOM KANAN ── --}}
             <div class="gallery-col" id="colRight">
@@ -96,21 +118,19 @@
                         <span class="gi-label">{{ $photo->title }}</span>
                     </div>
                 @empty
-                    {{-- Kolom kanan kosong --}}
                 @endforelse
-            </div>{{-- /colRight --}}
+            </div>
  
-        </div>{{-- /galleryGrid --}}
+        </div>
  
-        {{-- VIEW MORE: hanya tampil kalau ada extra-item --}}
-        @php
-            $hasExtra = ($leftPhotos->count() > 4) || ($rightPhotos->count() > 4);
-        @endphp
+        {{-- VIEW MORE --}}
+        @php $hasExtra = ($leftPhotos->count() > 4) || ($rightPhotos->count() > 4); @endphp
  
         @if($hasExtra)
         <div class="view-more-wrap">
-            <button class="view-more-btn" id="viewMoreBtn">
-                <span>View More</span>
+            <button class="view-more-btn" id="viewMoreBtn"
+                    data-en="View More" data-id="Lihat Lebih">
+                <span data-en="View More" data-id="Lihat Lebih">View More</span>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M7 1v12M1 7l6 6 6-6"
                           stroke="currentColor" stroke-width="1.5"
@@ -131,32 +151,43 @@
     <div class="story-eyebrow reveal">
         <img src="{{ asset('images/gallery/Icon.png') }}" alt="">
     </div>
-    <h2 class="reveal">Our Story, Hand-Crafted.</h2>
+
+    <h2 class="reveal"
+        data-en="{{ $g['story_title'] }}"
+        data-id="{{ $g['story_title_id'] }}"
+    >{{ $g['story_title'] }}</h2>
+
     <div class="story-body">
-        <p class="reveal">
-            At AlasAre, we don't just build; we restore.
-            This sanctuary stands as a living witness
-            to our vision: to reunite the human spirit
-            with the natural rhythms of the earth.
-        </p>
-        <p class="reveal">
-            Every guest is part of an intimate circle—
-            just 24 souls sharing the stillness and
-            rediscovering wellness through the forgotten
-            riches of Javanese flora.
-        </p>
+        <p class="reveal"
+           data-en="{{ $g['story_paragraph_1'] }}"
+           data-id="{{ $g['story_paragraph_1_id'] }}"
+        >{{ $g['story_paragraph_1'] }}</p>
+
+        <p class="reveal"
+           data-en="{{ $g['story_paragraph_2'] }}"
+           data-id="{{ $g['story_paragraph_2_id'] }}"
+        >{{ $g['story_paragraph_2'] }}</p>
+
         <div class="signature-wrap reveal">
-            <span class="signature-name">In Serenity,</span>
-            <span class="signature-title">The AlaSare Guardians</span>
+            <span class="signature-name"
+                  data-en="{{ $g['story_signature_line'] }}"
+                  data-id="{{ $g['story_signature_line_id'] }}"
+            >{{ $g['story_signature_line'] }}</span>
+
+            <span class="signature-title"
+                  data-en="{{ $g['story_signature_title'] }}"
+                  data-id="{{ $g['story_signature_title_id'] }}"
+            >{{ $g['story_signature_title'] }}</span>
         </div>
     </div>
 </section>
+
  
 @include('components.footer')
  
- <x-whatsapp_floating />
+<x-whatsapp_floating />
  
- {{-- ═══════ LIGHTBOX ═══════ --}}
+{{-- ═══════ LIGHTBOX ═══════ --}}
 <div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true">
     <div class="lightbox-inner">
         <button class="lightbox-close" id="lbClose" aria-label="Tutup">&times;</button>
