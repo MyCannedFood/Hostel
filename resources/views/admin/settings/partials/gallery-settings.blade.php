@@ -32,13 +32,17 @@
 {{-- ── Gallery Text Button ── --}}
 <div style="margin-bottom:16px;">
     <a href="{{ route('admin.settings', ['section' => 'landing', 'sub' => 'gallery']) }}"
-       class="btn btn-orange-outline"
-       style="display:inline-flex; align-items:center; gap:8px; text-decoration:none;">
-        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-        Gallery Text (EN/ID)
+       class="settings-nav-card"
+       style="display:flex; align-items:center; gap:10px; padding:14px 16px; text-decoration:none;">
+        <span class="settings-nav-icon" style="display:inline-flex;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+        </span>
+        <span class="settings-nav-label">Gallery Text (EN/ID)</span>
+        <span class="settings-nav-chevron">›</span>
     </a>
 </div>
 
