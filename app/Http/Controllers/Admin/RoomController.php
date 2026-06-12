@@ -12,10 +12,9 @@ class RoomController extends Controller
 {
     public function addNewRoomPopup()
     {
-        // Menambahkan 'Mixed' sesuai dengan enum di migration
-        $roomTypes = ['Male', 'Female', 'Mixed']; 
+        $roomTypes = ['Male', 'Female', 'Mixed'];
         $statuses = ['Available', 'Maintenance', 'Closed'];
-        
+
         return view('admin.partials.add-room-modal', compact('roomTypes', 'statuses'));
     }
 
@@ -26,42 +25,42 @@ class RoomController extends Controller
 
     public function store(Request $req)
     {
-        // 1. Validasi Input
         $validated = $req->validate([
             'name'            => 'required|string|max:255',
-            'gender_type'     => 'required|in:Male,Female,Mixed', // Sesuai dengan Enum database
-            'capacity'        => 'required|integer|min:1', // Harus required karena di DB tidak nullable
+            'gender_type'     => 'required|in:Male,Female,Mixed',
+            'capacity'        => 'required|integer|min:1',
             'description'     => 'nullable|string',
+            'description_id'  => 'nullable|string',
             'status'          => 'required|string',
             'photo'           => 'nullable|image|max:5120',
             'attributes'      => 'nullable|array',
+            'attributes_id'   => 'nullable|array',
             'main_facilities' => 'nullable|array',
             'beds'            => 'nullable|array',
         ]);
 
-        // 2. Upload Foto jika ada
         if ($req->hasFile('photo')) {
             $path = $req->file('photo')->store('rooms', 'public');
             $validated['photo'] = $path;
         }
 
-        // 3. Konversi array ke string (comma-separated)
-        $validated['attributes'] = isset($validated['attributes']) 
-            ? implode(',', array_filter($validated['attributes'])) 
+        $validated['attributes'] = isset($validated['attributes'])
+            ? implode(',', array_filter($validated['attributes']))
             : null;
-            
-        $validated['main_facilities'] = isset($validated['main_facilities']) 
-            ? implode(',', array_filter($validated['main_facilities'])) 
+
+        $validated['attributes_id'] = isset($validated['attributes_id'])
+            ? implode(',', array_filter($validated['attributes_id']))
             : null;
-        
-        // 4. Pisahkan 'beds' dari $validated agar tidak ikut masuk ke Room::create()
+
+        $validated['main_facilities'] = isset($validated['main_facilities'])
+            ? implode(',', array_filter($validated['main_facilities']))
+            : null;
+
         $beds = $req->input('beds');
         unset($validated['beds']);
 
-        // 5. Simpan ke database
         $room = Room::create($validated);
 
-        // 6. Simpan relasi beds jika ada input beds
         if (!empty($beds)) {
             foreach ($beds as $b) {
                 $b['room_id'] = $room->id;
@@ -70,7 +69,7 @@ class RoomController extends Controller
         }
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'data'    => $room->load('beds')
         ]);
     }
@@ -82,9 +81,11 @@ class RoomController extends Controller
             'gender_type'     => 'required|in:Male,Female,Mixed',
             'capacity'        => 'required|integer|min:1',
             'description'     => 'nullable|string',
+            'description_id'  => 'nullable|string',
             'status'          => 'required|string',
             'photo'           => 'nullable|image|max:5120',
             'attributes'      => 'nullable|array',
+            'attributes_id'   => 'nullable|array',
             'main_facilities' => 'nullable|array',
         ]);
 
@@ -97,6 +98,10 @@ class RoomController extends Controller
 
         $validated['attributes'] = isset($validated['attributes'])
             ? implode(',', array_filter($validated['attributes']))
+            : null;
+
+        $validated['attributes_id'] = isset($validated['attributes_id'])
+            ? implode(',', array_filter($validated['attributes_id']))
             : null;
 
         $validated['main_facilities'] = isset($validated['main_facilities'])
@@ -119,7 +124,7 @@ class RoomController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $room->fresh()->load('beds'),
+            'data'    => $room->fresh()->load('beds'),
         ]);
     }
 
@@ -135,6 +140,7 @@ class RoomController extends Controller
             'success' => true,
         ]);
     }
+
     public function uploadLayout(Request $request, $id)
     {
         $room = Room::findOrFail($id);
@@ -143,19 +149,17 @@ class RoomController extends Controller
             'layout_photo' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        // Hapus foto denah lama jika sudah ada
         if ($room->layout_photo && Storage::disk('public')->exists($room->layout_photo)) {
             Storage::disk('public')->delete($room->layout_photo);
         }
 
-        // Simpan foto baru
         $path = $request->file('layout_photo')->store('room_layouts', 'public');
         $room->update(['layout_photo' => $path]);
 
         return response()->json([
-            'success' => true,
-            'message' => 'Foto denah berhasil diunggah!',
-            'layout_url' => asset('storage/' . $path) // Kembalikan URL untuk langsung ditampilkan di halaman
+            'success'    => true,
+            'message'    => 'Foto denah berhasil diunggah!',
+            'layout_url' => asset('storage/' . $path)
         ]);
     }
 }

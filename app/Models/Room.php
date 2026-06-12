@@ -20,6 +20,9 @@ class Room extends Model
         'main_facilities',
         'status',
         'is_active',
+        'description_id',
+        'attributes_id',
+        'main_facilities_id',
     ];
 
     /**

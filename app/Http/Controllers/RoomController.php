@@ -23,9 +23,19 @@ class RoomController extends Controller
                 : asset('storage/' . $room->photo);
         };
 
-        $genderLabel = fn ($room) => strtoupper($room->gender_type ?? 'Mixed') . ' ONLY';
+        $genderLabel = fn ($room) => match(strtolower($room->gender_type ?? 'mixed')) {
+            'female' => 'Female Only',
+            'male'   => 'Male Only',
+            default  => 'Mixed',
+        };
 
-        $roomData = $rooms->map(function ($room) use ($roomPhoto, $genderLabel) {
+        $genderLabelId = fn ($room) => match(strtolower($room->gender_type ?? 'mixed')) {
+            'female' => 'Khusus Perempuan',
+            'male'   => 'Khusus Laki-laki',
+            default  => 'Campur',
+        };
+
+        $roomData = $rooms->map(function ($room) use ($roomPhoto, $genderLabel, $genderLabelId) {
             $totalBeds = $room->beds->count();
             $availableBeds = $room->beds->where('is_active', true)->count();
             $availabilityPercentage = $totalBeds > 0 ? ($availableBeds / $totalBeds) * 100 : 0;
@@ -37,10 +47,19 @@ class RoomController extends Controller
                 'photo' => $roomPhoto($room),
                 'gender_type' => $room->gender_type,
                 'gender_label' => $genderLabel($room),
+                'gender_label_id' => $genderLabelId($room),
                 'capacity' => $room->capacity,
                 'description' => $room->description,
+                'description_id'   => $room->description_id ?: $room->description,
                 'attributes' => $room->attributes ? explode(',', $room->attributes) : [],
+                'attributes_id'    => $room->attributes_id 
+                                        ? explode(',', $room->attributes_id)
+                                        : ($room->attributes ? explode(',', $room->attributes) : []),
                 'main_facilities' => $room->main_facilities ? explode(',', $room->main_facilities) : [],
+                'main_facilities_id' => $room->main_facilities_id
+                            ? explode(',', $room->main_facilities_id)
+                            : ($room->main_facilities ? explode(',', $room->main_facilities) : []),
+
                 'total_beds' => $totalBeds,
                 'available_beds' => $availableBeds,
                 'availability_percentage' => $availabilityPercentage,

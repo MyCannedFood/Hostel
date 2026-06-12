@@ -1,6 +1,7 @@
 @php
 	$room = $room ?? null;
-	$attributes = array_values(array_filter(array_map('trim', explode(',', (string) ($room->attributes ?? '')))));
+	$attributes   = array_values(array_filter(array_map('trim', explode(',', (string) ($room->attributes    ?? '')))));
+	$attributesId = array_values(array_filter(array_map('trim', explode(',', (string) ($room->attributes_id ?? '')))));
 	$mainFacilities = array_values(array_filter(array_map('trim', explode(',', (string) ($room->main_facilities ?? '')))));
 	$roomPhoto = !empty($room?->photo) ? asset('storage/' . $room->photo) : asset('images/Background.png');
 	$hasExistingPhoto = !empty($room?->photo);
@@ -34,7 +35,7 @@
 
 	.room-modal__panel {
 		width: 100%;
-		max-width: 600px;
+		max-width: 680px;
 		background-color: var(--bg-main);
 		border-radius: 8px;
 		outline: 1px solid var(--primary-dark);
@@ -107,6 +108,7 @@
 		font-size: 14px;
 		color: var(--primary-dark);
 		outline: none;
+		box-sizing: border-box;
 	}
 
 	.room-modal .form-control:focus {
@@ -178,33 +180,21 @@
 	.room-modal .input-group {
 		display: flex;
 		align-items: center;
-	}
-
-	.room-modal .input-group input {
-		border-right: 1px solid var(--border-color);
-		border-top-right-radius: 2px;
-		border-bottom-right-radius: 2px;
-	}
-
-	.room-modal .input-btn {
-		background-color: var(--white);
-		border: 1px solid var(--border-color);
-		padding: 10px 12px;
-		border-top-right-radius: 2px;
-		border-bottom-right-radius: 2px;
-		color: var(--primary-dark);
-		cursor: pointer;
+		gap: 8px;
+		flex: 1;
 	}
 
 	.room-modal .input-actions {
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		margin-bottom: 8px;
 	}
 
 	.room-modal .icon-btn {
 		width: 40px;
 		height: 40px;
+		flex-shrink: 0;
 		border: 1px solid var(--border-color);
 		border-radius: 2px;
 		background-color: var(--white);
@@ -224,10 +214,26 @@
 	.room-modal .icon-group {
 		display: inline-flex;
 		gap: 8px;
+		flex-shrink: 0;
 	}
 
 	.room-modal .icon-btn:hover {
 		background-color: #f0f0f0;
+	}
+
+	.room-modal .attr-lang-label {
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--text-muted);
+		letter-spacing: 0.8px;
+		text-transform: uppercase;
+		margin-bottom: 2px;
+	}
+
+	.room-modal .attr-input-wrap {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
 	}
 
 	.room-modal .facilities-list {
@@ -319,7 +325,8 @@
 	}
 
 	@media (max-width: 768px) {
-		.room-modal .grid-3 {
+		.room-modal .grid-3,
+		.room-modal .grid-2 {
 			grid-template-columns: 1fr;
 		}
 
@@ -342,11 +349,12 @@
 				<input type="hidden" name="room_id" value="{{ $room->id ?? '' }}">
 				<input type="file" name="photo" id="photoInput" accept="image/*" hidden>
 
+				{{-- Photo --}}
 				<div class="form-group">
 					<label class="form-label">Photo of Main Room</label>
-                    <label for="photoInput" class="upload-area" id="uploadArea">
-                        <div class="upload-icon">+</div>
-                        <div class="upload-text">Click to upload photo</div>
+					<label for="photoInput" class="upload-area" id="uploadArea">
+						<div class="upload-icon">+</div>
+						<div class="upload-text">Click to upload photo</div>
 					</label>
 				</div>
 
@@ -356,49 +364,66 @@
 					@endif
 				</div>
 
-				<div class="form-group">
+				{{-- Room Name --}}
+				<div class="form-group" style="margin-top:20px;">
 					<label class="form-label">Room Name</label>
 					<input type="text" name="name" class="form-control" placeholder="Cth: Pavilion" value="{{ old('name', $room->name ?? '') }}" required>
 				</div>
 
+				{{-- Room Type + Capacity --}}
 				<div class="grid-2">
 					<div class="form-group">
 						<label class="form-label">Room Type</label>
 						<select name="gender_type" class="form-control" required>
-							<option value="Male" @selected(old('gender_type', $room->gender_type ?? 'Male') === 'Male')>Male</option>
+							<option value="Male"   @selected(old('gender_type', $room->gender_type ?? 'Male') === 'Male')>Male</option>
 							<option value="Female" @selected(old('gender_type', $room->gender_type ?? '') === 'Female')>Female</option>
-							<option value="Mixed" @selected(old('gender_type', $room->gender_type ?? '') === 'Mixed')>Mixed</option>
+							<option value="Mixed"  @selected(old('gender_type', $room->gender_type ?? '') === 'Mixed')>Mixed</option>
 						</select>
 					</div>
-
 					<div class="form-group">
 						<label class="form-label">Capacity (Bed)</label>
 						<input type="number" min="1" name="capacity" class="form-control" value="{{ old('capacity', $room->capacity ?? 4) }}">
 					</div>
 				</div>
 
-				<div class="form-group">
-					<label class="form-label">Description</label>
-					<textarea name="description" class="form-control" placeholder="Describe the atmosphere and advantages of this room...">{{ old('description', $room->description ?? '') }}</textarea>
+				{{-- Description EN + ID --}}
+				<div class="grid-2">
+					<div class="form-group">
+						<label class="form-label">Description (EN)</label>
+						<textarea name="description" class="form-control" placeholder="Describe the atmosphere and advantages of this room...">{{ old('description', $room->description ?? '') }}</textarea>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Description (ID)</label>
+						<textarea name="description_id" class="form-control" placeholder="Deskripsikan suasana dan keunggulan kamar ini...">{{ old('description_id', $room->description_id ?? '') }}</textarea>
+					</div>
 				</div>
 
+				{{-- Status --}}
 				<div class="form-group">
 					<label class="form-label">Status</label>
 					<select name="status" class="form-control">
-						<option value="Available" @selected(old('status', $room->status ?? 'Available') === 'Available')>Active</option>
-						<option value="Inactive" @selected(old('status', $room->status ?? '') === 'Inactive')>Inactive</option>
+						<option value="Available"   @selected(old('status', $room->status ?? 'Available') === 'Available')>Active</option>
+						<option value="Inactive"    @selected(old('status', $room->status ?? '') === 'Inactive')>Inactive</option>
 						<option value="Maintenance" @selected(old('status', $room->status ?? '') === 'Maintenance')>Maintenance</option>
 					</select>
 				</div>
 
+				{{-- Attributes --}}
 				<div class="form-group">
 					<label class="form-label">Attributes</label>
 					<div id="attributesWrapper">
 						@if (count($attributes))
-							@foreach ($attributes as $attribute)
+							@foreach ($attributes as $i => $attribute)
 								<div class="input-actions attr-row">
-									<div class="input-group" style="flex: 1;">
-										<input type="text" name="attributes[]" class="form-control" value="{{ $attribute }}">
+									<div class="input-group">
+										<div class="attr-input-wrap">
+											<div class="attr-lang-label">EN</div>
+											<input type="text" name="attributes[]" class="form-control" placeholder="e.g. Simple & Functional" value="{{ $attribute }}">
+										</div>
+										<div class="attr-input-wrap">
+											<div class="attr-lang-label">ID</div>
+											<input type="text" name="attributes_id[]" class="form-control" placeholder="cth. Simpel & Fungsional" value="{{ $attributesId[$i] ?? '' }}">
+										</div>
 									</div>
 									<div class="icon-group" aria-label="Attribute actions">
 										<button type="button" class="icon-btn add-attr" aria-label="Add attribute">
@@ -412,8 +437,15 @@
 							@endforeach
 						@else
 							<div class="input-actions attr-row">
-								<div class="input-group" style="flex: 1;">
-									<input type="text" name="attributes[]" class="form-control" value="">
+								<div class="input-group">
+									<div class="attr-input-wrap">
+										<div class="attr-lang-label">EN</div>
+										<input type="text" name="attributes[]" class="form-control" placeholder="e.g. Simple & Functional">
+									</div>
+									<div class="attr-input-wrap">
+										<div class="attr-lang-label">ID</div>
+										<input type="text" name="attributes_id[]" class="form-control" placeholder="cth. Simpel & Fungsional">
+									</div>
 								</div>
 								<div class="icon-group" aria-label="Attribute actions">
 									<button type="button" class="icon-btn add-attr" aria-label="Add attribute">
@@ -428,6 +460,7 @@
 					</div>
 				</div>
 
+				{{-- Main Facilities --}}
 				<div class="form-group">
 					<label class="form-label">Main Facilities</label>
 					<div class="facilities-list">
@@ -436,19 +469,16 @@
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">AC</span>
 						</label>
-
 						<label class="facility-chip">
 							<input type="checkbox" name="main_facilities[]" value="Wifi" @checked(in_array('Wifi', $mainFacilities))>
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">Wifi</span>
 						</label>
-
 						<label class="facility-chip">
 							<input type="checkbox" name="main_facilities[]" value="En-suite Bath" @checked(in_array('En-suite Bath', $mainFacilities))>
 							<span class="custom-checkbox"></span>
 							<span class="facility-text">En-suite Bath</span>
 						</label>
-
 						<label class="facility-chip">
 							<input type="checkbox" name="main_facilities[]" value="Lockers" @checked(in_array('Lockers', $mainFacilities))>
 							<span class="custom-checkbox"></span>
@@ -488,8 +518,9 @@
 
 	window.closeInjectedModal = closeInjectedModal;
 
-	const closeButtons = document.querySelectorAll('[data-room-modal-close]');
-	closeButtons.forEach(btn => btn.addEventListener('click', closeInjectedModal));
+	document.querySelectorAll('[data-room-modal-close]').forEach(btn =>
+		btn.addEventListener('click', closeInjectedModal)
+	);
 
 	if (photoInput && uploadArea && uploadPreview) {
 		photoInput.addEventListener('change', (e) => {
@@ -500,14 +531,12 @@
 				uploadPreview.innerHTML = '';
 				return;
 			}
-
 			const img = document.createElement('img');
 			img.src = URL.createObjectURL(file);
 			img.style.maxWidth = '100%';
 			img.style.maxHeight = '140px';
 			img.style.borderRadius = '4px';
 			img.style.objectFit = 'contain';
-
 			uploadArea.style.display = 'none';
 			uploadPreview.innerHTML = '';
 			uploadPreview.appendChild(img);
@@ -517,6 +546,7 @@
 		uploadPreview.addEventListener('click', () => photoInput.click());
 	}
 
+	// Add / remove attribute rows — clone both EN and ID inputs
 	document.addEventListener('click', function (e) {
 		if (e.target.closest('.add-attr')) {
 			e.preventDefault();
@@ -546,17 +576,7 @@
 			event.preventDefault();
 			const fd = new FormData(form);
 			fd.append('_method', 'PUT');
-			if (csrfToken && !fd.get('_token')) {
-				fd.append('_token', csrfToken);
-			}
-
-			const headers = {
-				'X-Requested-With': 'XMLHttpRequest',
-				'Accept': 'application/json',
-			};
-			if (csrfToken) {
-				headers['X-CSRF-TOKEN'] = csrfToken;
-			}
+			if (csrfToken && !fd.get('_token')) fd.append('_token', csrfToken);
 
 			try {
 				saveBtn.disabled = true;
@@ -564,7 +584,11 @@
 					method: 'POST',
 					credentials: 'same-origin',
 					body: fd,
-					headers,
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest',
+						'Accept': 'application/json',
+						'X-CSRF-TOKEN': csrfToken,
+					},
 				});
 
 				const json = await response.json();
@@ -594,17 +618,7 @@
 
 			const fd = new FormData();
 			fd.append('_method', 'DELETE');
-			if (csrfToken) {
-				fd.append('_token', csrfToken);
-			}
-
-			const headers = {
-				'X-Requested-With': 'XMLHttpRequest',
-				'Accept': 'application/json',
-			};
-			if (csrfToken) {
-				headers['X-CSRF-TOKEN'] = csrfToken;
-			}
+			if (csrfToken) fd.append('_token', csrfToken);
 
 			try {
 				deleteBtn.disabled = true;
@@ -612,7 +626,11 @@
 					method: 'POST',
 					credentials: 'same-origin',
 					body: fd,
-					headers,
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest',
+						'Accept': 'application/json',
+						'X-CSRF-TOKEN': csrfToken,
+					},
 				});
 
 				const json = await response.json();
@@ -621,7 +639,6 @@
 					location.reload();
 					return;
 				}
-
 				alert(json.message || 'Failed to delete room');
 			} catch (err) {
 				console.error('[Room Edit Modal] Error:', err);
