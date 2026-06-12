@@ -72,14 +72,17 @@ class SettingsController extends Controller
  
             if ($sub === 'footer') {
                 $data['footer'] = [
-                    'brand_desc'      => SiteSetting::get('footer_brand_desc',      'A sanctuary where Javanese heritage meets modern ecological luxury.'),
-                    'newsletter_text' => SiteSetting::get('footer_newsletter_text', 'Subscribe for seasonal updates and exclusive retreat offers.'),
-                    'instagram_url'   => SiteSetting::get('footer_instagram_url',   ''),
-                    'facebook_url'    => SiteSetting::get('footer_facebook_url',    ''),
-                    'pinterest_url'   => SiteSetting::get('footer_pinterest_url',   ''),
-                    'copyright_text'  => SiteSetting::get('footer_copyright_text',  '© 2026 ALASARE ECO-SANCTUARY. ALL RIGHTS RESERVED.'),
-                    'privacy_url'     => SiteSetting::get('footer_privacy_url',     '/legal/privacy-policy'),
-                    'terms_url'       => SiteSetting::get('footer_terms_url',       '/legal/terms'),
+                    'brand_desc'         => SiteSetting::get('footer_brand_desc',         'A sanctuary where Javanese heritage meets modern ecological luxury.'),
+                    'brand_desc_id'      => SiteSetting::get('footer_brand_desc_id',      ''),
+                    'newsletter_text'    => SiteSetting::get('footer_newsletter_text',    'Subscribe for seasonal updates and exclusive retreat offers.'),
+                    'newsletter_text_id' => SiteSetting::get('footer_newsletter_text_id', ''),
+                    'instagram_url'      => SiteSetting::get('footer_instagram_url',      ''),
+                    'facebook_url'       => SiteSetting::get('footer_facebook_url',       ''),
+                    'pinterest_url'      => SiteSetting::get('footer_pinterest_url',      ''),
+                    'copyright_text'     => SiteSetting::get('footer_copyright_text',     '© 2026 ALASARE ECO-SANCTUARY. ALL RIGHTS RESERVED.'),
+                    'copyright_text_id'  => SiteSetting::get('footer_copyright_text_id',  ''),
+                    'privacy_url'        => SiteSetting::get('footer_privacy_url',        '/legal/privacy-policy'),
+                    'terms_url'          => SiteSetting::get('footer_terms_url',          '/legal/terms'),
                 ];
             }
  
@@ -255,19 +258,22 @@ class SettingsController extends Controller
             ->with('success', 'Profil berhasil disimpan.');
     }
 
-     public function footerUpdate(FooterSettingsRequest $request)
+    public function footerUpdate(FooterSettingsRequest $request)
     {
         $d = $request->validated();
- 
-        SiteSetting::set('footer_brand_desc',      $d['brand_desc']      ?? '');
-        SiteSetting::set('footer_newsletter_text', $d['newsletter_text'] ?? '');
-        SiteSetting::set('footer_instagram_url',   $d['instagram_url']   ?? '');
-        SiteSetting::set('footer_facebook_url',    $d['facebook_url']    ?? '');
-        SiteSetting::set('footer_pinterest_url',   $d['pinterest_url']   ?? '');
-        SiteSetting::set('footer_copyright_text',  $d['copyright_text']  ?? '');
-        SiteSetting::set('footer_privacy_url',     $d['privacy_url']     ?? '');
-        SiteSetting::set('footer_terms_url',       $d['terms_url']       ?? '');
- 
+
+        SiteSetting::set('footer_brand_desc',         $d['brand_desc']         ?? '');
+        SiteSetting::set('footer_brand_desc_id',      $d['brand_desc_id']      ?? '');
+        SiteSetting::set('footer_newsletter_text',    $d['newsletter_text']    ?? '');
+        SiteSetting::set('footer_newsletter_text_id', $d['newsletter_text_id'] ?? '');
+        SiteSetting::set('footer_instagram_url',      $d['instagram_url']      ?? '');
+        SiteSetting::set('footer_facebook_url',       $d['facebook_url']       ?? '');
+        SiteSetting::set('footer_pinterest_url',      $d['pinterest_url']      ?? '');
+        SiteSetting::set('footer_copyright_text',     $d['copyright_text']     ?? '');
+        SiteSetting::set('footer_copyright_text_id',  $d['copyright_text_id']  ?? '');
+        SiteSetting::set('footer_privacy_url',        $d['privacy_url']        ?? '');
+        SiteSetting::set('footer_terms_url',          $d['terms_url']          ?? '');
+
         return redirect()
             ->route('admin.settings', ['section' => 'general', 'sub' => 'footer'])
             ->with('success', 'Footer settings berhasil disimpan.');

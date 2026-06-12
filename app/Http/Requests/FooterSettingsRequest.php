@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,14 +15,17 @@ class FooterSettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'brand_desc'       => ['nullable', 'string', 'max:500'],
-            'newsletter_text'  => ['nullable', 'string', 'max:200'],
-            'instagram_url'    => ['nullable', 'url', 'max:255'],
-            'facebook_url'     => ['nullable', 'url', 'max:255'],
-            'pinterest_url'    => ['nullable', 'url', 'max:255'],
-            'copyright_text'   => ['nullable', 'string', 'max:200'],
-            'privacy_url'      => ['nullable', 'string', 'max:255'],
-            'terms_url'        => ['nullable', 'string', 'max:255'],
+            'brand_desc'         => ['nullable', 'string', 'max:500'],
+            'brand_desc_id'      => ['nullable', 'string', 'max:500'],
+            'newsletter_text'    => ['nullable', 'string', 'max:200'],
+            'newsletter_text_id' => ['nullable', 'string', 'max:200'],
+            'instagram_url'      => ['nullable', 'url', 'max:255'],
+            'facebook_url'       => ['nullable', 'url', 'max:255'],
+            'pinterest_url'      => ['nullable', 'url', 'max:255'],
+            'copyright_text'     => ['nullable', 'string', 'max:200'],
+            'copyright_text_id'  => ['nullable', 'string', 'max:200'],
+            'privacy_url'        => ['nullable', 'string', 'max:255'],
+            'terms_url'          => ['nullable', 'string', 'max:255'],
         ];
     }
 

@@ -14,14 +14,12 @@
 .pm-btn-save { padding:10px 24px;border-radius:2px;border:none;background:#1A3D0A;color:#fff;font-size:13.5px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit; }
 .pm-btn-save:hover { background:#2d5a1a; }
 
-/* Footer-specific */
 .footer-info-box { display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#5e655f;line-height:1.5; }
 .footer-info-icon { width:20px;height:20px;flex-shrink:0;border-radius:50%;border:1.5px solid #4B9960;color:#4B9960;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px; }
-.footer-section-title { font-size:11.5px;font-weight:700;letter-spacing:.14em;color:#5a6b62;margin-bottom:22px;text-transform:uppercase; }
+.footer-section-title { font-size:11.5px;font-weight:700;letter-spacing:.14em;color:#5a6b62;margin-bottom:12px;text-transform:uppercase; }
 
-/* Base field */
-.footer-field { padding:12px 0 14px;border-bottom:1.5px solid #e0e6e2;margin-bottom:16px; }
-.footer-field:last-child {margin-bottom:0; }
+.footer-field { padding:12px 0 14px;border-bottom:1.5px solid #e0e6e2;margin-bottom:8px; }
+.footer-field:last-child { margin-bottom:0; }
 .footer-field-label { font-size:12px;color:#8a9690;font-weight:500;margin-bottom:6px;display:block; }
 .footer-field-input,
 .footer-field-textarea { width:100%;border:none;outline:none;font-size:14.5px;color:#1a3d0a;background:transparent;font-family:inherit;padding:0; }
@@ -29,7 +27,9 @@
 .footer-field-textarea::placeholder { color:#c0ccc5; }
 .footer-field-textarea { resize:vertical;min-height:60px;line-height:1.55; }
 
-/* ── Grid fix: 2 kolom, border bawah hanya di antara baris ── */
+.footer-lang-group { margin-bottom:24px; }
+.footer-lang-group:last-child { margin-bottom:0; }
+
 .footer-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -41,28 +41,22 @@
     border-bottom: 1.5px solid #e0e6e2;
     padding-bottom: 14px;
 }
-.footer-grid-wrap {
-    padding-top: 14px;
-    margin-top: 0;
-}
+.footer-grid-wrap { padding-top: 14px; margin-top: 0; }
 @media (max-width:600px) {
     .footer-grid { grid-template-columns:1fr; gap:0; }
     .footer-grid .footer-field { border-bottom:1.5px solid #e0e6e2; padding-bottom:14px; margin-bottom:16px; }
     .footer-grid .footer-field:last-child { border-bottom:none; margin-bottom:0; }
 }
 
-/* Social item */
 .footer-social-item { display:flex;align-items:flex-start;gap:14px; }
 .footer-social-icon { width:38px;height:38px;border-radius:50%;background:#f5f6f3;border:1px solid #e5e9e6;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:14px; }
 .footer-social-icon svg { color:#5a6b62; }
 .footer-social-content { flex:1; }
 
-/* Alert */
 .footer-alert { display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;font-size:13.5px;font-weight:500;margin-bottom:20px; }
 .footer-alert-success { background:#eef7f0;color:#276c42;border:1px solid #b6dfc4; }
 .footer-alert-error   { background:#fdecea;color:#c0392b;border:1px solid #f5c6c2; }
 
-/* Validation */
 .footer-field.error .footer-field-input,
 .footer-field.error .footer-field-textarea { color:#c0392b; }
 .footer-field.error { border-bottom-color:#e57373; }
@@ -107,25 +101,47 @@
     </div>
 </div>
 
-{{-- Card 1: Brand & Newsletter --}}
+{{-- Card 1: Brand Description --}}
 <div class="pm-card">
-    <div class="footer-field @error('brand_desc') error @enderror">
-        <label class="footer-field-label" for="footer-brand-desc">Brand Description (Under Logo)</label>
-        <textarea class="footer-field-textarea" id="footer-brand-desc" name="brand_desc"
-            placeholder="Short tagline or description under your logo...">{{ old('brand_desc', $footer['brand_desc']) }}</textarea>
-        <span class="footer-error-msg">@error('brand_desc'){{ $message }}@enderror</span>
-    </div>
-
-    <div class="footer-field @error('newsletter_text') error @enderror" >
-        <label class="footer-field-label" for="footer-newsletter">Journal / Newsletter Text</label>
-        <input type="text" class="footer-field-input" id="footer-newsletter" name="newsletter_text"
-            placeholder="e.g. Subscribe for seasonal updates..."
-            value="{{ old('newsletter_text', $footer['newsletter_text']) }}">
-        <span class="footer-error-msg">@error('newsletter_text'){{ $message }}@enderror</span>
+    <div class="footer-lang-group">
+        <div class="footer-section-title">Brand Description (Under Logo)</div>
+        <div class="footer-field @error('brand_desc') error @enderror" style="margin-bottom:8px;">
+            <label class="footer-field-label" for="footer-brand-desc">🇬🇧 English</label>
+            <textarea class="footer-field-textarea" id="footer-brand-desc" name="brand_desc"
+                placeholder="Short tagline or description under your logo...">{{ old('brand_desc', $footer['brand_desc']) }}</textarea>
+            <span class="footer-error-msg">@error('brand_desc'){{ $message }}@enderror</span>
+        </div>
+        <div class="footer-field @error('brand_desc_id') error @enderror" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
+            <label class="footer-field-label" for="footer-brand-desc-id">🇮🇩 Indonesian</label>
+            <textarea class="footer-field-textarea" id="footer-brand-desc-id" name="brand_desc_id"
+                placeholder="Tagline atau deskripsi singkat di bawah logo...">{{ old('brand_desc_id', $footer['brand_desc_id'] ?? '') }}</textarea>
+            <span class="footer-error-msg">@error('brand_desc_id'){{ $message }}@enderror</span>
+        </div>
     </div>
 </div>
 
-{{-- Card 2: Social Media --}}
+{{-- Card 2: Newsletter Text --}}
+<div class="pm-card">
+    <div class="footer-lang-group">
+        <div class="footer-section-title">Journal / Newsletter Text</div>
+        <div class="footer-field @error('newsletter_text') error @enderror" style="margin-bottom:8px;">
+            <label class="footer-field-label" for="footer-newsletter">🇬🇧 English</label>
+            <input type="text" class="footer-field-input" id="footer-newsletter" name="newsletter_text"
+                placeholder="e.g. Subscribe for seasonal updates..."
+                value="{{ old('newsletter_text', $footer['newsletter_text']) }}">
+            <span class="footer-error-msg">@error('newsletter_text'){{ $message }}@enderror</span>
+        </div>
+        <div class="footer-field @error('newsletter_text_id') error @enderror" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
+            <label class="footer-field-label" for="footer-newsletter-id">🇮🇩 Indonesian</label>
+            <input type="text" class="footer-field-input" id="footer-newsletter-id" name="newsletter_text_id"
+                placeholder="mis. Berlangganan untuk pembaruan musiman..."
+                value="{{ old('newsletter_text_id', $footer['newsletter_text_id'] ?? '') }}">
+            <span class="footer-error-msg">@error('newsletter_text_id'){{ $message }}@enderror</span>
+        </div>
+    </div>
+</div>
+
+{{-- Card 3: Social Media --}}
 <div class="pm-card">
     <div class="footer-section-title">Social Media Presence</div>
 
@@ -183,18 +199,28 @@
     </div>
 </div>
 
-{{-- Card 3: Copyright & Legal ── GRID FIXED ── --}}
+{{-- Card 4: Copyright & Legal --}}
 <div class="pm-card">
-    <div class="footer-field @error('copyright_text') error @enderror">
-        <label class="footer-field-label" for="footer-copyright">Copyright Text</label>
-        <input type="text" class="footer-field-input" id="footer-copyright" name="copyright_text"
-            placeholder="© 2026 Your Company. All rights reserved."
-            value="{{ old('copyright_text', $footer['copyright_text']) }}">
-        <span class="footer-error-msg">@error('copyright_text'){{ $message }}@enderror</span>
+    <div class="footer-lang-group">
+        <div class="footer-section-title">Copyright Text</div>
+        <div class="footer-field @error('copyright_text') error @enderror" style="margin-bottom:8px;">
+            <label class="footer-field-label" for="footer-copyright">🇬🇧 English</label>
+            <input type="text" class="footer-field-input" id="footer-copyright" name="copyright_text"
+                placeholder="© 2026 Your Company. All rights reserved."
+                value="{{ old('copyright_text', $footer['copyright_text']) }}">
+            <span class="footer-error-msg">@error('copyright_text'){{ $message }}@enderror</span>
+        </div>
+        <div class="footer-field @error('copyright_text_id') error @enderror" style="border-bottom:none;margin-bottom:0;padding-bottom:0;">
+            <label class="footer-field-label" for="footer-copyright-id">🇮🇩 Indonesian</label>
+            <input type="text" class="footer-field-input" id="footer-copyright-id" name="copyright_text_id"
+                placeholder="© 2026 Perusahaan Anda. Seluruh hak cipta dilindungi."
+                value="{{ old('copyright_text_id', $footer['copyright_text_id'] ?? '') }}">
+            <span class="footer-error-msg">@error('copyright_text_id'){{ $message }}@enderror</span>
+        </div>
     </div>
 
-    {{-- wrapper dengan border-top sebagai pemisah, lalu grid di dalamnya --}}
     <div class="footer-grid-wrap">
+        <div class="footer-section-title" style="margin-bottom:12px;">Legal URLs</div>
         <div class="footer-grid">
             <div class="footer-field @error('privacy_url') error @enderror">
                 <label class="footer-field-label" for="footer-privacy">Privacy Policy URL</label>
