@@ -21,12 +21,12 @@
         <div class="summary-inputs">
             <div class="summary-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span><span data-en="Check-in: " data-id="Check-in: ">Check-in: </span><strong id="checkinDate">--/--/----</strong></span>
+                <span><span data-en="Check-in: " data-id="Tgl Masuk: ">Check-in: </span><strong id="checkinDate">--/--/----</strong></span>
             </div>
             <div class="divider"></div>
             <div class="summary-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span><span data-en="Check-out: " data-id="Check-out: ">Check-out: </span><strong id="checkoutDate">--/--/----</strong></span>
+                <span><span data-en="Check-out: " data-id="Tgl Keluar: ">Check-out: </span><strong id="checkoutDate">--/--/----</strong></span>
             </div>
             <div class="divider"></div>
             <div class="summary-item">
@@ -60,7 +60,7 @@
         </div>
         <div class="nights-indicator">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <span id="totalNights">0 Nights</span>
+            <span id="totalNights" data-en="0 Nights" data-id="0 Malam">0 Nights</span>
         </div>
     </div>
 
@@ -102,7 +102,13 @@
                     @endif
                 </div>
                 <div class="calendar-grid">
-                    <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div><div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
+                    <div class="day-name" data-en="S" data-id="M">S</div>
+                    <div class="day-name" data-en="M" data-id="S">M</div>
+                    <div class="day-name" data-en="T" data-id="S">T</div>
+                    <div class="day-name" data-en="W" data-id="R">W</div>
+                    <div class="day-name" data-en="T" data-id="K">T</div>
+                    <div class="day-name" data-en="F" data-id="J">F</div>
+                    <div class="day-name" data-en="S" data-id="S">S</div>
                     
                     @for($i = 0; $i < $startOffset; $i++)
                         <div class="day empty"></div>
@@ -138,7 +144,7 @@
     </div>
 
     <div class="calendar-footer">
-        <button id="btnNext" type="button" class="btn-choose" style="border: none; cursor: pointer; width: 100%; text-align: center; font-family: inherit; font-size: 16px;">Choose these dates</button>
+        <button id="btnNext" type="button" class="btn-choose" data-en="Choose these dates" data-id="Pilih tanggal ini" style="border: none; cursor: pointer; width: 100%; text-align: center; font-family: inherit; font-size: 16px;">Choose these dates</button>
     </div>
 </main>
 
@@ -159,42 +165,53 @@ document.addEventListener('DOMContentLoaded', function () {
     let nightsCount = 0;
     let appliedPromoCode = '';
 
-    // Ambil bahasa saat ini (default 'en')
     let currentLang = localStorage.getItem('alas_lang') || 'en';
 
-    // Update elemen dinamis yang tidak di-handle otomatis oleh navbar
     function updateDynamicLanguage() {
-        // 1. Update teks dinamis dari Malam/Nights
+        // 1. Update nights indicator
         if (totalNightsEl) {
             if (currentLang === 'id') {
                 totalNightsEl.textContent = `${nightsCount} Malam`;
             } else {
-                totalNightsEl.textContent = `${nightsCount} Night${nightsCount > 1 ? 's' : ''}`;
+                totalNightsEl.textContent = `${nightsCount} Night${nightsCount !== 1 ? 's' : ''}`;
             }
         }
 
-        // 2. Update Placeholder (AlasLang murni hanya update textContent)
+        // 2. Update promo placeholder
         if (promoCode) {
-            promoCode.placeholder = currentLang === 'id' ? promoCode.getAttribute('data-id-placeholder') : promoCode.getAttribute('data-en-placeholder');
+            promoCode.placeholder = currentLang === 'id'
+                ? promoCode.getAttribute('data-id-placeholder')
+                : promoCode.getAttribute('data-en-placeholder');
         }
 
-        // 3. Update teks Button Checkout dinamis
-        if (btnNext) {
-            // Cek apakah sedang proses atau normal
-            if (btnNext.style.pointerEvents === 'none' && btnNext.style.opacity === '0.7') {
-                btnNext.textContent = currentLang === 'id' ? 'Memproses...' : 'Processing...';
-            } else {
-                btnNext.textContent = currentLang === 'id' ? 'Pilih tanggal ini' : 'Choose these dates';
-            }
+        // 3. Update guest select options
+        if (guestSelect) {
+            Array.from(guestSelect.options).forEach(opt => {
+                opt.textContent = currentLang === 'id'
+                    ? opt.getAttribute('data-id')
+                    : opt.getAttribute('data-en');
+            });
         }
-        
-        // 4. Update teks Button Promo terapan
-        if (btnApplyPromo && appliedPromoCode !== '') {
-            btnApplyPromo.textContent = currentLang === 'id' ? 'Diterapkan' : 'Applied';
+
+        // 4. Update btnNext text (only when not processing)
+        if (btnNext && !(btnNext.style.pointerEvents === 'none' && btnNext.style.opacity === '0.7')) {
+            btnNext.textContent = currentLang === 'id'
+                ? btnNext.getAttribute('data-id')
+                : btnNext.getAttribute('data-en');
+        }
+
+        // 5. Update promo apply button text
+        if (btnApplyPromo) {
+            if (appliedPromoCode !== '') {
+                btnApplyPromo.textContent = currentLang === 'id' ? 'Diterapkan' : 'Applied';
+            } else {
+                btnApplyPromo.textContent = currentLang === 'id'
+                    ? btnApplyPromo.getAttribute('data-id')
+                    : btnApplyPromo.getAttribute('data-en');
+            }
         }
     }
 
-    // Dengarkan event langchange dari navbar
     document.addEventListener('alas:langchange', function(e) {
         currentLang = e.detail.lang;
         updateDynamicLanguage();
@@ -237,8 +254,6 @@ document.addEventListener('DOMContentLoaded', function () {
         else checkoutEl.classList.remove('selected-date');
 
         nightsCount = calculateNights(checkinDate, checkoutDate);
-        
-        // Panggil fungsi terjemahan dinamis untuk total malam
         updateDynamicLanguage();
 
         allDays.forEach(day => {
@@ -313,7 +328,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 alert(msg);
             } else {
                 appliedPromoCode = '';
-                btnApplyPromo.textContent = currentLang === 'id' ? 'Terapkan' : 'Apply';
+                btnApplyPromo.textContent = currentLang === 'id'
+                    ? btnApplyPromo.getAttribute('data-id')
+                    : btnApplyPromo.getAttribute('data-en');
                 btnApplyPromo.style.color = '';
             }
         });
@@ -349,14 +366,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     : "Failed to process, please try again.";
                 alert(errorMsg);
                 
-                btnNext.textContent = currentLang === 'id' ? "Pilih tanggal ini" : "Choose these dates";
+                btnNext.textContent = currentLang === 'id'
+                    ? btnNext.getAttribute('data-id')
+                    : btnNext.getAttribute('data-en');
                 btnNext.style.opacity = '1';
                 btnNext.style.pointerEvents = 'auto';
             }
         });
     }
 
-    // Inisialisasi tampilan pertama kali
     updateUI();
 });
 </script>

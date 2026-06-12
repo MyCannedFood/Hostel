@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Bed & Shared Room - AlaSare</title>
+<title data-en="Bed & Shared Room - AlaSare" data-id="Kasur & Kamar Bersama - AlaSare">Bed & Shared Room - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         /* STYLE KHUSUS POP-UP & ADDON */
@@ -64,13 +64,21 @@
             mengganti textContent secara otomatis saat bahasa berubah.
         --}}
         <x-booking-header 
-            title="Choose Your Private Space" 
-            subtitle="We provide beds/rooms with the best facilities for your comfort." 
-            data-en-title="Choose Your Private Space"
-            data-id-title="Pilih Ruang Pribadimu"
-            data-en-subtitle="We provide beds/rooms with the best facilities for your comfort."
-            data-id-subtitle="Kami menyediakan kasur/kamar dengan fasilitas terbaik untuk kenyamananmu."
+            title="Choose Your Private Space"
+            title-id="Pilih Ruang Pribadimu"
+            subtitle="We provide beds/rooms with the best facilities for your comfort."
+            subtitle-id="Kami menyediakan kasur/kamar dengan fasilitas terbaik untuk kenyamananmu."
         />
+
+        <script>
+            // Pastikan komponen booking-header ikut ter-translate berdasarkan AlasLang
+            // (komponen ini kadang render textContent setelah AlasLang init)
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.AlasLang && typeof window.AlasLang.apply === 'function') {
+                    window.AlasLang.apply(window.AlasLang.current());
+                }
+            });
+        </script>
 
         @php
             use Carbon\Carbon;
@@ -164,7 +172,7 @@
                                 'desc' => $guest->self_description,
                                 'bed_name' => $bedInfo->name,
                                 'avatar' => asset('images/sharedroom/' . ($guest->id % 2 == 0 ? 'liam.png' : 'julian.png')),
-                                'tags' => explode(',', 'Traveler,Backpacker')
+'tags' => explode(',', 'Traveler,Backpacker')
                             ];
                         }
                     }
@@ -178,7 +186,7 @@
             foreach($room->beds as $bed) {
                 $pin = $bed->bedPin;
                 if($pin && $pin->position_top && $pin->position_left) {
-                    $label = $pin->point_label ?: 'Unknown';
+$label = $pin->point_label ?: 'Unknown';
                     if(!isset($groupedPoints[$label])) {
                         $groupedPoints[$label] = [
                             'top' => $pin->position_top,
@@ -250,7 +258,7 @@
             </h2>
             <span class="room-type-tag">
                 <span data-en="Room Type:" data-id="Tipe Kamar:">Room Type:</span>
-                {{ $room->gender_type == 'Mixed' ? 'Mixed Dorm' : $room->gender_type . ' Only' }}
+{{ $room->gender_type == 'Mixed' ? 'Mixed Dorm' : $room->gender_type . ' Only' }}
             </span>
         </div>
 
@@ -258,8 +266,8 @@
             <div class="room-detail-image-wrap">
                 <img src="{{ $room->photo ? asset('storage/' . $room->photo) : asset('images/default-room.png') }}" alt="{{ $room->name }}" class="room-detail-image">
                 @if(strtolower($room->gender_type) != 'mixed')
-                    <span class="male-only-badge" @if($room->gender_type == 'Female') style="background: rgba(192, 124, 77, 0.9);" @endif>
-                        {{ strtoupper($room->gender_type) }} ONLY
+<span class="male-only-badge" @if($room->gender_type == 'Female') style="background: rgba(192, 124, 77, 0.9);" @endif>
+                        <span data-en="{{ strtoupper($room->gender_type) }} ONLY" data-id="HANYA {{ strtoupper($room->gender_type) }}">{{ strtoupper($room->gender_type) }} ONLY</span>
                     </span>
                 @endif
             </div>

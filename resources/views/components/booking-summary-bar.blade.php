@@ -8,12 +8,12 @@
     <div class="summary-inputs">
         <div class="summary-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Check-in: <strong>{{ $checkIn }}</strong></span>
+            <span><span data-en="Check-in: " data-id="Tgl Masuk: ">Check-in: </span><strong>{{ $checkIn }}</strong></span>
         </div>
         <div class="divider"></div>
         <div class="summary-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>Check-out: <strong>{{ $checkOut }}</strong></span>
+            <span><span data-en="Check-out: " data-id="Tgl Keluar: ">Check-out: </span><strong>{{ $checkOut }}</strong></span>
         </div>
         <div class="divider"></div>
         <div class="summary-item">
@@ -24,8 +24,11 @@
     <div class="promo-section">
         <div class="promo-input-wrapper">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D37D4F" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-            <input type="text" placeholder="Apply Promo Code">
+            <input type="text" 
+                   placeholder="Apply Promo Code"
+                   data-en-placeholder="Apply Promo Code"
+                   data-id-placeholder="Gunakan Kode Promo">
         </div>
-        <a href="#" class="apply-btn">Apply</a>
+        <a href="#" class="apply-btn" data-en="Apply" data-id="Terapkan">Apply</a>
     </div>
 </div>
