@@ -58,7 +58,13 @@
                             Return to Article List
                         </a>
 
-                        <h2 class="editor-title">{{ isset($article) ? 'Edit Your Article' : 'Organize Your Articles' }}</h2>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                            <h2 class="editor-title" style="margin:0;">{{ isset($article) ? 'Edit Your Article' : 'Organize Your Articles' }}</h2>
+                            <div style="display:flex;align-items:center;gap:4px;background:#f3f4f6;border-radius:6px;padding:3px;">
+                                <button type="button" class="lang-switch-btn active" data-lang="id" style="padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:0.08em;transition:all 0.2s;">ID</button>
+                                <button type="button" class="lang-switch-btn" data-lang="en" style="padding:6px 14px;border:none;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;letter-spacing:0.08em;transition:all 0.2s;">EN</button>
+                            </div>
+                        </div>
 
                         <div class="thumbnail-upload-zone" onclick="document.getElementById('thumbnailInput').click();" style="cursor: pointer;">
                             @if(isset($article) && $article->thumbnail)
@@ -73,10 +79,14 @@
                             <div class="alasare-badge">ALASARE</div>
                         </div>
 
-                        <textarea class="article-title-field" name="title" rows="2" placeholder="Enter article title...">{{ old('title', $article->title ?? '') }}</textarea>
+                        <input type="text" id="titleInput" class="article-title-field" rows="2" placeholder="Judul Artikel" value="">
 
                         <div id="quill-editor" style="min-height: 320px;"></div>
-                        <textarea name="content" id="contentInput" style="display:none;">{{ old('content', $article->content ?? '') }}</textarea>
+
+                        <input type="hidden" name="title" id="hiddenTitle" value="{{ old('title', $article->title ?? '') }}">
+                        <textarea name="content" id="hiddenContent" style="display:none;">{{ old('content', $article->content ?? '') }}</textarea>
+                        <input type="hidden" name="title_en" id="hiddenTitleEn" value="{{ old('title_en', $article->title_en ?? '') }}">
+                        <textarea name="content_en" id="hiddenContentEn" style="display:none;">{{ old('content_en', $article->content_en ?? '') }}</textarea>
                     </div>
 
                     <!-- Right Side: Metadata / Publish Panel -->
@@ -237,21 +247,102 @@
         }
     });
 
-    const existing = document.getElementById('contentInput').value.trim();
-    if (existing) {
-        quill.clipboard.dangerouslyPasteHTML(existing);
+    let currentLang = 'id';
+
+    function getContentInputId(lang) {
+        return lang === 'id' ? 'hiddenContent' : 'hiddenContentEn';
     }
 
-    quill.on('text-change', function() {
+    function getTitleInputId(lang) {
+        return lang === 'id' ? 'hiddenTitle' : 'hiddenTitleEn';
+    }
+
+    function saveCurrentToHidden(lang) {
+        const titleEl = document.getElementById('titleInput');
+        const hiddenTitle = document.getElementById(getTitleInputId(lang));
+        const hiddenContent = document.getElementById(getContentInputId(lang));
+        hiddenTitle.value = titleEl.value;
         const html = quill.root.innerHTML;
-        document.getElementById('contentInput').value = (html === '<p><br></p>') ? '' : html;
+        hiddenContent.value = (html === '<p><br></p>') ? '' : html;
+    }
+
+    function loadFromHidden(lang) {
+        const titleEl = document.getElementById('titleInput');
+        const hiddenTitle = document.getElementById(getTitleInputId(lang));
+        const hiddenContent = document.getElementById(getContentInputId(lang));
+        titleEl.value = hiddenTitle.value;
+        const content = hiddenContent.value.trim();
+        if (content) {
+            quill.clipboard.dangerouslyPasteHTML(content);
+        } else {
+            quill.root.innerHTML = '<p><br></p>';
+        }
+    }
+
+    function switchLang(lang) {
+        if (lang === currentLang) return;
+        saveCurrentToHidden(currentLang);
+        currentLang = lang;
+        loadFromHidden(lang);
+
+        document.querySelectorAll('.lang-switch-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
+            btn.style.background = btn.dataset.lang === lang ? '#fff' : 'transparent';
+            btn.style.color = btn.dataset.lang === lang ? '#1a3d0a' : '#888';
+            btn.style.boxShadow = btn.dataset.lang === lang ? '0 1px 3px rgba(0,0,0,0.12)' : 'none';
+        });
+
+        const placeholder = lang === 'id' ? 'Judul Artikel' : 'Article Title';
+        document.getElementById('titleInput').placeholder = placeholder;
+    }
+
+    // Init: determine which language to show
+    const existingId = document.getElementById('hiddenContent').value.trim();
+    const existingEn = document.getElementById('hiddenContentEn').value.trim();
+    if (existingId) {
+        document.getElementById('titleInput').value = document.getElementById('hiddenTitle').value;
+        quill.clipboard.dangerouslyPasteHTML(existingId);
+    } else if (existingEn) {
+        switchLang('en');
+    }
+
+    // Setup lang switch buttons
+    document.querySelectorAll('.lang-switch-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            switchLang(this.dataset.lang);
+        });
     });
 
+    // Initial active state
+    document.querySelectorAll('.lang-switch-btn').forEach(function(btn) {
+        if (btn.dataset.lang === currentLang) {
+            btn.style.background = '#fff';
+            btn.style.color = '#1a3d0a';
+            btn.style.boxShadow = '0 1px 3px rgba(0,0,0,0.12)';
+        } else {
+            btn.style.background = 'transparent';
+            btn.style.color = '#888';
+        }
+    });
+
+    // Save to hidden fields on text change
+    quill.on('text-change', function() {
+        const html = quill.root.innerHTML;
+        document.getElementById(getContentInputId(currentLang)).value = (html === '<p><br></p>') ? '' : html;
+    });
+
+    document.getElementById('titleInput').addEventListener('input', function() {
+        document.getElementById(getTitleInputId(currentLang)).value = this.value;
+    });
+
+    // Validate on submit
     document.querySelector('form').addEventListener('submit', function(e) {
-        const content = document.getElementById('contentInput').value.trim();
+        saveCurrentToHidden(currentLang);
+        const content = document.getElementById('hiddenContent').value.trim();
         if (!content) {
             e.preventDefault();
-            alert('Content tidak boleh kosong!');
+            alert('Konten bahasa Indonesia tidak boleh kosong!');
+            switchLang('id');
             quill.focus();
             return;
         }

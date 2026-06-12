@@ -66,11 +66,11 @@ $featuredArticles ??= collect();
                             </span>
                             @endif
 
-                            <h3 class="home-journal-card-title">
+                            <h3 class="home-journal-card-title" data-en="{{ $article->title_en ?? $article->title }}" data-id="{{ $article->title_id ?? $article->title }}">
                                 {{ $article->title }}
                             </h3>
 
-                            <p class="home-journal-card-excerpt">
+                            <p class="home-journal-card-excerpt" data-en="{{ Str::limit(strip_tags($article->content_en ?? $article->content), 120) }}" data-id="{{ Str::limit(strip_tags($article->content_id ?? $article->content), 120) }}">
                                 {{ Str::limit(strip_tags($article->content), 120) }}
                             </p>
 

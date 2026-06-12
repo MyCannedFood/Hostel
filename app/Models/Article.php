@@ -12,7 +12,11 @@ class Article extends Model
     protected $fillable = [
         'admin_id',
         'title',
+        'title_en',
+        'title_id',
         'content',
+        'content_en',
+        'content_id',
         'thumbnail',
         'status',
         'category',
@@ -25,6 +29,20 @@ class Article extends Model
     protected $casts = [
         'publish_at' => 'datetime',
     ];
+
+    public function getTitleAttribute($value)
+    {
+        $locale = app()->getLocale();
+        $localized = $this->{"title_{$locale}"};
+        return $localized ?? $value;
+    }
+
+    public function getContentAttribute($value)
+    {
+        $locale = app()->getLocale();
+        $localized = $this->{"content_{$locale}"};
+        return $localized ?? $value;
+    }
 
     public function admin()
     {
