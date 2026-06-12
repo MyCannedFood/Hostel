@@ -275,7 +275,7 @@
         if (content) {
             quill.clipboard.dangerouslyPasteHTML(content);
         } else {
-            quill.root.innerHTML = '<p><br></p>';
+            quill.setText('');
         }
     }
 
@@ -335,11 +335,24 @@
         document.getElementById(getTitleInputId(currentLang)).value = this.value;
     });
 
-    // Validate on submit
+    // Validate on submit — sync visible fields to the right hidden fields
     document.querySelector('form').addEventListener('submit', function(e) {
-        saveCurrentToHidden(currentLang);
-        const content = document.getElementById('hiddenContent').value.trim();
-        if (!content) {
+        const html = quill.root.innerHTML;
+        const titleVal = document.getElementById('titleInput').value;
+        const isEmpty = html === '<p><br></p>' || !html.trim();
+
+        // Simpan visible fields ke hidden sesuai bahasa aktif
+        if (currentLang === 'id') {
+            document.getElementById('hiddenTitle').value = titleVal;
+            document.getElementById('hiddenContent').value = isEmpty ? '' : html;
+        } else {
+            document.getElementById('hiddenTitleEn').value = titleVal;
+            document.getElementById('hiddenContentEn').value = isEmpty ? '' : html;
+        }
+
+        // Validasi: konten ID wajib
+        const idContent = document.getElementById('hiddenContent').value.trim();
+        if (!idContent) {
             e.preventDefault();
             alert('Konten bahasa Indonesia tidak boleh kosong!');
             switchLang('id');

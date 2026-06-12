@@ -30,7 +30,7 @@
         </div>
         <h1 data-en="{{ $article->title_en ?? $article->title }}" data-id="{{ $article->title_id ?? $article->title }}">{{ $article->title }}</h1>
         
-        <div class="journal-body">
+        <div class="journal-body" data-en-html="{{ $article->content_en ?? $article->content }}" data-id-html="{{ $article->content }}">
             {!! $article->content !!}
         </div>
     </div>
@@ -39,5 +39,27 @@
 @include('components.footer')
 
 <x-whatsapp_floating />
+
+<script>
+(function () {
+    var el = document.querySelector('.journal-body');
+    if (!el || !el.dataset.enHtml) return;
+
+    function applyBody(lang) {
+        var key = lang === 'en' ? 'enHtml' : 'idHtml';
+        var html = el.dataset[key];
+        if (html) el.innerHTML = html;
+    }
+
+    document.addEventListener('alas:langchange', function (e) {
+        applyBody(e.detail.lang);
+    });
+
+    var lang = (window.AlasLang ? window.AlasLang.current() : null)
+               || localStorage.getItem('alas_lang')
+               || 'en';
+    applyBody(lang);
+})();
+</script>
 </body>
 </html>

@@ -30,20 +30,6 @@ class Article extends Model
         'publish_at' => 'datetime',
     ];
 
-    public function getTitleAttribute($value)
-    {
-        $locale = app()->getLocale();
-        $localized = $this->{"title_{$locale}"};
-        return $localized ?? $value;
-    }
-
-    public function getContentAttribute($value)
-    {
-        $locale = app()->getLocale();
-        $localized = $this->{"content_{$locale}"};
-        return $localized ?? $value;
-    }
-
     public function admin()
     {
         return $this->belongsTo(Admin::class);
