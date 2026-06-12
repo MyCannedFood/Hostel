@@ -12,18 +12,27 @@ class UpdateMapRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'subtitle'  => ['nullable', 'string', 'max:100'],
-            'title'     => ['nullable', 'string', 'max:200'],
-            'map_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], // max 5MB
-            'remove_map_image' => ['nullable', 'boolean'],
+            // English Labels
+            'subtitle'          => ['nullable', 'string', 'max:100'],
+            'title'             => ['required', 'string', 'max:200'],
+
+            // Indonesian Labels
+            'subtitle_id'       => ['nullable', 'string', 'max:100'],
+            'title_id'          => ['required', 'string', 'max:200'],
+
+            // Image & Action Flags
+            'map_image'         => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'], // max 5MB
+            'remove_map_image'  => ['nullable', 'boolean'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'map_image.max'   => 'Ukuran gambar maksimal 5MB.',
-            'map_image.mimes' => 'Format gambar harus JPG, PNG, atau WEBP.',
+            'title.required'    => 'Section title (EN) wajib diisi.',
+            'title_id.required' => 'Section title (ID) wajib diisi.',
+            'map_image.max'     => 'Ukuran gambar maksimal 5MB.',
+            'map_image.mimes'   => 'Format gambar harus JPG, PNG, atau WEBP.',
         ];
     }
 }

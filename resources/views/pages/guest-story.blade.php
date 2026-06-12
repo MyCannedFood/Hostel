@@ -19,7 +19,11 @@ $pageUrl     = fn($p) => $baseUrl . '?page=' . $p;
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ $guestStoriesData['title'] ?? 'Guest Stories' }} - AlaSare</title>
+    <title 
+        data-en="{{ $guestStoriesData['title'] ?? 'Guest Stories' }} - AlaSare" 
+        data-id="{{ $guestStoriesData['title_id'] ?? 'Cerita Tamu' }} - AlaSare">
+        {{ $guestStoriesData['title'] ?? 'Guest Stories' }} - AlaSare
+    </title>
     @vite(['resources/css/app.css', 'resources/css/guest-stories.css', 'resources/js/app.js'])
 </head>
 <body class="gs-page" style="margin: 0; padding: 0;">
@@ -30,10 +34,15 @@ $pageUrl     = fn($p) => $baseUrl . '?page=' . $p;
 
     {{-- ===== HERO ===== --}}
     <section class="gs-hero">
-        <h1 class="gs-hero__title">{{ $guestStoriesData['title'] ?? 'Guest Stories' }}</h1>
-        <p class="gs-hero__sub">
-            Discover the meaningful connections and restorative moments shared by<br>
-            those who have walked our botanical trails and rested in our forest sanctuary.
+        <h1 class="gs-hero__title"
+            data-en="{{ $guestStoriesData['title'] ?? 'Guest Stories' }}"
+            data-id="{{ $guestStoriesData['title_id'] ?? 'Cerita Tamu' }}">
+            {{ $guestStoriesData['title'] ?? 'Guest Stories' }}
+        </h1>
+        <p class="gs-hero__sub"
+           data-en="{{ $guestStoriesData['subtitle'] ?? 'Discover the meaningful connections and restorative moments shared by those who have walked our botanical trails and rested in our forest sanctuary.' }}"
+           data-id="{{ $guestStoriesData['subtitle_id'] ?? 'Temukan koneksi bermakna dan momen pemulihan yang dibagikan oleh mereka yang telah menyusuri jalur botani dan beristirahat di suaka hutan kami.' }}">
+            {{ $guestStoriesData['subtitle'] ?? 'Discover the meaningful connections and restorative moments shared by those who have walked our botanical trails and rested in our forest sanctuary.' }}
         </p>
     </section>
 
@@ -50,7 +59,7 @@ $pageUrl     = fn($p) => $baseUrl . '?page=' . $p;
                             {{ strtoupper(substr($story['name'] ?? 'G', 0, 1)) }}
                         </div>
                     @endif
-                    <span class="gs-card__badge">
+                    <span class="gs-card__badge" data-en="Verified Guest" data-id="Tamu Terverifikasi">
                         <span class="gs-card__badge-check">
                             <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/>
@@ -62,18 +71,25 @@ $pageUrl     = fn($p) => $baseUrl . '?page=' . $p;
                 </div>
                 <div class="gs-card__body">
                     <span class="gs-card__ql">"</span>
-                    <blockquote class="gs-card__quote">
+                    <blockquote class="gs-card__quote"
+                                data-en="{{ $story['quote'] ?? '' }}"
+                                data-id="{{ $story['quote_id'] ?? '' }}">
                         "{{ $story['quote'] ?? '' }}"
                     </blockquote>
                     <div class="gs-card__meta">
                         <div class="gs-card__bar"></div>
                         <p class="gs-card__name">{{ $story['name'] ?? '' }}</p>
-                        <p class="gs-card__detail">{{ $story['origin'] ?? '' }}</p>
+                        <p class="gs-card__detail"
+                           data-en="{{ $story['origin'] ?? '' }}"
+                           data-id="{{ $story['origin_id'] ?? '' }}">
+                            {{ $story['origin'] ?? '' }}
+                        </p>
                     </div>
                 </div>
             </article>
         @empty
-            <p style="text-align:center; color:#8a9b8c; font-family:'Georgia',serif; padding: 60px 0;">
+            <p style="text-align:center; color:#8a9b8c; font-family:'Georgia',serif; padding: 60px 0;"
+               data-en="No guest stories yet." data-id="Belum ada cerita tamu.">
                 No guest stories yet.
             </p>
         @endforelse

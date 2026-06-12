@@ -11,14 +11,21 @@ class UpdateGuestStoriesRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title'                    => ['nullable', 'string', 'max:100'],
+            // Section Titles & Subtitles
+            'title'        => ['nullable', 'string', 'max:100'],
+            'title_id'     => ['nullable', 'string', 'max:100'],
+            'subtitle'     => ['nullable', 'string', 'max:500'],
+            'subtitle_id'  => ['nullable', 'string', 'max:500'],
 
-            'stories'                  => ['nullable', 'array'],
-            'stories.*.name'           => ['required_with:stories', 'string', 'max:150'],
-            'stories.*.origin'         => ['nullable', 'string', 'max:150'],
-            'stories.*.quote'          => ['nullable', 'string', 'max:400'],
-            'stories.*.image'          => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-            'stories.*.image_path'     => ['nullable', 'string'],
+            // Array Stories
+            'stories'               => ['nullable', 'array'],
+            'stories.*.name'        => ['required_with:stories', 'string', 'max:150'],
+            'stories.*.origin'      => ['nullable', 'string', 'max:150'],
+            'stories.*.quote'       => ['nullable', 'string', 'max:400'],
+            'stories.*.origin_id'   => ['nullable', 'string', 'max:150'],
+            'stories.*.quote_id'    => ['nullable', 'string', 'max:400'],
+            'stories.*.image'       => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'stories.*.image_path'  => ['nullable', 'string'],
         ];
     }
 

@@ -23,6 +23,7 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\PaymentSettingsController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Admin\LocationSettingsController;
 
 /*
 |--------------------------------------------------------------------------

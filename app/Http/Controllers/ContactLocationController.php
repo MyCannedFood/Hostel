@@ -13,7 +13,6 @@ use Illuminate\View\View;
 
 class ContactLocationController extends Controller
 {
-
     public function index(): View
     {
         $transports = TransportationInfo::orderBy('sort_order')->orderBy('id')->get();
@@ -21,10 +20,25 @@ class ContactLocationController extends Controller
 
         return view('pages.contact-location', [
             'address'     => $address,
+            'address_id'  => SiteSetting::get('address_id', $address),
+
             'phone'       => SiteSetting::get('phone', ''),
             'publicEmail' => SiteSetting::get('public_email', ''),
             'mapsLink'    => static::toMapsEmbedUrl(SiteSetting::get('maps_link', ''), $address),
             'transports'  => $transports,
+
+            // CMS-managed bilingual text for hero & intro sections
+            'heroTitle'        => SiteSetting::get('contact_hero_title',    'We\'re here for you'),
+            'heroTitle_id'     => SiteSetting::get('contact_hero_title_id', 'Kami siap membantu'),
+
+            'heroSubtitle'     => SiteSetting::get('contact_hero_subtitle',    'Questions, group bookings, collaborations, or just saying hi - we respond to everything within a few hours.'),
+            'heroSubtitle_id'  => SiteSetting::get('contact_hero_subtitle_id', 'Pertanyaan, pemesanan grup, kolaborasi, atau sekadar menyapa — kami membalas semuanya dalam beberapa jam.'),
+
+            'locationTitle'    => SiteSetting::get('contact_location_title',    'Find us in ...'),
+            'locationTitle_id' => SiteSetting::get('contact_location_title_id', 'Temukan kami di ...'),
+
+            'locationDesc'     => SiteSetting::get('contact_location_desc',    'Tucked in a green pocket of Bandung - close to everything that matters, removed from everything that doesn\'t.'),
+            'locationDesc_id'  => SiteSetting::get('contact_location_desc_id', 'Tersembunyi di sudut hijau Bandung — dekat dengan semua yang penting, jauh dari semua yang tidak.'),
         ]);
     }
 
@@ -68,10 +82,8 @@ class ContactLocationController extends Controller
             'message'      => 'required|string|max:2000',
         ]);
 
-        // Save to DB
         $msg = ContactMessage::create($validated);
 
-        // Send email notification
         $receiverEmail = SiteSetting::get('contact_form_email', config('mail.from.address'));
         Mail::to($receiverEmail)->send(new ContactFormMail($msg));
 

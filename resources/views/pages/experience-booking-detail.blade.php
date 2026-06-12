@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{{ __('experience.reservation_title') }} - AlaSare</title>
+    <title data-en="Experience Reservation - AlaSare" data-id="Reservasi Pengalaman - AlaSare">{{ __('experience.reservation_title') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -16,19 +16,19 @@
     <nav class="exp-stepper">
         <div class="exp-step exp-step--active">
             <span class="exp-step-number">1.</span>
-            <span class="exp-step-label">{{ __('experience.step_detail') }}</span>
+            <span class="exp-step-label" data-en="Detail" data-id="Detail">{{ __('experience.step_detail') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">{{ __('experience.step_payment_method') }}</span>
+            <span class="exp-step-label" data-en="Payment Method" data-id="Metode Pembayaran">{{ __('experience.step_payment_method') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">{{ __('experience.step_payment') }}</span>
+            <span class="exp-step-label" data-en="Payment" data-id="Pembayaran">{{ __('experience.step_payment') }}</span>
             <span class="exp-step-arrow">›</span>
         </div>
         <div class="exp-step exp-step--pending">
-            <span class="exp-step-label">{{ __('experience.step_success') }}</span>
+            <span class="exp-step-label" data-en="Success" data-id="Sukses">{{ __('experience.step_success') }}</span>
         </div>
     </nav>
 
@@ -40,17 +40,24 @@
             <img src="https://images.unsplash.com/photo-1596431976070-13f59049a4f4?auto=format&fit=crop&q=80&w=800"
                  alt="{{ $experience->name }}">
         @endif
-        <div class="badge">{{ strtoupper($experience->category) }} {{ strtoupper(__('experience.experience_label')) }}</div>
+        @php
+            $catEn = $experience->category;
+            $catId = match($experience->category) {
+                'Wellness' => 'Wellness',
+                'Culture'  => 'Budaya',
+                'Nature'   => 'Alam',
+                default    => $experience->category,
+            };
+        @endphp
+        <div class="badge" data-en="{{ $catEn }} Experience" data-id="{{ $catId }} Pengalaman">{{ strtoupper($experience->category) }} {{ strtoupper(__('experience.experience_label')) }}</div>
     </div>
 
     {{-- Header --}}
     <div class="exp-header">
         <span class="exp-header-tag">{{ strtoupper($experience->name) }}</span>
-        <h1>{{ __('experience.reservation_title') }}</h1>
+        <h1 data-en="Experience Reservation" data-id="Reservasi Pengalaman">{{ __('experience.reservation_title') }}</h1>
         <div class="exp-header-line"></div>
-        <p>
-            {{ $experience->short_description }}
-        </p>
+        <p>{{ $experience->short_description }}</p>
     </div>
 
     {{-- Validation Errors --}}
@@ -70,7 +77,7 @@
 
         <div class="exp-form-row">
             <div class="exp-form-group">
-                <label class="exp-label">{{ __('experience.select_date') }}</label>
+                <label class="exp-label" data-en="SELECT DATE" data-id="PILIH TANGGAL">{{ __('experience.select_date') }}</label>
                 <input
                     type="date"
                     class="exp-input"
@@ -81,7 +88,7 @@
                 >
             </div>
             <div class="exp-form-group">
-                <label class="exp-label">{{ __('experience.session_time') }}</label>
+                <label class="exp-label" data-en="SESSION TIME" data-id="WAKTU SESI">{{ __('experience.session_time') }}</label>
                 <div class="session-buttons">
                     @php
                         $slots = $experience->time_slots && count($experience->time_slots)
@@ -103,7 +110,7 @@
 
         <div class="exp-form-row">
             <div class="exp-form-group">
-                <label class="exp-label">{{ __('experience.number_of_guests') }}</label>
+                <label class="exp-label" data-en="NUMBER OF GUESTS" data-id="JUMLAH TAMU">{{ __('experience.number_of_guests') }}</label>
                 <div class="guest-counter">
                     <button type="button" class="counter-btn" onclick="decreaseGuests()">−</button>
                     <span class="counter-value" id="guestCount">{{ old('guest_count', $old['guest_count'] ?? 1) }}</span>
@@ -112,13 +119,15 @@
                 </div>
                 {{-- Harga per orang & total dinamis --}}
                 <p class="exp-price-hint" id="priceHint" style="margin-top:8px;font-size:12px;color:rgba(26,61,10,0.6);">
-                    {{ __('experience.price_per_orang', ['price' => number_format($experience->price, 0, ',', '.')]) }}
+                    <span data-en="IDR {{ number_format($experience->price, 0, ',', '.') }} / person" data-id="IDR {{ number_format($experience->price, 0, ',', '.') }} / orang">
+                        {{ __('experience.price_per_orang', ['price' => number_format($experience->price, 0, ',', '.')]) }}
+                    </span>
                     &nbsp;→&nbsp;
                     <strong id="totalPrice">IDR {{ number_format($experience->price * (old('guest_count', $old['guest_count'] ?? 1)), 0, ',', '.') }}</strong>
                 </p>
             </div>
             <div class="exp-form-group">
-                <label class="exp-label">{{ __('experience.full_name') }}</label>
+                <label class="exp-label" data-en="FULL NAME" data-id="NAMA LENGKAP">{{ __('experience.full_name') }}</label>
                 <input
                     type="text"
                     class="exp-input"
@@ -132,7 +141,7 @@
 
         <div class="exp-form-row">
             <div class="exp-form-group">
-                <label class="exp-label">{{ __('experience.whatsapp_number') }}</label>
+                <label class="exp-label" data-en="WHATSAPP NUMBER" data-id="NOMOR WHATSAPP">{{ __('experience.whatsapp_number') }}</label>
                 <input
                     type="tel"
                     class="exp-input"
@@ -146,7 +155,7 @@
                 >
             </div>
             <div class="exp-form-group">
-                <label class="exp-label">{{ __('experience.special_notes') }}</label>
+                <label class="exp-label" data-en="SPECIAL NOTES / ALLERGIES" data-id="CATATAN KHUSUS / ALERGI">{{ __('experience.special_notes') }}</label>
                 <input
                     type="text"
                     class="exp-input"
@@ -160,7 +169,7 @@
         {{-- What's Included --}}
         @if($experience->inclusions && count($experience->inclusions) > 0)
         <div class="exp-form-group" style="margin-top: 16px;">
-            <label class="exp-label">{{ __('experience.whats_included') }}</label>
+            <label class="exp-label" data-en="WHAT'S INCLUDED" data-id="YANG TERMASUK">{{ __('experience.whats_included') }}</label>
             <div class="includes-grid">
                 @foreach($experience->inclusions as $inclusion)
                 <div class="include-badge">
@@ -174,33 +183,36 @@
 
         {{-- Sanctuary Rules --}}
         <div class="exp-form-group" style="margin-top: 16px;">
-            <label class="exp-label">{{ __('experience.sanctuary_rules') }}</label>
+            <label class="exp-label" data-en="SANCTUARY RULES" data-id="ATURAN SANCTUARY">{{ __('experience.sanctuary_rules') }}</label>
             <div class="rules-box">
                 <ol>
-                    <li>{{ __('experience.rule_1') }}</li>
-                    <li>{{ __('experience.rule_2') }}</li>
-                    <li>{{ __('experience.rule_3') }}</li>
-                    <li>{{ __('experience.rule_4') }}</li>
+                    <li data-en="Respect the silence of the forest." data-id="Hormati kesunyian hutan.">{{ __('experience.rule_1') }}</li>
+                    <li data-en="No outside food or plastic allowed." data-id="Tidak diperbolehkan membawa makanan atau plastik dari luar.">{{ __('experience.rule_2') }}</li>
+                    <li data-en="Participate in the digital detox." data-id="Ikuti digital detox.">{{ __('experience.rule_3') }}</li>
+                    <li data-en="Respect the local flora and fauna." data-id="Hormati flora dan fauna setempat.">{{ __('experience.rule_4') }}</li>
                 </ol>
             </div>
         </div>
 
         <div class="exp-checkbox-group" style="margin-top: 16px;">
             <input type="checkbox" id="agree" name="agree" value="1" {{ old('agree') ? 'checked' : '' }} required>
-            <label for="agree">{!! __('experience.agree_rules', [
-                'rules' => '<a href="#">' . __('experience.sanctuary_rules_link') . '</a>',
-                'terms' => '<a href="#">' . __('experience.terms_conditions') . '</a>',
-            ]) !!}</label>
+            <label for="agree">
+                <span data-en="I have read and agree to " data-id="Saya telah membaca dan menyetujui "></span>
+                <a href="#"><span data-en="Sanctuary Rules" data-id="Aturan Sanctuary">{{ __('experience.sanctuary_rules_link') }}</span></a>
+                <span data-en=" and " data-id=" dan "></span>
+                <a href="#"><span data-en="Terms & Conditions" data-id="Syarat & Ketentuan">{{ __('experience.terms_conditions') }}</span></a>
+                <span data-en="." data-id="."></span>
+            </label>
         </div>
 
         <div class="exp-footer">
-            <p>{{ __('experience.digital_detox_note') }}</p>
-            <button type="submit" class="btn-proceed">{{ __('experience.proceed_to_payment') }}</button>
+            <p data-en="A brief digital detox begins with your intention." data-id="Digital detox singkat dimulai dari niat Anda.">{{ __('experience.digital_detox_note') }}</p>
+            <button type="submit" class="btn-proceed" data-en="PROCEED TO PAYMENT" data-id="LANJUTKAN KE PEMBAYARAN">{{ __('experience.proceed_to_payment') }}</button>
             <div class="secure-badge">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
-                {{ __('experience.secure_eco_transaction') }}
+                <span data-en="SECURE ECOLOGICAL TRANSACTION" data-id="TRANSAKSI EKOLOGIS AMAN">{{ __('experience.secure_eco_transaction') }}</span>
             </div>
         </div>
     </form>

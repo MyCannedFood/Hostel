@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Select Your Dates - AlaSare</title>
+    <title data-en="Select Your Dates - AlaSare" data-id="Pilih Tanggal - AlaSare">Select Your Dates - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
@@ -12,8 +12,8 @@
 
 <main class="calendar-page">
     <header class="calendar-header">
-        <h1>Select Your Dates</h1>
-        <p>Find serenity in the heart of Java.</p>
+        <h1 data-en="Select Your Dates" data-id="Pilih Tanggal Anda">Select Your Dates</h1>
+        <p data-en="Find serenity in the heart of Java." data-id="Temukan ketenangan di jantung pulau Jawa.">Find serenity in the heart of Java.</p>
     </header>
 
     {{-- Summary Bar --}}
@@ -21,23 +21,23 @@
         <div class="summary-inputs">
             <div class="summary-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>Check-in: <strong id="checkinDate">--/--/----</strong></span>
+                <span><span data-en="Check-in: " data-id="Tgl Masuk: ">Check-in: </span><strong id="checkinDate">--/--/----</strong></span>
             </div>
             <div class="divider"></div>
             <div class="summary-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span>Check-out: <strong id="checkoutDate">--/--/----</strong></span>
+                <span><span data-en="Check-out: " data-id="Tgl Keluar: ">Check-out: </span><strong id="checkoutDate">--/--/----</strong></span>
             </div>
             <div class="divider"></div>
             <div class="summary-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 <select id="guestSelect" style="border: none; outline: none; background: transparent; font-weight: 600; color: inherit; font-size: 14px; cursor: pointer; max-width: 200px;">
-                    <option value="1a0c" selected>1 Male Adult, 0 Children</option>
-                    <option value="1f0c">1 Female Adult, 0 Children</option>
-                    <option value="2a1c">2 Male Adults, 1 Child</option>
-                    <option value="2f1c">2 Female Adults, 1 Child</option>
-                    <option value="2a2c">2 Male Adults, 2 Children</option>
-                    <option value="2f2c">2 Female Adults, 2 Children</option>
+                    <option value="1a0c" data-en="1 Male Adult, 0 Children" data-id="1 Dewasa Pria, 0 Anak" selected>1 Male Adult, 0 Children</option>
+                    <option value="1f0c" data-en="1 Female Adult, 0 Children" data-id="1 Dewasa Wanita, 0 Anak">1 Female Adult, 0 Children</option>
+                    <option value="2a1c" data-en="2 Male Adults, 1 Child" data-id="2 Dewasa Pria, 1 Anak">2 Male Adults, 1 Child</option>
+                    <option value="2f1c" data-en="2 Female Adults, 1 Child" data-id="2 Dewasa Wanita, 1 Anak">2 Female Adults, 1 Child</option>
+                    <option value="2a2c" data-en="2 Male Adults, 2 Children" data-id="2 Dewasa Pria, 2 Anak">2 Male Adults, 2 Children</option>
+                    <option value="2f2c" data-en="2 Female Adults, 2 Children" data-id="2 Dewasa Wanita, 2 Anak">2 Female Adults, 2 Children</option>
                 </select>
             </div>
         </div>
@@ -45,22 +45,22 @@
         <div class="promo-section">
             <div class="promo-input-wrapper">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D37D4F" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                <input type="text" id="promoCode" placeholder="Apply Promo Code">
+                <input type="text" id="promoCode" placeholder="Apply Promo Code" data-en-placeholder="Apply Promo Code" data-id-placeholder="Gunakan Kode Promo">
             </div>
-            <a href="#" id="btnApplyPromo" class="apply-btn">Apply</a>
+            <a href="#" id="btnApplyPromo" class="apply-btn" data-en="Apply" data-id="Terapkan">Apply</a>
         </div>
     </div>
 
     {{-- Controls --}}
     <div class="calendar-controls">
         <div class="filter-tabs" style="display:none;">
-            <button class="filter-tab active">All Rooms</button>
-            <button class="filter-tab">Female Only Dorm</button>
-            <button class="filter-tab">Male Only Dorm</button>
+            <button class="filter-tab active" data-en="All Rooms" data-id="Semua Kamar">All Rooms</button>
+            <button class="filter-tab" data-en="Female Only Dorm" data-id="Asrama Khusus Wanita">Female Only Dorm</button>
+            <button class="filter-tab" data-en="Male Only Dorm" data-id="Asrama Khusus Pria">Male Only Dorm</button>
         </div>
         <div class="nights-indicator">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-            <span id="totalNights">0 Nights</span>
+            <span id="totalNights" data-en="0 Nights" data-id="0 Malam">0 Nights</span>
         </div>
     </div>
 
@@ -78,9 +78,7 @@
             $baseMonth->copy()->addMonth()
         ];
 
-        // Simpan hari ini untuk perbandingan
         $today = Carbon::today();
-
         $prevMonthUrl = url()->current() . '?month=' . $baseMonth->copy()->subMonth()->format('Y-m');
         $nextMonthUrl = url()->current() . '?month=' . $baseMonth->copy()->addMonth()->format('Y-m');
     @endphp
@@ -104,7 +102,13 @@
                     @endif
                 </div>
                 <div class="calendar-grid">
-                    <div class="day-name">S</div><div class="day-name">M</div><div class="day-name">T</div><div class="day-name">W</div><div class="day-name">T</div><div class="day-name">F</div><div class="day-name">S</div>
+                    <div class="day-name" data-en="S" data-id="M">S</div>
+                    <div class="day-name" data-en="M" data-id="S">M</div>
+                    <div class="day-name" data-en="T" data-id="S">T</div>
+                    <div class="day-name" data-en="W" data-id="R">W</div>
+                    <div class="day-name" data-en="T" data-id="K">T</div>
+                    <div class="day-name" data-en="F" data-id="J">F</div>
+                    <div class="day-name" data-en="S" data-id="S">S</div>
                     
                     @for($i = 0; $i < $startOffset; $i++)
                         <div class="day empty"></div>
@@ -113,7 +117,6 @@
                     @for($d = 1; $d <= $daysInMonth; $d++)
                         @php
                             $date = $month->copy()->day($d);
-                            // Cek apakah hari sudah lewat
                             $isPast = $date->lt($today);
                             $class = $isPast ? 'past' : 'available';
                             $fullDate = $date->format('Y-m-d');
@@ -133,15 +136,15 @@
         {{-- Legend --}}
         <div style="grid-column: 1 / span 3;">
             <div class="calendar-legend">
-                <div class="legend-item"><span class="dot available"></span> Tersedia</div>
-                <div class="legend-item"><span class="dot unavailable"></span> Tidak Tersedia</div>
-                <div class="legend-item"><span class="dot selected"></span> Terpilih</div>
+                <div class="legend-item"><span class="dot available"></span> <span data-en="Available" data-id="Tersedia">Available</span></div>
+                <div class="legend-item"><span class="dot unavailable"></span> <span data-en="Unavailable" data-id="Tidak Tersedia">Unavailable</span></div>
+                <div class="legend-item"><span class="dot selected"></span> <span data-en="Selected" data-id="Terpilih">Selected</span></div>
             </div>
         </div>
     </div>
 
     <div class="calendar-footer">
-        <button id="btnNext" type="button" class="btn-choose" style="border: none; cursor: pointer; width: 100%; text-align: center; font-family: inherit; font-size: 16px;">Choose these dates</button>
+        <button id="btnNext" type="button" class="btn-choose" data-en="Choose these dates" data-id="Pilih tanggal ini" style="border: none; cursor: pointer; width: 100%; text-align: center; font-family: inherit; font-size: 16px;">Choose these dates</button>
     </div>
 </main>
 
@@ -155,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const guestSelect = document.getElementById('guestSelect');
     const promoCode = document.getElementById('promoCode');
 
-    // ✅ PERBAIKAN: hanya pilih hari yang available (bukan past/unavailable)
     const allDays = document.querySelectorAll('.calendar-grid .day.available');
 
     let checkinDate = null;
@@ -163,7 +165,58 @@ document.addEventListener('DOMContentLoaded', function () {
     let nightsCount = 0;
     let appliedPromoCode = '';
 
-    // Ambil data dari URL jika ada (fungsi Back)
+    let currentLang = localStorage.getItem('alas_lang') || 'en';
+
+    function updateDynamicLanguage() {
+        // 1. Update nights indicator
+        if (totalNightsEl) {
+            if (currentLang === 'id') {
+                totalNightsEl.textContent = `${nightsCount} Malam`;
+            } else {
+                totalNightsEl.textContent = `${nightsCount} Night${nightsCount !== 1 ? 's' : ''}`;
+            }
+        }
+
+        // 2. Update promo placeholder
+        if (promoCode) {
+            promoCode.placeholder = currentLang === 'id'
+                ? promoCode.getAttribute('data-id-placeholder')
+                : promoCode.getAttribute('data-en-placeholder');
+        }
+
+        // 3. Update guest select options
+        if (guestSelect) {
+            Array.from(guestSelect.options).forEach(opt => {
+                opt.textContent = currentLang === 'id'
+                    ? opt.getAttribute('data-id')
+                    : opt.getAttribute('data-en');
+            });
+        }
+
+        // 4. Update btnNext text (only when not processing)
+        if (btnNext && !(btnNext.style.pointerEvents === 'none' && btnNext.style.opacity === '0.7')) {
+            btnNext.textContent = currentLang === 'id'
+                ? btnNext.getAttribute('data-id')
+                : btnNext.getAttribute('data-en');
+        }
+
+        // 5. Update promo apply button text
+        if (btnApplyPromo) {
+            if (appliedPromoCode !== '') {
+                btnApplyPromo.textContent = currentLang === 'id' ? 'Diterapkan' : 'Applied';
+            } else {
+                btnApplyPromo.textContent = currentLang === 'id'
+                    ? btnApplyPromo.getAttribute('data-id')
+                    : btnApplyPromo.getAttribute('data-en');
+            }
+        }
+    }
+
+    document.addEventListener('alas:langchange', function(e) {
+        currentLang = e.detail.lang;
+        updateDynamicLanguage();
+    });
+
     try {
         const cleanSearch = window.location.search.replace(/&amp;/g, '&');
         const urlParams = new URLSearchParams(cleanSearch);
@@ -176,14 +229,12 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Gagal membaca URL:", e);
     }
 
-    // Format tanggal untuk tampilan
     function formatDisplayDate(dateString) {
         if (!dateString) return '--/--/----';
         const [year, month, day] = dateString.split('-');
         return `${day}/${month}/${year}`;
     }
 
-    // Hitung selisih hari (malam)
     function calculateNights(start, end) {
         if (!start || !end) return 0;
         const startDate = new Date(start);
@@ -203,9 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
         else checkoutEl.classList.remove('selected-date');
 
         nightsCount = calculateNights(checkinDate, checkoutDate);
-        totalNightsEl.textContent = nightsCount + (nightsCount > 1 ? ' Nights' : ' Night');
+        updateDynamicLanguage();
 
-        // Update warna kalender
         allDays.forEach(day => {
             const d = day.getAttribute('data-date');
             if (!d) return;
@@ -225,7 +275,6 @@ document.addEventListener('DOMContentLoaded', function () {
             btnNext.style.opacity = '1';
             btnNext.style.pointerEvents = 'auto';
             btnNext.style.cursor = 'pointer';
-            btnNext.textContent = 'Choose these dates';
         } else {
             btnNext.style.opacity = '0.5';
             btnNext.style.pointerEvents = 'none';
@@ -233,7 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ✅ Dapatkan tanggal hari ini (format YYYY-MM-DD, timezone lokal)
     function getTodayString() {
         const now = new Date();
         const y = now.getFullYear();
@@ -242,12 +290,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return `${y}-${m}-${d}`;
     }
 
-    // Klik Kalender
     allDays.forEach(day => {
         day.addEventListener('click', function () {
             const clickedDate = this.getAttribute('data-date');
-
-            // ✅ GUARD: tolak tanggal masa lalu (double protection di JS)
             const todayStr = getTodayString();
             if (clickedDate < todayStr) return;
 
@@ -258,7 +303,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (clickedDate < checkinDate) {
                     checkinDate = clickedDate;
                 } else if (clickedDate === checkinDate) {
-                    // ✅ Klik tanggal yang sama → reset
                     checkinDate = null;
                 } else {
                     checkoutDate = clickedDate;
@@ -268,7 +312,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Apply Promo
     if (btnApplyPromo) {
         btnApplyPromo.addEventListener('click', function (e) {
             e.preventDefault();
@@ -276,28 +319,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (rawValue !== '') {
                 appliedPromoCode = rawValue;
-                btnApplyPromo.textContent = 'Applied';
+                btnApplyPromo.textContent = currentLang === 'id' ? 'Diterapkan' : 'Applied';
                 btnApplyPromo.style.color = '#D37D4F';
-                alert(`Promo Code "${appliedPromoCode}" has been applied!`);
+                
+                const msg = currentLang === 'id' 
+                    ? `Kode Promo "${appliedPromoCode}" telah diterapkan!` 
+                    : `Promo Code "${appliedPromoCode}" has been applied!`;
+                alert(msg);
             } else {
                 appliedPromoCode = '';
-                btnApplyPromo.textContent = 'Apply';
+                btnApplyPromo.textContent = currentLang === 'id'
+                    ? btnApplyPromo.getAttribute('data-id')
+                    : btnApplyPromo.getAttribute('data-en');
                 btnApplyPromo.style.color = '';
             }
         });
     }
 
-    // Tombol "Choose these dates"
     if (btnNext) {
         btnNext.addEventListener('click', function (e) {
             e.preventDefault();
             
             if (!checkinDate || !checkoutDate) {
-                alert("Silakan pilih tanggal Check-in dan Check-out terlebih dahulu.");
+                const msg = currentLang === 'id' 
+                    ? "Silakan pilih tanggal Check-in dan Check-out terlebih dahulu." 
+                    : "Please select your Check-in and Check-out dates first.";
+                alert(msg);
                 return;
             }
 
-            btnNext.textContent = "Processing...";
+            btnNext.textContent = currentLang === 'id' ? "Memproses..." : "Processing...";
             btnNext.style.opacity = '0.7';
             btnNext.style.pointerEvents = 'none';
 
@@ -310,8 +361,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 window.location.href = targetUrl;
             } catch (error) {
                 console.error("Terjadi kesalahan:", error);
-                alert("Gagal memproses, silakan coba lagi.");
-                btnNext.textContent = "Choose these dates";
+                const errorMsg = currentLang === 'id' 
+                    ? "Gagal memproses, silakan coba lagi." 
+                    : "Failed to process, please try again.";
+                alert(errorMsg);
+                
+                btnNext.textContent = currentLang === 'id'
+                    ? btnNext.getAttribute('data-id')
+                    : btnNext.getAttribute('data-en');
                 btnNext.style.opacity = '1';
                 btnNext.style.pointerEvents = 'auto';
             }

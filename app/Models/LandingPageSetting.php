@@ -29,7 +29,6 @@ class LandingPageSetting extends Model
             'bg_image'    => null,
         ],
 
-
         'philosophy' => [
             // English (default)
             'tagline'     => 'OUR PHILOSOPHY',
@@ -42,9 +41,10 @@ class LandingPageSetting extends Model
             // Indonesian (default)
             'tagline_id'     => 'FILOSOFI KAMI',
             'heading_id'     => 'Bernafas Bersama Bumi',
-            'body_1_id'      => 'Di AlaSare, kami percaya bahwa sebuah retreat seharusnya meninggalkan alam dalam kondisi lebih baik dari sebelumnya. Setiap struktur, setiap jalur, setiap keputusan dipandu oleh satu pertanyaan: apakah ini bermanfaat bagi hutan?',
+            'body_1_id'      => 'Di AlaSare, kami believe bahwa sebuah retreat seharusnya meninggalkan alam dalam kondisi lebih baik dari sebelumnya. Setiap struktur, setiap jalur, setiap keputusan dipandu oleh satu pertanyaan: apakah ini bermanfaat bagi hutan?',
             'body_2_id'      => 'Kami bekerja bersama pengrajin Jawa lokal, menggunakan bahan-bahan yang dipanen dalam radius 40 km, dan mengalokasikan 30% pendapatan untuk penghijauan aktif. Menginap di sini adalah sebuah tindakan kepedulian.',
             'badge_label_id' => 'Konservasi',
+            'badge_value_id' => '80% Tutupan Hutan', // ← Sudah ditambahkan agar sinkron dengan Form Request
 
             'features'    => [
                 [
@@ -110,7 +110,7 @@ class LandingPageSetting extends Model
             ],
         ],
 
-'map' => [
+        'map' => [
             // English (default)
             'subtitle'        => 'Explore the Ground',
             'title'           => 'AlaSare Map',
@@ -124,18 +124,16 @@ class LandingPageSetting extends Model
         ],
 
         'featured_rooms' => [
-            'title'       => 'Sanctuaries',
-            'title_id'    => 'Tempat Peristirahatan',
-
-            'description' => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
+            'title'          => 'Sanctuaries',
+            'title_id'       => 'Tempat Peristirahatan',
+            'description'    => 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.',
             'description_id' => 'Setiap vila memiliki jiwa yang unik, dibuat dari kayu jati daur ulang dan dirancang untuk membingkai hutan.',
-
-            'room_ids'    => [],
+            'room_ids'       => [],
         ],
 
         'guest_stories' => [
             // English (default)
-            'title'   => 'Guest Stories',
+            'title'    => 'Guest Stories',
 
             // Indonesian (default)
             'title_id' => 'Cerita Tamu',
@@ -177,35 +175,35 @@ class LandingPageSetting extends Model
 
             'items'         => [
                 [
-                    'icon_path' => null,
-                    'title' => 'EarthCheck',
-                    'title_id' => 'EarthCheck',
-                    'sub' => 'Gold Certified',
-                    'sub_id' => 'Sertifikasi Emas',
+                    'icon_path'  => null,
+                    'title'      => 'EarthCheck',
+                    'title_id'   => 'EarthCheck',
+                    'sub'        => 'Gold Certified',
+                    'sub_id'     => 'Sertifikasi Emas',
                     'is_visible' => true,
                 ],
                 [
-                    'icon_path' => null,
-                    'title' => "Traveler's Choice",
-                    'title_id' => 'Pilihan Wisatawan',
-                    'sub' => 'TripAdvisor 2025',
-                    'sub_id' => 'TripAdvisor 2025',
+                    'icon_path'  => null,
+                    'title'      => "Traveler's Choice",
+                    'title_id'   => 'Pilihan Wisatawan',
+                    'sub'        => 'TripAdvisor 2025',
+                    'sub_id'     => 'TripAdvisor 2025',
                     'is_visible' => true,
                 ],
                 [
-                    'icon_path' => null,
-                    'title' => 'Local Heritage',
-                    'title_id' => 'Warisan Lokal',
-                    'sub' => 'Preservation',
-                    'sub_id' => 'Pelestarian',
+                    'icon_path'  => null,
+                    'title'      => 'Local Heritage',
+                    'title_id'   => 'Warisan Lokal',
+                    'sub'        => 'Preservation',
+                    'sub_id'     => 'Pelestarian',
                     'is_visible' => true,
                 ],
                 [
-                    'icon_path' => null,
-                    'title' => 'Zero Waste',
-                    'title_id' => 'Bebas Limbah',
-                    'sub' => 'Initiative',
-                    'sub_id' => 'Inisiatif',
+                    'icon_path'  => null,
+                    'title'      => 'Zero Waste',
+                    'title_id'   => 'Bebas Limbah',
+                    'sub'        => 'Initiative',
+                    'sub_id'     => 'Inisiatif',
                     'is_visible' => true,
                 ],
             ],
@@ -220,15 +218,15 @@ class LandingPageSetting extends Model
             'section_title_id'       => 'Jurnal & Cerita',
             'section_description_id' => 'Kurasi cerita tentang alam, hidup yang lebih pelan, dan perjalanan arsitektur kami di dalam urban jungle.',
 
-            'article_ids'         => [],   // max 3 integer IDs dari tabel articles
+            'article_ids'         => [],
         ],
 
         'media_partners' => [
             // English (default)
-            'title'   => 'As Seen In',
+            'title'    => 'As Seen In',
 
             // Indonesian (default)
-            'title_id'=> 'Diliput Oleh',
+            'title_id' => 'Diliput Oleh',
 
             'partners' => [
                 ['logo_path' => null, 'name' => 'Condé Nast Traveller', 'url' => '', 'style' => 'font-family:Georgia,serif; font-size:17px; font-weight:400; letter-spacing:0.02em;'],

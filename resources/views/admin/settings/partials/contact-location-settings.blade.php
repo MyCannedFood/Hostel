@@ -1,7 +1,6 @@
 {{-- resources/views/admin/settings/partials/contact-location-settings.blade.php --}}
 
-<link rel="stylesheet"
-href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 
 <style>
 /* ── Location & Contact Settings ── */
@@ -64,6 +63,29 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 .form-row      { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-error    { font-size: 12px; color: #c62828; margin-top: 4px; }
 .is-invalid    { border-color: #c62828 !important; }
+
+/* ── Bilingual pair layout ── */
+.bilingual-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.bilingual-row .form-group { margin-bottom: 0; }
+.lang-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-bottom: 6px;
+}
+.lang-badge.en { background: #e8f5e9; color: #2d6a1e; }
+.lang-badge.id { background: #fff3e0; color: #e65100; }
 
 .select-wrap  { position: relative; }
 .select-icon  {
@@ -130,6 +152,35 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 .action-btn:not(.del)    { color: #1A3D0A; }
 .action-btn:not(.del):hover { background: #EDF5EF; }
 
+/* ── Route pair rows ── */
+.route-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+.route-pair-inputs {
+    display: contents;
+}
+.route-row {
+    display: flex; align-items: center; gap: 8px;
+    background: #fff; border: 1.5px solid #c8d5c4;
+    border-radius: 8px; padding: 8px 12px;
+}
+.route-row.id-row { border-color: #ffe0b2; }
+.route-input {
+    flex: 1; border: none; outline: none;
+    font-size: 13px; color: #1a3d0a;
+    background: transparent; font-family: inherit;
+}
+.route-input::placeholder { color: #b0b8b0; }
+.route-remove {
+    background: none; border: none; cursor: pointer;
+    color: #d97706; display: flex; align-items: center; padding: 0 2px;
+}
+.route-remove:hover { color: #c62828; }
+
 .modal-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.5); z-index: 999;
@@ -138,7 +189,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 .modal-overlay.open { display: flex; }
 .modal-box {
     background: #fff; border-radius: 8px;
-    width: 100%; max-width: 480px;
+    width: 100%; max-width: 560px;
     box-shadow: 0 12px 40px rgba(0,0,0,0.18); overflow: hidden;
 }
 .modal-head {
@@ -153,44 +204,38 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
     transition: background 0.15s;
 }
 .modal-close:hover { background: #f0f4ee; }
-.modal-body  { padding: 20px 22px; max-height: 65vh; overflow-y: auto; }
+.modal-body  { padding: 20px 22px; max-height: 72vh; overflow-y: auto; }
 .modal-foot  { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 22px; border-top: 1px solid #e2e8de; }
 
-.route-row {
-    display: flex; align-items: center; gap: 8px;
-    background: #fff; border: 1.5px solid #c8d5c4;
-    border-radius: 8px; padding: 8px 12px; margin-bottom: 8px;
+.section-divider {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #9aaa96;
+    border-bottom: 1px solid #f0f4ee;
+    padding-bottom: 6px; margin-bottom: 14px; margin-top: 18px;
 }
-.route-input {
-    flex: 1; border: none; outline: none;
-    font-size: 13px; color: #1a3d0a;
-    background: transparent; font-family: inherit;
+.section-divider:first-child { margin-top: 0; }
+
+@media (max-width: 640px) {
+    .bilingual-row,
+    .route-pair { grid-template-columns: 1fr; }
+    .modal-box  { max-width: 100%; }
 }
-.route-input::placeholder { color: #b0b8b0; }
-.route-remove {
-    background: none; border: none; cursor: pointer;
-    color: #d97706; display: flex; align-items: center; padding: 0 2px;
-}
-.route-remove:hover { color: #c62828; }
 </style>
 
 
-
-
-    {{-- Flash success --}}
     @if(session('success'))
     <div class="alert-success show">✓ {{ session('success') }}</div>
     @endif
 
     <div class="page-header">
         <h2 class="page-title">Location & Contact Settings</h2>
-        <p class="page-sub">Manage public contact details and system routing.</p>
+        <p class="page-sub">Manage public contact details, bilingual text, and transportation info.</p>
     </div>
 
-    {{-- ── CARD 1: Public Contact Info ────────────────────────────────── --}}
     <form method="POST" action="{{ route('admin.settings.location.update') }}" id="settingsForm">
         @csrf
 
+        {{-- ── CARD 1: Public Contact Info ─────────────────────────────── --}}
         <div class="lp-card">
             <div class="lp-card-header">
                 <span class="lp-card-icon">
@@ -202,12 +247,23 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
                 <h3 class="lp-card-title">Public Contact Information</h3>
             </div>
 
-            <div class="form-group">
-                <label class="form-label" for="address">Address</label>
-                <textarea class="form-textarea @error('address') is-invalid @enderror"
-                    id="address" name="address" rows="3"
-                    placeholder="e.g., Jl. Prof. Dr. Sutami No 62, Bandung...">{{ old('address', $address ?? '') }}</textarea>
-                @error('address')<div class="form-error">{{ $message }}</div>@enderror
+            {{-- Address --}}
+            <div class="bilingual-row">
+                <div class="form-group">
+                    <span class="lang-badge en">🇬🇧 English</span>
+                    <label class="form-label" for="address">Address</label>
+                    <textarea class="form-textarea @error('address') is-invalid @enderror"
+                        id="address" name="address" rows="3"
+                        placeholder="e.g., Jl. Prof. Dr. Sutami No 62, Bandung...">{{ old('address', $address ?? '') }}</textarea>
+                    @error('address')<div class="form-error">{{ $message }}</div>@enderror
+                </div>
+                <div class="form-group">
+                    <span class="lang-badge id">🇮🇩 Indonesian</span>
+                    <label class="form-label" for="address_id">Address (Indonesian)</label>
+                    <textarea class="form-textarea"
+                        id="address_id" name="address_id" rows="3"
+                        placeholder="mis. Jl. Prof. Dr. Sutami No 62, Bandung...">{{ old('address_id', $address_id ?? '') }}</textarea>
+                </div>
             </div>
 
             <div class="form-row">
@@ -236,7 +292,89 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
             </div>
         </div>
 
-        {{-- ── CARD 2: System Config ─────────────────────────────────────── --}}
+        {{-- ── CARD 2: Bilingual Page Text ──────────────────────────────── --}}
+        <div class="lp-card">
+            <div class="lp-card-header">
+                <span class="lp-card-icon">
+                    <svg width="14" height="14" fill="none" stroke="#2d6a1e" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M5 8l6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/>
+                        <path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>
+                    </svg>
+                </span>
+                <h3 class="lp-card-title">Page Text (Bilingual)</h3>
+            </div>
+
+            {{-- Hero Title --}}
+            <p class="section-divider">Hero Section</p>
+            <div class="bilingual-row">
+                <div class="form-group">
+                    <span class="lang-badge en">🇬🇧 English</span>
+                    <label class="form-label" for="contact_hero_title">Hero Title</label>
+                    <input type="text" class="form-input" id="contact_hero_title" name="contact_hero_title"
+                        value="{{ old('contact_hero_title', $heroTitle ?? 'We\'re here for you') }}"
+                        placeholder="We're here for you">
+                </div>
+                <div class="form-group">
+                    <span class="lang-badge id">🇮🇩 Indonesian</span>
+                    <label class="form-label" for="contact_hero_title_id">Hero Title (Indonesian)</label>
+                    <input type="text" class="form-input" id="contact_hero_title_id" name="contact_hero_title_id"
+                        value="{{ old('contact_hero_title_id', $heroTitle_id ?? 'Kami siap membantu') }}"
+                        placeholder="Kami siap membantu">
+                </div>
+            </div>
+
+            {{-- Hero Subtitle --}}
+            <div class="bilingual-row">
+                <div class="form-group">
+                    <span class="lang-badge en">🇬🇧 English</span>
+                    <label class="form-label" for="contact_hero_subtitle">Hero Subtitle</label>
+                    <textarea class="form-textarea" id="contact_hero_subtitle" name="contact_hero_subtitle" rows="2"
+                        placeholder="Questions, group bookings...">{{ old('contact_hero_subtitle', $heroSubtitle ?? '') }}</textarea>
+                </div>
+                <div class="form-group">
+                    <span class="lang-badge id">🇮🇩 Indonesian</span>
+                    <label class="form-label" for="contact_hero_subtitle_id">Hero Subtitle (Indonesian)</label>
+                    <textarea class="form-textarea" id="contact_hero_subtitle_id" name="contact_hero_subtitle_id" rows="2"
+                        placeholder="Pertanyaan, pemesanan grup...">{{ old('contact_hero_subtitle_id', $heroSubtitle_id ?? '') }}</textarea>
+                </div>
+            </div>
+
+            {{-- Location Section --}}
+            <p class="section-divider">Location Section</p>
+            <div class="bilingual-row">
+                <div class="form-group">
+                    <span class="lang-badge en">🇬🇧 English</span>
+                    <label class="form-label" for="contact_location_title">Location Title</label>
+                    <input type="text" class="form-input" id="contact_location_title" name="contact_location_title"
+                        value="{{ old('contact_location_title', $locationTitle ?? 'Find us in ...') }}"
+                        placeholder="Find us in ...">
+                </div>
+                <div class="form-group">
+                    <span class="lang-badge id">🇮🇩 Indonesian</span>
+                    <label class="form-label" for="contact_location_title_id">Location Title (Indonesian)</label>
+                    <input type="text" class="form-input" id="contact_location_title_id" name="contact_location_title_id"
+                        value="{{ old('contact_location_title_id', $locationTitle_id ?? 'Temukan kami di ...') }}"
+                        placeholder="Temukan kami di ...">
+                </div>
+            </div>
+
+            <div class="bilingual-row" style="margin-bottom:0">
+                <div class="form-group" style="margin-bottom:0">
+                    <span class="lang-badge en">🇬🇧 English</span>
+                    <label class="form-label" for="contact_location_desc">Location Description</label>
+                    <textarea class="form-textarea" id="contact_location_desc" name="contact_location_desc" rows="2"
+                        placeholder="Tucked in a green pocket of Bandung...">{{ old('contact_location_desc', $locationDesc ?? '') }}</textarea>
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                    <span class="lang-badge id">🇮🇩 Indonesian</span>
+                    <label class="form-label" for="contact_location_desc_id">Location Description (Indonesian)</label>
+                    <textarea class="form-textarea" id="contact_location_desc_id" name="contact_location_desc_id" rows="2"
+                        placeholder="Tersembunyi di sudut hijau Bandung...">{{ old('contact_location_desc_id', $locationDesc_id ?? '') }}</textarea>
+                </div>
+            </div>
+        </div>
+
+        {{-- ── CARD 3: System Config ─────────────────────────────────────── --}}
         <div class="lp-card">
             <div class="lp-card-header">
                 <span class="lp-card-icon">
@@ -264,7 +402,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
             </div>
         </div>
 
-        {{-- ── CARD 3: Transportation ────────────────────────────────────── --}}
+        {{-- ── CARD 4: Transportation ────────────────────────────────────── --}}
         <div class="lp-card">
             <div class="lp-card-header spaced">
                 <div style="display:flex;align-items:center;gap:9px;">
@@ -275,7 +413,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
                             <circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>
                         </svg>
                     </span>
-                    <h3 class="lp-card-title" style="color:var(--green-800, #1a3d0a)">Transportation Info</h3>
+                    <h3 class="lp-card-title">Transportation Info</h3>
                 </div>
                 <button type="button" class="btn btn-dark btn-sm" onclick="openModal('add')">
                     <svg width="13" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -287,7 +425,6 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
 
             <div id="transportList">
                 @php
-                    // Map dari value database 'icon' ke class name 'Material Symbols'
                     $iconMapper = [
                         'car'        => 'directions_car',
                         'motorcycle' => 'two_wheeler',
@@ -310,73 +447,43 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
                       <span class="transport-icon">
                           <span class="material-symbols-rounded">
                               {{ $iconMapper[$transport->icon] ?? 'help_outline' }}
-                              
                           </span>
                       </span>
-
-                      <span class="transport-name">
-                          {{ $transport->title }}
-                      </span>
+                      <div>
+                          <span class="transport-name">{{ $transport->title }}</span>
+                          @if($transport->title_id)
+                              <span style="display:block;font-size:11px;color:#9aaa96">ID: {{ $transport->title_id }}</span>
+                          @endif
+                      </div>
                   </div>
 
                   <div class="action-icons">
-
-                      {{-- EDIT --}}
-                      <button
-                          type="button"
-                          class="action-btn"
-                          title="Edit"
+                      <button type="button" class="action-btn" title="Edit"
                           data-transport='@json($transport)'
                           onclick="event.stopPropagation(); openModal('edit', JSON.parse(this.dataset.transport))">
-
-                          <svg width="15"
-                              height="15"
-                              fill="none"
-                              stroke="currentColor"
-                              stroke-width="2"
-                              viewBox="0 0 24 24">
+                          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
                           </svg>
-
                       </button>
-
-                      {{-- DELETE --}}
-                      <button type="button"
-                        class="action-btn del"
-                        title="Delete"
-                        onclick="event.stopPropagation(); deleteTransport({{ $transport->id }}, '{{ $transport->title }}')">
-                          
-                              <svg width="15"
-                                  height="15"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  stroke-width="2"
-                                  viewBox="0 0 24 24">
-
-                                  <polyline points="3 6 5 6 21 6"/>
-                                  <path d="M19 6l-1 14H6L5 6"/>
-                                  <path d="M10 11v6M14 11v6"/>
-                                  <path d="M9 6V4h6v2"/>
-
-                              </svg>
-
-                          </button>
-
-                      
-
+                      <button type="button" class="action-btn del" title="Delete"
+                          onclick="event.stopPropagation(); deleteTransport({{ $transport->id }}, '{{ $transport->title }}')">
+                          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                              <polyline points="3 6 5 6 21 6"/>
+                              <path d="M19 6l-1 14H6L5 6"/>
+                              <path d="M10 11v6M14 11v6"/>
+                              <path d="M9 6V4h6v2"/>
+                          </svg>
+                      </button>
                   </div>
-
-              </div>
-              @empty
-              <div class="transport-empty">
-                  No transportation info added yet.
-              </div>
-              @endforelse
-              </div>
+                </div>
+                @empty
+                <div class="transport-empty">No transportation info added yet.</div>
+                @endforelse
+            </div>
         </div>
 
-        {{-- Footer buttons --}}
+        {{-- Footer --}}
         <div class="form-footer">
             <a href="{{ route('admin.settings', ['section' => 'location']) }}" class="btn btn-cancel">Cancel</a>
             <button type="submit" class="btn btn-dark">
@@ -427,21 +534,48 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Transportation Title</label>
-                    <input type="text" class="form-input" name="title" id="transTitle" placeholder="e.g., Online Taxi" required>
+                {{-- Title --}}
+                <p class="section-divider">Title</p>
+                <div class="bilingual-row">
+                    <div class="form-group">
+                        <span class="lang-badge en">🇬🇧 English</span>
+                        <label class="form-label">Transportation Title</label>
+                        <input type="text" class="form-input" name="title" id="transTitle"
+                            placeholder="e.g., Online Taxi" required>
+                    </div>
+                    <div class="form-group">
+                        <span class="lang-badge id">🇮🇩 Indonesian</span>
+                        <label class="form-label">Judul (Indonesian)</label>
+                        <input type="text" class="form-input" name="title_id" id="transTitleId"
+                            placeholder="mis. Taksi Online">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label">Short Description (Optional)</label>
-                    <input type="text" class="form-input" name="description" id="transDesc" placeholder="e.g., Approximately 20 minutes...">
+                {{-- Description --}}
+                <p class="section-divider">Description (Optional)</p>
+                <div class="bilingual-row">
+                    <div class="form-group">
+                        <span class="lang-badge en">🇬🇧 English</span>
+                        <label class="form-label">Short Description</label>
+                        <input type="text" class="form-input" name="description" id="transDesc"
+                            placeholder="e.g., Approximately 20 minutes...">
+                    </div>
+                    <div class="form-group">
+                        <span class="lang-badge id">🇮🇩 Indonesian</span>
+                        <label class="form-label">Deskripsi Singkat (Indonesian)</label>
+                        <input type="text" class="form-input" name="description_id" id="transDescId"
+                            placeholder="mis. Sekitar 20 menit...">
+                    </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom:0">
-                    <label class="form-label">Route / Drop Points</label>
-                    <div id="routeList"></div>
-                    <button type="button" class="add-route-btn" onclick="addRoute()">+ Add another route point</button>
+                {{-- Routes --}}
+                <p class="section-divider">Route / Drop Points</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;">
+                    <span class="lang-badge en" style="margin-bottom:0">🇬🇧 English</span>
+                    <span class="lang-badge id" style="margin-bottom:0">🇮🇩 Indonesian</span>
                 </div>
+                <div id="routeList"></div>
+                <button type="button" class="add-route-btn" onclick="addRoute()">+ Add another route point</button>
 
             </div>
 
@@ -453,36 +587,24 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
     </div>
 </div>
 
-<!-- View Modal -->
- <div class="modal-overlay" id="viewTransportModal">
+{{-- View Modal --}}
+<div class="modal-overlay" id="viewTransportModal">
     <div class="modal-box">
-
         <div class="modal-head">
             <h3>Transportation Details</h3>
             <button type="button" class="modal-close" onclick="closeViewModal()">✕</button>
         </div>
-
         <div class="modal-body" style="text-align:center">
-
-            <span class="material-symbols-rounded"
-                  id="viewIcon"
-                  style="font-size:42px;color:#D9864A;">
-            </span>
-
+            <span class="material-symbols-rounded" id="viewIcon" style="font-size:42px;color:#D9864A;"></span>
             <h3 id="viewTitle" style="margin-top:10px;"></h3>
-
+            <p id="viewTitleId" style="color:#e65100;font-size:13px;margin-top:2px;"></p>
             <p id="viewDescription" style="color:#777;"></p>
-
-            <ul id="viewRoutes"
-                style="text-align:left;margin-top:15px;padding-left:20px;">
-            </ul>
-
+            <ul id="viewRoutes" style="text-align:left;margin-top:15px;padding-left:20px;"></ul>
         </div>
-
     </div>
 </div>
 
- <!-- Delete Confirm Modal -->
+{{-- Delete Confirm Modal --}}
 <div class="modal-overlay" id="deleteModal">
     <div class="modal-box" style="max-width:380px">
         <div class="modal-head">
@@ -501,7 +623,7 @@ href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" />
         </div>
         <div class="modal-foot">
             <button type="button" class="btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
-            <button type="button" class="btn btn-dark"  onclick="confirmDelete()">Delete</button>
+            <button type="button" class="btn btn-dark" onclick="confirmDelete()">Delete</button>
         </div>
     </div>
 </div>
@@ -517,118 +639,128 @@ const ICONS = {
     boat:       'directions_boat',
 };
 
-function previewIcon(v){
+function previewIcon(v) {
     const icon = ICONS[v] || 'help_outline';
     document.getElementById('selectIconPreview').innerHTML =
         `<span class="material-symbols-rounded" style="font-size:18px">${icon}</span>`;
 }
 
-function openModal(mode, data = null){
+function openModal(mode, data = null) {
     const form   = document.getElementById('transportForm');
     const method = document.getElementById('formMethod');
 
     if (mode === 'edit' && data) {
         document.getElementById('modalTitle').textContent = 'Edit Transportation Info';
-        
-        // Memakai Route Url bawaan laravel untuk mode PUT/Edit
         let editUrl = '{{ route("admin.settings.location.transport.update", ":id") }}';
         form.action = editUrl.replace(':id', data.id);
-        
         method.value = 'PUT';
-        document.getElementById('iconType').value   = data.icon        || '';
-        document.getElementById('transTitle').value = data.title       || '';
-        document.getElementById('transDesc').value  = data.description || '';
+        document.getElementById('iconType').value      = data.icon        || '';
+        document.getElementById('transTitle').value    = data.title       || '';
+        document.getElementById('transTitleId').value  = data.title_id    || '';
+        document.getElementById('transDesc').value     = data.description || '';
+        document.getElementById('transDescId').value   = data.description_id || '';
         previewIcon(data.icon || '');
-        
-        // Parsing data routes jika bentuknya string JSON dari DB
-        let routesArray = data.routes;
-        if(typeof routesArray === 'string') {
-            try { routesArray = JSON.parse(routesArray); } catch(e) { routesArray = ['', '']; }
-        }
-        buildRoutes(routesArray || ['', '']);
+
+        let routesEn = data.routes;
+        let routesId = data.routes_id;
+        if (typeof routesEn === 'string') { try { routesEn = JSON.parse(routesEn); } catch(e) { routesEn = ['', '']; } }
+        if (typeof routesId === 'string') { try { routesId = JSON.parse(routesId); } catch(e) { routesId = []; } }
+        buildRoutes(routesEn || ['', ''], routesId || []);
     } else {
         document.getElementById('modalTitle').textContent = 'Add Transportation Info';
         form.action = '{{ route("admin.settings.location.transport.store") }}';
         method.value = 'POST';
-        document.getElementById('iconType').value   = '';
-        document.getElementById('transTitle').value = '';
-        document.getElementById('transDesc').value  = '';
+        document.getElementById('iconType').value      = '';
+        document.getElementById('transTitle').value    = '';
+        document.getElementById('transTitleId').value  = '';
+        document.getElementById('transDesc').value     = '';
+        document.getElementById('transDescId').value   = '';
         previewIcon('');
-        buildRoutes(['', '']);
+        buildRoutes(['', ''], ['', '']);
     }
 
     document.getElementById('transportModal').classList.add('open');
     document.body.style.overflow = 'hidden';
 }
 
-function closeModal(){
+function closeModal() {
     document.getElementById('transportModal').classList.remove('open');
     document.body.style.overflow = '';
 }
 
-document.getElementById('transportModal').addEventListener('click', function(e){
+document.getElementById('transportModal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
 });
 
-function buildRoutes(arr){
+function buildRoutes(arrEn, arrId) {
     const list = document.getElementById('routeList');
     list.innerHTML = '';
-    (arr && arr.length ? arr : ['', '']).forEach(v => addRouteRow(v));
+    const len = Math.max(arrEn.length, arrId ? arrId.length : 0, 2);
+    for (let i = 0; i < len; i++) {
+        addRouteRow(arrEn[i] || '', arrId ? (arrId[i] || '') : '');
+    }
 }
 
-function addRoute(){ addRouteRow(''); }
+function addRoute() { addRouteRow('', ''); }
 
-function addRouteRow(val){
-    const row = document.createElement('div');
-    row.className = 'route-row';
-    row.innerHTML = `
-        <svg width="14" height="14" fill="none" stroke="#9aaa96" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
-            <circle cx="12" cy="10" r="3"/>
-        </svg>
-        <input class="route-input" type="text" name="routes[]" placeholder="e.g., Trans Studio Bandung"
-            value="${val.replace(/"/g,'&quot;')}">
-        <button type="button" class="route-remove" onclick="rmRoute(this)">
-            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
+function addRouteRow(valEn, valId) {
+    const pair = document.createElement('div');
+    pair.className = 'route-pair';
+    pair.innerHTML = `
+        <div class="route-row">
+            <svg width="14" height="14" fill="none" stroke="#9aaa96" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
             </svg>
-        </button>
+            <input class="route-input" type="text" name="routes[]"
+                placeholder="e.g., Trans Studio Bandung"
+                value="${escAttr(valEn)}">
+            <button type="button" class="route-remove" onclick="rmRoute(this)">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="route-row id-row">
+            <svg width="14" height="14" fill="none" stroke="#ffb74d" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+            <input class="route-input" type="text" name="routes_id[]"
+                placeholder="mis. Trans Studio Bandung"
+                value="${escAttr(valId)}">
+        </div>
     `;
-    document.getElementById('routeList').appendChild(row);
+    document.getElementById('routeList').appendChild(pair);
 }
 
-function rmRoute(btn){
+function escAttr(str) {
+    return String(str || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function rmRoute(btn) {
     const list = document.getElementById('routeList');
-    if (list.children.length > 1) btn.closest('.route-row').remove();
+    if (list.children.length > 1) btn.closest('.route-pair').remove();
 }
 
-function openViewModal(data)
-{
-    document.getElementById('viewIcon').textContent =
-        ICONS[data.icon] || 'help_outline';
-
-    document.getElementById('viewTitle').textContent =
-        data.title || '-';
-
-    document.getElementById('viewDescription').textContent =
-        data.description || '-';
+function openViewModal(data) {
+    document.getElementById('viewIcon').textContent = ICONS[data.icon] || 'help_outline';
+    document.getElementById('viewTitle').textContent = data.title || '-';
+    document.getElementById('viewTitleId').textContent = data.title_id ? `🇮🇩 ${data.title_id}` : '';
+    document.getElementById('viewDescription').textContent = data.description || '';
 
     const routes = document.getElementById('viewRoutes');
     routes.innerHTML = '';
-
-    (data.routes || []).forEach(route => {
-        routes.innerHTML += `<li>${route}</li>`;
+    (data.routes || []).forEach((route, i) => {
+        const routeId = data.routes_id ? (data.routes_id[i] || '') : '';
+        routes.innerHTML += `<li>${route}${routeId ? ` <span style="color:#e65100;font-size:11px">(ID: ${routeId})</span>` : ''}</li>`;
     });
 
-    document.getElementById('viewTransportModal')
-        .classList.add('open');
+    document.getElementById('viewTransportModal').classList.add('open');
 }
 
-function closeViewModal()
-{
-    document.getElementById('viewTransportModal')
-        .classList.remove('open');
+function closeViewModal() {
+    document.getElementById('viewTransportModal').classList.remove('open');
 }
 
 let _deleteId = null;
@@ -651,17 +783,12 @@ function confirmDelete() {
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = '/admin/settings/location/transportation/' + _deleteId;
-
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = '_token';
-    csrf.value = '{{ csrf_token() }}';
-
+    const csrf   = document.createElement('input');
+    csrf.type    = 'hidden'; csrf.name = '_token';
+    csrf.value   = '{{ csrf_token() }}';
     const method = document.createElement('input');
-    method.type = 'hidden';
-    method.name = '_method';
+    method.type  = 'hidden'; method.name  = '_method';
     method.value = 'DELETE';
-
     form.appendChild(csrf);
     form.appendChild(method);
     document.body.appendChild(form);

@@ -42,7 +42,9 @@ class AdminArticleController extends Controller
     {
         $validated = $request->validate([
             'title'            => 'required|string|max:255',
+            'title_en'         => 'nullable|string|max:255',
             'content'          => 'required|string',
+            'content_en'       => 'nullable|string',
             'category'         => 'required|string|max:255',
             'source'           => 'nullable|string|max:255',
             'status'           => 'required|string|in:Draft,Published',
@@ -60,7 +62,9 @@ class AdminArticleController extends Controller
         Article::create([
             'admin_id'         => Auth::guard('admin')->id(),
             'title'            => $validated['title'],
+            'title_en'         => $validated['title_en'] ?? null,
             'content'          => $validated['content'],
+            'content_en'       => $validated['content_en'] ?? null,
             'category'         => $validated['category'],
             'source'           => $validated['source'] ?? null,
             'status'           => $validated['status'],
@@ -81,7 +85,9 @@ class AdminArticleController extends Controller
     {
         $validated = $request->validate([
             'title'            => 'required|string|max:255',
+            'title_en'         => 'nullable|string|max:255',
             'content'          => 'required|string',
+            'content_en'       => 'nullable|string',
             'category'         => 'required|string|max:255',
             'source'           => 'nullable|string|max:255',
             'status'           => 'required|string|in:Draft,Published',
@@ -92,7 +98,6 @@ class AdminArticleController extends Controller
 
         $thumbnailPath = $article->thumbnail;
         if ($request->hasFile('thumbnail')) {
-            // Delete old thumbnail if exists
             if ($article->thumbnail) {
                 $oldPath = str_replace('/storage/', 'public/', $article->thumbnail);
                 Storage::delete($oldPath);
@@ -103,7 +108,9 @@ class AdminArticleController extends Controller
 
         $article->update([
             'title'            => $validated['title'],
+            'title_en'         => $validated['title_en'] ?? null,
             'content'          => $validated['content'],
+            'content_en'       => $validated['content_en'] ?? null,
             'category'         => $validated['category'],
             'source'           => $validated['source'] ?? null,
             'status'           => $validated['status'],

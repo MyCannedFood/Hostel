@@ -88,13 +88,21 @@
             Main Headline
         </h3>
         <div class="lp-field">
+            <label class="lp-field-label">Headline (English)</label>
             <input type="text" class="lp-input" name="headline"
                    value="{{ old('headline', $heroData['headline']) }}"
                    maxlength="150" required>
         </div>
 
+        <div class="lp-field">
+            <label class="lp-field-label">Headline (Indonesia)</label>
+            <input type="text" class="lp-input" name="headline_id"
+                   value="{{ old('headline_id', $heroData['headline_id'] ?? '') }}"
+                   maxlength="150" required>
+        </div>
+
         <h3 style="font-size:17px; font-weight:600; color:#1a3d0a; margin:24px 0 20px;">
-            Sub-headline
+            Sub-headline (English)
         </h3>
         <div class="lp-field">
             <textarea class="lp-textarea" name="subheadline"
@@ -103,6 +111,20 @@
                       required>{{ old('subheadline', $heroData['subheadline']) }}</textarea>
             <div class="lp-char-counter">
                 <span id="heroSubCount">{{ strlen(old('subheadline', $heroData['subheadline'])) }}</span>
+                / 200 characters
+            </div>
+        </div>
+
+        <h3 style="font-size:17px; font-weight:600; color:#1a3d0a; margin:24px 0 20px;">
+            Sub-headline (Indonesia)
+        </h3>
+        <div class="lp-field">
+            <textarea class="lp-textarea" name="subheadline_id"
+                      maxlength="200" id="heroSubheadlineId" rows="3"
+                      oninput="updateCharCount(this,'heroSubCountId',200)"
+                      required>{{ old('subheadline_id', $heroData['subheadline_id'] ?? '') }}</textarea>
+            <div class="lp-char-counter">
+                <span id="heroSubCountId">{{ strlen(old('subheadline_id', $heroData['subheadline_id'] ?? '')) }}</span>
                 / 200 characters
             </div>
         </div>

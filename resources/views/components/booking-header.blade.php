@@ -1,6 +1,6 @@
-@props(['title', 'subtitle'])
+@props(['title', 'subtitle', 'titleId' => '', 'subtitleId' => ''])
 
 <header class="booking-header">
-    <h1>{{ $title }}</h1>
-    <p>{{ $subtitle }}</p>
+    <h1 data-en="{{ $title }}" data-id="{{ $titleId ?: $title }}">{{ $title }}</h1>
+    <p  data-en="{{ $subtitle }}" data-id="{{ $subtitleId ?: $subtitle }}">{{ $subtitle }}</p>
 </header>

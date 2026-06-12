@@ -1,25 +1,18 @@
-{{--
-    Ganti <footer class="main-footer"> yang sekarang hardcoded
-    dengan versi ini yang fetch dari SiteSetting & SiteSetting (location).
-
-    Letakkan di: resources/views/components/footer.blade.php
-    atau langsung inline di layout utama.
---}}
-
 @php
     use App\Models\SiteSetting;
 
-    // ── Brand / Footer settings ──────────────────────────────
-    $footerBrandDesc     = SiteSetting::get('footer_brand_desc',      'A sanctuary where Javanese heritage meets ecological mindfulness. Retreat to the forest and rediscover balance.');
-    $footerNewsletterTxt = SiteSetting::get('footer_newsletter_text', 'Subscribe for seasonal updates and exclusive retreat offers.');
-    $footerInstagram     = SiteSetting::get('footer_instagram_url',   '#');
-    $footerFacebook      = SiteSetting::get('footer_facebook_url',    '#');
-    $footerPinterest     = SiteSetting::get('footer_pinterest_url',   '#');
-    $footerCopyright     = SiteSetting::get('footer_copyright_text',  '© 2026 AlaSare Eco-Sanctuary. All rights reserved.');
-    $footerPrivacyUrl    = SiteSetting::get('footer_privacy_url',     '#');
-    $footerTermsUrl      = SiteSetting::get('footer_terms_url',       '#');
+    $footerBrandDesc      = SiteSetting::get('footer_brand_desc',         'A sanctuary where Javanese heritage meets ecological mindfulness. Retreat to the forest and rediscover balance.');
+    $footerBrandDescId    = SiteSetting::get('footer_brand_desc_id',      $footerBrandDesc);
+    $footerNewsletterTxt  = SiteSetting::get('footer_newsletter_text',    'Subscribe for seasonal updates and exclusive retreat offers.');
+    $footerNewsletterTxtId= SiteSetting::get('footer_newsletter_text_id', $footerNewsletterTxt);
+    $footerInstagram      = SiteSetting::get('footer_instagram_url',      '#');
+    $footerFacebook       = SiteSetting::get('footer_facebook_url',       '#');
+    $footerPinterest      = SiteSetting::get('footer_pinterest_url',      '#');
+    $footerCopyright      = SiteSetting::get('footer_copyright_text',     '© 2026 AlaSare Eco-Sanctuary. All rights reserved.');
+    $footerCopyrightId    = SiteSetting::get('footer_copyright_text_id',  $footerCopyright);
+    $footerPrivacyUrl     = SiteSetting::get('footer_privacy_url',        '#');
+    $footerTermsUrl       = SiteSetting::get('footer_terms_url',          '#');
 
-    // ── Contact / Location settings (sudah ada dari LocationSettings) ──
     $address     = SiteSetting::get('address',      'Jl. Raya Hutan No. 88, Gianyar, Bali, Indonesia 80571');
     $publicEmail = SiteSetting::get('public_email', 'reservations@alasare.com');
     $phone       = SiteSetting::get('phone',        '+62 361 900 8888');
@@ -31,7 +24,10 @@
         {{-- Brand column --}}
         <div class="footer-brand">
             <span class="logo">AlaSare</span>
-            <p>{{ $footerBrandDesc }}</p>
+            <p data-en="{{ $footerBrandDesc }}"
+               data-id="{{ $footerBrandDescId }}">
+                {{ $footerBrandDesc }}
+            </p>
             <div class="contact-info">
                 {!! nl2br(e($address)) !!}<br><br>
                 {{ $publicEmail }}<br>
@@ -39,27 +35,36 @@
             </div>
         </div>
 
-        {{-- Nav column (static — bisa dijadikan dynamic juga kalau perlu) --}}
+        {{-- Nav column --}}
         <div class="footer-nav">
-            <h4>Discover</h4>
+            <h4 data-en="Discover" data-id="Jelajahi">Discover</h4>
             <ul class="footer-links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/rooms">Villas</a></li>
-                <li><a href="/gallery">Gallery</a></li>
-                <li><a href="/experience">Experience</a></li>
-                <li><a href="/journal">Journal</a></li>
-                <li><a href="/guest-story">Guest Story</a></li>
-                <li><a href="/contact">Contact</a></li>
+                <li><a href="/"            data-en="Home"        data-id="Beranda">Home</a></li>
+                <li><a href="/rooms"       data-en="Villas"      data-id="Vila">Villas</a></li>
+                <li><a href="/gallery"     data-en="Gallery"     data-id="Galeri">Gallery</a></li>
+                <li><a href="/experience"  data-en="Experience"  data-id="Pengalaman">Experience</a></li>
+                <li><a href="/journal"     data-en="Journal"     data-id="Jurnal">Journal</a></li>
+                <li><a href="/guest-story" data-en="Guest Story" data-id="Cerita Tamu">Guest Story</a></li>
+                <li><a href="/contact"     data-en="Contact"     data-id="Kontak">Contact</a></li>
             </ul>
         </div>
 
         {{-- Newsletter + Social column --}}
         <div class="footer-newsletter">
-            <h4>Journal</h4>
-            <p>{{ $footerNewsletterTxt }}</p>
+            <h4 data-en="Journal" data-id="Jurnal">Journal</h4>
+            <p data-en="{{ $footerNewsletterTxt }}"
+               data-id="{{ $footerNewsletterTxtId }}">
+                {{ $footerNewsletterTxt }}
+            </p>
             <form class="newsletter-form">
-                <input type="email" placeholder="Email address" required>
-                <button type="submit">Submit</button>
+                <input type="email"
+                       data-en="Email address"
+                       data-id="Alamat email"
+                       placeholder="Email address"
+                       required>
+                <button type="submit"
+                        data-en="Submit"
+                        data-id="Kirim">Submit</button>
             </form>
             <div class="social-links">
                 @if($footerInstagram && $footerInstagram !== '#')
@@ -100,12 +105,18 @@
     </div>
 
     <div class="footer-bottom">
-        <div class="copyright">
+        <div class="copyright"
+             data-en="{{ $footerCopyright }}"
+             data-id="{{ $footerCopyrightId }}">
             {{ $footerCopyright }}
         </div>
         <div class="footer-bottom-links">
-            <a href="{{ $footerPrivacyUrl }}">Privacy Policy</a>
-            <a href="{{ $footerTermsUrl }}">Terms of Service</a>
+            <a href="{{ $footerPrivacyUrl }}"
+               data-en="Privacy Policy"
+               data-id="Kebijakan Privasi">Privacy Policy</a>
+            <a href="{{ $footerTermsUrl }}"
+               data-en="Terms of Service"
+               data-id="Syarat Layanan">Terms of Service</a>
         </div>
     </div>
 </footer>
