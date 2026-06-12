@@ -21,16 +21,16 @@
 
     <div class="journal-detail-content">
         <div class="journal-meta">
-            BY {{ strtoupper($article->admin?->name ?? 'ADMIN') }} 
+            <span data-en="BY " data-id="OLEH ">BY </span>{{ strtoupper($article->admin?->name ?? 'ADMIN') }}
             • {{ strtoupper($article->publish_at ? $article->publish_at->format('d M Y') : $article->created_at->format('d M Y')) }}
-            • {{ $article->views_count }} {{ Str::plural('VIEW', $article->views_count) }}
+            • {{ $article->views_count }} <span data-en="VIEW" data-id="TONTONAN">{{ Str::plural('VIEW', $article->views_count) }}</span>
             @if($article->source)
-                • SOURCE: <a href="{{ Str::startsWith($article->source, ['http://', 'https://']) ? $article->source : '#' }}" target="_blank" style="color: inherit; text-decoration: underline;">{{ $article->source }}</a>
+                • <span data-en="SOURCE:" data-id="SUMBER:">SOURCE:</span> <a href="{{ Str::startsWith($article->source, ['http://', 'https://']) ? $article->source : '#' }}" target="_blank" style="color: inherit; text-decoration: underline;">{{ $article->source }}</a>
             @endif
         </div>
-        <h1>{{ $article->title }}</h1>
+        <h1 data-en="{{ $article->title_en ?? $article->title }}" data-id="{{ $article->title_id ?? $article->title }}">{{ $article->title }}</h1>
         
-        <div class="journal-body">
+        <div class="journal-body" data-en-html="{{ $article->content_en ?? $article->content }}" data-id-html="{{ $article->content }}">
             {!! $article->content !!}
         </div>
     </div>
@@ -39,5 +39,27 @@
 @include('components.footer')
 
 <x-whatsapp_floating />
+
+<script>
+(function () {
+    var el = document.querySelector('.journal-body');
+    if (!el || !el.dataset.enHtml) return;
+
+    function applyBody(lang) {
+        var key = lang === 'en' ? 'enHtml' : 'idHtml';
+        var html = el.dataset[key];
+        if (html) el.innerHTML = html;
+    }
+
+    document.addEventListener('alas:langchange', function (e) {
+        applyBody(e.detail.lang);
+    });
+
+    var lang = (window.AlasLang ? window.AlasLang.current() : null)
+               || localStorage.getItem('alas_lang')
+               || 'en';
+    applyBody(lang);
+})();
+</script>
 </body>
 </html>
