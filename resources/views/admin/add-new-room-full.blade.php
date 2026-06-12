@@ -27,7 +27,7 @@
 
 	.room-modal__panel {
 		width: 100%;
-		max-width: 600px;
+		max-width: 680px;
 		background-color: var(--bg-main);
 		border-radius: 8px;
 		outline: 1px solid var(--primary-dark);
@@ -100,6 +100,7 @@
 		font-size: 14px;
 		color: var(--primary-dark);
 		outline: none;
+		box-sizing: border-box;
 	}
 
 	.room-modal .form-control:focus {
@@ -171,33 +172,21 @@
 	.room-modal .input-group {
 		display: flex;
 		align-items: center;
-	}
-
-	.room-modal .input-group input {
-		border-right: 1px solid var(--border-color);
-		border-top-right-radius: 2px;
-		border-bottom-right-radius: 2px;
-	}
-
-	.room-modal .input-btn {
-		background-color: var(--white);
-		border: 1px solid var(--border-color);
-		padding: 10px 12px;
-		border-top-right-radius: 2px;
-		border-bottom-right-radius: 2px;
-		color: var(--primary-dark);
-		cursor: pointer;
+		gap: 8px;
+		flex: 1;
 	}
 
 	.room-modal .input-actions {
 		display: flex;
 		align-items: center;
 		gap: 8px;
+		margin-bottom: 8px;
 	}
 
 	.room-modal .icon-btn {
 		width: 40px;
 		height: 40px;
+		flex-shrink: 0;
 		border: 1px solid var(--border-color);
 		border-radius: 2px;
 		background-color: var(--white);
@@ -217,10 +206,26 @@
 	.room-modal .icon-group {
 		display: inline-flex;
 		gap: 8px;
+		flex-shrink: 0;
 	}
 
 	.room-modal .icon-btn:hover {
 		background-color: #f0f0f0;
+	}
+
+	.room-modal .attr-lang-label {
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--text-muted);
+		letter-spacing: 0.8px;
+		text-transform: uppercase;
+		margin-bottom: 2px;
+	}
+
+	.room-modal .attr-input-wrap {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
 	}
 
 	.room-modal .facilities-list {
@@ -312,7 +317,8 @@
 	}
 
 	@media (max-width: 768px) {
-		.room-modal .grid-3 {
+		.room-modal .grid-3,
+		.room-modal .grid-2 {
 			grid-template-columns: 1fr;
 		}
 
@@ -350,41 +356,57 @@
 					<input type="text" name="name" class="form-control" placeholder="Cth: Pavilion" required>
 				</div>
 
+				<div class="grid-2">
+					<div class="form-group">
+						<label class="form-label">Room Type</label>
+						<select name="gender_type" class="form-control" required>
+							<option value="Male">Male</option>
+							<option value="Female">Female</option>
+							<option value="Mixed">Mixed</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label class="form-label">Capacity (Bed)</label>
+						<input type="number" min="1" name="capacity" class="form-control" value="4">
+					</div>
+				</div>
+
+				{{-- Description EN + ID --}}
+				<div class="grid-2">
+					<div class="form-group">
+						<label class="form-label">Description (EN)</label>
+						<textarea name="description" class="form-control" placeholder="Describe the atmosphere and advantages of this room..."></textarea>
+					</div>
+					<div class="form-group">
+						<label class="form-label">Description (ID)</label>
+						<textarea name="description_id" class="form-control" placeholder="Deskripsikan suasana dan keunggulan kamar ini..."></textarea>
+					</div>
+				</div>
+
 				<div class="form-group">
-					<label class="form-label">Room Type</label>
-					<select name="gender_type" class="form-control" required>
-						<option value="Male">Male</option>
-						<option value="Female">Female</option>
+					<label class="form-label">Status</label>
+					<select name="status" class="form-control">
+						<option value="Available">Active</option>
+						<option value="Inactive">Inactive</option>
+						<option value="Maintenance">Maintenance</option>
 					</select>
 				</div>
 
-				<div class="form-group">
-					<label class="form-label">Description</label>
-					<textarea name="description" class="form-control" placeholder="Describe the atmosphere and advantages of this room..."></textarea>
-				</div>
-
-				<div class="grid-2">
-					<div class="form-group">
-						<label class="form-label">Capacity (Bed)</label>
-						<input type="number" name="capacity" class="form-control" value="4">
-					</div>
-
-					<div class="form-group">
-						<label class="form-label">Status</label>
-						<select name="status" class="form-control">
-							<option value="Available">Active</option>
-							<option value="Inactive">Inactive</option>
-							<option value="Maintenance">Maintenance</option>
-						</select>
-					</div>
-				</div>
-
+				{{-- Attributes EN + ID --}}
 				<div class="form-group">
 					<label class="form-label">Attributes</label>
 					<div id="attributesWrapper">
 						<div class="input-actions attr-row">
-							<div class="input-group" style="flex: 1;">
-								<input type="text" name="attributes[]" class="form-control" value="Simple & Functional">
+							<div class="input-group">
+								<div class="attr-input-wrap">
+									<div class="attr-lang-label">EN</div>
+									<input type="text" name="attributes[]" class="form-control" placeholder="e.g. Simple & Functional" value="Simple &amp; Functional">
+								</div>
+								<div class="attr-input-wrap">
+									<div class="attr-lang-label">ID</div>
+									<input type="text" name="attributes_id[]" class="form-control" placeholder="cth. Simpel & Fungsional" value="Simpel &amp; Fungsional">
+								</div>
 							</div>
 							<div class="icon-group" aria-label="Attribute actions">
 								<button type="button" class="icon-btn add-attr" aria-label="Add attribute">
@@ -427,8 +449,6 @@
 					</div>
 				</div>
 
-
-
 			</form>
 		</div>
 
@@ -444,7 +464,7 @@ console.log('[Room Modal] Script loaded and executing');
 
 (() => {
 	console.log('[Room Modal] IIFE started');
-	
+
 	const container = document.getElementById('roomModal');
 	function closeInjectedModal() {
 		const c = document.getElementById('addNewRoomContainer');
@@ -459,15 +479,15 @@ console.log('[Room Modal] Script loaded and executing');
 	const photoInput = document.getElementById('photoInput');
 	const uploadArea = document.getElementById('uploadArea');
 	const uploadPreview = document.getElementById('uploadPreview');
-	
+
 	console.log('[Room Modal] Elements found - photoInput:', !!photoInput, 'uploadArea:', !!uploadArea, 'uploadPreview:', !!uploadPreview);
-	
+
 	if (photoInput && uploadArea && uploadPreview) {
 		// rely on label's `for` to open file picker; show preview when file selected
 		photoInput.addEventListener('change', (e) => {
 			const f = e.target.files && e.target.files[0];
 			console.log('[Room Modal] File selected:', f ? f.name : 'none');
-			
+
 			if (!f) {
 				// Clear preview - show text again
 				uploadArea.style.display = 'flex';
@@ -475,7 +495,7 @@ console.log('[Room Modal] Script loaded and executing');
 				uploadPreview.innerHTML = '';
 				return;
 			}
-			
+
 			const url = URL.createObjectURL(f);
 			// create image element for clearer layout control
 			const img = document.createElement('img');
@@ -484,7 +504,7 @@ console.log('[Room Modal] Script loaded and executing');
 			img.style.maxHeight = '140px';
 			img.style.borderRadius = '4px';
 			img.style.objectFit = 'contain';
-			
+
 			// Hide upload area text and show preview in its place
 			uploadArea.style.display = 'none';
 			uploadPreview.innerHTML = '';
@@ -492,52 +512,52 @@ console.log('[Room Modal] Script loaded and executing');
 			uploadPreview.style.display = 'block';
 			console.log('[Room Modal] Preview displayed, upload area hidden');
 		});
-		
+
 		// Click preview to upload new image
 		uploadPreview.addEventListener('click', () => {
 			photoInput.click();
 		});
 	}
 
-    	// attributes add/remove
-    	document.addEventListener('click', function (e) {
-    		if (e.target.closest('.add-attr')) {
-    			e.preventDefault();
-    			const wrapper = document.getElementById('attributesWrapper');
-    			const row = e.target.closest('.attr-row');
-    			if (wrapper && row) {
-    				const clone = row.cloneNode(true);
-    				clone.querySelectorAll('input').forEach(i => i.value = '');
-    				wrapper.appendChild(clone);
-    				console.log('[Room Modal] Attribute row added');
-    			}
-    			return;
-    		}
-    		if (e.target.closest('.remove-attr')) {
-    			e.preventDefault();
-    			const wrapper = document.getElementById('attributesWrapper');
-    			const rows = wrapper.querySelectorAll('.attr-row');
-    			if (rows.length <= 1) {
-    				console.log('[Room Modal] Cannot remove - only one attribute left');
-    				return;
-    			}
-    			const row = e.target.closest('.attr-row');
-    			if (row) {
-    				row.remove();
-    				console.log('[Room Modal] Attribute row removed');
-    			}
-    			return;
-    		}
-    	});
+	// attributes add/remove — clone both EN and ID inputs
+	document.addEventListener('click', function (e) {
+		if (e.target.closest('.add-attr')) {
+			e.preventDefault();
+			const wrapper = document.getElementById('attributesWrapper');
+			const row = e.target.closest('.attr-row');
+			if (wrapper && row) {
+				const clone = row.cloneNode(true);
+				clone.querySelectorAll('input').forEach(i => i.value = '');
+				wrapper.appendChild(clone);
+				console.log('[Room Modal] Attribute row added');
+			}
+			return;
+		}
+		if (e.target.closest('.remove-attr')) {
+			e.preventDefault();
+			const wrapper = document.getElementById('attributesWrapper');
+			const rows = wrapper.querySelectorAll('.attr-row');
+			if (rows.length <= 1) {
+				console.log('[Room Modal] Cannot remove - only one attribute left');
+				return;
+			}
+			const row = e.target.closest('.attr-row');
+			if (row) {
+				row.remove();
+				console.log('[Room Modal] Attribute row removed');
+			}
+			return;
+		}
+	});
 
-    	// no bed UI in this modal — beds will be managed separately
+	// no bed UI in this modal — beds will be managed separately
 
 	// form submit via AJAX
 	const form = document.getElementById('addRoomForm');
 	const saveBtn = document.getElementById('saveRoomBtn');
-	
+
 	console.log('[Room Modal] form:', form, 'saveBtn:', saveBtn);
-	
+
 	if (saveBtn && form) {
 		saveBtn.addEventListener('click', async (ev) => {
 			ev.preventDefault();
@@ -564,9 +584,9 @@ console.log('[Room Modal] Script loaded and executing');
 						'Accept': 'application/json'
 					}
 				});
-				
+
 				console.log('[Room Modal] Response status:', res.status);
-				
+
 				let json = null;
 				try {
 					json = await res.json();
@@ -577,7 +597,7 @@ console.log('[Room Modal] Script loaded and executing');
 					alert('Server returned non-JSON response. See console for details.');
 					return;
 				}
-				
+
 				if (res.ok && json.success) {
 					console.log('[Room Modal] Room saved successfully!');
 					closeInjectedModal();

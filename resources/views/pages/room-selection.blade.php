@@ -37,6 +37,16 @@
         $displayCheckOut = $checkOutParam ? Carbon::parse($checkOutParam)->format('d/m/Y') : '--/--/----';
         
         $backToCalendarUrl = url('/calendar') . '?' . http_build_query(request()->query());
+
+        // Mapping label fasilitas EN/ID — main_facilities di DB cuma simpan
+        // string EN (AC, Wifi, En-suite Bath, Lockers), jadi label ID
+        // di-mapping statis di sini.
+        $facilityLabels = [
+            'AC'            => ['en' => 'AC', 'id' => 'AC'],
+            'Wifi'          => ['en' => 'Wifi', 'id' => 'Wifi'],
+            'En-suite Bath' => ['en' => 'En-suite Bath', 'id' => 'Kamar Mandi Dalam'],
+            'Lockers'       => ['en' => 'Lockers', 'id' => 'Loker'],
+        ];
     @endphp
 
     {{-- SUMMARY BAR INTERAKTIF --}}
@@ -129,7 +139,9 @@
             
             <div class="room-sel-content">
                 <h2>{{ $room->name }}</h2>
-                <p class="room-sel-desc">{{ $room->description }}</p>
+                <p class="room-sel-desc" 
+                   data-en="{{ $room->description }}" 
+                   data-id="{{ $room->description_id ?: $room->description }}">{{ $room->description }}</p>
                 
                 <div class="room-sel-features">
                     <div class="sel-feature">
@@ -142,9 +154,13 @@
                     @endphp
                     
                     @foreach($facilities as $facility)
+                        @php
+                            $facilityKey = trim($facility);
+                            $label = $facilityLabels[$facilityKey] ?? ['en' => $facilityKey, 'id' => $facilityKey];
+                        @endphp
                         <div class="sel-feature">
                             <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-                            {{ trim($facility) }}
+                            <span data-en="{{ $label['en'] }}" data-id="{{ $label['id'] }}">{{ $label['en'] }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -281,6 +297,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (bContinueBtn) bContinueBtn.textContent = 'Continue To Bed';
             }
         }
+
+        // 8. Generic fallback: elemen apapun yang punya data-en / data-id
+        // (mis. description kamar & label fasilitas yang baru ditambahkan)
+        document.querySelectorAll('[data-en][data-id]').forEach(el => {
+            // Skip elemen yang sudah ditangani manual di atas supaya
+            // nggak ke-overwrite ganda.
+            if (el === nightsTextEl || el === promoCode || el === btnApplyPromo) return;
+            if (el.tagName === 'OPTION') return;
+
+            const text = el.getAttribute(`data-${currentLang}`);
+            if (text !== null) {
+                el.textContent = text;
+            }
+        });
     }
 
     document.addEventListener('alas:langchange', function(e) {

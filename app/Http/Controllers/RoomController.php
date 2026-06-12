@@ -30,8 +30,8 @@ class RoomController extends Controller
         };
 
         $genderLabelId = fn ($room) => match(strtolower($room->gender_type ?? 'mixed')) {
-            'female' => 'Khusus Perempuan',
-            'male'   => 'Khusus Laki-laki',
+            'female' => 'Khusus Wanita',
+            'male'   => 'Khusus Pria',
             default  => 'Campur',
         };
 

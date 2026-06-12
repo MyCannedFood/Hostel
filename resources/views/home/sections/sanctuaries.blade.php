@@ -18,6 +18,19 @@
                 : asset('storage/' . $room->photo);
         };
 
+        // Samain dengan mapping label gender di RoomController (pages.rooms)
+        $genderLabel = fn ($room) => match(strtolower($room->gender_type ?? 'mixed')) {
+            'female' => 'Female Only',
+            'male'   => 'Male Only',
+            default  => 'Mixed',
+        };
+
+        $genderLabelId = fn ($room) => match(strtolower($room->gender_type ?? 'mixed')) {
+            'female' => 'Khusus Wanita',
+            'male'   => 'Khusus Pria',
+            default  => 'Campur',
+        };
+
         $sectionTitle      = $featuredRoomsData['title']          ?? 'Sanctuaries';
         $sectionTitleId    = $featuredRoomsData['title_id']        ?? 'Tempat Peristirahatan';
         $sectionDesc       = $featuredRoomsData['description']     ?? 'Each villa possesses a unique soul, crafted from reclaimed teak and designed to frame the forest.';
@@ -52,10 +65,10 @@
                 <div class="sanctuary-card">
                     <div class="card-image-wrapper">
                         @if($room->gender_type)
-                            <span class="card-badge"
-                                  data-en="{{ $room->gender_type }} Only"
-                                  data-id="{{ $room->gender_type }} Saja">
-                                {{ $room->gender_type }} Only
+                            <span class="card-badge @if(strtolower($room->gender_type) === 'female') card-badge--female @endif"
+                                  data-en="{{ $genderLabel($room) }}"
+                                  data-id="{{ $genderLabelId($room) }}">
+                                {{ $genderLabel($room) }}
                             </span>
                         @endif
                         <img src="{{ $roomPhoto($room) }}" alt="{{ $room->name }}" class="card-image">
@@ -262,6 +275,10 @@
         border-radius: 100px;
         z-index: 1;
         letter-spacing: 0.03em;
+    }
+
+    .card-badge--female {
+        background: #C07C4D;
     }
 
     .card-body {
