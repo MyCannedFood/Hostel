@@ -59,17 +59,16 @@ class SettingsController extends Controller
         }
 
         /* ── General Settings ── */
-         if ($section === 'general') {
+        if ($section === 'general') {
             $sub = $request->get('sub');
             $data['user'] = Auth::guard('admin')->user();
- 
+
             if ($sub === 'payment-methods') {
                 $data['settings'] = PaymentSetting::instance();
                 $data['banks']    = BankAccount::ordered()->get();
                 $data['methods']  = PaymentMethod::ordered()->get();
             }
-            
- 
+
             if ($sub === 'footer') {
                 $data['footer'] = [
                     'brand_desc'         => SiteSetting::get('footer_brand_desc',         'A sanctuary where Javanese heritage meets modern ecological luxury.'),
@@ -85,14 +84,14 @@ class SettingsController extends Controller
                     'terms_url'          => SiteSetting::get('footer_terms_url',          '/legal/terms'),
                 ];
             }
- 
+
             // Hostel info / operational policies
             $sectionKey = match ($sub) {
                 'hostel-info'           => 'hostel_info',
                 'operational-policies'  => 'operational_policies',
                 default                 => null,
             };
- 
+
             if ($sectionKey) {
                 $setting = GeneralSetting::getSection($sectionKey);
                 $data['settings'] = array_merge(
@@ -101,9 +100,6 @@ class SettingsController extends Controller
                 );
                 $data['settings']['_section'] = Str::slug($sub);
             }
- 
-            
-        
         }
 
         /* ── Landing Page ── */
@@ -121,6 +117,7 @@ class SettingsController extends Controller
                 'guest-stories'     => $data['guestStoriesSettings']  = LandingPageSetting::getSection('guest_stories'),
                 'awards'            => $data['awardsSettings']        = LandingPageSetting::getSection('awards'),
                 'media-partners'    => $data['mediaPartnersSettings'] = LandingPageSetting::getSection('media_partners'),
+                'gallery'           => $data['gallerySettings']       = LandingPageSetting::getSection('gallery'),
                 default             => null,
             };
         }
@@ -215,32 +212,32 @@ class SettingsController extends Controller
         return null;
     }
 
-     public function profileUpdate(ProfileUpdateRequest $request)
+    public function profileUpdate(ProfileUpdateRequest $request)
     {
         /** @var \App\Models\Admin $admin */
         $admin = Auth::guard('admin')->user();
         $data  = $request->validated();
- 
+
         // ── Basic info ────────────────────────────────────────────────────
         $admin->name  = $data['full_name'];
         $admin->email = $data['email'];
         $admin->phone = $data['phone'] ?? $admin->phone;
- 
+
         // ── Avatar (base64 dari crop modal) ───────────────────────────────
         if (!empty($data['avatar_data'])) {
             // Hapus avatar lama
             if ($admin->avatar && Storage::disk('public')->exists($admin->avatar)) {
                 Storage::disk('public')->delete($admin->avatar);
             }
- 
+
             $base64   = preg_replace('/^data:image\/\w+;base64,/', '', $data['avatar_data']);
             $decoded  = base64_decode($base64);
             $filename = 'avatars/' . $admin->id . '_' . Str::random(8) . '.png';
             Storage::disk('public')->put($filename, $decoded);
- 
+
             $admin->avatar = $filename;
         }
- 
+
         // ── Password ──────────────────────────────────────────────────────
         if (!empty($data['new_password'])) {
             if (!Hash::check($data['current_password'], $admin->password)) {
@@ -250,9 +247,9 @@ class SettingsController extends Controller
             }
             $admin->password = Hash::make($data['new_password']);
         }
- 
+
         $admin->save();
- 
+
         return redirect()
             ->route('admin.settings', ['section' => 'general', 'sub' => 'profile'])
             ->with('success', 'Profil berhasil disimpan.');
@@ -278,5 +275,4 @@ class SettingsController extends Controller
             ->route('admin.settings', ['section' => 'general', 'sub' => 'footer'])
             ->with('success', 'Footer settings berhasil disimpan.');
     }
- 
 }

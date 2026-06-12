@@ -14,6 +14,7 @@ class LandingPageSetting extends Model
         'hero', 'philosophy', 'flora', 'map',
         'featured_rooms', 'guest_stories', 'awards', 'featured_articles',
         'media_partners',
+        'gallery',
     ];
 
     public const DEFAULTS = [
@@ -242,6 +243,38 @@ class LandingPageSetting extends Model
                 ['logo_path' => null, 'name' => 'Wallpaper*',            'url' => '', 'style' => 'font-family:Georgia,serif; font-size:15px; font-style:italic;'],
                 ['logo_path' => null, 'name' => 'BBC Travel',            'url' => '', 'style' => 'font-family:Arial,sans-serif; font-size:15px; font-weight:700; letter-spacing:0.01em; color:#6b8f6b;'],
             ],
+        ],
+
+        'gallery' => [
+            // EN (default)
+            'hero_title_line_1'  => 'A Javanese Sanctuary,',
+            'hero_title_line_2'  => 'Woven by Nature',
+            'hero_description'   => 'Explore the textures, scents, and rhythms of our sanctuary through a curated lens of tropical elegance and Javanese heritage.',
+
+            'intro_label'        => 'VISUAL SANCTUARY',
+            'intro_title'        => 'Moments of Zen, Woven in Nature.',
+            'intro_description'  => 'Explore the textures, scents, and rhythms of our sanctuary through a curated lens of tropical elegance and Javanese heritage.',
+
+            'story_title'        => 'Our Story, Hand-Crafted.',
+            'story_paragraph_1'  => "At AlasAre, we don't just build; we restore. This sanctuary stands as a living witness to our vision: to reunite the human spirit with the natural rhythms of the earth.",
+            'story_paragraph_2'  => 'Every guest is part of an intimate circle— just 24 souls sharing the stillness and rediscovering wellness through the forgotten riches of Javanese flora.',
+            'story_signature_line'=> 'In Serenity,',
+            'story_signature_title'=> 'The AlaSare Guardians',
+
+            // ID
+            'hero_title_line_1_id'  => 'Sebuah Sanctuary Jawa,',
+            'hero_title_line_2_id'  => 'Terjalin oleh Alam',
+            'hero_description_id'   => 'Jelajahi tekstur, aroma, dan ritme sanctuary kami melalui kurasi yang memadukan keanggunan tropis dan warisan Jawa.',
+
+            'intro_label_id'        => 'SANCTUARY VISUAL',
+            'intro_title_id'        => 'Momen Zen, Terjalin dalam Alam.',
+            'intro_description_id'  => 'Jelajahi tekstur, aroma, dan ritme sanctuary kami melalui kurasi yang memadukan keanggunan tropis dan warisan Jawa.',
+
+            'story_title_id'        => 'Kisah Kami, Dipahat dengan Tangan.',
+            'story_paragraph_1_id'  => "Di AlasAre, kami tidak hanya membangun; kami memulihkan. Sanctuary ini berdiri sebagai saksi hidup dari visi kami: menyatukan kembali jiwa manusia dengan ritme alami bumi.",
+            'story_paragraph_2_id'  => 'Setiap tamu adalah bagian dari lingkaran intim— hanya 24 jiwa yang berbagi keheningan dan menemukan kembali kesejahteraan melalui kekayaan flora Jawa yang terlupakan.',
+            'story_signature_line_id'=> 'Dalam Serenity,',
+            'story_signature_title_id'=> 'The AlaSare Guardians',
         ],
     ];
 

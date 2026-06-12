@@ -538,6 +538,13 @@ Route::middleware(['is_admin'])->group(function () {
         ->name('admin.landing.media-partners.update');
 
  
+    // GALLERY TEXT SETTINGS
+    Route::put('/admin/landing/gallery',
+        [\App\Http\Controllers\LandingPageController::class, 'updateGallery'])
+        ->name('admin.landing.gallery.update');
+
+    /* GALLERY TEXT SETTINGS */
+
     // CONTACT & LOCATION SETTINGS
     Route::get('/admin/settings/location',
         [AdminContactLocationSettingController::class, 'index'])
