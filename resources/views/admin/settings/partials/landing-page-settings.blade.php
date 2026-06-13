@@ -15,16 +15,15 @@
     <div class="lp-section-list">
         @php
         $sections = [
-            ['key' => 'hero',            'label' => 'Hero Section'],
-            ['key' => 'philosophy',      'label' => 'Our Philosophy'],
-            ['key' => 'flora',           'label' => 'The Flora Concept'],
-            ['key' => 'map',             'label' => 'AlaSare Map'],
-            ['key' => 'featured-rooms',  'label' => 'Featured Rooms'],
+            ['key' => 'hero',             'label' => 'Hero Section'],
+            ['key' => 'philosophy',       'label' => 'Our Philosophy'],
+            ['key' => 'flora',            'label' => 'The Flora Concept'],
+            ['key' => 'map',              'label' => 'AlaSare Map'],
+            ['key' => 'featured-rooms',   'label' => 'Featured Rooms'],
             ['key' => 'featured-articles','label' => 'Featured Articles'],
-            ['key' => 'guest-stories',   'label' => 'Guest Stories'],
-            ['key' => 'awards',          'label' => 'Awards & Recognition'],
-            ['key' => 'media-partners',  'label' => 'Media & Partners'],
-            ['key' => 'gallery',         'label' => 'Gallery Text (EN/ID)'],
+            ['key' => 'guest-stories',    'label' => 'Guest Stories'],
+            ['key' => 'awards',           'label' => 'Awards & Recognition'],
+            ['key' => 'media-partners',   'label' => 'Media & Partners'],
         ];
         @endphp
         @foreach($sections as $s)

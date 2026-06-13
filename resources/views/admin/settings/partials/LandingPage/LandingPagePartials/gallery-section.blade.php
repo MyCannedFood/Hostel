@@ -21,8 +21,9 @@
     </div>
 @endif
 
-<a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="lp-back-link">
-    ← Back to Landing Page Settings
+{{-- ── Back link → Gallery Settings (bukan Landing Page lagi) ── --}}
+<a href="{{ route('admin.settings', ['section' => 'gallery']) }}" class="lp-back-link">
+    ← Back to Gallery Settings
 </a>
 
 <h2 class="section-title" style="margin-bottom:4px;">Gallery Text Settings</h2>
@@ -41,7 +42,6 @@
             Judul besar dan deskripsi di bagian atas halaman Gallery.
         </p>
 
-        {{-- Preview label --}}
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
 
             {{-- EN --}}
@@ -250,12 +250,9 @@
         </div>
     </div>
 
-    {{-- ══════════════════════════════════════════════════════
-         INFO BOX: Filter Buttons
-    ══════════════════════════════════════════════════════ --}}
     {{-- Action buttons --}}
     <div style="display:flex; justify-content:flex-end; gap:10px;">
-        <a href="{{ route('admin.settings', ['section' => 'landing']) }}" class="btn btn-orange-outline">Cancel</a>
+        <a href="{{ route('admin.settings', ['section' => 'gallery']) }}" class="btn btn-orange-outline">Cancel</a>
         <button type="submit" class="btn btn-dark">Save Changes</button>
     </div>
 </form>

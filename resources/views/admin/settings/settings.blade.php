@@ -37,6 +37,13 @@
 
                 @php
                     $section = $section ?? request('section', 'gallery');
+
+                    // Jika user berada di sub-section Landing Page Gallery Text (sub=gallery),
+                    // tetap highlight "Gallery Settings" di panel kiri.
+                    $subSection = request('sub');
+                    if ($section === 'landing' && $subSection === 'gallery') {
+                        $section = 'gallery';
+                    }
                 @endphp
 
                 <div class="settings-wrapper">
@@ -123,8 +130,14 @@
 
                     {{-- ── Right Content Panel ── --}}
                     <div class="settings-content">
-                        @if($section === 'gallery')
-                            @include('admin.settings.partials.gallery-settings')
+                    @if($section === 'gallery')
+                            {{-- Kalau sub=gallery berarti yang diminta adalah Gallery Text di Landing Page.
+                                 Jangan include gallery CRUD yang butuh $photos. --}}
+                            @if(request('sub') === 'gallery' && request('section') === 'landing')
+                                @include('admin.settings.partials.LandingPage.LandingPagePartials.gallery-section')
+                            @else
+                                @include('admin.settings.partials.gallery-settings')
+                            @endif
 
                         @elseif($section === 'staff')
                             @include('admin.settings.partials.staff-access')

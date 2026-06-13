@@ -29,6 +29,23 @@
     </button>
 </div>
 
+{{-- ── Gallery Text Button ── --}}
+<div style="margin-bottom:16px;">
+    <a href="{{ route('admin.settings', ['section' => 'landing', 'sub' => 'gallery']) }}"
+       class="settings-nav-card"
+       style="display:flex; align-items:center; gap:10px; padding:14px 16px; text-decoration:none;">
+        <span class="settings-nav-icon" style="display:inline-flex;">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+        </span>
+        <span class="settings-nav-label">Gallery Text (EN/ID)</span>
+        <span class="settings-nav-chevron">›</span>
+    </a>
+</div>
+
 {{-- ── Filters ── --}}
 <form method="GET" action="{{ route('admin.settings') }}" id="filterForm">
     <input type="hidden" name="section" value="gallery">
