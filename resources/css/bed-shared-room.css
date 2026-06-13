@@ -7,11 +7,10 @@
 }
 
 .bed-room-container {
-    max-width: 1000px;
+    max-width: 1140px;
     margin: 0 auto;
     padding: 0 20px;
 }
-
 /* ===== ROOM SECTION HEADER (Title row above the card) ===== */
 .room-section-header {
     display: flex;

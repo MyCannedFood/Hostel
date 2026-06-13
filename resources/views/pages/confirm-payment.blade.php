@@ -121,15 +121,30 @@
                 <h2 data-en="Review Booking Details" data-id="Tinjauan Detail Pemesanan">Review Booking Details</h2>
                 <div class="room-review-card">
                     <div class="room-review-image-wrapper">
-                        <img src="{{ $room && $room->photo ? asset('storage/' . $room->photo) : asset('images/default-room.png') }}" alt="{{ $roomName }}">
-                        @if($room && strtolower($room->gender_type) != 'mixed')
-                            <span class="room-review-tag" data-en="{{ strtoupper($room->gender_type) }} ONLY" data-id="KHUSUS {{ $room->gender_type == 'male' ? 'PRIA' : ($room->gender_type == 'female' ? 'WANITA' : strtoupper($room->gender_type)) }}">{{ strtoupper($room->gender_type) }} ONLY</span>
-                        @endif
+                        <img src="{{ $room && $room->photo ? asset('storage/' . $room->photo) : asset('images/default-room.png') }}" alt="{{ $roomName }}">    
+                        @php
+                            $genderLower = strtolower($room->gender_type);
+                            $badgeEn = strtoupper($room->gender_type) . ' ONLY';
+                            $badgeId = match($genderLower) {
+                                'female' => 'KHUSUS WANITA',
+                                'male'   => 'KHUSUS PRIA',
+                                default  => strtoupper($room->gender_type),
+                            };
+                        @endphp
+                        <span class="room-review-tag" 
+                            data-en="{{ $badgeEn }}" 
+                            data-id="{{ $badgeId }}">
+                            {{ $badgeEn }}
+                        </span>
                     </div>
                     <div class="room-review-details">
                         <h3>{{ $roomName }}</h3>
                         <div class="room-review-bed">{{ $bedName }}</div>
-                        <p class="room-review-desc">{{ $room ? $room->description : '' }}</p>
+                        <p class="room-review-desc"
+                            data-en="{{ $room ? $room->description : '' }}"
+                            data-id="{{ $room ? ($room->description_id ?: $room->description) : '' }}">
+                                {{ $room ? $room->description : '' }}
+                         </p>
                         
                         <div class="room-review-features">
                             <div class="review-feature">
@@ -397,12 +412,12 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        if (window.AlasLang && typeof window.AlasLang.apply === 'function') {
-            window.AlasLang.apply(window.AlasLang.current());
-        }
-        if (window.AlasLang && typeof window.AlasLang.apply === 'function') {
-            window.AlasLang.apply(window.AlasLang.current());
-        }
+        const lang = window.AlasLang ? window.AlasLang.current() : 'id';
+        document.querySelectorAll('[data-en][data-id]').forEach(el => {
+            if (el.tagName === 'OPTION') return;
+            const text = el.getAttribute('data-' + lang);
+            if (text !== null) el.textContent = text;
+    });
 
         const agreeCheck = document.getElementById('agree-check');
         const btnPayNow = document.getElementById('btnPayNow');
@@ -566,6 +581,8 @@
                 }
             }, 1000);
         }
+
+        
     });
 </script>
 

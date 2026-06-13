@@ -55,7 +55,7 @@
             <a href="{!! $backToCalendarUrl !!}" class="summary-item calendar-link" style="text-decoration: none; color: inherit; cursor: pointer;" 
                data-en-title="Change Dates" data-id-title="Ubah Tanggal" title="Change Dates">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span><span data-en="Check-in: " data-id="Tgl Masuk: ">Check-in: </span><strong>{{ $displayCheckIn }}</strong></span>
+                <span><span data-en="Check-in: " data-id="Tgl Masuk: ">Check-in: </span><strong class="date-confirmed">{{ $displayCheckIn }}</strong></span>
             </a>
             
             <div class="divider"></div>
@@ -63,7 +63,7 @@
             <a href="{!! $backToCalendarUrl !!}" class="summary-item calendar-link" style="text-decoration: none; color: inherit; cursor: pointer;" 
                data-en-title="Change Dates" data-id-title="Ubah Tanggal" title="Change Dates">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                <span><span data-en="Check-out: " data-id="Tgl Keluar: ">Check-out: </span><strong>{{ $displayCheckOut }}</strong></span>
+                <span><span data-en="Check-out: " data-id="Tgl Keluar: ">Check-out: </span><strong class="date-confirmed">{{ $displayCheckOut }}</strong></span>
             </a>
             
             <div class="divider"></div>
@@ -298,20 +298,17 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // 8. Generic fallback: elemen apapun yang punya data-en / data-id
-        // (mis. description kamar & label fasilitas yang baru ditambahkan)
+
         document.querySelectorAll('[data-en][data-id]').forEach(el => {
-            // Skip elemen yang sudah ditangani manual di atas supaya
-            // nggak ke-overwrite ganda.
             if (el === nightsTextEl || el === promoCode || el === btnApplyPromo) return;
             if (el.tagName === 'OPTION') return;
-
+        
+            
             const text = el.getAttribute(`data-${currentLang}`);
-            if (text !== null) {
-                el.textContent = text;
+            if (text !== null) el.textContent = text;
+
+                });
             }
-        });
-    }
 
     document.addEventListener('alas:langchange', function(e) {
         currentLang = e.detail.lang;

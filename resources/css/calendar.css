@@ -30,7 +30,6 @@
     background: #FFFFFF;
     border: 1px solid #E8EBE6;
     border-radius: 12px;
-    color: rgba(75, 153, 96, 0.7);
     padding: 20px 32px;
     display: flex;
     justify-content: space-between;
@@ -42,6 +41,8 @@
 
 .summary-inputs {
     display: flex;
+    align-self: center; 
+    margin-top: 24px;
     align-items: center;
     gap: 24px;
 }
@@ -74,18 +75,12 @@
     font-weight: 600;
 }
 
-.divider {
-    width: 4px;
-    height: 24px;
-    background: #B8D9A0;
-    align-self: center;
-}
-
 .promo-section {
     display: flex;
     align-items: center;
     gap: 16px;
     align-self: center;
+    flex-shrink: 0; 
 }
 
 .promo-input-wrapper {
@@ -113,6 +108,36 @@
     font-size: 14px;
     text-decoration: none;
     display: inline-flex;
+    align-items: center;
+}
+
+.calendar-summary-bar .promo-section {
+    margin-top: 0 !important;
+}
+
+.calendar-summary-bar {
+    display: flex;
+    align-items: center;
+}
+
+.summary-inputs,
+.promo-section {
+    display: flex;
+    align-items: center;
+    height: 40px;
+}
+
+.promo-input-wrapper {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    box-sizing: border-box;
+}
+
+.promo-section .apply-btn {
+    height: 40px;
+    display: flex;
     align-items: center;
 }
 
@@ -281,9 +306,14 @@
     color: #FFF;
 }
 
-/* Summary selected date color */
+/* Summary selected date color (kalender - sedang memilih tanggal) */
 .summary-item strong.selected-date {
     color: #D37D4F;
+}
+
+/* Summary date color (setelah kalender - tanggal sudah dikonfirmasi) */
+.summary-item strong.date-confirmed {
+    color: #4B9960;
 }
 
 /* Legend */
