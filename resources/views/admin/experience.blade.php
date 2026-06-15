@@ -165,7 +165,7 @@
                     </table>
 
                     <div class="exp-last-updated">
-                        Last updated: {{ $experiences->first()?->updated_at?->format('M d, Y • h:i A') ?? 'No data' }}
+Last updated: {{ optional($experiences->first())->updated_at?->format('M d, Y • h:i A') ?? 'No data' }}
                     </div>
                 </div>
 
@@ -841,7 +841,6 @@
             'status'               => $e->status,
         ]]);
 
-        {{-- Doc 2: promo codes passed directly from controller --}}
         $promoPayload = collect($promoCodes ?? [])->map(fn($p) => [
             'id'             => $p->id,
             'code'           => $p->code,
@@ -1430,15 +1429,14 @@
         const body = {
             code, start_date: start, end_date: end,
             discount_value: value, discount_type: type,
-            quota, status, _token: CSRF,
+            quota, status,
+            type: 'experience',   // ← tambahkan ini
+            _token: CSRF,
         };
-        if (editingPromoId !== null) {
-            body._method = 'PUT';
-        }
 
         const url = editingPromoId !== null
-            ? `/admin/promo/${editingPromoId}`
-            : '{{ route("admin.promo.store") }}';
+            ? `/admin/promo-codes/${editingPromoId}/update`   // ← fix URL
+            : '{{ route("admin.promo-codes.store") }}';       // ← fix route name
 
         try {
             const res  = await fetch(url, {
@@ -1446,7 +1444,7 @@
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
                 body: JSON.stringify(body),
             });
-            const data = await parseJsonResponse(res);
+            const data = await res.json();
             if (data.success) { closePromoModal(); location.reload(); }
         } catch (err) {
             alert(err.message);
@@ -1456,11 +1454,11 @@
     async function deletePromoCode(id) {
         if (!confirm('Delete this promo code? This cannot be undone.')) return;
         try {
-            const res  = await fetch(`/admin/promo/${id}`, {
+            const res  = await fetch(`/admin/promo-codes/${id}`, {  // ← fix URL
                 method: 'DELETE',
                 headers: { 'X-CSRF-TOKEN': CSRF },
             });
-            const data = await parseJsonResponse(res);
+            const data = await res.json();
             if (data.success) {
                 promoCodes = promoCodes.filter(p => p.id !== id);
                 renderPromoTable();
