@@ -850,6 +850,18 @@
             'cover_image'          => $e->cover_image,
             'status'               => $e->status,
         ]]);
+
+        $promoPayload = $promoCodes?->map(fn($p) => [
+            'id'             => $p->id,
+            'code'           => $p->code,
+            'discount_value' => $p->discount_value,
+            'discount_type'  => $p->discount_type,
+            'start_date'     => optional($p->start_date)->format('Y-m-d'),
+            'end_date'       => optional($p->end_date)->format('Y-m-d'),
+            'quota'          => $p->quota,
+            'used_count'     => $p->used_count,
+            'status'         => $p->status,
+        ])->values() ?? [];
     @endphp
 
     const CSRF        = document.querySelector('meta[name="csrf-token"]').content;
@@ -1272,29 +1284,42 @@
         } catch (err) { alert(err.message); }
     }
 
-    // ══════════════════════════════════════════
-    // PROMO CODE (UI only — backend nanti)
-    // ══════════════════════════════════════════
+// Hapus kode promo lama Anda sampai bersih, lalu ganti dengan ini:
+
+    // ═══════════════════════════════════════════════════════════════
+    // PROMO CODE — REPLACED BLOCK (BACKEND INTEGRATED)
+    // ═══════════════════════════════════════════════════════════════
+
     const PROMO_PER_PAGE = 3;
     let promoPage        = 1;
     let editingPromoId   = null;
 
-    // Dummy data — akan diganti data dari DB nanti
-    let promoCodes = [
-        { id: 1, code: 'ALASAREZEN',   discountValue: 10,    discountType: 'percentage', startDate: '2026-10-24', endDate: '2026-11-24', quota: 20, used: 10, status: 'active' },
-        { id: 2, code: 'NATURE20',     discountValue: 20000, discountType: 'flat',       startDate: '2026-11-01', endDate: '2026-12-01', quota: 50, used: 0,  status: 'active' },
-        { id: 3, code: 'SUMMERRETREAT',discountValue: 15,    discountType: 'percentage', startDate: '2024-06-01', endDate: '2024-08-31', quota: 50, used: 50, status: 'non-active' },
-    ];
+    // FIX: Menggunakan $promoCodes sesuai data yang dikirim dari Controller Anda
+
+    let promoCodes = @json($promoCodes ?? []);
+
+    // Helper untuk menangani response fetch JSON & error dari server
+    async function parseJsonResponse(res) {
+        const isJson = res.headers.get('content-type')?.includes('application/json');
+        const data = isJson ? await res.json() : null;
+        
+        if (!res.ok) {
+            throw new Error(data?.message || `Server error: ${res.status}`);
+        }
+        return data;
+    }
 
     function formatPromoDate(dateStr) {
-        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+        return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+            month: 'short', day: '2-digit', year: 'numeric'
+        });
     }
 
     function getValidityMeta(startDate, endDate, status) {
-        if (status === 'non-active') return { label: 'Expired', cls: 'expired' };
-        const now   = new Date(); now.setHours(0,0,0,0);
-        const start = new Date(startDate);
-        const end   = new Date(endDate);
+        if (status === 'non-active') return { label: 'Non-active', cls: 'expired' };
+        const now   = new Date(); now.setHours(0, 0, 0, 0);
+        const start = new Date(startDate + 'T00:00:00');
+        const end   = new Date(endDate + 'T00:00:00');
         if (now < start) {
             const days = Math.ceil((start - now) / 86400000);
             return { label: `Starts in ${days} day${days !== 1 ? 's' : ''}`, cls: 'upcoming' };
@@ -1305,19 +1330,19 @@
     }
 
     function renderPromoTable() {
-        const tbody  = document.getElementById('promoTableBody');
-        const total  = promoCodes.length;
-        const start  = (promoPage - 1) * PROMO_PER_PAGE;
-        const paged  = promoCodes.slice(start, start + PROMO_PER_PAGE);
+        const tbody = document.getElementById('promoTableBody');
+        const total = promoCodes.length;
+        const start = (promoPage - 1) * PROMO_PER_PAGE;
+        const paged = promoCodes.slice(start, start + PROMO_PER_PAGE);
 
         if (paged.length === 0) {
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:rgba(26,61,10,0.4);font-size:13px;">No promo codes yet.</td></tr>`;
         } else {
             tbody.innerHTML = paged.map(p => {
-                const discountLabel = p.discountType === 'percentage'
-                    ? `${p.discountValue}%`
-                    : `IDR ${parseInt(p.discountValue).toLocaleString('id-ID')}`;
-                const meta = getValidityMeta(p.startDate, p.endDate, p.status);
+                const discountLabel = p.discount_type === 'percentage'
+                    ? `${p.discount_value}%`
+                    : `IDR ${parseInt(p.discount_value).toLocaleString('id-ID')}`;
+                const meta = getValidityMeta(p.start_date, p.end_date, p.status);
                 const statusBadge = p.status === 'active'
                     ? `<span class="promo-status-badge active">Active</span>`
                     : `<span class="promo-status-badge non-active">Non-active</span>`;
@@ -1326,11 +1351,11 @@
                     <td class="promo-code-cell">${p.code}</td>
                     <td class="promo-discount-cell">${discountLabel}</td>
                     <td class="promo-validity-cell">
-                        <span>${formatPromoDate(p.startDate)} –</span><br>
-                        <span>${formatPromoDate(p.endDate)}</span>
+                        <span>${formatPromoDate(p.start_date)} –</span><br>
+                        <span>${formatPromoDate(p.end_date)}</span>
                         <div class="promo-validity-meta ${meta.cls}">${meta.label}</div>
                     </td>
-                    <td class="promo-quota-cell">${p.used} / ${p.quota}</td>
+                    <td class="promo-quota-cell">${p.used_count ?? 0} / ${p.quota}</td>
                     <td>${statusBadge}</td>
                     <td>
                         <div class="exp-actions">
@@ -1356,7 +1381,7 @@
 
         const activeCount = promoCodes.filter(p => p.status === 'active').length;
         document.getElementById('promoCountLabel').textContent =
-            `Showing ${Math.min(paged.length, PROMO_PER_PAGE)} of ${total} promo codes (${activeCount} active)`;
+            `Showing ${paged.length} of ${total} promo codes (${activeCount} active)`;
     }
 
     function promoChangePage(delta) {
@@ -1365,26 +1390,34 @@
         renderPromoTable();
     }
 
-    // Promo Modal
+    // ── Modal open/close ──
+    // (Fungsi modal promo tetap sama dan aman)
     function openPromoModal() {
         editingPromoId = null;
-        document.getElementById('promoModalTitle').textContent    = 'Add Promo Code';
+        document.getElementById('promoModalTitle').textContent   = 'Add Promo Code';
         document.getElementById('promoCode').value                = '';
-        document.getElementById('promoStartDate').value           = '';
-        document.getElementById('promoEndDate').value             = '';
-        document.getElementById('promoDiscountValue').value       = '';
-        document.getElementById('promoDiscountType').value        = 'percentage';
+        document.getElementById('promoStartDate').value          = '';
+        document.getElementById('promoEndDate').value            = '';
+        document.getElementById('promoDiscountValue').value      = '';
+        document.getElementById('promoDiscountType').value       = 'percentage';
         document.getElementById('promoQuota').value               = '0';
-        document.getElementById('promoStatusToggle').checked      = true;
-        document.getElementById('promoStatusLabel').textContent   = 'Enable';
+        document.getElementById('promoStatusToggle').checked     = true;
+        document.getElementById('promoStatusLabel').textContent  = 'Enable';
         document.getElementById('promoModal').classList.add('open');
     }
-    function closePromoModal() { document.getElementById('promoModal').classList.remove('open'); }
-    document.getElementById('promoModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePromoModal(); });
+
+    function closePromoModal() { 
+        document.getElementById('promoModal').classList.remove('open'); 
+    }
+
+    document.getElementById('promoModal').addEventListener('click', e => { 
+        if (e.target === e.currentTarget) closePromoModal(); 
+    });
 
     document.getElementById('promoStatusToggle').addEventListener('change', function () {
         document.getElementById('promoStatusLabel').textContent = this.checked ? 'Enable' : 'Disable';
     });
+
     document.getElementById('promoCode').addEventListener('input', function () {
         this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     });
@@ -1394,18 +1427,18 @@
         if (!p) return;
         editingPromoId = id;
         document.getElementById('promoModalTitle').textContent   = 'Edit Promo Code';
-        document.getElementById('promoCode').value               = p.code;
-        document.getElementById('promoStartDate').value          = p.startDate;
-        document.getElementById('promoEndDate').value            = p.endDate;
-        document.getElementById('promoDiscountValue').value      = p.discountValue;
-        document.getElementById('promoDiscountType').value       = p.discountType;
-        document.getElementById('promoQuota').value              = p.quota;
+        document.getElementById('promoCode').value                = p.code;
+        document.getElementById('promoStartDate').value          = p.start_date;
+        document.getElementById('promoEndDate').value            = p.end_date;
+        document.getElementById('promoDiscountValue').value      = p.discount_value;
+        document.getElementById('promoDiscountType').value       = p.discount_type;
+        document.getElementById('promoQuota').value               = p.quota;
         document.getElementById('promoStatusToggle').checked     = p.status === 'active';
         document.getElementById('promoStatusLabel').textContent  = p.status === 'active' ? 'Enable' : 'Disable';
         document.getElementById('promoModal').classList.add('open');
     }
 
-    function savePromoCode() {
+    async function savePromoCode() {
         const code   = document.getElementById('promoCode').value.trim();
         const start  = document.getElementById('promoStartDate').value;
         const end    = document.getElementById('promoEndDate').value;
@@ -1423,26 +1456,54 @@
             return;
         }
 
+        const body = {
+            code, start_date: start, end_date: end,
+            discount_value: value, discount_type: type,
+            quota, status, _token: CSRF
+        };
+
         if (editingPromoId !== null) {
-            const idx = promoCodes.findIndex(x => x.id === editingPromoId);
-            if (idx > -1) {
-                promoCodes[idx] = { ...promoCodes[idx], code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, status };
-            }
-        } else {
-            promoCodes.push({ id: Date.now(), code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, used: 0, status });
+            body._method = 'PUT';
         }
 
-        closePromoModal();
-        renderPromoTable();
+        const url = editingPromoId !== null
+            ? `/admin/promo/${editingPromoId}`
+            : '{{ route("admin.promo.store") }}';
+
+        try {
+            const res = await fetch(url, {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body: JSON.stringify(body),
+            });
+            const data = await parseJsonResponse(res);
+            if (data.success) {
+                closePromoModal();
+                location.reload(); 
+            }
+        } catch (err) {
+            alert(err.message);
+        }
     }
 
-    function deletePromoCode(id) {
+    async function deletePromoCode(id) {
         if (!confirm('Delete this promo code? This cannot be undone.')) return;
-        promoCodes = promoCodes.filter(p => p.id !== id);
-        renderPromoTable();
+        try {
+            const res = await fetch(`/admin/promo/${id}`, {
+                method: 'DELETE', 
+                headers: { 'X-CSRF-TOKEN': CSRF }
+            });
+            const data = await parseJsonResponse(res);
+            if (data.success) {
+                promoCodes = promoCodes.filter(p => p.id !== id);
+                renderPromoTable();
+            }
+        } catch (err) {
+            alert(err.message);
+        }
     }
 
-    // Init
+    // Init jalankan fungsi pertama kali saat halaman dimuat
     renderPromoTable();
     </script>
 

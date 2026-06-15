@@ -108,12 +108,39 @@
 
                 {{-- Promo Code --}}
                 <div class="promo-section">
-                    <label class="promo-label" data-en="PROMO OR REFERRAL CODE" data-id="KODE PROMO ATAU REFERRAL">{{ __('experience.promo_or_referral') }}</label>
-                    <div class="promo-input-group">
-                        <input type="text" class="promo-input" name="promo_code" placeholder="{{ __('experience.promo_placeholder') }}">
-                        <button type="button" class="btn-apply" data-en="Apply" data-id="Gunakan">{{ __('experience.apply') }}</button>
+                    <label class="promo-label">PROMO OR REFERRAL CODE</label>
+                    <div class="promo-input-group" id="promoInputGroup">
+                        <input type="text" class="promo-input" id="promoCodeInput"
+                               name="promo_code"
+                               value="{{ $booking['promo_code'] ?? '' }}"
+                               placeholder="e.g. ALASAREZEN"
+                               style="text-transform:uppercase;letter-spacing:0.05em;"
+                               {{ !empty($booking['promo_code']) ? 'readonly' : '' }}>
+                        <button type="button" class="btn-apply" id="promoBtn"
+                                onclick="{{ !empty($booking['promo_code']) ? 'removePromoCode()' : 'applyPromoCode()' }}">
+                            {{ !empty($booking['promo_code']) ? 'Remove' : 'Apply' }}
+                        </button>
+                    </div>
+
+                    {{-- Feedback messages --}}
+                    <div id="promoSuccess" style="display:{{ !empty($booking['promo_code']) ? 'flex' : 'none' }};align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#2a6e32;font-weight:600;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span id="promoSuccessText">
+                            @if(!empty($booking['promo_code']))
+                                Promo <strong>{{ $booking['promo_code'] }}</strong> applied!
+                            @endif
+                        </span>
+                    </div>
+                    <div id="promoError" style="display:none;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:#b03020;font-weight:600;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <span id="promoErrorText"></span>
                     </div>
                 </div>
+
             </div>
 
             {{-- Right Column: Summary --}}
@@ -145,12 +172,18 @@
                             <span data-en="SUBTOTAL" data-id="SUB TOTAL">{{ __('experience.subtotal') }}</span>
                             <span class="val">IDR {{ number_format($booking['subtotal'], 0, ',', '.') }}</span>
                         </div>
-                        <div class="breakdown-row discount">
-                            <span data-en="PROMO DISCOUNT" data-id="DISKON PROMO">{{ __('experience.promo_discount') }}</span>
-                            <span class="val">
-                                {{ $booking['promo_discount'] > 0 ? '- IDR ' . number_format($booking['promo_discount'], 0, ',', '.') : '-' }}
+                        <div class="breakdown-row discount" id="promoDiscountRow"
+                             style="{{ ($booking['promo_discount'] ?? 0) > 0 ? '' : 'display:none;' }}">
+                            <span>PROMO DISCOUNT</span>
+                            <span class="val" id="promoDiscountDisplay">
+                                @if(($booking['promo_discount'] ?? 0) > 0)
+                                    - IDR {{ number_format($booking['promo_discount'], 0, ',', '.') }}
+                                @else
+                                    -
+                                @endif
                             </span>
                         </div>
+
                         <div class="breakdown-row">
                             <span data-en="TAX & SERVICE (21%)" data-id="PAJAK & LAYANAN (21%)">{{ __('experience.tax_service') }}</span>
                             <span class="val" data-en="Included" data-id="Termasuk">{{ __('experience.included') }}</span>
@@ -158,9 +191,10 @@
                     </div>
 
                     <div class="summary-total">
-                        <span class="lbl" data-en="Total" data-id="Total">{{ __('experience.total') }}</span>
-                        <span class="val">IDR {{ number_format($booking['total_amount'], 0, ',', '.') }}</span>
+                        <span class="lbl">Total</span>
+                        <span class="val" id="summaryTotal">IDR {{ number_format($booking['total_amount'], 0, ',', '.') }}</span>
                     </div>
+
 
                     <button type="submit" class="btn-pay-now" data-en="PAY NOW" data-id="BAYAR SEKARANG">
                         {{ __('experience.pay_now') }}
@@ -195,6 +229,111 @@
         const radio = clickedDiv.closest('label')?.querySelector('.payment-radio');
         if (radio) radio.checked = true;
     }
+
+    const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.content
+        || '{{ csrf_token() }}';
+
+    const subtotal = {{ $booking['subtotal'] }};
+
+    function formatIDR(amount) {
+        return 'IDR ' + parseInt(amount).toLocaleString('id-ID');
+    }
+
+    async function applyPromoCode() {
+        const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+        if (!code) {
+            showPromoError('Please enter a promo code.');
+            return;
+        }
+
+        const btn = document.getElementById('promoBtn');
+        btn.disabled = true;
+        btn.textContent = 'Checking...';
+
+        try {
+            const res  = await fetch('{{ route("experience.promo.apply") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                body: JSON.stringify({ code }),
+            });
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                showPromoError(data.message || 'Invalid promo code.');
+                btn.disabled = false;
+                btn.textContent = 'Apply';
+                return;
+            }
+
+            // Success
+            document.getElementById('promoCodeInput').readOnly = true;
+            btn.textContent = 'Remove';
+            btn.onclick = removePromoCode;
+            btn.disabled = false;
+
+            // Update UI
+            showPromoSuccess(`Promo <strong>${code}</strong> applied! You save ${formatIDR(data.discount)}.`);
+
+            // Update summary
+            document.getElementById('promoDiscountRow').style.display = '';
+            document.getElementById('promoDiscountDisplay').textContent = '- ' + formatIDR(data.discount);
+            document.getElementById('summaryTotal').textContent = formatIDR(data.total_amount);
+
+        } catch (e) {
+            showPromoError('Something went wrong. Please try again.');
+            btn.disabled = false;
+            btn.textContent = 'Apply';
+        }
+    }
+
+    async function removePromoCode() {
+        const btn = document.getElementById('promoBtn');
+        btn.disabled = true;
+        btn.textContent = 'Removing...';
+
+        try {
+            const res  = await fetch('{{ route("experience.promo.remove") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                body: JSON.stringify({}),
+            });
+            const data = await res.json();
+
+            document.getElementById('promoCodeInput').value    = '';
+            document.getElementById('promoCodeInput').readOnly = false;
+            btn.textContent = 'Apply';
+            btn.onclick     = applyPromoCode;
+            btn.disabled    = false;
+
+            hidePromoMessages();
+            document.getElementById('promoDiscountRow').style.display = 'none';
+            document.getElementById('summaryTotal').textContent = formatIDR(data.total_amount || subtotal);
+
+        } catch (e) {
+            btn.disabled    = false;
+            btn.textContent = 'Remove';
+        }
+    }
+
+    function showPromoSuccess(html) {
+        document.getElementById('promoError').style.display   = 'none';
+        document.getElementById('promoSuccess').style.display = 'flex';
+        document.getElementById('promoSuccessText').innerHTML = html;
+    }
+    function showPromoError(msg) {
+        document.getElementById('promoSuccess').style.display = 'none';
+        document.getElementById('promoError').style.display   = 'flex';
+        document.getElementById('promoErrorText').textContent = msg;
+    }
+    function hidePromoMessages() {
+        document.getElementById('promoSuccess').style.display = 'none';
+        document.getElementById('promoError').style.display   = 'none';
+    }
+
+    // Auto uppercase saat user mengetik
+    document.getElementById('promoCodeInput')?.addEventListener('input', function () {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
 </script>
 
 </body>

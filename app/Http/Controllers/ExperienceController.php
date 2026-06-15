@@ -4,24 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Experience;
 use App\Models\ExperienceBooking;
+use App\Models\PromoCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ExperienceController extends Controller
 {
-    // ──────────────────────────────────────────
-    // STEP 0 — List semua experience (publik)
-    // ──────────────────────────────────────────
     public function index()
     {
         $experiences = Experience::where('status', 'Active')->get();
         return view('pages.experience', compact('experiences'));
     }
 
-    // ──────────────────────────────────────────
-    // STEP 1 — Booking Detail Form
-    // GET /experience/{experience}/booking
-    // ──────────────────────────────────────────
     public function bookingDetail(Experience $experience)
     {
         if ($experience->status !== 'Active') {
@@ -33,10 +27,6 @@ class ExperienceController extends Controller
         return view('pages.experience-booking-detail', compact('experience', 'old'));
     }
 
-    // ──────────────────────────────────────────
-    // STEP 1 — POST: Simpan ke session
-    // POST /experience/{experience}/booking
-    // ──────────────────────────────────────────
     public function storeBookingDetail(Request $request, Experience $experience)
     {
         $validated = $request->validate([
@@ -65,6 +55,7 @@ class ExperienceController extends Controller
                 'guest_whatsapp' => $validated['guest_whatsapp'],
                 'special_notes'  => $validated['special_notes'] ?? null,
                 'subtotal'       => $totalAmount,
+                'promo_code'     => null,
                 'promo_discount' => 0,
                 'total_amount'   => $totalAmount,
             ],
@@ -73,10 +64,6 @@ class ExperienceController extends Controller
         return redirect()->route('experience.payment-method');
     }
 
-    // ──────────────────────────────────────────
-    // STEP 2 — Payment Method
-    // GET /experience/payment-method
-    // ──────────────────────────────────────────
     public function paymentMethod()
     {
         $booking = session('exp_booking');
@@ -89,10 +76,6 @@ class ExperienceController extends Controller
         return view('pages.experience-payment-method', compact('booking', 'experience'));
     }
 
-    // ──────────────────────────────────────────
-    // STEP 2 — POST: Simpan payment method, generate Snap Token
-    // POST /experience/payment-method
-    // ──────────────────────────────────────────
     public function storePaymentMethod(Request $request)
     {
         $request->validate([
@@ -104,82 +87,84 @@ class ExperienceController extends Controller
             return redirect()->route('experience');
         }
 
-        // Promo code
-        $promoDiscount = 0;
-        if ($request->filled('promo_code')) {
-            // TODO: validasi promo code dari DB
-            // if ($request->promo_code === 'ALASARE10') $promoDiscount = 50000;
-        }
-
-        // Generate order ID unik untuk Midtrans
+        // Generate ticket ID jika belum ada
         if (empty($booking['pending_ticket_id'])) {
             $booking['pending_ticket_id'] = 'ALS-' . strtoupper(Str::random(8));
         }
 
         $booking['payment_method'] = $request->payment_method;
-        $booking['promo_code']     = $request->promo_code;
-        $booking['promo_discount'] = $promoDiscount;
-        $booking['total_amount']   = $booking['subtotal'] - $promoDiscount;
-        $booking['snap_token']     = null; // akan diisi saat Midtrans aktif
-
-        // ══════════════════════════════════════════════════════
-        // MIDTRANS SNAP TOKEN — Uncomment saat akun siap
-        // ══════════════════════════════════════════════════════
-        //
-        // Langkah aktivasi:
-        // 1. composer require midtrans/midtrans-php
-        // 2. Tambahkan ke .env:
-        //    MIDTRANS_SERVER_KEY=SB-Mid-server-xxxx
-        //    MIDTRANS_CLIENT_KEY=SB-Mid-client-xxxx
-        //    MIDTRANS_IS_PRODUCTION=false
-        // 3. Buat file config/midtrans.php (sudah disediakan terpisah)
-        // 4. Uncomment blok di bawah ini:
-        //
-        // try {
-        //     \Midtrans\Config::$serverKey    = config('midtrans.server_key');
-        //     \Midtrans\Config::$isProduction = config('midtrans.is_production');
-        //     \Midtrans\Config::$isSanitized  = true;
-        //     \Midtrans\Config::$is3ds        = true;
-        //
-        //     $params = [
-        //         'transaction_details' => [
-        //             'order_id'     => $booking['pending_ticket_id'],
-        //             'gross_amount' => (int) $booking['total_amount'],
-        //         ],
-        //         'customer_details' => [
-        //             'first_name' => $booking['guest_name'],
-        //             'phone'      => $booking['guest_whatsapp'],
-        //         ],
-        //         'item_details' => [[
-        //             'id'       => $booking['experience_id'],
-        //             'price'    => (int) Experience::find($booking['experience_id'])->price,
-        //             'quantity' => (int) $booking['guest_count'],
-        //             'name'     => Experience::find($booking['experience_id'])->name,
-        //         ]],
-        //         // Filter metode pembayaran sesuai pilihan user:
-        //         // 'enabled_payments' => match($request->payment_method) {
-        //         //     'QRIS'           => ['gopay', 'shopeepay', 'other_qris'],
-        //         //     'Virtual Account'=> ['bca_va', 'bni_va', 'bri_va', 'permata_va'],
-        //         //     'Credit Card'    => ['credit_card'],
-        //         //     default          => [],
-        //         // },
-        //     ];
-        //
-        //     $booking['snap_token'] = \Midtrans\Snap::getSnapToken($params);
-        // } catch (\Exception $e) {
-        //     \Log::error('Midtrans Snap token error: ' . $e->getMessage());
-        // }
-        // ══════════════════════════════════════════════════════
+        $booking['snap_token']     = null;
 
         session(['exp_booking' => $booking]);
 
         return redirect()->route('experience.payment');
     }
 
-    // ──────────────────────────────────────────
-    // STEP 3 — Payment Page
-    // GET /experience/payment
-    // ──────────────────────────────────────────
+    /**
+     * AJAX: Apply promo code
+     * POST /experience/promo/apply
+     */
+    public function applyPromo(Request $request)
+    {
+        $request->validate([
+            'code' => 'required|string',
+        ]);
+
+        $booking = session('exp_booking');
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => 'Session expired.'], 422);
+        }
+
+        $promo = PromoCode::where('code', strtoupper(trim($request->code)))->first();
+
+        if (!$promo) {
+            return response()->json(['success' => false, 'message' => 'Promo code not found.'], 404);
+        }
+
+        $result = $promo->apply((int) $booking['subtotal']);
+
+        if (!$result['valid']) {
+            return response()->json(['success' => false, 'message' => $result['message']], 422);
+        }
+
+        // Simpan ke session
+        $booking['promo_code']     = $promo->code;
+        $booking['promo_discount'] = $result['discount'];
+        $booking['total_amount']   = max(0, $booking['subtotal'] - $result['discount']);
+        session(['exp_booking' => $booking]);
+
+        return response()->json([
+            'success'        => true,
+            'discount'       => $result['discount'],
+            'total_amount'   => $booking['total_amount'],
+            'discount_label' => $promo->discount_type === 'percentage'
+                ? $promo->discount_value . '%'
+                : 'IDR ' . number_format($promo->discount_value, 0, ',', '.'),
+        ]);
+    }
+
+    /**
+     * AJAX: Remove promo code
+     * POST /experience/promo/remove
+     */
+    public function removePromo(Request $request)
+    {
+        $booking = session('exp_booking');
+        if (!$booking) {
+            return response()->json(['success' => false, 'message' => 'Session expired.'], 422);
+        }
+
+        $booking['promo_code']     = null;
+        $booking['promo_discount'] = 0;
+        $booking['total_amount']   = $booking['subtotal'];
+        session(['exp_booking' => $booking]);
+
+        return response()->json([
+            'success'      => true,
+            'total_amount' => $booking['total_amount'],
+        ]);
+    }
+
     public function payment()
     {
         $booking = session('exp_booking');
@@ -189,20 +174,14 @@ class ExperienceController extends Controller
 
         $experience = Experience::findOrFail($booking['experience_id']);
 
-        // QR placeholder — diganti Midtrans saat aktif
         $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
             . urlencode($booking['pending_ticket_id']);
 
-        // snap_token null sampai Midtrans aktif
         $snapToken = $booking['snap_token'] ?? null;
 
         return view('pages.experience-payment', compact('booking', 'experience', 'qrCodeUrl', 'snapToken'));
     }
 
-    // ──────────────────────────────────────────
-    // STEP 3 — POST: Konfirmasi bayar → simpan ke DB
-    // POST /experience/payment/confirm
-    // ──────────────────────────────────────────
     public function confirmPayment(Request $request)
     {
         $booking = session('exp_booking');
@@ -210,13 +189,8 @@ class ExperienceController extends Controller
             return redirect()->route('experience');
         }
 
-        // Cegah double submit — hanya blokir jika ticket_id sama persis
-        // (bukan blokir semua booking baru berdasarkan session lama)
-
         $ticketId = $booking['pending_ticket_id'];
 
-        // Cegah duplicate ticket_id — jika ticket sudah ada di DB
-        // (terjadi saat user back/refresh setelah booking berhasil)
         $existing = ExperienceBooking::where('ticket_id', $ticketId)->first();
         if ($existing) {
             session(['exp_booking_confirmed_id' => $existing->id]);
@@ -242,6 +216,11 @@ class ExperienceController extends Controller
                 'status'         => 'Awaiting',
             ]);
 
+            // Increment promo used count
+            if (!empty($booking['promo_code'])) {
+                PromoCode::where('code', $booking['promo_code'])->increment('used_count');
+            }
+
             session(['exp_booking_confirmed_id' => $expBooking->id]);
             session()->forget('exp_booking');
 
@@ -254,10 +233,6 @@ class ExperienceController extends Controller
         }
     }
 
-    // ──────────────────────────────────────────
-    // STEP 4 — Success Page
-    // GET /experience/success
-    // ──────────────────────────────────────────
     public function success()
     {
         $bookingId = session('exp_booking_confirmed_id');
@@ -270,8 +245,6 @@ class ExperienceController extends Controller
         $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
             . urlencode($expBooking->ticket_id);
 
-        // Hapus session setelah halaman ditampilkan
-        // agar booking berikutnya bisa diproses dengan benar
         session()->forget('exp_booking_confirmed_id');
 
         return view('pages.experience-success', compact('expBooking', 'qrCodeUrl'));

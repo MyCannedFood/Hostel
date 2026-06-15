@@ -9,6 +9,9 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
 use App\Http\Controllers\ExperienceController;
+use App\Http\Controllers\AdminPromoCodeController;
+
+
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
@@ -185,6 +188,16 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 
 // Admin Routes (Protected)
 Route::middleware(['is_admin'])->group(function () {
+
+// PROMO CODES
+Route::post('/admin/promo', [AdminPromoCodeController::class, 'store'])
+    ->name('admin.promo.store');
+
+Route::post('/admin/promo/{promo}', [AdminPromoCodeController::class, 'update'])
+    ->name('admin.promo.update');
+
+Route::delete('/admin/promo/{promo}', [AdminPromoCodeController::class, 'destroy'])
+    ->name('admin.promo.destroy');
 
     // Profile Update
      Route::put(
@@ -402,6 +415,13 @@ Route::middleware(['is_admin'])->group(function () {
 
     Route::post('/admin/experience/verify-ticket', [AdminExperienceController::class, 'verifyTicket'])
         ->name('admin.experience.verify');
+
+    // Promo Code
+    Route::post('/experience/promo/apply', [ExperienceController::class, 'applyPromo'])
+        ->name('experience.promo.apply');
+
+    Route::post('/experience/promo/remove', [ExperienceController::class, 'removePromo'])
+        ->name('experience.promo.remove');
 
     // SETTINGS
     Route::get('/Admin/Settings',

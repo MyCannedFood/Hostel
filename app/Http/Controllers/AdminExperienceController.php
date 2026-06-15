@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Experience;
 use App\Models\ExperienceBooking;
+use App\Models\PromoCode;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -15,8 +16,9 @@ class AdminExperienceController extends Controller
     {
         $experiences = Experience::withCount('bookings')->orderBy('created_at', 'desc')->get();
         $bookings    = ExperienceBooking::with('experience')->orderBy('created_at', 'desc')->get();
+        $promoCodes  = PromoCode::orderBy('created_at', 'desc')->get();
 
-        return view('admin.experience', compact('experiences', 'bookings'));
+        return view('admin.experience', compact('experiences', 'bookings', 'promoCodes'));
     }
 
     // ── EXPERIENCE CRUD ──
@@ -169,7 +171,6 @@ class AdminExperienceController extends Controller
 
     public function checkIn(ExperienceBooking $booking): \Illuminate\Http\JsonResponse
     {
-        // Prevent double check-in
         if ($booking->status === 'Checked In') {
             return response()->json([
                 'success' => false,
@@ -177,10 +178,8 @@ class AdminExperienceController extends Controller
             ], 409);
         }
 
-        // Update booking status
         $booking->update(['status' => 'Checked In']);
 
-        // Create cash-in entry to Master General Ledger (idempotent via trans_code)
         $transCode = 'TR-EXP-' . $booking->id;
 
         if (!\App\Models\GeneralLedger::where('trans_code', $transCode)->exists()) {
@@ -201,7 +200,6 @@ class AdminExperienceController extends Controller
     {
         $request->validate(['ticket_id' => 'required|string']);
 
-        // Strip # jika ada (user mungkin copy dari tampilan tabel yang ada prefix #)
         $ticketId = ltrim(trim($request->ticket_id), '#');
 
         $booking = ExperienceBooking::with('experience')
