@@ -773,6 +773,381 @@
             transition: 0.2s;
         }
 
+        /* ═══════════════════════════════════════════
+           PROMO CODE — Additional Styles
+        ═══════════════════════════════════════════ */
+
+        .promo-table td {
+            padding: 16px 18px;
+            vertical-align: middle;
+        }
+        .promo-code-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+            color: var(--dark-green);
+        }
+        .promo-discount-cell {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-green);
+        }
+        .promo-validity-cell {
+            font-size: 12px;
+            color: rgba(26, 61, 10, 0.75);
+            line-height: 1.55;
+        }
+        .promo-validity-meta {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+        .promo-validity-meta.remaining { color: #3a7d2f; }
+        .promo-validity-meta.upcoming  { color: #9a6b1a; }
+        .promo-validity-meta.expired   { color: #b03020; }
+        .promo-quota-cell {
+            font-size: 13px;
+            color: rgba(26, 61, 10, 0.8);
+        }
+
+        .promo-status-badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .promo-status-badge.active {
+            background: #d6f0d8;
+            color: #2a6e32;
+        }
+        .promo-status-badge.non-active {
+            background: #fde8e5;
+            color: #b03020;
+        }
+
+        .promo-table-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0 0;
+            margin-top: 8px;
+            border-top: 1px solid rgba(26, 61, 10, 0.08);
+        }
+        .promo-count-label {
+            font-size: 12px;
+            color: rgba(26, 61, 10, 0.55);
+        }
+        .promo-pagination {
+            display: flex;
+            gap: 6px;
+        }
+        .promo-page-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1.5px solid rgba(26, 61, 10, 0.2);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(26, 61, 10, 0.6);
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .promo-page-btn:hover {
+            border-color: var(--dark-green);
+            background: rgba(26, 61, 10, 0.05);
+        }
+
+        .promo-date-wrap {
+            position: relative;
+        }
+        .promo-date-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: rgba(26, 61, 10, 0.4);
+        }
+        .promo-date-input {
+            padding-left: 36px !important;
+        }
+
+        .promo-code-input {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .promo-status-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(26, 61, 10, 0.04);
+            border: 1px solid rgba(26, 61, 10, 0.1);
+            border-radius: 8px;
+            margin-top: 2px;
+        }
+        .promo-status-main {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--dark-green);
+            margin: 0;
+            line-height: 1.3;
+        }
+        .promo-status-hint {
+            font-size: 11px;
+            color: rgba(26, 61, 10, 0.5);
+            margin: 2px 0 0;
+        }
+
+        .exp-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 99999;
+        }
+        .exp-modal-overlay.open {
+            display: flex;
+        }
+        .exp-modal {
+            width: 100%;
+            max-width: 600px;
+            background: var(--white);
+            border-radius: 8px;
+            outline: 1px solid var(--dark-green);
+            box-shadow: 0px 4px 24px rgba(26, 61, 10, 0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            max-height: 90vh;
+        }
+        .exp-modal-header {
+            background: var(--light-green);
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--dark-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .exp-modal-title {
+            color: var(--dark-green);
+            font-size: 24px;
+            font-weight: 500;
+            margin: 0;
+        }
+        .exp-modal-subtitle {
+            font-size: 13px;
+            color: rgba(26, 61, 10, 0.6);
+            margin: 2px 0 0;
+        }
+        .exp-modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: rgba(26, 61, 10, 0.5);
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .exp-modal-close:hover {
+            color: var(--dark-green);
+        }
+        .exp-modal-body {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+        .exp-modal-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        .exp-field-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--dark-green);
+        }
+        .exp-modal-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--dark-green);
+            outline: none;
+            box-sizing: border-box;
+        }
+        .exp-modal-input:focus {
+            border-color: var(--dark-green);
+        }
+        .exp-modal-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--dark-green);
+            outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A3D0A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px top 50%;
+            background-size: 10px auto;
+            box-sizing: border-box;
+        }
+        .exp-modal-row {
+            display: flex;
+            gap: 16px;
+        }
+        .exp-modal-footer {
+            background: var(--light-green);
+            padding: 16px 24px;
+            border-top: 1px solid var(--dark-green);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .exp-btn-cancel {
+            background: var(--white);
+            color: var(--dark-green);
+            border: 1px solid var(--dark-green);
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .exp-btn-cancel:hover {
+            background: #f0f0f0;
+        }
+        .exp-btn-primary-form {
+            background: var(--orange);
+            color: var(--white);
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .exp-btn-primary-form:hover {
+            opacity: 0.9;
+        }
+        .exp-toggle {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .exp-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .exp-toggle-slider {
+            position: absolute;
+            inset: 0;
+            background: var(--light-green);
+            border: 1px solid var(--dark-green);
+            border-radius: 20px;
+            transition: 0.2s;
+        }
+        .exp-toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            left: 2px;
+            bottom: 2px;
+            background: var(--dark-green);
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        .exp-toggle input:checked + .exp-toggle-slider {
+            background: var(--orange);
+            border-color: var(--orange);
+        }
+        .exp-toggle input:checked + .exp-toggle-slider::before {
+            transform: translateX(16px);
+            background: var(--white);
+        }
+        .exp-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .exp-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: rgba(26, 61, 10, 0.5);
+            transition: color 0.15s;
+        }
+        .exp-action-btn.edit:hover { color: var(--dark-green); }
+        .exp-action-btn.delete:hover { color: #b03020; }
+
+        .exp-btn-outline-promo {
+            padding: 12px 24px;
+            border-radius: 4px;
+            border: 2px solid var(--dark-green);
+            background: transparent;
+            color: var(--dark-green);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.15s, color 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .exp-btn-outline-promo:hover {
+            background: rgba(26, 61, 10, 0.07);
+        }
+
+        .exp-card {
+            background: var(--white);
+            border: 1px solid var(--dark-green);
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .exp-card-title {
+            font-size: 22px;
+            font-weight: 400;
+            color: var(--dark-green);
+            margin: 0;
+        }
+        .exp-registry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
@@ -798,6 +1173,7 @@
                 </h1>
                 
                 <div style="display: flex; gap: 16px;">
+                    <button class="exp-btn-outline-promo" onclick="openPromoModal()">+ Promo Code</button>
                     <button id="openRoomModal" type="button" style="display: inline-flex; align-items: center; gap: 8px; background-color: #D9864A; color: white; border: none; padding: 12px 24px; font-size: 16px; font-weight: bold; font-family: 'DM Sans', sans-serif; border-radius: 4px; cursor: pointer;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -973,6 +1349,139 @@
 </table>
             </div>
 
+            {{-- Promo Codes --}}
+            <div class="exp-card">
+                <div class="exp-registry-header">
+                    <h2 class="exp-card-title">Promo Codes</h2>
+                    <button type="button" class="exp-btn-outline-promo" onclick="openPromoModal()">+ Promo Code</button>
+                </div>
+
+                <table class="promo-table" style="width:100%;border-collapse:collapse;">
+                    <thead>
+                        <tr>
+                            <th style="padding:12px 18px;font-size:14px;font-weight:700;color:var(--dark-green);background:var(--light-green);border-bottom:1px solid var(--dark-green);text-align:left;">Promo Code</th>
+                            <th style="padding:12px 18px;font-size:14px;font-weight:700;color:var(--dark-green);background:var(--light-green);border-bottom:1px solid var(--dark-green);text-align:left;">Discount</th>
+                            <th style="padding:12px 18px;font-size:14px;font-weight:700;color:var(--dark-green);background:var(--light-green);border-bottom:1px solid var(--dark-green);text-align:left;">Validity Period</th>
+                            <th style="padding:12px 18px;font-size:14px;font-weight:700;color:var(--dark-green);background:var(--light-green);border-bottom:1px solid var(--dark-green);text-align:left;">Quota</th>
+                            <th style="padding:12px 18px;font-size:14px;font-weight:700;color:var(--dark-green);background:var(--light-green);border-bottom:1px solid var(--dark-green);text-align:left;">Status</th>
+                            <th style="padding:12px 18px;font-size:14px;font-weight:700;color:var(--dark-green);background:var(--light-green);border-bottom:1px solid var(--dark-green);text-align:left;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="promoTableBody">
+                        {{-- Rendered by JS --}}
+                    </tbody>
+                </table>
+
+                <div class="promo-table-footer">
+                    <span class="promo-count-label" id="promoCountLabel">Showing 0 promo codes</span>
+                    <div class="promo-pagination">
+                        <button class="promo-page-btn" onclick="promoChangePage(-1)">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
+                        <button class="promo-page-btn" onclick="promoChangePage(1)">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    {{-- Modal Add / Edit Promo Code --}}
+    <div class="exp-modal-overlay" id="promoModal">
+        <div class="exp-modal" style="max-width:480px;">
+            <div class="exp-modal-header">
+                <div>
+                    <h2 class="exp-modal-title" id="promoModalTitle">Add Promo Code</h2>
+                    <p class="exp-modal-subtitle">Set up a discount code for your guests.</p>
+                </div>
+                <button class="exp-modal-close" onclick="closePromoModal()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="exp-modal-body" style="gap:20px;">
+
+                {{-- Promo Code --}}
+                <div class="exp-modal-field">
+                    <label class="exp-field-label">PROMO CODE</label>
+                    <input type="text" class="exp-modal-input promo-code-input" id="promoCode"
+                        placeholder="e.g., ALASAREZEN">
+                </div>
+
+                {{-- Date Row --}}
+                <div class="exp-modal-row">
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label">START DATE</label>
+                        <div class="promo-date-wrap">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="promo-date-icon">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <input type="date" class="exp-modal-input promo-date-input" id="promoStartDate">
+                        </div>
+                    </div>
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label">END DATE</label>
+                        <div class="promo-date-wrap">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="promo-date-icon">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <input type="date" class="exp-modal-input promo-date-input" id="promoEndDate">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Discount Row --}}
+                <div class="exp-modal-row">
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label">DISCOUNT VALUE</label>
+                        <input type="number" class="exp-modal-input" id="promoDiscountValue" placeholder="e.g, 10" min="0">
+                    </div>
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label">DISCOUNT TYPE</label>
+                        <select class="exp-modal-select" id="promoDiscountType">
+                            <option value="percentage">percentage %</option>
+                            <option value="flat">flat IDR</option>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Quota + Status --}}
+                <div class="exp-modal-row" style="align-items:flex-start;">
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label">QUOTA</label>
+                        <input type="number" class="exp-modal-input" id="promoQuota" placeholder="0" min="0" value="0">
+                    </div>
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label">STATUS</label>
+                        <div class="promo-status-box">
+                            <label class="exp-toggle">
+                                <input type="checkbox" id="promoStatusToggle" checked>
+                                <span class="exp-toggle-slider"></span>
+                            </label>
+                            <div>
+                                <p class="promo-status-main" id="promoStatusLabel">Enable</p>
+                                <p class="promo-status-hint">Enable or disable this code instantly</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="exp-modal-footer">
+                <button class="exp-btn-cancel" onclick="closePromoModal()">Cancel</button>
+                <button class="exp-btn-primary-form" onclick="savePromoCode()">Save</button>
+            </div>
         </div>
     </div>
 
@@ -1187,6 +1696,181 @@
 
     window.closeInjectedModal = closeInjectedModal;
 })();
+</script>
+
+<script>
+// ══════════════════════════════════════════
+// PROMO CODE (UI only — backend nanti)
+// ══════════════════════════════════════════
+const PROMO_PER_PAGE = 3;
+let promoPage        = 1;
+let editingPromoId   = null;
+
+// Dummy data — akan diganti data dari DB nanti
+let promoCodes = [
+    { id: 1, code: 'ALASAREZEN',   discountValue: 10,    discountType: 'percentage', startDate: '2026-10-24', endDate: '2026-11-24', quota: 20, used: 10, status: 'active' },
+    { id: 2, code: 'NATURE20',     discountValue: 20000, discountType: 'flat',       startDate: '2026-11-01', endDate: '2026-12-01', quota: 50, used: 0,  status: 'active' },
+    { id: 3, code: 'SUMMERRETREAT',discountValue: 15,    discountType: 'percentage', startDate: '2024-06-01', endDate: '2024-08-31', quota: 50, used: 50, status: 'non-active' },
+];
+
+function formatPromoDate(dateStr) {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+}
+
+function getValidityMeta(startDate, endDate, status) {
+    if (status === 'non-active') return { label: 'Expired', cls: 'expired' };
+    const now   = new Date(); now.setHours(0,0,0,0);
+    const start = new Date(startDate);
+    const end   = new Date(endDate);
+    if (now < start) {
+        const days = Math.ceil((start - now) / 86400000);
+        return { label: `Starts in ${days} day${days !== 1 ? 's' : ''}`, cls: 'upcoming' };
+    }
+    if (now > end) return { label: 'Expired', cls: 'expired' };
+    const remaining = Math.ceil((end - now) / 86400000);
+    return { label: `${remaining} Day${remaining !== 1 ? 's' : ''} remaining`, cls: 'remaining' };
+}
+
+function renderPromoTable() {
+    const tbody  = document.getElementById('promoTableBody');
+    const total  = promoCodes.length;
+    const start  = (promoPage - 1) * PROMO_PER_PAGE;
+    const paged  = promoCodes.slice(start, start + PROMO_PER_PAGE);
+
+    if (paged.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:rgba(26,61,10,0.4);font-size:13px;">No promo codes yet.</td></tr>`;
+    } else {
+        tbody.innerHTML = paged.map(p => {
+            const discountLabel = p.discountType === 'percentage'
+                ? `${p.discountValue}%`
+                : `IDR ${parseInt(p.discountValue).toLocaleString('id-ID')}`;
+            const meta = getValidityMeta(p.startDate, p.endDate, p.status);
+            const statusBadge = p.status === 'active'
+                ? `<span class="promo-status-badge active">Active</span>`
+                : `<span class="promo-status-badge non-active">Non-active</span>`;
+            return `
+            <tr>
+                <td class="promo-code-cell">${p.code}</td>
+                <td class="promo-discount-cell">${discountLabel}</td>
+                <td class="promo-validity-cell">
+                    <span>${formatPromoDate(p.startDate)} –</span><br>
+                    <span>${formatPromoDate(p.endDate)}</span>
+                    <div class="promo-validity-meta ${meta.cls}">${meta.label}</div>
+                </td>
+                <td class="promo-quota-cell">${p.used} / ${p.quota}</td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="exp-actions">
+                        <button class="exp-action-btn edit" onclick="openEditPromoModal(${p.id})">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            </svg>
+                        </button>
+                        <button class="exp-action-btn delete" onclick="deletePromoCode(${p.id})">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                <path d="M10 11v6M14 11v6"/>
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    const activeCount = promoCodes.filter(p => p.status === 'active').length;
+    document.getElementById('promoCountLabel').textContent =
+        `Showing ${Math.min(paged.length, PROMO_PER_PAGE)} of ${total} promo codes (${activeCount} active)`;
+}
+
+function promoChangePage(delta) {
+    const maxPage = Math.max(1, Math.ceil(promoCodes.length / PROMO_PER_PAGE));
+    promoPage = Math.max(1, Math.min(promoPage + delta, maxPage));
+    renderPromoTable();
+}
+
+// Promo Modal
+function openPromoModal() {
+    editingPromoId = null;
+    document.getElementById('promoModalTitle').textContent    = 'Add Promo Code';
+    document.getElementById('promoCode').value                = '';
+    document.getElementById('promoStartDate').value           = '';
+    document.getElementById('promoEndDate').value             = '';
+    document.getElementById('promoDiscountValue').value       = '';
+    document.getElementById('promoDiscountType').value        = 'percentage';
+    document.getElementById('promoQuota').value               = '0';
+    document.getElementById('promoStatusToggle').checked      = true;
+    document.getElementById('promoStatusLabel').textContent   = 'Enable';
+    document.getElementById('promoModal').classList.add('open');
+}
+function closePromoModal() { document.getElementById('promoModal').classList.remove('open'); }
+document.getElementById('promoModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePromoModal(); });
+
+document.getElementById('promoStatusToggle').addEventListener('change', function () {
+    document.getElementById('promoStatusLabel').textContent = this.checked ? 'Enable' : 'Disable';
+});
+document.getElementById('promoCode').addEventListener('input', function () {
+    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+});
+
+function openEditPromoModal(id) {
+    const p = promoCodes.find(x => x.id === id);
+    if (!p) return;
+    editingPromoId = id;
+    document.getElementById('promoModalTitle').textContent   = 'Edit Promo Code';
+    document.getElementById('promoCode').value               = p.code;
+    document.getElementById('promoStartDate').value          = p.startDate;
+    document.getElementById('promoEndDate').value            = p.endDate;
+    document.getElementById('promoDiscountValue').value      = p.discountValue;
+    document.getElementById('promoDiscountType').value       = p.discountType;
+    document.getElementById('promoQuota').value              = p.quota;
+    document.getElementById('promoStatusToggle').checked     = p.status === 'active';
+    document.getElementById('promoStatusLabel').textContent  = p.status === 'active' ? 'Enable' : 'Disable';
+    document.getElementById('promoModal').classList.add('open');
+}
+
+function savePromoCode() {
+    const code   = document.getElementById('promoCode').value.trim();
+    const start  = document.getElementById('promoStartDate').value;
+    const end    = document.getElementById('promoEndDate').value;
+    const value  = document.getElementById('promoDiscountValue').value;
+    const type   = document.getElementById('promoDiscountType').value;
+    const quota  = parseInt(document.getElementById('promoQuota').value) || 0;
+    const status = document.getElementById('promoStatusToggle').checked ? 'active' : 'non-active';
+
+    if (!code || !start || !end || !value) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    if (new Date(end) < new Date(start)) {
+        alert('End date must be after start date.');
+        return;
+    }
+
+    if (editingPromoId !== null) {
+        const idx = promoCodes.findIndex(x => x.id === editingPromoId);
+        if (idx > -1) {
+            promoCodes[idx] = { ...promoCodes[idx], code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, status };
+        }
+    } else {
+        promoCodes.push({ id: Date.now(), code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, used: 0, status });
+    }
+
+    closePromoModal();
+    renderPromoTable();
+}
+
+function deletePromoCode(id) {
+    if (!confirm('Delete this promo code? This cannot be undone.')) return;
+    promoCodes = promoCodes.filter(p => p.id !== id);
+    renderPromoTable();
+}
+
+// Init
+renderPromoTable();
 </script>
 </body>
 </html>
