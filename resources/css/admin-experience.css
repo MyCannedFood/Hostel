@@ -985,3 +985,169 @@
         align-items: stretch;
     }
 }
+
+/* ═══════════════════════════════════════════
+   PROMO CODE — Tambahan CSS
+   Append ke bawah admin-experience.css
+═══════════════════════════════════════════ */
+
+/* Header action group */
+.exp-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Outline button untuk Promo Code */
+.exp-btn-outline-promo {
+    padding: 12px 24px;
+    border-radius: 2px;
+    border: 2px solid var(--exp-green);
+    background: transparent;
+    color: var(--exp-green);
+    font-family: 'Be Vietnam Pro', sans-serif;
+    font-size: 18.75px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+.exp-btn-outline-promo:hover {
+    background: rgba(26, 61, 10, 0.07);
+}
+
+/* Promo table cell overrides */
+.promo-table td {
+    padding: 16px 18px;
+    vertical-align: middle;
+}
+.promo-code-cell {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--exp-green);
+}
+.promo-discount-cell {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--exp-green);
+}
+.promo-validity-cell {
+    font-size: 12px;
+    color: rgba(26, 61, 10, 0.75);
+    line-height: 1.55;
+}
+.promo-validity-meta {
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 3px;
+}
+.promo-validity-meta.remaining { color: #3a7d2f; }
+.promo-validity-meta.upcoming  { color: #9a6b1a; }
+.promo-validity-meta.expired   { color: #b03020; }
+.promo-quota-cell {
+    font-size: 13px;
+    color: rgba(26, 61, 10, 0.8);
+}
+
+/* Promo status badges */
+.promo-status-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.promo-status-badge.active {
+    background: #d6f0d8;
+    color: #2a6e32;
+}
+.promo-status-badge.non-active {
+    background: #fde8e5;
+    color: #b03020;
+}
+
+/* Promo table footer */
+.promo-table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0 0;
+    margin-top: 8px;
+    border-top: 1px solid rgba(26, 61, 10, 0.08);
+}
+.promo-count-label {
+    font-size: 12px;
+    color: rgba(26, 61, 10, 0.55);
+}
+.promo-pagination {
+    display: flex;
+    gap: 6px;
+}
+.promo-page-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1.5px solid rgba(26, 61, 10, 0.2);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(26, 61, 10, 0.6);
+    transition: border-color 0.15s, background 0.15s;
+}
+.promo-page-btn:hover {
+    border-color: var(--exp-green);
+    background: rgba(26, 61, 10, 0.05);
+}
+
+/* Promo modal — date input with icon */
+.promo-date-wrap {
+    position: relative;
+}
+.promo-date-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: rgba(26, 61, 10, 0.4);
+}
+.promo-date-input {
+    padding-left: 36px !important;
+}
+
+/* Promo code input */
+.promo-code-input {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+/* Promo status box inside modal */
+.promo-status-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    background: rgba(26, 61, 10, 0.04);
+    border: 1px solid rgba(26, 61, 10, 0.1);
+    border-radius: 8px;
+    margin-top: 2px;
+}
+.promo-status-main {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--exp-green);
+    margin: 0;
+    line-height: 1.3;
+}
+.promo-status-hint {
+    font-size: 11px;
+    color: rgba(26, 61, 10, 0.5);
+    margin: 2px 0 0;
+}

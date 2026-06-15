@@ -39,7 +39,10 @@
                         <h1 class="exp-page-title">Experience Management</h1>
                         <p class="exp-page-subtitle">Curating moments of zen for the mindful traveler</p>
                     </div>
-                    <button class="exp-btn-primary" onclick="openExpModal()">+ Add New Experience</button>
+                    <div class="exp-header-actions">
+                        <button class="exp-btn-outline-promo" onclick="openPromoModal()">+ Promo Code</button>
+                        <button class="exp-btn-primary" onclick="openExpModal()">+ Add New Experience</button>
+                    </div>
                 </div>
 
                 {{-- Guest Check-In --}}
@@ -216,6 +219,46 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                {{-- Promo Codes --}}
+                <div class="exp-card">
+                    <div class="exp-registry-header">
+                        <h2 class="exp-card-title">Promo Codes</h2>
+                        <button type="button" class="exp-btn-primary" onclick="openPromoModal()">+ Promo Code</button>
+                    </div>
+
+                    <table class="exp-table promo-table">
+                        <thead>
+                            <tr>
+                                <th>Promo Code</th>
+                                <th>Discount</th>
+                                <th>Validity Period</th>
+                                <th>Quota</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="promoTableBody">
+                            {{-- Rendered by JS --}}
+                        </tbody>
+                    </table>
+
+                    <div class="promo-table-footer">
+                        <span class="promo-count-label" id="promoCountLabel">Showing 0 promo codes</span>
+                        <div class="promo-pagination">
+                            <button class="promo-page-btn" onclick="promoChangePage(-1)">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="15 18 9 12 15 6"/>
+                                </svg>
+                            </button>
+                            <button class="promo-page-btn" onclick="promoChangePage(1)">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -683,6 +726,101 @@
         </div>
     </div>
 
+    {{-- ══════════════════════════════════════════ --}}
+    {{-- Modal Add / Edit Promo Code               --}}
+    {{-- ══════════════════════════════════════════ --}}
+    <div class="exp-modal-overlay" id="promoModal">
+        <div class="exp-modal" style="max-width:480px;">
+            <div class="exp-modal-header">
+                <div>
+                    <h2 class="exp-modal-title" id="promoModalTitle">Add Promo Code</h2>
+                    <p class="exp-modal-subtitle">Set up a discount code for your guests.</p>
+                </div>
+                <button class="exp-modal-close" onclick="closePromoModal()">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="exp-modal-body" style="gap:20px;">
+
+                {{-- Promo Code --}}
+                <div class="exp-modal-field">
+                    <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">PROMO CODE</label>
+                    <input type="text" class="exp-modal-input promo-code-input" id="promoCode"
+                        placeholder="e.g., ALASAREZEN">
+                </div>
+
+                {{-- Date Row --}}
+                <div class="exp-modal-row">
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">START DATE</label>
+                        <div class="promo-date-wrap">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="promo-date-icon">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <input type="date" class="exp-modal-input promo-date-input" id="promoStartDate">
+                        </div>
+                    </div>
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">END DATE</label>
+                        <div class="promo-date-wrap">
+                            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="promo-date-icon">
+                                <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            <input type="date" class="exp-modal-input promo-date-input" id="promoEndDate">
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Discount Row --}}
+                <div class="exp-modal-row">
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">DISCOUNT VALUE</label>
+                        <input type="number" class="exp-modal-input" id="promoDiscountValue" placeholder="e.g, 10" min="0">
+                    </div>
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">DISCOUNT TYPE</label>
+                        <select class="exp-modal-select" id="promoDiscountType">
+                            <option value="percentage">percentage %</option>
+                            <option value="flat">flat IDR</option>
+                        </select>
+                    </div>
+                </div>
+
+                {{-- Quota + Status --}}
+                <div class="exp-modal-row" style="align-items:flex-start;">
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">QUOTA</label>
+                        <input type="number" class="exp-modal-input" id="promoQuota" placeholder="0" min="0" value="0">
+                    </div>
+                    <div class="exp-modal-field">
+                        <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">STATUS</label>
+                        <div class="promo-status-box">
+                            <label class="exp-toggle">
+                                <input type="checkbox" id="promoStatusToggle" checked>
+                                <span class="exp-toggle-slider"></span>
+                            </label>
+                            <div>
+                                <p class="promo-status-main" id="promoStatusLabel">Enable</p>
+                                <p class="promo-status-hint">Enable or disable this code instantly</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="exp-modal-footer">
+                <button class="exp-btn-cancel" onclick="closePromoModal()">Cancel</button>
+                <button class="exp-btn-primary-form" onclick="savePromoCode()">Save</button>
+            </div>
+        </div>
+    </div>
+
     <script>
     @php
         $bookingPayload = $bookings->mapWithKeys(fn($b) => [$b->id => [
@@ -714,8 +852,8 @@
         ]]);
     @endphp
 
-    const CSRF       = document.querySelector('meta[name="csrf-token"]').content;
-    const bookings   = @json($bookingPayload);
+    const CSRF        = document.querySelector('meta[name="csrf-token"]').content;
+    const bookings    = @json($bookingPayload);
     const experiences = @json($experiencePayload);
     let editingExperienceId = null;
 
@@ -747,7 +885,7 @@
         window.addEventListener('resize', () => { if (window.innerWidth >= 1024) setSidebarOpen(false); });
     }
 
-    // ── FILTER & SEARCH (client-side) ──
+    // ── FILTER & SEARCH ──
     let activeStatusFilter = '';
 
     document.querySelectorAll('.exp-tab').forEach(tab => {
@@ -785,7 +923,6 @@
     function closeExpModal() { document.getElementById('addExpModal').classList.remove('open'); }
     document.getElementById('addExpModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeExpModal(); });
 
-    // Inclusions
     function addInclusion() {
         const input = document.getElementById('inclusionInput');
         const val   = input.value.trim();
@@ -805,7 +942,6 @@
         if (e.key === 'Enter') { e.preventDefault(); addInclusion(); }
     });
 
-    // Time slots
     let slotCount = 1;
     function getSlotHtml(start = '09:00', end = '12:00', removable = false) {
         return `
@@ -828,9 +964,9 @@
     function removeSlot(btn) { btn.closest('.exp-timeslot').remove(); slotCount--; }
 
     function setTimeSlots(slots = []) {
-        const list = document.getElementById('timeslotList');
+        const list       = document.getElementById('timeslotList');
         const normalized = slots.length ? slots : ['09:00 - 12:00'];
-        list.innerHTML = '';
+        list.innerHTML   = '';
         normalized.slice(0, 3).forEach((slotValue, index) => {
             const [start = '09:00', end = '12:00'] = String(slotValue).split(' - ');
             const slot = document.createElement('div');
@@ -841,7 +977,6 @@
         slotCount = list.querySelectorAll('.exp-timeslot').length;
     }
 
-    // Cover preview
     function previewCover(input) {
         if (!input.files?.[0]) return;
         const reader = new FileReader();
@@ -856,12 +991,12 @@
         editingExperienceId = null;
         document.querySelector('#addExpModal .exp-modal-title').textContent = 'Add New Experience';
         document.getElementById('expSubmitBtn').textContent = 'Add Experience';
-        document.getElementById('expNameEn').value = '';
-        document.getElementById('expNameId').value = '';
+        document.getElementById('expNameEn').value    = '';
+        document.getElementById('expNameId').value    = '';
         document.getElementById('expShortDescEn').value = '';
         document.getElementById('expShortDescId').value = '';
-        document.getElementById('expCategory').value = 'Wellness';
-        document.getElementById('expPrice').value = '';
+        document.getElementById('expCategory').value  = 'Wellness';
+        document.getElementById('expPrice').value     = '';
         document.getElementById('inclusionList').innerHTML = '';
         document.getElementById('pubStatusToggle').checked = true;
         document.getElementById('pubStatusLabel').textContent = 'Activate Immediately';
@@ -882,14 +1017,14 @@
 
     async function submitExperience() {
         const formData = new FormData();
-        formData.append('name_en',           document.getElementById('expNameEn').value);
-        formData.append('name_id',           document.getElementById('expNameId').value);
+        formData.append('name_en',              document.getElementById('expNameEn').value);
+        formData.append('name_id',              document.getElementById('expNameId').value);
         formData.append('short_description_en', document.getElementById('expShortDescEn').value);
         formData.append('short_description_id', document.getElementById('expShortDescId').value);
-        formData.append('category',          document.getElementById('expCategory').value);
-        formData.append('price',             document.getElementById('expPrice').value);
-        formData.append('status',            document.getElementById('pubStatusToggle').checked ? 'Active' : 'Inactive');
-        formData.append('_token',            CSRF);
+        formData.append('category',             document.getElementById('expCategory').value);
+        formData.append('price',                document.getElementById('expPrice').value);
+        formData.append('status',               document.getElementById('pubStatusToggle').checked ? 'Active' : 'Inactive');
+        formData.append('_token',               CSRF);
 
         document.querySelectorAll('#inclusionList .exp-inclusion-item span').forEach(el => {
             formData.append('inclusions[]', el.textContent);
@@ -922,15 +1057,15 @@
         resetExpForm();
         editingExperienceId = id;
         document.querySelector('#addExpModal .exp-modal-title').textContent = 'Edit Experience';
-        document.getElementById('expSubmitBtn').textContent = 'Save Changes';
-        document.getElementById('expNameEn').value       = exp.name_en || '';
-        document.getElementById('expNameId').value       = exp.name_id || '';
-        document.getElementById('expShortDescEn').value  = exp.short_description_en || '';
-        document.getElementById('expShortDescId').value  = exp.short_description_id || '';
-        document.getElementById('expCategory').value     = exp.category || 'Wellness';
-        document.getElementById('expPrice').value        = parseInt(exp.price) || '';
-        document.getElementById('pubStatusToggle').checked = exp.status === 'Active';
-        document.getElementById('pubStatusLabel').textContent = exp.status === 'Active' ? 'Activate Immediately' : 'Save as Draft';
+        document.getElementById('expSubmitBtn').textContent    = 'Save Changes';
+        document.getElementById('expNameEn').value             = exp.name_en || '';
+        document.getElementById('expNameId').value             = exp.name_id || '';
+        document.getElementById('expShortDescEn').value        = exp.short_description_en || '';
+        document.getElementById('expShortDescId').value        = exp.short_description_id || '';
+        document.getElementById('expCategory').value           = exp.category || 'Wellness';
+        document.getElementById('expPrice').value              = parseInt(exp.price) || '';
+        document.getElementById('pubStatusToggle').checked     = exp.status === 'Active';
+        document.getElementById('pubStatusLabel').textContent  = exp.status === 'Active' ? 'Activate Immediately' : 'Save as Draft';
         (exp.inclusions || []).forEach(addInclusionTag);
         setTimeSlots(exp.time_slots || []);
         if (exp.cover_image) {
@@ -946,7 +1081,6 @@
                 method: 'POST', headers: { 'X-CSRF-TOKEN': CSRF }
             });
             await parseJsonResponse(res);
-            // Update data-status di baris tabel
             const row = checkbox.closest('tr');
             if (row) row.dataset.status = checkbox.checked ? 'Active' : 'Inactive';
             filterExperiences();
@@ -981,7 +1115,7 @@
     document.getElementById('scanTicketModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeScanModal(); });
 
     async function verifyTicketCode(code) {
-        code = code.trim().replace(/^#/, ''); // strip # jika user copy dari tabel
+        code = code.trim().replace(/^#/, '');
         if (!code) return;
         const res  = await fetch('{{ route("admin.experience.verify") }}', {
             method: 'POST',
@@ -992,17 +1126,17 @@
         const b    = data.booking;
 
         document.getElementById('guestDetailModal').dataset.bookingId = b.id;
-        document.getElementById('guestName').textContent        = b.guest_name;
-        document.getElementById('guestRole').textContent        = b.guest_whatsapp || '—';
-        document.getElementById('guestEmail').textContent       = b.guest_email || '—';
-        document.getElementById('guestPhone').textContent       = b.guest_whatsapp || '—';
-        document.getElementById('guestExperience').textContent  = b.experience?.name || '—';
-        document.getElementById('guestTicket').textContent      = '#' + b.ticket_id;
-        document.getElementById('guestDate').textContent        = b.scheduled_date;
-        document.getElementById('guestTime').textContent        = b.time_slot;
-        document.getElementById('guestCount').textContent       = b.guest_count + ' Guest(s)';
-        document.getElementById('guestNotes').textContent       = b.special_notes || '—';
-        document.getElementById('guestStatus').textContent      = b.status;
+        document.getElementById('guestName').textContent       = b.guest_name;
+        document.getElementById('guestRole').textContent       = b.guest_whatsapp || '—';
+        document.getElementById('guestEmail').textContent      = b.guest_email || '—';
+        document.getElementById('guestPhone').textContent      = b.guest_whatsapp || '—';
+        document.getElementById('guestExperience').textContent = b.experience?.name || '—';
+        document.getElementById('guestTicket').textContent     = '#' + b.ticket_id;
+        document.getElementById('guestDate').textContent       = b.scheduled_date;
+        document.getElementById('guestTime').textContent       = b.time_slot;
+        document.getElementById('guestCount').textContent      = b.guest_count + ' Guest(s)';
+        document.getElementById('guestNotes').textContent      = b.special_notes || '—';
+        document.getElementById('guestStatus').textContent     = b.status;
 
         closeScanModal();
         document.getElementById('guestDetailModal').classList.add('open');
@@ -1040,14 +1174,14 @@
         const b = bookings[bookingId];
         if (!b) return;
         document.getElementById('editGuestModal').dataset.bookingId = bookingId;
-        document.getElementById('editGuestName').value        = b.guest_name || '';
-        document.getElementById('editGuestEmail').value       = b.guest_email || '';
-        document.getElementById('editGuestPhone').value       = b.guest_whatsapp || '';
-        document.getElementById('editGuestExperience').value  = b.experience_id;
-        document.getElementById('editGuestDate').value        = b.scheduled_date || '';
-        document.getElementById('editGuestTime').value        = b.time_slot || '';
-        document.getElementById('editGuestCount').value       = b.guest_count || 1;
-        document.getElementById('editGuestNotes').value       = b.special_notes || '';
+        document.getElementById('editGuestName').value       = b.guest_name || '';
+        document.getElementById('editGuestEmail').value      = b.guest_email || '';
+        document.getElementById('editGuestPhone').value      = b.guest_whatsapp || '';
+        document.getElementById('editGuestExperience').value = b.experience_id;
+        document.getElementById('editGuestDate').value       = b.scheduled_date || '';
+        document.getElementById('editGuestTime').value       = b.time_slot || '';
+        document.getElementById('editGuestCount').value      = b.guest_count || 1;
+        document.getElementById('editGuestNotes').value      = b.special_notes || '';
         document.getElementById('editGuestModal').classList.add('open');
     }
     function closeEditGuestModal() { document.getElementById('editGuestModal').classList.remove('open'); }
@@ -1137,6 +1271,179 @@
             if (data.success) { closeAddGuestModal(); location.reload(); }
         } catch (err) { alert(err.message); }
     }
+
+    // ══════════════════════════════════════════
+    // PROMO CODE (UI only — backend nanti)
+    // ══════════════════════════════════════════
+    const PROMO_PER_PAGE = 3;
+    let promoPage        = 1;
+    let editingPromoId   = null;
+
+    // Dummy data — akan diganti data dari DB nanti
+    let promoCodes = [
+        { id: 1, code: 'ALASAREZEN',   discountValue: 10,    discountType: 'percentage', startDate: '2026-10-24', endDate: '2026-11-24', quota: 20, used: 10, status: 'active' },
+        { id: 2, code: 'NATURE20',     discountValue: 20000, discountType: 'flat',       startDate: '2026-11-01', endDate: '2026-12-01', quota: 50, used: 0,  status: 'active' },
+        { id: 3, code: 'SUMMERRETREAT',discountValue: 15,    discountType: 'percentage', startDate: '2024-06-01', endDate: '2024-08-31', quota: 50, used: 50, status: 'non-active' },
+    ];
+
+    function formatPromoDate(dateStr) {
+        return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    }
+
+    function getValidityMeta(startDate, endDate, status) {
+        if (status === 'non-active') return { label: 'Expired', cls: 'expired' };
+        const now   = new Date(); now.setHours(0,0,0,0);
+        const start = new Date(startDate);
+        const end   = new Date(endDate);
+        if (now < start) {
+            const days = Math.ceil((start - now) / 86400000);
+            return { label: `Starts in ${days} day${days !== 1 ? 's' : ''}`, cls: 'upcoming' };
+        }
+        if (now > end) return { label: 'Expired', cls: 'expired' };
+        const remaining = Math.ceil((end - now) / 86400000);
+        return { label: `${remaining} Day${remaining !== 1 ? 's' : ''} remaining`, cls: 'remaining' };
+    }
+
+    function renderPromoTable() {
+        const tbody  = document.getElementById('promoTableBody');
+        const total  = promoCodes.length;
+        const start  = (promoPage - 1) * PROMO_PER_PAGE;
+        const paged  = promoCodes.slice(start, start + PROMO_PER_PAGE);
+
+        if (paged.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:rgba(26,61,10,0.4);font-size:13px;">No promo codes yet.</td></tr>`;
+        } else {
+            tbody.innerHTML = paged.map(p => {
+                const discountLabel = p.discountType === 'percentage'
+                    ? `${p.discountValue}%`
+                    : `IDR ${parseInt(p.discountValue).toLocaleString('id-ID')}`;
+                const meta = getValidityMeta(p.startDate, p.endDate, p.status);
+                const statusBadge = p.status === 'active'
+                    ? `<span class="promo-status-badge active">Active</span>`
+                    : `<span class="promo-status-badge non-active">Non-active</span>`;
+                return `
+                <tr>
+                    <td class="promo-code-cell">${p.code}</td>
+                    <td class="promo-discount-cell">${discountLabel}</td>
+                    <td class="promo-validity-cell">
+                        <span>${formatPromoDate(p.startDate)} –</span><br>
+                        <span>${formatPromoDate(p.endDate)}</span>
+                        <div class="promo-validity-meta ${meta.cls}">${meta.label}</div>
+                    </td>
+                    <td class="promo-quota-cell">${p.used} / ${p.quota}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <div class="exp-actions">
+                            <button class="exp-action-btn edit" onclick="openEditPromoModal(${p.id})">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                            </button>
+                            <button class="exp-action-btn delete" onclick="deletePromoCode(${p.id})">
+                                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"/>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                    <path d="M10 11v6M14 11v6"/>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        const activeCount = promoCodes.filter(p => p.status === 'active').length;
+        document.getElementById('promoCountLabel').textContent =
+            `Showing ${Math.min(paged.length, PROMO_PER_PAGE)} of ${total} promo codes (${activeCount} active)`;
+    }
+
+    function promoChangePage(delta) {
+        const maxPage = Math.max(1, Math.ceil(promoCodes.length / PROMO_PER_PAGE));
+        promoPage = Math.max(1, Math.min(promoPage + delta, maxPage));
+        renderPromoTable();
+    }
+
+    // Promo Modal
+    function openPromoModal() {
+        editingPromoId = null;
+        document.getElementById('promoModalTitle').textContent    = 'Add Promo Code';
+        document.getElementById('promoCode').value                = '';
+        document.getElementById('promoStartDate').value           = '';
+        document.getElementById('promoEndDate').value             = '';
+        document.getElementById('promoDiscountValue').value       = '';
+        document.getElementById('promoDiscountType').value        = 'percentage';
+        document.getElementById('promoQuota').value               = '0';
+        document.getElementById('promoStatusToggle').checked      = true;
+        document.getElementById('promoStatusLabel').textContent   = 'Enable';
+        document.getElementById('promoModal').classList.add('open');
+    }
+    function closePromoModal() { document.getElementById('promoModal').classList.remove('open'); }
+    document.getElementById('promoModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePromoModal(); });
+
+    document.getElementById('promoStatusToggle').addEventListener('change', function () {
+        document.getElementById('promoStatusLabel').textContent = this.checked ? 'Enable' : 'Disable';
+    });
+    document.getElementById('promoCode').addEventListener('input', function () {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+
+    function openEditPromoModal(id) {
+        const p = promoCodes.find(x => x.id === id);
+        if (!p) return;
+        editingPromoId = id;
+        document.getElementById('promoModalTitle').textContent   = 'Edit Promo Code';
+        document.getElementById('promoCode').value               = p.code;
+        document.getElementById('promoStartDate').value          = p.startDate;
+        document.getElementById('promoEndDate').value            = p.endDate;
+        document.getElementById('promoDiscountValue').value      = p.discountValue;
+        document.getElementById('promoDiscountType').value       = p.discountType;
+        document.getElementById('promoQuota').value              = p.quota;
+        document.getElementById('promoStatusToggle').checked     = p.status === 'active';
+        document.getElementById('promoStatusLabel').textContent  = p.status === 'active' ? 'Enable' : 'Disable';
+        document.getElementById('promoModal').classList.add('open');
+    }
+
+    function savePromoCode() {
+        const code   = document.getElementById('promoCode').value.trim();
+        const start  = document.getElementById('promoStartDate').value;
+        const end    = document.getElementById('promoEndDate').value;
+        const value  = document.getElementById('promoDiscountValue').value;
+        const type   = document.getElementById('promoDiscountType').value;
+        const quota  = parseInt(document.getElementById('promoQuota').value) || 0;
+        const status = document.getElementById('promoStatusToggle').checked ? 'active' : 'non-active';
+
+        if (!code || !start || !end || !value) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+        if (new Date(end) < new Date(start)) {
+            alert('End date must be after start date.');
+            return;
+        }
+
+        if (editingPromoId !== null) {
+            const idx = promoCodes.findIndex(x => x.id === editingPromoId);
+            if (idx > -1) {
+                promoCodes[idx] = { ...promoCodes[idx], code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, status };
+            }
+        } else {
+            promoCodes.push({ id: Date.now(), code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, used: 0, status });
+        }
+
+        closePromoModal();
+        renderPromoTable();
+    }
+
+    function deletePromoCode(id) {
+        if (!confirm('Delete this promo code? This cannot be undone.')) return;
+        promoCodes = promoCodes.filter(p => p.id !== id);
+        renderPromoTable();
+    }
+
+    // Init
+    renderPromoTable();
     </script>
 
 </body>

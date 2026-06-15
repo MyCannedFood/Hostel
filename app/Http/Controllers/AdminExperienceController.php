@@ -43,8 +43,10 @@ class AdminExperienceController extends Controller
         }
 
         $experience = Experience::create([
+            'name'                 => $validated['name_en'],
             'name_en'              => $validated['name_en'],
             'name_id'              => $validated['name_id'] ?? null,
+            'short_description'    => $validated['short_description_en'] ?? null,
             'short_description_en' => $validated['short_description_en'] ?? null,
             'short_description_id' => $validated['short_description_id'] ?? null,
             'category'             => $validated['category'],
@@ -83,8 +85,10 @@ class AdminExperienceController extends Controller
         }
 
         $experience->update([
+            'name'                 => $validated['name_en'],
             'name_en'              => $validated['name_en'],
             'name_id'              => $validated['name_id'] ?? null,
+            'short_description'    => $validated['short_description_en'] ?? null,
             'short_description_en' => $validated['short_description_en'] ?? null,
             'short_description_id' => $validated['short_description_id'] ?? null,
             'category'             => $validated['category'],
