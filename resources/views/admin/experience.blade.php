@@ -744,15 +744,10 @@
             </div>
 
             <div class="exp-modal-body" style="gap:20px;">
-
-                {{-- Promo Code --}}
                 <div class="exp-modal-field">
                     <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">PROMO CODE</label>
-                    <input type="text" class="exp-modal-input promo-code-input" id="promoCode"
-                        placeholder="e.g., ALASAREZEN">
+                    <input type="text" class="exp-modal-input promo-code-input" id="promoCode" placeholder="e.g., ALASAREZEN">
                 </div>
-
-                {{-- Date Row --}}
                 <div class="exp-modal-row">
                     <div class="exp-modal-field">
                         <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">START DATE</label>
@@ -775,8 +770,6 @@
                         </div>
                     </div>
                 </div>
-
-                {{-- Discount Row --}}
                 <div class="exp-modal-row">
                     <div class="exp-modal-field">
                         <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">DISCOUNT VALUE</label>
@@ -790,8 +783,6 @@
                         </select>
                     </div>
                 </div>
-
-                {{-- Quota + Status --}}
                 <div class="exp-modal-row" style="align-items:flex-start;">
                     <div class="exp-modal-field">
                         <label class="exp-field-label" style="font-size:11px;font-weight:700;letter-spacing:0.08em;">QUOTA</label>
@@ -811,7 +802,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="exp-modal-footer">
@@ -851,7 +841,8 @@
             'status'               => $e->status,
         ]]);
 
-        $promoPayload = $promoCodes?->map(fn($p) => [
+        {{-- Doc 2: promo codes passed directly from controller --}}
+        $promoPayload = collect($promoCodes ?? [])->map(fn($p) => [
             'id'             => $p->id,
             'code'           => $p->code,
             'discount_value' => $p->discount_value,
@@ -861,7 +852,7 @@
             'quota'          => $p->quota,
             'used_count'     => $p->used_count,
             'status'         => $p->status,
-        ])->values() ?? [];
+        ])->values();
     @endphp
 
     const CSRF        = document.querySelector('meta[name="csrf-token"]').content;
@@ -871,8 +862,12 @@
 
     // ── UTILS ──
     async function parseJsonResponse(res) {
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok || data.success === false) {
+        const isJson = res.headers.get('content-type')?.includes('application/json');
+        const data   = isJson ? await res.json() : null;
+        if (!res.ok) {
+            throw new Error(data?.message || `Server error: ${res.status}`);
+        }
+        if (data?.success === false) {
             throw new Error(data.message || Object.values(data.errors || {}).flat().join('\n') || 'Request failed.');
         }
         return data;
@@ -1003,16 +998,16 @@
         editingExperienceId = null;
         document.querySelector('#addExpModal .exp-modal-title').textContent = 'Add New Experience';
         document.getElementById('expSubmitBtn').textContent = 'Add Experience';
-        document.getElementById('expNameEn').value    = '';
-        document.getElementById('expNameId').value    = '';
-        document.getElementById('expShortDescEn').value = '';
-        document.getElementById('expShortDescId').value = '';
-        document.getElementById('expCategory').value  = 'Wellness';
-        document.getElementById('expPrice').value     = '';
-        document.getElementById('inclusionList').innerHTML = '';
-        document.getElementById('pubStatusToggle').checked = true;
+        document.getElementById('expNameEn').value          = '';
+        document.getElementById('expNameId').value          = '';
+        document.getElementById('expShortDescEn').value     = '';
+        document.getElementById('expShortDescId').value     = '';
+        document.getElementById('expCategory').value        = 'Wellness';
+        document.getElementById('expPrice').value           = '';
+        document.getElementById('inclusionList').innerHTML  = '';
+        document.getElementById('pubStatusToggle').checked  = true;
         document.getElementById('pubStatusLabel').textContent = 'Activate Immediately';
-        document.getElementById('expCoverInput').value = '';
+        document.getElementById('expCoverInput').value      = '';
         document.getElementById('expCoverPreview').innerHTML = `
             <svg viewBox="0 0 48 48" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.3">
                 <rect x="6" y="6" width="36" height="36" rx="4"/>
@@ -1284,30 +1279,15 @@
         } catch (err) { alert(err.message); }
     }
 
-// Hapus kode promo lama Anda sampai bersih, lalu ganti dengan ini:
-
-    // ═══════════════════════════════════════════════════════════════
-    // PROMO CODE — REPLACED BLOCK (BACKEND INTEGRATED)
-    // ═══════════════════════════════════════════════════════════════
-
+    // ══════════════════════════════════════════
+    // PROMO CODE
+    // ══════════════════════════════════════════
     const PROMO_PER_PAGE = 3;
-    let promoPage        = 1;
-    let editingPromoId   = null;
+    let promoPage      = 1;
+    let editingPromoId = null;
 
-    // FIX: Menggunakan $promoCodes sesuai data yang dikirim dari Controller Anda
-
-    let promoCodes = @json($promoCodes ?? []);
-
-    // Helper untuk menangani response fetch JSON & error dari server
-    async function parseJsonResponse(res) {
-        const isJson = res.headers.get('content-type')?.includes('application/json');
-        const data = isJson ? await res.json() : null;
-        
-        if (!res.ok) {
-            throw new Error(data?.message || `Server error: ${res.status}`);
-        }
-        return data;
-    }
+    // Data baked-in dari server (tidak perlu fetch tambahan)
+    let promoCodes = @json($promoPayload);
 
     function formatPromoDate(dateStr) {
         return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
@@ -1390,34 +1370,25 @@
         renderPromoTable();
     }
 
-    // ── Modal open/close ──
-    // (Fungsi modal promo tetap sama dan aman)
     function openPromoModal() {
         editingPromoId = null;
-        document.getElementById('promoModalTitle').textContent   = 'Add Promo Code';
-        document.getElementById('promoCode').value                = '';
-        document.getElementById('promoStartDate').value          = '';
-        document.getElementById('promoEndDate').value            = '';
-        document.getElementById('promoDiscountValue').value      = '';
-        document.getElementById('promoDiscountType').value       = 'percentage';
-        document.getElementById('promoQuota').value               = '0';
-        document.getElementById('promoStatusToggle').checked     = true;
-        document.getElementById('promoStatusLabel').textContent  = 'Enable';
+        document.getElementById('promoModalTitle').textContent  = 'Add Promo Code';
+        document.getElementById('promoCode').value              = '';
+        document.getElementById('promoStartDate').value         = '';
+        document.getElementById('promoEndDate').value           = '';
+        document.getElementById('promoDiscountValue').value     = '';
+        document.getElementById('promoDiscountType').value      = 'percentage';
+        document.getElementById('promoQuota').value             = '0';
+        document.getElementById('promoStatusToggle').checked    = true;
+        document.getElementById('promoStatusLabel').textContent = 'Enable';
         document.getElementById('promoModal').classList.add('open');
     }
-
-    function closePromoModal() { 
-        document.getElementById('promoModal').classList.remove('open'); 
-    }
-
-    document.getElementById('promoModal').addEventListener('click', e => { 
-        if (e.target === e.currentTarget) closePromoModal(); 
-    });
+    function closePromoModal() { document.getElementById('promoModal').classList.remove('open'); }
+    document.getElementById('promoModal').addEventListener('click', e => { if (e.target === e.currentTarget) closePromoModal(); });
 
     document.getElementById('promoStatusToggle').addEventListener('change', function () {
         document.getElementById('promoStatusLabel').textContent = this.checked ? 'Enable' : 'Disable';
     });
-
     document.getElementById('promoCode').addEventListener('input', function () {
         this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
     });
@@ -1426,15 +1397,15 @@
         const p = promoCodes.find(x => x.id === id);
         if (!p) return;
         editingPromoId = id;
-        document.getElementById('promoModalTitle').textContent   = 'Edit Promo Code';
-        document.getElementById('promoCode').value                = p.code;
-        document.getElementById('promoStartDate').value          = p.start_date;
-        document.getElementById('promoEndDate').value            = p.end_date;
-        document.getElementById('promoDiscountValue').value      = p.discount_value;
-        document.getElementById('promoDiscountType').value       = p.discount_type;
-        document.getElementById('promoQuota').value               = p.quota;
-        document.getElementById('promoStatusToggle').checked     = p.status === 'active';
-        document.getElementById('promoStatusLabel').textContent  = p.status === 'active' ? 'Enable' : 'Disable';
+        document.getElementById('promoModalTitle').textContent  = 'Edit Promo Code';
+        document.getElementById('promoCode').value              = p.code;
+        document.getElementById('promoStartDate').value         = p.start_date;
+        document.getElementById('promoEndDate').value           = p.end_date;
+        document.getElementById('promoDiscountValue').value     = p.discount_value;
+        document.getElementById('promoDiscountType').value      = p.discount_type;
+        document.getElementById('promoQuota').value             = p.quota;
+        document.getElementById('promoStatusToggle').checked    = p.status === 'active';
+        document.getElementById('promoStatusLabel').textContent = p.status === 'active' ? 'Enable' : 'Disable';
         document.getElementById('promoModal').classList.add('open');
     }
 
@@ -1459,9 +1430,8 @@
         const body = {
             code, start_date: start, end_date: end,
             discount_value: value, discount_type: type,
-            quota, status, _token: CSRF
+            quota, status, _token: CSRF,
         };
-
         if (editingPromoId !== null) {
             body._method = 'PUT';
         }
@@ -1471,16 +1441,13 @@
             : '{{ route("admin.promo.store") }}';
 
         try {
-            const res = await fetch(url, {
-                method: 'POST', 
+            const res  = await fetch(url, {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
                 body: JSON.stringify(body),
             });
             const data = await parseJsonResponse(res);
-            if (data.success) {
-                closePromoModal();
-                location.reload(); 
-            }
+            if (data.success) { closePromoModal(); location.reload(); }
         } catch (err) {
             alert(err.message);
         }
@@ -1489,9 +1456,9 @@
     async function deletePromoCode(id) {
         if (!confirm('Delete this promo code? This cannot be undone.')) return;
         try {
-            const res = await fetch(`/admin/promo/${id}`, {
-                method: 'DELETE', 
-                headers: { 'X-CSRF-TOKEN': CSRF }
+            const res  = await fetch(`/admin/promo/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': CSRF },
             });
             const data = await parseJsonResponse(res);
             if (data.success) {
@@ -1503,7 +1470,7 @@
         }
     }
 
-    // Init jalankan fungsi pertama kali saat halaman dimuat
+    // Init
     renderPromoTable();
     </script>
 

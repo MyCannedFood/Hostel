@@ -8,10 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
-use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\AdminPromoCodeController;
-
-
+use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\RoomController as AdminRoomController;
@@ -89,6 +87,13 @@ Route::get('/experience/{experience}/booking',      [ExperienceController::class
  
 Route::post('/experience/{experience}/booking',     [ExperienceController::class, 'storeBookingDetail'])
     ->name('experience.booking-detail.store');
+
+// Experience Promo Code (user-facing) — dari File 2
+Route::post('/experience/promo/apply', [ExperienceController::class, 'applyPromo'])
+    ->name('experience.promo.apply');
+
+Route::post('/experience/promo/remove', [ExperienceController::class, 'removePromo'])
+    ->name('experience.promo.remove');
 
 // Book now routes
 Route::get('/calendar', fn () => view('pages.calendar'));
@@ -189,18 +194,8 @@ Route::post('/admin/logout', [AdminAuthController::class, 'logout'])->name('admi
 // Admin Routes (Protected)
 Route::middleware(['is_admin'])->group(function () {
 
-// PROMO CODES
-Route::post('/admin/promo', [AdminPromoCodeController::class, 'store'])
-    ->name('admin.promo.store');
-
-Route::post('/admin/promo/{promo}', [AdminPromoCodeController::class, 'update'])
-    ->name('admin.promo.update');
-
-Route::delete('/admin/promo/{promo}', [AdminPromoCodeController::class, 'destroy'])
-    ->name('admin.promo.destroy');
-
     // Profile Update
-     Route::put(
+    Route::put(
         '/admin/settings/profile',
         [\App\Http\Controllers\SettingsController::class, 'profileUpdate']
     )->name('admin.settings.profile.update');
@@ -416,12 +411,21 @@ Route::delete('/admin/promo/{promo}', [AdminPromoCodeController::class, 'destroy
     Route::post('/admin/experience/verify-ticket', [AdminExperienceController::class, 'verifyTicket'])
         ->name('admin.experience.verify');
 
-    // Promo Code
-    Route::post('/experience/promo/apply', [ExperienceController::class, 'applyPromo'])
-        ->name('experience.promo.apply');
+    // Promo Codes (Admin)
+    Route::get('/admin/promo-codes', [AdminPromoCodeController::class, 'index'])
+        ->name('admin.promo-codes.index');
 
-    Route::post('/experience/promo/remove', [ExperienceController::class, 'removePromo'])
-        ->name('experience.promo.remove');
+    Route::post('/admin/promo-codes/store', [AdminPromoCodeController::class, 'store'])
+        ->name('admin.promo-codes.store');
+
+    Route::post('/admin/promo-codes/{promoCode}/update', [AdminPromoCodeController::class, 'update'])
+        ->name('admin.promo-codes.update');
+
+    Route::post('/admin/promo-codes/{promoCode}/toggle', [AdminPromoCodeController::class, 'toggleStatus'])
+        ->name('admin.promo-codes.toggle');
+
+    Route::delete('/admin/promo-codes/{promoCode}', [AdminPromoCodeController::class, 'destroy'])
+        ->name('admin.promo-codes.destroy');
 
     // SETTINGS
     Route::get('/Admin/Settings',
@@ -557,13 +561,10 @@ Route::delete('/admin/promo/{promo}', [AdminPromoCodeController::class, 'destroy
         [\App\Http\Controllers\LandingPageController::class, 'updateMediaPartners'])
         ->name('admin.landing.media-partners.update');
 
- 
     // GALLERY TEXT SETTINGS
     Route::put('/admin/landing/gallery',
         [\App\Http\Controllers\LandingPageController::class, 'updateGallery'])
         ->name('admin.landing.gallery.update');
-
-    /* GALLERY TEXT SETTINGS */
 
     // CONTACT & LOCATION SETTINGS
     Route::get('/admin/settings/location',
@@ -586,7 +587,7 @@ Route::delete('/admin/promo/{promo}', [AdminPromoCodeController::class, 'destroy
         [AdminContactLocationSettingController::class, 'destroyTransport'])
         ->name('admin.settings.location.transport.destroy');
 
-        // Notification
+    // Notification
     Route::prefix('admin/notification')
         ->name('admin.notification.')
         ->controller(NotificationController::class)
