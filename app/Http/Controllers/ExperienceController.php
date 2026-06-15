@@ -218,8 +218,10 @@ class ExperienceController extends Controller
 
             // Increment promo used count
             if (!empty($booking['promo_code'])) {
-                PromoCode::where('code', $booking['promo_code'])->increment('used_count');
+                // Field di promo_codes: `used`
+                PromoCode::where('code', $booking['promo_code'])->increment('used');
             }
+
 
             session(['exp_booking_confirmed_id' => $expBooking->id]);
             session()->forget('exp_booking');

@@ -849,7 +849,8 @@ Last updated: {{ optional($experiences->first())->updated_at?->format('M d, Y â€
             'start_date'     => optional($p->start_date)->format('Y-m-d'),
             'end_date'       => optional($p->end_date)->format('Y-m-d'),
             'quota'          => $p->quota,
-            'used_count'     => $p->used_count,
+            'used_count'     => $p->used,
+
             'status'         => $p->status,
         ])->values();
     @endphp
