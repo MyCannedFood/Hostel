@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
+use App\Http\Controllers\AdminPromoCodeController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Admin\BookingController;
@@ -402,6 +403,22 @@ Route::middleware(['is_admin'])->group(function () {
 
     Route::post('/admin/experience/verify-ticket', [AdminExperienceController::class, 'verifyTicket'])
         ->name('admin.experience.verify');
+
+    // Promo Codes
+    Route::get('/admin/promo-codes', [AdminPromoCodeController::class, 'index'])
+        ->name('admin.promo-codes.index');
+
+    Route::post('/admin/promo-codes/store', [AdminPromoCodeController::class, 'store'])
+        ->name('admin.promo-codes.store');
+
+    Route::post('/admin/promo-codes/{promoCode}/update', [AdminPromoCodeController::class, 'update'])
+        ->name('admin.promo-codes.update');
+
+    Route::post('/admin/promo-codes/{promoCode}/toggle', [AdminPromoCodeController::class, 'toggleStatus'])
+        ->name('admin.promo-codes.toggle');
+
+    Route::delete('/admin/promo-codes/{promoCode}', [AdminPromoCodeController::class, 'destroy'])
+        ->name('admin.promo-codes.destroy');
 
     // SETTINGS
     Route::get('/Admin/Settings',

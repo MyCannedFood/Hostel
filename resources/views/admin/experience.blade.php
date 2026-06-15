@@ -1273,18 +1273,26 @@
     }
 
     // ══════════════════════════════════════════
-    // PROMO CODE (UI only — backend nanti)
+    // PROMO CODE
     // ══════════════════════════════════════════
+    const PROMO_TYPE = 'experience';
     const PROMO_PER_PAGE = 3;
     let promoPage        = 1;
     let editingPromoId   = null;
+    let promoCodes = [];
 
-    // Dummy data — akan diganti data dari DB nanti
-    let promoCodes = [
-        { id: 1, code: 'ALASAREZEN',   discountValue: 10,    discountType: 'percentage', startDate: '2026-10-24', endDate: '2026-11-24', quota: 20, used: 10, status: 'active' },
-        { id: 2, code: 'NATURE20',     discountValue: 20000, discountType: 'flat',       startDate: '2026-11-01', endDate: '2026-12-01', quota: 50, used: 0,  status: 'active' },
-        { id: 3, code: 'SUMMERRETREAT',discountValue: 15,    discountType: 'percentage', startDate: '2024-06-01', endDate: '2024-08-31', quota: 50, used: 50, status: 'non-active' },
-    ];
+    async function fetchPromoCodes() {
+        try {
+            const res = await fetch(`/admin/promo-codes?type=${PROMO_TYPE}`, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.success) promoCodes = data.promoCodes;
+        } catch (err) {
+            console.error('Fetch promo codes error:', err);
+        }
+        renderPromoTable();
+    }
 
     function formatPromoDate(dateStr) {
         return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
@@ -1314,10 +1322,11 @@
             tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:28px;color:rgba(26,61,10,0.4);font-size:13px;">No promo codes yet.</td></tr>`;
         } else {
             tbody.innerHTML = paged.map(p => {
-                const discountLabel = p.discountType === 'percentage'
-                    ? `${p.discountValue}%`
-                    : `IDR ${parseInt(p.discountValue).toLocaleString('id-ID')}`;
-                const meta = getValidityMeta(p.startDate, p.endDate, p.status);
+                const discountVal = parseFloat(p.discount_value ?? p.discountValue);
+                const discountLabel = (p.discount_type ?? p.discountType) === 'percentage'
+                    ? `${discountVal}%`
+                    : `IDR ${discountVal.toLocaleString('id-ID')}`;
+                const meta = getValidityMeta(p.start_date ?? p.startDate, p.end_date ?? p.endDate, p.status);
                 const statusBadge = p.status === 'active'
                     ? `<span class="promo-status-badge active">Active</span>`
                     : `<span class="promo-status-badge non-active">Non-active</span>`;
@@ -1326,8 +1335,8 @@
                     <td class="promo-code-cell">${p.code}</td>
                     <td class="promo-discount-cell">${discountLabel}</td>
                     <td class="promo-validity-cell">
-                        <span>${formatPromoDate(p.startDate)} –</span><br>
-                        <span>${formatPromoDate(p.endDate)}</span>
+                        <span>${formatPromoDate(p.start_date ?? p.startDate)} –</span><br>
+                        <span>${formatPromoDate(p.end_date ?? p.endDate)}</span>
                         <div class="promo-validity-meta ${meta.cls}">${meta.label}</div>
                     </td>
                     <td class="promo-quota-cell">${p.used} / ${p.quota}</td>
@@ -1365,7 +1374,6 @@
         renderPromoTable();
     }
 
-    // Promo Modal
     function openPromoModal() {
         editingPromoId = null;
         document.getElementById('promoModalTitle').textContent    = 'Add Promo Code';
@@ -1395,17 +1403,17 @@
         editingPromoId = id;
         document.getElementById('promoModalTitle').textContent   = 'Edit Promo Code';
         document.getElementById('promoCode').value               = p.code;
-        document.getElementById('promoStartDate').value          = p.startDate;
-        document.getElementById('promoEndDate').value            = p.endDate;
-        document.getElementById('promoDiscountValue').value      = p.discountValue;
-        document.getElementById('promoDiscountType').value       = p.discountType;
+        document.getElementById('promoStartDate').value          = p.start_date ?? p.startDate;
+        document.getElementById('promoEndDate').value            = p.end_date ?? p.endDate;
+        document.getElementById('promoDiscountValue').value      = p.discount_value ?? p.discountValue;
+        document.getElementById('promoDiscountType').value       = p.discount_type ?? p.discountType;
         document.getElementById('promoQuota').value              = p.quota;
         document.getElementById('promoStatusToggle').checked     = p.status === 'active';
         document.getElementById('promoStatusLabel').textContent  = p.status === 'active' ? 'Enable' : 'Disable';
         document.getElementById('promoModal').classList.add('open');
     }
 
-    function savePromoCode() {
+    async function savePromoCode() {
         const code   = document.getElementById('promoCode').value.trim();
         const start  = document.getElementById('promoStartDate').value;
         const end    = document.getElementById('promoEndDate').value;
@@ -1423,27 +1431,46 @@
             return;
         }
 
-        if (editingPromoId !== null) {
-            const idx = promoCodes.findIndex(x => x.id === editingPromoId);
-            if (idx > -1) {
-                promoCodes[idx] = { ...promoCodes[idx], code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, status };
-            }
-        } else {
-            promoCodes.push({ id: Date.now(), code, startDate: start, endDate: end, discountValue: value, discountType: type, quota, used: 0, status });
-        }
+        const body = { code, start_date: start, end_date: end, discount_value: value, discount_type: type, quota, status, _token: CSRF };
+        const url = editingPromoId !== null
+            ? `/admin/promo-codes/${editingPromoId}/update`
+            : '/admin/promo-codes/store';
+        if (editingPromoId === null) body.type = PROMO_TYPE;
 
-        closePromoModal();
-        renderPromoTable();
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (data.success) {
+                closePromoModal();
+                await fetchPromoCodes();
+            } else {
+                alert(data.message || 'Failed to save promo code.');
+            }
+        } catch (err) {
+            alert('Error saving promo code: ' + err.message);
+        }
     }
 
-    function deletePromoCode(id) {
+    async function deletePromoCode(id) {
         if (!confirm('Delete this promo code? This cannot be undone.')) return;
-        promoCodes = promoCodes.filter(p => p.id !== id);
-        renderPromoTable();
+        try {
+            const res = await fetch(`/admin/promo-codes/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': CSRF, 'Accept': 'application/json' },
+            });
+            const data = await res.json();
+            if (data.success) await fetchPromoCodes();
+        } catch (err) {
+            alert('Error deleting promo code: ' + err.message);
+        }
     }
 
     // Init
-    renderPromoTable();
+    fetchPromoCodes();
     </script>
 
 </body>
