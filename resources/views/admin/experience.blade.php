@@ -40,7 +40,7 @@
                         <p class="exp-page-subtitle">Curating moments of zen for the mindful traveler</p>
                     </div>
                     <div class="exp-header-actions">
-                        <button class="exp-btn-outline-promo" onclick="openPromoModal()">+ Promo Code</button>
+                        <button class="exp-btn-primary" onclick="openPromoModal()">+ Promo Code</button>
                         <button class="exp-btn-primary" onclick="openExpModal()">+ Add New Experience</button>
                     </div>
                 </div>
