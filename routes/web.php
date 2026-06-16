@@ -121,6 +121,38 @@ Route::get('/guest-details', function () {
 });
 Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 
+// Promo Code AJAX untuk room booking
+Route::post('/confirm-payment/promo/apply', function (Request $request) {
+    $request->validate(['code' => 'required|string', 'subtotal' => 'required|numeric']);
+
+    $promo = \App\Models\PromoCode::where('code', strtoupper(trim($request->code)))
+        ->where('type', 'room')
+        ->first();
+
+    if (!$promo) {
+        return response()->json(['success' => false, 'message' => 'Promo code not found.'], 404);
+    }
+
+    $result = $promo->apply((float) $request->subtotal);
+
+    if (!$result['valid']) {
+        return response()->json(['success' => false, 'message' => $result['message']], 422);
+    }
+
+    return response()->json([
+        'success'        => true,
+        'discount'       => $result['discount'],
+        'discount_label' => $promo->discount_type === 'percentage'
+            ? $promo->discount_value . '%'
+            : 'IDR ' . number_format($promo->discount_value, 0, ',', '.'),
+        'code'           => $promo->code,
+    ]);
+})->name('booking.promo.apply');
+
+Route::post('/confirm-payment/promo/remove', function (Request $request) {
+    return response()->json(['success' => true]);
+})->name('booking.promo.remove');
+
 Route::post('/api/create-booking', function (Request $request) {
     // 1. Simpan Data Tamu
     $guest = Guest::create([
@@ -136,6 +168,13 @@ Route::post('/api/create-booking', function (Request $request) {
         'self_description' => $request->self_description,
     ]);
 
+    // Simpan promo code ke personal_notes jika ada
+    $personalNotes = [];
+    if ($request->promo_code) {
+        $personalNotes['promo_code'] = $request->promo_code;
+        $personalNotes['promo_discount'] = $request->promo_discount ?? 0;
+    }
+
     // 2. Simpan Data Booking dengan Status PENDING
     $booking = Booking::create([
         'booking_code' => $guest->booking_code,
@@ -147,6 +186,7 @@ Route::post('/api/create-booking', function (Request $request) {
         'total_nights' => $request->nights,
         'total_price' => $request->grand_total,
         'payment_method' => $request->payment_method,
+        'personal_notes' => !empty($personalNotes) ? json_encode($personalNotes) : null,
         'status' => 'PENDING', 
     ]);
 
@@ -164,6 +204,14 @@ Route::post('/api/confirm-booking/{id}', function ($id) {
     if($booking) {
         // 1. Ubah status menjadi lunas/terkonfirmasi
         $booking->update(['status' => 'CONFIRMED']);
+
+        // Increment promo used count jika ada
+        if ($booking->personal_notes) {
+            $notes = json_decode($booking->personal_notes, true);
+            if (!empty($notes['promo_code'])) {
+                \App\Models\PromoCode::where('code', $notes['promo_code'])->increment('used');
+            }
+        }
         
         // 2. Ambil data tamu berdasarkan guest_id
         $guest = Guest::find($booking->guest_id);

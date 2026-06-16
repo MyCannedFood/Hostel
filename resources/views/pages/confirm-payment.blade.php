@@ -164,6 +164,53 @@
                 </div>
             </section>
 
+            <section class="confirm-card" id="promoSection">
+                <h2 data-en="Promotion" data-id="Promo">Promotion</h2>
+
+                {{-- Promo input --}}
+                <div id="promoInputArea">
+                    <div style="display:flex;gap:8px;margin-bottom:8px;">
+                        <input type="text" id="promoCodeInput"
+                               value="{{ $promoParam }}"
+                               placeholder="e.g. ALASAREZEN"
+                               style="flex:1;padding:10px 12px;border:1px solid #ddd;border-radius:4px;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;{{ $promoParam ? 'background:#f5f5f5;' : '' }}"
+                               {{ $promoParam ? 'readonly' : '' }}>
+                        <button type="button" id="promoBtn"
+                                class="btn-apply"
+                                style="padding:10px 20px;background:#D9864A;color:#fff;border:none;border-radius:4px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;">
+                            {{ $promoParam ? 'Remove' : 'Apply' }}
+                        </button>
+                    </div>
+                    <div id="promoSuccess" style="display:{{ $promoParam ? 'flex' : 'none' }};align-items:center;gap:6px;font-size:12px;color:#2a6e32;font-weight:600;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span id="promoSuccessText">
+                            @if($promoParam)
+                                Promo <strong>{{ $promoParam }}</strong> applied!
+                            @endif
+                        </span>
+                    </div>
+                    <div id="promoError" style="display:none;align-items:center;gap:6px;font-size:12px;color:#b03020;font-weight:600;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <span id="promoErrorText"></span>
+                    </div>
+                </div>
+
+                {{-- Promo badge (shown when promo is applied) --}}
+                <div id="promoBadgeArea" style="display:{{ $promoParam ? 'block' : 'none' }};">
+                    <div class="promo-badge-card">
+                        <div class="promo-badge-left">
+                            <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            <div class="promo-badge-info">
+                                <h4 id="promoBadgeCode" style="text-transform:uppercase;">{{ $promoParam }}</h4>
+                                <p id="promoBadgeDesc" data-en="Discount Applied" data-id="Diskon Diterapkan">
+                                    @if($promoParam) 10% Discount Applied @else Discount Applied @endif
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section class="confirm-card">
                 <div class="confirm-card-header">
                     <h2 data-en="Guest Details" data-id="Detail Tamu">Guest Details</h2>
@@ -175,21 +222,6 @@
                     <span>{{ $guestPhone }}</span>
                 </div>
             </section>
-
-            @if($promoParam)
-                <section class="confirm-card">
-                    <h2 data-en="Promotion" data-id="Promo">Promotion</h2>
-                    <div class="promo-badge-card">
-                        <div class="promo-badge-left">
-                            <svg viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-                            <div class="promo-badge-info">
-                                <h4 style="text-transform: uppercase;">{{ $promoParam }}</h4>
-                                <p data-en="10% Discount Applied" data-id="Diskon 10% Diterapkan">10% Discount Applied</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            @endif
 
             <section class="confirm-card" style="margin-bottom: 0;">
                 <div class="confirm-card-header">
@@ -238,21 +270,19 @@
                     @endforeach
 
                     {{-- Diskon Promo --}}
-                    @if($promoDiscount > 0)
-                        <div class="summary-item-row">
-                            <div class="summary-item-label">
-                                <span data-en="Promo Discount (10%)" data-id="Diskon Promo (10%)">Promo Discount (10%)</span>
-                            </div>
-                            <span class="summary-item-value discount">- IDR {{ number_format($promoDiscount, 0, ',', '.') }}</span>
+                    <div class="summary-item-row" id="promoDiscountRow" style="display:{{ $promoDiscount > 0 ? '' : 'none' }};">
+                        <div class="summary-item-label">
+                            <span data-en="Promo Discount" data-id="Diskon Promo">Promo Discount</span>
                         </div>
-                    @endif
+                        <span class="summary-item-value discount" id="promoDiscountDisplay">- IDR {{ number_format($promoDiscount, 0, ',', '.') }}</span>
+                    </div>
 
                     {{-- Pajak & Servis --}}
                     <div class="summary-item-row">
                         <div class="summary-item-label">
                             <span data-en="Tax & Service (10%)" data-id="Pajak & Layanan (10%)">Tax & Service (10%)</span>
                         </div>
-                        <span class="summary-item-value">IDR {{ number_format($tax, 0, ',', '.') }}</span>
+                        <span class="summary-item-value" id="taxDisplay">IDR {{ number_format($tax, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
@@ -260,7 +290,7 @@
 
                 <div class="summary-total-row">
                     <span class="summary-total-label" data-en="Total Payment" data-id="Total Pembayaran">Total Payment</span>
-                    <span class="summary-total-value">IDR {{ number_format($grandTotal, 0, ',', '.') }}</span>
+                    <span class="summary-total-value" id="summaryTotalValue">IDR {{ number_format($grandTotal, 0, ',', '.') }}</span>
                 </div>
 
                 <div class="agreement-container">
@@ -428,10 +458,170 @@
         const columnHeaderLabel = document.getElementById('columnHeaderLabel');
         const modalBookingId = document.getElementById('modalBookingId');
 
+        // Promo elements
+        const promoInput = document.getElementById('promoCodeInput');
+        const promoBtn = document.getElementById('promoBtn');
+        const promoSuccess = document.getElementById('promoSuccess');
+        const promoSuccessText = document.getElementById('promoSuccessText');
+        const promoError = document.getElementById('promoError');
+        const promoErrorText = document.getElementById('promoErrorText');
+        const promoInputArea = document.getElementById('promoInputArea');
+        const promoBadgeArea = document.getElementById('promoBadgeArea');
+        const promoBadgeCode = document.getElementById('promoBadgeCode');
+        const promoBadgeDesc = document.getElementById('promoBadgeDesc');
+        const promoDiscountRow = document.getElementById('promoDiscountRow');
+        const promoDiscountDisplay = document.getElementById('promoDiscountDisplay');
+        const summaryTotalValue = document.getElementById('summaryTotalValue');
+        const taxDisplay = document.getElementById('taxDisplay');
+
+        const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
         let paymentTimerInterval;
         let createdBookingId = null;
+        let currentPromoCode = '{{ $promoParam }}';
+        let currentPromoDiscount = {{ $promoDiscount }};
 
         const isId = () => (window.AlasLang && window.AlasLang.current() === 'id');
+
+        // ── Promo Code ────────────────────────────────────────────
+        function formatIDR(amount) {
+            return 'IDR ' + parseInt(amount).toLocaleString('id-ID');
+        }
+
+        async function applyPromoCode() {
+            const code = promoInput.value.trim().toUpperCase();
+            if (!code) {
+                showPromoError('Please enter a promo code.');
+                return;
+            }
+
+            promoBtn.disabled = true;
+            promoBtn.textContent = 'Checking...';
+
+            const subtotal = {{ $totalBedCost }} + {{ $addonTotal }};
+
+            try {
+                const res = await fetch('{{ route("booking.promo.apply") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                    body: JSON.stringify({ code, subtotal }),
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.success) {
+                    showPromoError(data.message || 'Invalid promo code.');
+                    promoBtn.disabled = false;
+                    promoBtn.textContent = 'Remove';
+                    return;
+                }
+
+                // Success
+                currentPromoCode = data.code;
+                currentPromoDiscount = data.discount;
+                promoInput.readOnly = true;
+                promoBtn.textContent = 'Remove';
+                promoBtn.onclick = removePromoCode;
+                promoBtn.disabled = false;
+
+                promoInputArea.style.display = 'none';
+                promoBadgeArea.style.display = 'block';
+                promoBadgeCode.textContent = data.code;
+                promoBadgeDesc.textContent = data.discount_label + ' Discount Applied';
+
+                showPromoSuccess('Promo <strong>' + data.code + '</strong> applied! You save ' + formatIDR(data.discount) + '.');
+
+                updateSummary();
+
+            } catch (e) {
+                showPromoError('Something went wrong. Please try again.');
+                promoBtn.disabled = false;
+                promoBtn.textContent = 'Apply';
+            }
+        }
+
+        async function removePromoCode() {
+            promoBtn.disabled = true;
+            promoBtn.textContent = 'Removing...';
+
+            try {
+                const res = await fetch('{{ route("booking.promo.remove") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+                });
+                const data = await res.json();
+
+                currentPromoCode = '';
+                currentPromoDiscount = 0;
+                promoInput.value = '';
+                promoInput.readOnly = false;
+                promoBtn.textContent = 'Apply';
+                promoBtn.onclick = applyPromoCode;
+                promoBtn.disabled = false;
+
+                promoInputArea.style.display = 'block';
+                promoBadgeArea.style.display = 'none';
+                hidePromoMessages();
+                updateSummary();
+
+            } catch (e) {
+                promoBtn.disabled = false;
+                promoBtn.textContent = 'Remove';
+            }
+        }
+
+        function updateSummary() {
+            const subtotal = {{ $totalBedCost }} + {{ $addonTotal }};
+            const discount = currentPromoDiscount;
+            const tax = (subtotal - discount) * 0.10;
+            const grandTotal = (subtotal - discount) + tax;
+
+            if (discount > 0) {
+                promoDiscountRow.style.display = '';
+                promoDiscountDisplay.textContent = '- ' + formatIDR(discount);
+            } else {
+                promoDiscountRow.style.display = 'none';
+            }
+
+            taxDisplay.textContent = formatIDR(tax);
+            summaryTotalValue.textContent = formatIDR(grandTotal);
+        }
+
+        function showPromoSuccess(html) {
+            promoError.style.display = 'none';
+            promoSuccess.style.display = 'flex';
+            promoSuccessText.innerHTML = html;
+        }
+
+        function showPromoError(msg) {
+            promoSuccess.style.display = 'none';
+            promoError.style.display = 'flex';
+            promoErrorText.textContent = msg;
+        }
+
+        function hidePromoMessages() {
+            promoSuccess.style.display = 'none';
+            promoError.style.display = 'none';
+        }
+
+        // Attach promo button
+        if (promoBtn) {
+            promoBtn.addEventListener('click', function () {
+                if (currentPromoCode) {
+                    removePromoCode();
+                } else {
+                    applyPromoCode();
+                }
+            });
+        }
+
+        // Auto uppercase
+        if (promoInput) {
+            promoInput.addEventListener('input', function () {
+                if (!this.readOnly) {
+                    this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                }
+            });
+        }
 
         agreeCheck.addEventListener('change', function() {
             if(this.checked) {
@@ -453,11 +643,17 @@
             btnPayNow.setAttribute('disabled', 'true');
 
             const urlParams = new URLSearchParams(window.location.search);
-            urlParams.append('grand_total', "{{ $grandTotal }}");
+            urlParams.append('grand_total', summaryTotalValue.textContent.replace(/[^0-9]/g, ''));
 
             const payload = {};
             for(let [key, value] of urlParams.entries()) {
                 payload[key] = value;
+            }
+
+            // Include promo data
+            if (currentPromoCode) {
+                payload['promo_code'] = currentPromoCode;
+                payload['promo_discount'] = currentPromoDiscount;
             }
 
             try {
