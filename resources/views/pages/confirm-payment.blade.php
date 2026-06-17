@@ -511,7 +511,7 @@
                 if (!res.ok || !data.success) {
                     showPromoError(data.message || 'Invalid promo code.');
                     promoBtn.disabled = false;
-                    promoBtn.textContent = 'Remove';
+                    promoBtn.textContent = 'Apply';
                     return;
                 }
 

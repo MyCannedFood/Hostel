@@ -125,9 +125,7 @@ Route::get('/confirm-payment', fn () => view('pages.confirm-payment'));
 Route::post('/confirm-payment/promo/apply', function (Request $request) {
     $request->validate(['code' => 'required|string', 'subtotal' => 'required|numeric']);
 
-    $promo = \App\Models\PromoCode::where('code', strtoupper(trim($request->code)))
-        ->where('type', 'room')
-        ->first();
+    $promo = \App\Models\PromoCode::where('code', strtoupper(trim($request->code)))->first();
 
     if (!$promo) {
         return response()->json(['success' => false, 'message' => 'Promo code not found.'], 404);
