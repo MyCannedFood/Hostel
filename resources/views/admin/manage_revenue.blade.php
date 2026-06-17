@@ -2,13 +2,7 @@
     $admin = auth('admin')->user();
 @endphp
 
-@php
-$transactions = [
-    ['id' => 'TR-1042', 'description' => 'Booking #BK-9021',          'category' => 'Accommodation', 'type' => 'Income',  'amount' => 350000],
-    ['id' => 'TR-1043', 'description' => 'Cleaning Supplies Purchase', 'category' => 'Operational',   'type' => 'Expense', 'amount' => 400000],
-    ['id' => 'TR-1044', 'description' => 'Laundry Service',            'category' => 'Service',       'type' => 'Income',  'amount' => 150000],
-];
-@endphp
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -56,55 +50,42 @@ $transactions = [
 
         {{-- Page content --}}
         {{-- FIX: tambah class .page-revenue sebagai namespace CSS --}}
-        <div class="content-area page-revenue">
+            <div class="content-area page-revenue">
 
             <h1 class="page-title">Revenue Overview</h1>
 
             {{-- ===== STAT CARDS ===== --}}
             <div class="stats-grid">
 
-                {{-- Revenue --}}
+                {{-- Revenue (match finance-accounting: Total Cash In) --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Revenue
                         <div class="stat-icon green"><i class="fa-solid fa-wallet"></i></div>
                     </div>
-                    <div class="stat-value">IDR {{ number_format($totalRevenue, 0, ',', '.') }}</div>
-                    <div class="stat-badge {{ $growthPercent >= 0 ? 'up' : 'down' }}">
-                        <i class="fa-solid fa-arrow-trend-{{ $growthPercent >= 0 ? 'up' : 'down' }}"></i>
-                        {{ $growthPercent >= 0 ? '+' : '' }}{{ $growthPercent }}% from target
+                    <div class="stat-value">IDR {{ number_format($totalCashIn ?? $totalRevenue, 0, ',', '.') }}</div>
+                    <div class="stat-badge {{ ($totalCashIn ?? $totalRevenue) > 0 ? 'up' : 'down' }}">
+                        <i class="fa-solid fa-arrow-trend-up"></i>
+                        {{ ($totalCashIn ?? $totalRevenue) > 0 ? 'Active' : 'No income' }}
                     </div>
-                    <div class="stat-sub">IDR {{ number_format($revenueThisWeek, 0, ',', '.') }} (week)<br>IDR {{ number_format($revenueThisMonth, 0, ',', '.') }} (month)</div>
+                    <div class="stat-sub">Total Cash In</div>
                 </div>
 
-                {{-- Expenses --}}
+                {{-- Expenses (match finance-accounting: Total Cash Out) --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Expenses
                         <div class="stat-label-right">
                             <div class="stat-icon orange"><i class="fa-solid fa-cart-shopping"></i></div>
-                            <div class="dots-wrapper">
-                                <div class="three-dots" id="expenseDotsBtn" onclick="toggleDropdown(event, 'expenseDropdown')">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </div>
-                                <div class="dropdown" id="expenseDropdown">
-                                    <div class="dropdown-item" onclick="openModal('overlayExpense'); closeAllDropdowns()">
-                                        <i class="fa-solid fa-file-circle-plus"></i> Request Expense
-                                    </div>
-                                    <div class="dropdown-item" onclick="openModal('overlayLpj'); closeAllDropdowns()">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i> Upload LPJ
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
-                    <div class="stat-value">IDR {{ number_format($totalExpenses, 0, ',', '.') }}</div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: {{ $expenseRatio }}%;"></div></div>
-                    <div class="stat-sub" style="margin-bottom:6px;">{{ $expenseRatio }}% of revenue allocated</div>
-                    <div class="stat-sub">Operational: IDR {{ number_format($expensesOperational, 0, ',', '.') }}<br>Maintenance: IDR {{ number_format($expensesMaintenance, 0, ',', '.') }}</div>
+                    <div class="stat-value">IDR {{ number_format($totalCashOut ?? $totalExpenses, 0, ',', '.') }}</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: {{ ($totalCashIn ?? $totalRevenue) > 0 ? round(($totalCashOut / $totalCashIn) * 100) : 0 }}%;"></div></div>
+                    <div class="stat-sub" style="margin-bottom:6px;">{{ ($totalCashIn ?? $totalRevenue) > 0 ? round(($totalCashOut / $totalCashIn) * 100) : 0 }}% of revenue allocated</div>
+                    <div class="stat-sub">Cash Out</div>
                 </div>
 
-                {{-- Net Profit --}}
+                {{-- Net Profit (same) --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Net Profit
@@ -112,25 +93,33 @@ $transactions = [
                     </div>
                     <div class="stat-value">IDR {{ number_format($netProfit, 0, ',', '.') }}</div>
                     <div class="stat-badge {{ $netProfit >= 0 ? 'healthy' : '' }}">
-                        <i class="fa-solid fa-circle-check"></i> {{ $netProfit >= 0 ? 'Healthy' : 'Loss' }}
+                        <i class="fa-solid fa-circle-check"></i> {{ $netProfit >= 0 ? 'Healthy' : 'Deficit' }}
                     </div>
-                    <div class="stat-sub">{{ $profitMargin }}% margin achieved this period</div>
+                    <div class="stat-sub">
+                        {{ ($totalCashIn ?? $totalRevenue) > 0 ? round(($netProfit / ($totalCashIn ?? $totalRevenue)) * 100, 1) . '% margin' : 'No income yet' }}
+                    </div>
                 </div>
 
-                {{-- Growth --}}
+                {{-- Growth (hasil perhitungan keuntungan/pengeluaran) --}}
                 <div class="stat-card growth-card">
                     <div class="stat-label">
                         Growth
                         <div class="stat-icon green"><i class="fa-solid fa-chart-line"></i></div>
                     </div>
-                    <div class="stat-value">{{ $growthPercent >= 0 ? '+' : '' }}{{ $growthPercent }}%</div>
-                    <div class="stat-sub" style="margin-bottom:4px; color:#8A9A8E; font-size:12px;">Vs last month (IDR {{ number_format($revenueLastMonth, 0, ',', '.') }})</div>
-                    <div class="growth-row"><span>Daily Growth</span><span class="growth-val">{{ $dailyGrowth >= 0 ? '+' : '' }}{{ $dailyGrowth }}%</span></div>
-                    <div class="growth-row"><span>Weekly Growth</span><span class="growth-val">{{ $weeklyGrowth >= 0 ? '+' : '' }}{{ $weeklyGrowth }}%</span></div>
-                    <div class="growth-row"><span>Monthly Avg</span><span class="growth-val">{{ $growthPercent >= 0 ? '+' : '' }}{{ $growthPercent }}%</span></div>
+                    @php
+                        $growthFromKPI = ($totalCashIn ?? $totalRevenue) > 0
+                            ? round((($totalCashIn ?? $totalRevenue) - ($totalCashOut ?? $totalExpenses)) / ($totalCashIn ?? $totalRevenue) * 100, 1)
+                            : 0;
+                    @endphp
+                    <div class="stat-value">{{ $growthFromKPI >= 0 ? '+' : '' }}{{ $growthFromKPI }}%</div>
+                    <div class="stat-sub" style="margin-bottom:4px; color:#8A9A8E; font-size:12px;">Net Profit margin vs Cash In</div>
+                    <div class="growth-row"><span>Cash In</span><span class="growth-val">IDR {{ number_format($totalCashIn ?? $totalRevenue, 0, ',', '.') }}</span></div>
+                    <div class="growth-row"><span>Cash Out</span><span class="growth-val">IDR {{ number_format($totalCashOut ?? $totalExpenses, 0, ',', '.') }}</span></div>
+                    <div class="growth-row"><span>Net Profit</span><span class="growth-val">IDR {{ number_format($netProfit, 0, ',', '.') }}</span></div>
                 </div>
 
             </div>{{-- /stats-grid --}}
+
 
             {{-- ===== CHARTS ===== --}}
             <div class="charts-row">
@@ -140,25 +129,8 @@ $transactions = [
                         <div class="chart-title">Revenue Statistics</div>
                         <div class="chart-filter">Unit: IDR &nbsp; Day <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>
                     </div>
-                    <div class="chart-body">
-                        @php
-                            $ymax = $revenueMax;
-                            $steps = 5;
-                            $stepVal = $ymax > 0 ? ceil($ymax / $steps / 100000) * 100000 : 100000;
-                        @endphp
-                        <div class="y-axis">
-                            @for ($s = $steps; $s >= 0; $s--)
-                                <div class="y-label">IDR {{ number_format($s * $stepVal, 0, ',', '.') }}</div>
-                            @endfor
-                        </div>
-                        <div class="bar-chart">
-                            @foreach ($revenueLabels as $i => $label)
-                                <div class="bar-wrap">
-                                    <div class="bar" style="height: {{ $revenueMax > 0 ? ($revenueData[$i] / $revenueMax) * 100 : 0 }}%"></div>
-                                    <div class="bar-label">{{ $label }}</div>
-                                </div>
-                            @endforeach
-                        </div>
+                    <div class="chart-body" style="position:relative; height:220px;">
+                        <canvas id="revenueStatChart"></canvas>
                     </div>
                 </div>
 
@@ -167,69 +139,62 @@ $transactions = [
                         <div class="chart-title">Financial Trend</div>
                         <div class="chart-filter">Day <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>
                     </div>
-                    <div class="area-chart-wrap">
-                        <svg width="100%" height="160" viewBox="0 0 400 160" preserveAspectRatio="none">
-                            <defs>
-                                <linearGradient id="areaGrad1" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#D9864A" stop-opacity="0.2"/>
-                                    <stop offset="100%" stop-color="#D9864A" stop-opacity="0"/>
-                                </linearGradient>
-                                <linearGradient id="areaGrad2" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#4B9960" stop-opacity="0.15"/>
-                                    <stop offset="100%" stop-color="#4B9960" stop-opacity="0"/>
-                                </linearGradient>
-                            </defs>
-                            <path d="{{ $pathTarget }}" stroke="#D9864A" stroke-width="2" fill="none"/>
-                            <path d="{{ $pathTargetArea }}" fill="url(#areaGrad1)"/>
-                            <path d="{{ $pathRevenue }}" stroke="#4B9960" stroke-width="2" fill="none"/>
-                            <path d="{{ $pathRevenueArea }}" fill="url(#areaGrad2)"/>
-                        </svg>
+                    <div class="chart-body" style="position:relative; height:220px;">
+                        <canvas id="financialTrendChart"></canvas>
                     </div>
-                    <div class="area-legend">
-                        <div class="legend-item"><div class="legend-dot orange-dot"></div> Revenue Target</div>
-                        <div class="legend-item"><div class="legend-dot green-dot"></div> Actual Income</div>
+                    <div class="area-legend" style="margin-top:10px;">
+                        <div class="legend-item"><div class="legend-dot orange-dot" style="background:#d9864a;"></div> Cash Out</div>
+                        <div class="legend-item"><div class="legend-dot green-dot" style="background:#26A7A9;"></div> Cash In</div>
                     </div>
                 </div>
 
             </div>{{-- /charts-row --}}
 
+
             {{-- ===== TABLE ===== --}}
             <div class="table-card">
                 <div class="table-header">
                     <div class="table-title">Recent Financial Transactions</div>
-                    <a href="#" class="view-all-link">View All <i class="fa-solid fa-arrow-right"></i></a>
                 </div>
+
                 <table>
                     <thead>
                         <tr>
-                            <th>Transaction ID</th>
+                            <th>Trans ID</th>
+                            <th>Date</th>
                             <th>Description</th>
                             <th>Category</th>
                             <th>Type</th>
                             <th>Amount</th>
-                            <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach ($transactions as $t)
-                        <tr>
-                            <td>#{{ $t['id'] }}</td>
+                    <tbody id="recentTransactionsBody">
+                            @foreach ($transactions as $t)
+                        <tr class="recent-transaction-row">
+                            <td>{{ $t['id'] }}</td>
+                            <td>{{ $t['date'] ?? '—' }}</td>
                             <td>{{ $t['description'] }}</td>
-                            <td><span class="category-badge">{{ $t['category'] }}</span></td>
-                            <td>
-                                @if ($t['type'] === 'Income')
-                                    <span class="type-income"><i class="fa-solid fa-arrow-down"></i> Income</span>
-                                @else
-                                    <span class="type-expense"><i class="fa-solid fa-arrow-up"></i> Expense</span>
-                                @endif
-                            </td>
-                            <td><strong>IDR {{ number_format($t['amount'], 0, ',', '.') }}</strong></td>
-                            <td><div class="action-dots"><i class="fa-solid fa-ellipsis"></i></div></td>
+                            <td>{{ $t['category'] }}</td>
+                            <td>{{ $t['type'] }}</td>
+                            <td>{{ number_format($t['amount'], 0, ',', '.') }}</td>
                         </tr>
                         @endforeach
+
                     </tbody>
                 </table>
+
+                {{-- Pagination (same style/logic as Master General Ledger) --}}
+                <div class="finance-ledger-foot recent-transactions-foot" id="recentTransactionsPaginationWrap" style="{{ count($transactions) <= 5 ? 'display:none;' : '' }}">
+                    <span id="recentTransactionsMeta"></span>
+                    <div class="recent-transactions-pagination-inner">
+                        <button type="button" class="finance-page-btn" id="recentPrevBtn">Prev</button>
+                        <div id="recentPageNumbers" class="recent-transactions-page-numbers"></div>
+                        <button type="button" class="finance-page-btn" id="recentNextBtn">Next</button>
+                    </div>
+                </div>
             </div>
+
+
 
         </div>{{-- /content-area.page-revenue --}}
     </div>{{-- /main-content --}}
@@ -239,8 +204,69 @@ $transactions = [
 @include('admin.modal-expense')
 @include('admin.modal-lpj')
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    /* Pagination — make it look like finance-accounting */
+    #recentTransactionsPaginationWrap .finance-page-btn {
+        padding: 4px 12px;
+        border: 1px solid #dde3de;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 12px;
+        color: #3a5a40;
+        transition: background 0.18s;
+    }
+    #recentTransactionsPaginationWrap .finance-page-btn:hover { background: #edf1ed; }
+    #recentTransactionsPaginationWrap .finance-page-btn:disabled { opacity: 0.4; cursor: default; }
+
+    #recentTransactionsPaginationWrap .finance-page-num,
+    #recentTransactionsPaginationWrap .recent-transactions-page-numbers > div.finance-page-num {
+        width: 28px; height: 28px;
+        display: flex; align-items: center; justify-content: center;
+        border: 1px solid #dde3de;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #3a5a40;
+        transition: background 0.18s;
+    }
+    #recentTransactionsPaginationWrap .finance-page-num.active { background: #3a5a40; color: #fff; border-color: #3a5a40; }
+    #recentTransactionsPaginationWrap .finance-page-num:hover:not(.active) { background: #edf1ed; }
+
+    #recentTransactionsPaginationWrap .recent-transactions-page-numbers {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+    }
+
+    #recentTransactionsPaginationWrap {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #7a857f;
+        font-size: 10px;
+        padding-top: 10px;
+    }
+    #recentTransactionsPaginationWrap .recent-transactions-pagination-inner,
+    #recentTransactionsPaginationWrap .recent-transactions-pagination-inner {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    /* fallback for inner wrapper that we don't explicitly style */
+    #recentTransactionsPaginationWrap > div:not(#recentTransactionsPaginationWrap) {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+</style>
+
 <script>
 /* ── Sidebar toggle (dari dashboard.css / layout bawaan) ── */
+
 const sidebar         = document.getElementById('adminSidebar');
 const sidebarToggle   = document.getElementById('sidebarToggle');
 const sidebarBackdrop = document.getElementById('sidebarBackdrop');
@@ -303,7 +329,202 @@ window.addEventListener('keydown', e => {
     document.querySelectorAll('.overlay.open').forEach(m => closeModal(m.id));
     setSidebarOpen(false);
 });
+
+/* ── Generic Pagination (same as finance-accounting) ── */
+function initTablePagination({ rowSelector, prevBtnId, nextBtnId, pageNumbersId, metaId, pageSize = 5, wrapId = null }) {
+    const allRows   = Array.from(document.querySelectorAll(rowSelector));
+    const prevBtn   = document.getElementById(prevBtnId);
+    const nextBtn   = document.getElementById(nextBtnId);
+    const pageNums  = document.getElementById(pageNumbersId);
+    const metaEl    = document.getElementById(metaId);
+    const wrapEl    = wrapId ? document.getElementById(wrapId) : null;
+
+    let currentPage = 1;
+    const totalPages = Math.ceil(allRows.length / pageSize);
+
+    if (wrapEl && allRows.length <= pageSize) {
+        wrapEl.style.display = 'none';
+    }
+
+    function render() {
+        const start = (currentPage - 1) * pageSize;
+        const end   = start + pageSize;
+
+        allRows.forEach((row, idx) => {
+            row.style.display = idx >= start && idx < end ? '' : 'none';
+        });
+
+        const from = allRows.length === 0 ? 0 : start + 1;
+        const to   = Math.min(end, allRows.length);
+        if (metaEl) metaEl.textContent = `Showing ${from}–${to} of ${allRows.length}`;
+
+        if (prevBtn) prevBtn.disabled = currentPage <= 1;
+        if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+
+        if (pageNums) {
+            pageNums.innerHTML = '';
+            const startP = Math.max(1, currentPage - 2);
+            const endP   = Math.min(totalPages, currentPage + 2);
+            for (let p = startP; p <= endP; p++) {
+                const el = document.createElement('div');
+                el.className = 'finance-page-num' + (p === currentPage ? ' active' : '');
+                el.textContent = p;
+                el.addEventListener('click', () => {
+                    currentPage = p;
+                    render();
+                });
+                pageNums.appendChild(el);
+            }
+        }
+    }
+
+    prevBtn?.addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            render();
+        }
+    });
+    nextBtn?.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            render();
+        }
+    });
+
+    if (allRows.length > 0) render();
+}
+
+// Init pagination Recent Transactions
+// Init pagination Recent Transactions
+if (document.getElementById('recentTransactionsPaginationWrap')) {
+    initTablePagination({
+        rowSelector:   '#recentTransactionsBody .recent-transaction-row',
+        prevBtnId:     'recentPrevBtn',
+        nextBtnId:     'recentNextBtn',
+        pageNumbersId: 'recentPageNumbers',
+        metaId:        'recentTransactionsMeta',
+        wrapId:        'recentTransactionsPaginationWrap',
+        pageSize:      5,
+    });
+}
 </script>
+
+
+<script>
+    // ── Revenue Statistics Chart (match finance-accounting) ──
+    const revenueStatCtx = document.getElementById('revenueStatChart')?.getContext('2d');
+    if (revenueStatCtx) {
+        const revenueData   = {!! json_encode($revenueData) !!};
+        const revenueLabels = {!! json_encode($revenueLabels) !!};
+
+        new Chart(revenueStatCtx, {
+            type: 'bar',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    data: revenueData,
+                    backgroundColor: '#26A7A9',
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => 'IDR ' + ctx.parsed.y.toLocaleString('id-ID'),
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        beginAtZero: true,
+                        grid: { display: false },
+                        ticks: {
+                            callback: val => {
+                                if (val >= 1000000) return (val / 1000000) + 'M';
+                                if (val >= 1000) return (val / 1000) + 'K';
+                                return val;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+        // ── Financial Trend Chart (Cash In vs Cash Out) ──
+    const trendCtx = document.getElementById('financialTrendChart')?.getContext('2d');
+    if (trendCtx) {
+        const trendLabels  = {!! json_encode($trendLabels) !!};
+        const trendCashIn  = {!! json_encode($trendCashIn) !!};
+        const trendCashOut = {!! json_encode($trendCashOut) !!};
+
+
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: trendLabels,
+                datasets: [
+                    {
+                        label: 'Cash In',
+                        data: trendCashIn,
+                        borderColor: '#26A7A9',
+                        backgroundColor: 'rgba(38,167,169,0.12)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#26A7A9',
+                    },
+                    {
+                        label: 'Cash Out',
+                        data: trendCashOut,
+                        borderColor: '#d9864a',
+                        backgroundColor: 'rgba(217,134,74,0.12)',
+                        borderWidth: 2.5,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#d9864a',
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: ctx => ctx.dataset.label + ': IDR ' + ctx.parsed.y.toLocaleString('id-ID'),
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { display: false } },
+                    y: {
+                        beginAtZero: true,
+                        grid: { display: false },
+                        ticks: {
+                            callback: val => {
+                                if (val >= 1000000) return (val / 1000000) + 'M';
+                                if (val >= 1000) return (val / 1000) + 'K';
+                                return val;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+
 
 </body>
 </html>
+
