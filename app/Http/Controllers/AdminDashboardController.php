@@ -35,29 +35,24 @@ class AdminDashboardController extends Controller
             'revenue' => ['labels' => [], 'data' => []],
         ];
 
-        $totalRevenue = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->sum('amount');
+        $totalRevenue = (int) GeneralLedger::where('type', 'In')->sum('amount');
 
-        $revenueThisWeek = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [
+        $revenueThisWeek = (int) GeneralLedger::where('type', 'In')
+            ->whereBetween('created_at', [
                 $now->copy()->startOfWeek(Carbon::MONDAY),
                 $now->copy()->endOfWeek(Carbon::SUNDAY),
             ])
             ->sum('amount');
 
-        $revenueThisMonth = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [
+        $revenueThisMonth = (int) GeneralLedger::where('type', 'In')
+            ->whereBetween('created_at', [
                 $now->copy()->startOfMonth(),
                 $now->copy()->endOfMonth(),
             ])
             ->sum('amount');
 
-        $revenueLastMonth = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [
+        $revenueLastMonth = (int) GeneralLedger::where('type', 'In')
+            ->whereBetween('created_at', [
                 $now->copy()->subMonth()->startOfMonth(),
                 $now->copy()->subMonth()->endOfMonth(),
             ])
@@ -143,16 +138,31 @@ class AdminDashboardController extends Controller
             $weekStart = $now->copy()->subWeeks($i)->startOfWeek(Carbon::MONDAY);
             $weekEnd   = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
             $bookingStats['revenue']['labels'][] = 'Week ' . $weekStart->format('W');
-            $bookingStats['revenue']['data'][]   = (int) DB::table('payments')
-                ->where('status', 'settlement')
-                ->whereBetween('paid_at', [$weekStart, $weekEnd])
+            $bookingStats['revenue']['data'][]   = (int) GeneralLedger::where('type', 'In')
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
                 ->sum('amount');
         }
+
+        $pendingBookings = Booking::with(['guest', 'room', 'bed'])
+            ->where('status', 'PENDING')
+            ->orderByDesc('created_at')
+            ->get()
+            ->map(fn ($b) => [
+                'id'           => $b->id,
+                'booking_code' => $b->booking_code,
+                'guest_name'   => $b->guest ? trim($b->guest->first_name . ' ' . $b->guest->last_name) : '—',
+                'room_name'    => $b->room?->name ?? '—',
+                'bed_name'     => $b->bed?->name ?? '—',
+                'check_in'     => $b->check_in_date ? Carbon::parse($b->check_in_date)->format('d M Y') : '—',
+                'total_price'  => (int) $b->total_price,
+                'status'       => $b->status,
+            ]);
 
         return view('admin.dashboard', compact(
             'guestStats', 'bookingStats',
             'totalRevenue', 'revenueThisWeek', 'revenueThisMonth', 'revenueGrowth',
-            'occupancyToday', 'occupancyWeek', 'occupancyMonth',  'unitAvailability'
+            'occupancyToday', 'occupancyWeek', 'occupancyMonth',  'unitAvailability',
+            'pendingBookings'
         ));
     }
 }

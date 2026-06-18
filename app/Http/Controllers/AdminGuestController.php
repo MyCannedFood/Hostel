@@ -133,6 +133,30 @@ class AdminGuestController extends Controller
             ->with('success', 'Guest added successfully.');
     }
 
+    public function search($bookingCode)
+    {
+        $guest = Guest::where('booking_code', $bookingCode)->first();
+
+        if (!$guest) {
+            return response()->json(['found' => false, 'message' => 'Booking ID tidak ditemukan.']);
+        }
+
+        if ($guest->check_out_date) {
+            return response()->json(['found' => false, 'message' => 'Tamu ini sudah checkout.']);
+        }
+
+        $booking = $guest->bookings()->orderByDesc('id')->first();
+
+        return response()->json([
+            'found' => true,
+            'guest' => [
+                'name'        => $guest->first_name . ' ' . $guest->last_name,
+                'country'     => $guest->country,
+                'total_price' => (int) ($booking?->total_price ?? 0),
+            ]
+        ]);
+    }
+
     public function checkout(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -154,6 +178,13 @@ class AdminGuestController extends Controller
             'check_out_date' => Carbon::today(),
             'status'         => $request->input('status') === 'blacklist' ? 'block' : 'save',
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.',
+            ]);
+        }
 
         return redirect()->route('admin.manage_guests')
             ->with('success', 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.');

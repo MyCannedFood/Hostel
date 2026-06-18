@@ -12,6 +12,7 @@
     <script type="module" async src="https://static.rocket.new/rocket-web.js?_cfg=https%3A%2F%2Fhostelman8354back.builtwithrocket.new&_be=https%3A%2F%2Fappanalytics.rocket.new&_v=0.1.18"></script>
     <script type="module" defer src="https://static.rocket.new/rocket-shot.js?v=0.0.2"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <div class="dashboard-container">
@@ -261,36 +262,22 @@
                             </thead>
 
                             <tbody id="waitlistTableBody">
-                                <tr data-waitlist-id="#BK-2023-1042">
-                                    <td>#BK-2023-1042</td>
-                                    <td>Aria Kusuma</td>
-                                    <td>Serene Haven</td>
-                                    <td>Bed 3U</td>
-                                    <td>24 Okt 2023</td>
-                                    <td>IDR 350.000</td>
-                                    <td><span class="status-badge">Pending</span></td>
-                                    <td><button class="btn-confirm">Confirm</button></td>
+                                @forelse($pendingBookings as $pb)
+                                <tr data-waitlist-id="{{ $pb['booking_code'] }}" data-booking-id="{{ $pb['id'] }}">
+                                    <td>{{ $pb['booking_code'] }}</td>
+                                    <td>{{ $pb['guest_name'] }}</td>
+                                    <td>{{ $pb['room_name'] }}</td>
+                                    <td>{{ $pb['bed_name'] }}</td>
+                                    <td>{{ $pb['check_in'] }}</td>
+                                    <td>IDR {{ number_format($pb['total_price'], 0, ',', '.') }}</td>
+                                    <td><span class="status-badge">{{ $pb['status'] }}</span></td>
+                                    <td><button class="btn-confirm" data-id="{{ $pb['id'] }}">Confirm</button></td>
                                 </tr>
-                                <tr data-waitlist-id="#BK-2023-1043">
-                                    <td>#BK-2023-1043</td>
-                                    <td>Budi Santoso</td>
-                                    <td>Botanika</td>
-                                    <td>Bed 1U</td>
-                                    <td>25 Okt 2023</td>
-                                    <td>IDR 400.000</td>
-                                    <td><span class="status-badge">Pending</span></td>
-                                    <td><button class="btn-confirm">Confirm</button></td>
+                                @empty
+                                <tr>
+                                    <td colspan="8" style="text-align:center;padding:2rem;color:#888;">Tidak ada booking pending.</td>
                                 </tr>
-                                <tr data-waitlist-id="#BK-2023-1044">
-                                    <td>#BK-2023-1044</td>
-                                    <td>Citra Lestari</td>
-                                    <td>Heritage</td>
-                                    <td>Bed 1B</td>
-                                    <td>26 Okt 2023</td>
-                                    <td>IDR 550.000</td>
-                                    <td><span class="status-badge">Pending</span></td>
-                                    <td><button class="btn-confirm">Confirm</button></td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
 
@@ -417,6 +404,43 @@
             // initial render
             refresh();
         })();
+
+        // Confirm booking button (AJAX)
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btn-confirm');
+            if (!btn) return;
+
+            const id = btn.getAttribute('data-id');
+            if (!id || !confirm('Confirm this booking?')) return;
+
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            fetch('/admin/booking/' + id + '/status', {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ status: 'CONFIRMED' })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    const row = btn.closest('tr');
+                    if (row) row.remove();
+                } else {
+                    alert('Gagal konfirmasi: ' + (data.message || 'Unknown error'));
+                    btn.disabled = false;
+                    btn.textContent = 'Confirm';
+                }
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan jaringan.');
+                btn.disabled = false;
+                btn.textContent = 'Confirm';
+            });
+        });
 
         const sidebar = document.getElementById('adminSidebar');
         const sidebarToggle = document.getElementById('sidebarToggle');

@@ -201,8 +201,7 @@ Route::post('/api/confirm-booking/{id}', function ($id) {
     $booking = Booking::find($id);
     
     if($booking) {
-        // 1. Ubah status menjadi lunas/terkonfirmasi
-        $booking->update(['status' => 'CONFIRMED']);
+        // 1. Status tetap PENDING sampai admin confirm check-in
 
         // Increment promo used count jika ada
         if ($booking->personal_notes) {
@@ -326,6 +325,10 @@ Route::middleware(['is_admin'])->group(function () {
     Route::post('/admin/manage-guests/checkout',
         [\App\Http\Controllers\AdminGuestController::class, 'checkout'])
         ->name('admin.manage_guests.checkout');
+
+    Route::get('/admin/manage-guests/search/{bookingCode}',
+        [\App\Http\Controllers\AdminGuestController::class, 'search'])
+        ->name('admin.manage_guests.search');
 
     Route::get('/admin/manage-occupation',
         [\App\Http\Controllers\AdminOccupationController::class, 'index'])

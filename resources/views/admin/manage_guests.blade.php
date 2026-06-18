@@ -11,6 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body>
     <div class="dashboard-container">
@@ -541,8 +542,16 @@
             document.getElementById('admin_first_name')?.focus();
         }
 
+        let checkoutGuestData = null;
+
         function showGuestActionCheckoutStep(bookingId) {
             resetCheckoutForm();
+            document.getElementById('checkout_booking_code').value = bookingId;
+
+            if (checkoutGuestData) {
+                document.getElementById('checkoutStayingFee').textContent = 'IDR ' + Number(checkoutGuestData.total_price).toLocaleString('id-ID');
+            }
+
             guestActionStepSearch?.setAttribute('hidden', '');
             guestActionStepCheckin?.setAttribute('hidden', '');
             guestActionStepCheckout?.removeAttribute('hidden');
@@ -567,6 +576,7 @@
         }
 
         function closeGuestActionModal() {
+            checkoutGuestData = null;
             if (!guestActionOverlay) return;
             guestActionOverlay.classList.remove('is-open');
             guestActionOverlay.setAttribute('hidden', '');
@@ -579,9 +589,31 @@
             if (!bookingId) { guestBookingId?.focus(); return; }
             if (currentGuestAction === 'checkin') {
                 showGuestActionCheckinStep(bookingId);
-            } else {
-                showGuestActionCheckoutStep(bookingId);
+                return;
             }
+
+            const searchBtn = guestActionSearchBtn;
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+
+            fetch('/admin/manage-guests/search/' + encodeURIComponent(bookingId))
+                .then(r => r.json())
+                .then(data => {
+                    searchBtn.disabled = false;
+                    searchBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Search</span>';
+
+                    if (!data.found) {
+                        alert(data.message || 'Booking ID tidak ditemukan.');
+                        return;
+                    }
+                    checkoutGuestData = data.guest;
+                    showGuestActionCheckoutStep(bookingId);
+                })
+                .catch(() => {
+                    searchBtn.disabled = false;
+                    searchBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Search</span>';
+                    alert('Gagal mencari booking.');
+                });
         }
 
         document.querySelectorAll('.split-label-btn').forEach(btn => {
@@ -592,7 +624,43 @@
         guestActionFormBack?.addEventListener('click', showGuestActionSearchStep);
         guestCheckoutFormBack?.addEventListener('click', showGuestActionSearchStep);
         guestActionFormDone?.addEventListener('click', closeGuestActionModal);
-        guestCheckoutFormDone?.addEventListener('click', closeGuestActionModal);
+        guestCheckoutFormDone?.addEventListener('click', function () {
+            const form = document.getElementById('adminGuestCheckoutForm');
+            const bookingCode = document.getElementById('checkout_booking_code')?.value;
+            const status = document.getElementById('checkout_status')?.value;
+            const notes = document.getElementById('checkout_notes')?.value;
+
+            if (!bookingCode) { alert('Booking ID tidak ditemukan.'); return; }
+
+            const btn = guestCheckoutFormDone;
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({ booking_code: bookingCode, status: status === 'blacklist' ? 'blacklist' : 'safe', notes: notes })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    closeGuestActionModal();
+                    location.reload();
+                } else {
+                    alert('Gagal: ' + (data.message || 'Unknown error'));
+                    btn.disabled = false;
+                    btn.textContent = 'Done';
+                }
+            })
+            .catch(() => {
+                alert('Terjadi kesalahan jaringan.');
+                btn.disabled = false;
+                btn.textContent = 'Done';
+            });
+        });
 
         guestActionSearchBtn?.addEventListener('click', handleGuestActionSearch);
         guestBookingId?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleGuestActionSearch(); } });

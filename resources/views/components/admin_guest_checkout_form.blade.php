@@ -1,4 +1,6 @@
-<form class="admin-checkout-form" id="adminGuestCheckoutForm" novalidate>
+<form class="admin-checkout-form" id="adminGuestCheckoutForm" method="POST" action="{{ route('admin.manage_guests.checkout') }}" novalidate>
+    @csrf
+    <input type="hidden" name="booking_code" id="checkout_booking_code" value="">
     <section class="admin-checkout-section">
         <h3 class="admin-checkout-section-title">Payment Preview</h3>
 
