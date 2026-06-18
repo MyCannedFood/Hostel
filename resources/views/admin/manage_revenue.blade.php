@@ -2,8 +2,6 @@
     $admin = auth('admin')->user();
 @endphp
 
-
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -26,7 +24,7 @@
 
 <div class="dashboard-container">
 
-    {{-- Sidebar (dari komponen) --}}
+    {{-- Sidebar --}}
     <x-admin_sidenavbar />
 
     {{-- Backdrop mobile --}}
@@ -42,40 +40,27 @@
             </button>
             <div class="header-actions">
                 <a href="{{ route('admin.notification.index') }}" class="notification-btn">
-
-                    <span class="material-symbols-outlined">
-                        notifications
-                    </span>
-
+                    <span class="material-symbols-outlined">notifications</span>
                     @if(($unreadCount ?? 0) > 0)
-                        <span class="notification-badge">
-                            {{ $unreadCount }}
-                        </span>
+                        <span class="notification-badge">{{ $unreadCount }}</span>
                     @endif
-
                 </a>
-                    <a href="{{ route('admin.settings', [
-                        'section' => 'general',
-                        'sub' => 'profile'
-                    ]) }}">
-                        <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('images/admin/profile.png') }}"
-                            alt="User profile"
-                            width="40"
-                            height="40">
-                    </a>            
-                </div>
+                <a href="{{ route('admin.settings', ['section' => 'general', 'sub' => 'profile']) }}">
+                    <img src="{{ $admin->avatar ? asset('storage/' . $admin->avatar) : asset('images/admin/profile.png') }}"
+                        alt="User profile" width="40" height="40">
+                </a>
+            </div>
         </header>
 
         {{-- Page content --}}
-        {{-- FIX: tambah class .page-revenue sebagai namespace CSS --}}
-            <div class="content-area page-revenue">
+        <div class="content-area page-revenue">
 
             <h1 class="page-title">Revenue Overview</h1>
 
             {{-- ===== STAT CARDS ===== --}}
             <div class="stats-grid">
 
-                {{-- Revenue (match finance-accounting: Total Cash In) --}}
+                {{-- Revenue --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Revenue
@@ -89,7 +74,7 @@
                     <div class="stat-sub">Total Cash In</div>
                 </div>
 
-                {{-- Expenses (match finance-accounting: Total Cash Out) --}}
+                {{-- Expenses --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Expenses
@@ -103,7 +88,7 @@
                     <div class="stat-sub">Cash Out</div>
                 </div>
 
-                {{-- Net Profit (same) --}}
+                {{-- Net Profit --}}
                 <div class="stat-card">
                     <div class="stat-label">
                         Net Profit
@@ -118,7 +103,7 @@
                     </div>
                 </div>
 
-                {{-- Growth (hasil perhitungan keuntungan/pengeluaran) --}}
+                {{-- Growth --}}
                 <div class="stat-card growth-card">
                     <div class="stat-label">
                         Growth
@@ -142,27 +127,35 @@
             {{-- ===== CHARTS ===== --}}
             <div class="charts-row">
 
+                {{-- Revenue Statistics --}}
                 <div class="chart-card">
                     <div class="chart-header">
                         <div class="chart-title">Revenue Statistics</div>
-                        <div class="chart-filter">Unit: IDR &nbsp; Day <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>
+                        <div class="chart-filter" style="border:none; background:none; box-shadow:none; font-weight:400; color:#6b7280; font-size:13px; padding:0;">Unit: IDR | Day</div>
                     </div>
                     <div class="chart-body" style="position:relative; height:220px;">
                         <canvas id="revenueStatChart"></canvas>
                     </div>
                 </div>
 
+                {{-- Financial Trend --}}
                 <div class="chart-card">
                     <div class="chart-header">
                         <div class="chart-title">Financial Trend</div>
-                        <div class="chart-filter">Day <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></div>
+                        <div class="chart-filter" style="border:none; background:none; box-shadow:none; font-weight:400; color:#6b7280; font-size:13px; padding:0;">Weekly</div>
                     </div>
                     <div class="chart-body" style="position:relative; height:220px;">
                         <canvas id="financialTrendChart"></canvas>
                     </div>
-                    <div class="area-legend" style="margin-top:10px;">
-                        <div class="legend-item"><div class="legend-dot orange-dot" style="background:#d9864a;"></div> Cash Out</div>
-                        <div class="legend-item"><div class="legend-dot green-dot" style="background:#26A7A9;"></div> Cash In</div>
+                    <div class="area-legend" style="margin-top:8px; display:flex; gap:16px; align-items:center;">
+                        <div class="legend-item" style="display:flex; align-items:center; gap:6px; font-size:12px; color:#4b5563;">
+                            <div style="width:10px; height:10px; border-radius:50%; background:#26A7A9;"></div>
+                            Cash In
+                        </div>
+                        <div class="legend-item" style="display:flex; align-items:center; gap:6px; font-size:12px; color:#4b5563;">
+                            <div style="width:10px; height:10px; border-radius:50%; background:#d9864a;"></div>
+                            Cash Out
+                        </div>
                     </div>
                 </div>
 
@@ -187,7 +180,7 @@
                         </tr>
                     </thead>
                     <tbody id="recentTransactionsBody">
-                            @foreach ($transactions as $t)
+                        @foreach ($transactions as $t)
                         <tr class="recent-transaction-row">
                             <td>{{ $t['id'] }}</td>
                             <td>{{ $t['date'] ?? '—' }}</td>
@@ -197,11 +190,10 @@
                             <td>{{ number_format($t['amount'], 0, ',', '.') }}</td>
                         </tr>
                         @endforeach
-
                     </tbody>
                 </table>
 
-                {{-- Pagination (same style/logic as Master General Ledger) --}}
+                {{-- Pagination --}}
                 <div class="finance-ledger-foot recent-transactions-foot" id="recentTransactionsPaginationWrap" style="{{ count($transactions) <= 5 ? 'display:none;' : '' }}">
                     <span id="recentTransactionsMeta"></span>
                     <div class="recent-transactions-pagination-inner">
@@ -212,8 +204,6 @@
                 </div>
             </div>
 
-
-
         </div>{{-- /content-area.page-revenue --}}
     </div>{{-- /main-content --}}
 </div>{{-- /dashboard-container --}}
@@ -222,10 +212,10 @@
 @include('admin.modal-expense')
 @include('admin.modal-lpj')
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-    /* Pagination — make it look like finance-accounting */
+    /* Pagination */
     #recentTransactionsPaginationWrap .finance-page-btn {
         padding: 4px 12px;
         border: 1px solid #dde3de;
@@ -267,15 +257,7 @@
         font-size: 10px;
         padding-top: 10px;
     }
-    #recentTransactionsPaginationWrap .recent-transactions-pagination-inner,
     #recentTransactionsPaginationWrap .recent-transactions-pagination-inner {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    /* fallback for inner wrapper that we don't explicitly style */
-    #recentTransactionsPaginationWrap > div:not(#recentTransactionsPaginationWrap) {
         display: flex;
         gap: 8px;
         align-items: center;
@@ -283,8 +265,7 @@
 </style>
 
 <script>
-/* ── Sidebar toggle (dari dashboard.css / layout bawaan) ── */
-
+/* ── Sidebar toggle ── */
 const sidebar         = document.getElementById('adminSidebar');
 const sidebarToggle   = document.getElementById('sidebarToggle');
 const sidebarBackdrop = document.getElementById('sidebarBackdrop');
@@ -334,21 +315,19 @@ function closeModal(id) {
     }
 }
 
-/* Klik backdrop menutup modal */
 document.querySelectorAll('.overlay').forEach(overlay => {
     overlay.addEventListener('click', e => {
         if (e.target === overlay) closeModal(overlay.id);
     });
 });
 
-/* ESC */
 window.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     document.querySelectorAll('.overlay.open').forEach(m => closeModal(m.id));
     setSidebarOpen(false);
 });
 
-/* ── Generic Pagination (same as finance-accounting) ── */
+/* ── Pagination ── */
 function initTablePagination({ rowSelector, prevBtnId, nextBtnId, pageNumbersId, metaId, pageSize = 5, wrapId = null }) {
     const allRows   = Array.from(document.querySelectorAll(rowSelector));
     const prevBtn   = document.getElementById(prevBtnId);
@@ -387,33 +366,18 @@ function initTablePagination({ rowSelector, prevBtnId, nextBtnId, pageNumbersId,
                 const el = document.createElement('div');
                 el.className = 'finance-page-num' + (p === currentPage ? ' active' : '');
                 el.textContent = p;
-                el.addEventListener('click', () => {
-                    currentPage = p;
-                    render();
-                });
+                el.addEventListener('click', () => { currentPage = p; render(); });
                 pageNums.appendChild(el);
             }
         }
     }
 
-    prevBtn?.addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            render();
-        }
-    });
-    nextBtn?.addEventListener('click', () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            render();
-        }
-    });
+    prevBtn?.addEventListener('click', () => { if (currentPage > 1) { currentPage--; render(); } });
+    nextBtn?.addEventListener('click', () => { if (currentPage < totalPages) { currentPage++; render(); } });
 
     if (allRows.length > 0) render();
 }
 
-// Init pagination Recent Transactions
-// Init pagination Recent Transactions
 if (document.getElementById('recentTransactionsPaginationWrap')) {
     initTablePagination({
         rowSelector:   '#recentTransactionsBody .recent-transaction-row',
@@ -427,9 +391,8 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
 }
 </script>
 
-
 <script>
-    // ── Revenue Statistics Chart (match finance-accounting) ──
+    // ── Revenue Statistics Chart ──
     const revenueStatCtx = document.getElementById('revenueStatChart')?.getContext('2d');
     if (revenueStatCtx) {
         const revenueData   = {!! json_encode($revenueData) !!};
@@ -442,8 +405,10 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
                 datasets: [{
                     data: revenueData,
                     backgroundColor: '#26A7A9',
-                    borderRadius: 4,
+                    borderRadius: 6,
                     borderSkipped: false,
+                    barThickness: 28,
+                    maxBarThickness: 32,
                 }]
             },
             options: {
@@ -458,11 +423,18 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
                     }
                 },
                 scales: {
-                    x: { grid: { display: false } },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false },
+                        ticks: { color: '#6b7280', font: { size: 11 } }
+                    },
                     y: {
                         beginAtZero: true,
                         grid: { display: false },
+                        border: { display: false },
                         ticks: {
+                            color: '#6b7280',
+                            font: { size: 11 },
                             callback: val => {
                                 if (val >= 1000000) return (val / 1000000) + 'M';
                                 if (val >= 1000) return (val / 1000) + 'K';
@@ -475,13 +447,12 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
         });
     }
 
-        // ── Financial Trend Chart (Cash In vs Cash Out) ──
+    // ── Financial Trend Chart ──
     const trendCtx = document.getElementById('financialTrendChart')?.getContext('2d');
     if (trendCtx) {
         const trendLabels  = {!! json_encode($trendLabels) !!};
         const trendCashIn  = {!! json_encode($trendCashIn) !!};
         const trendCashOut = {!! json_encode($trendCashOut) !!};
-
 
         new Chart(trendCtx, {
             type: 'line',
@@ -492,23 +463,29 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
                         label: 'Cash In',
                         data: trendCashIn,
                         borderColor: '#26A7A9',
-                        backgroundColor: 'rgba(38,167,169,0.12)',
+                        backgroundColor: 'rgba(38,167,169,0.10)',
                         borderWidth: 2.5,
                         fill: true,
                         tension: 0.4,
-                        pointRadius: 4,
+                        pointRadius: 5,
                         pointBackgroundColor: '#26A7A9',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        order: 1,
                     },
                     {
                         label: 'Cash Out',
                         data: trendCashOut,
                         borderColor: '#d9864a',
-                        backgroundColor: 'rgba(217,134,74,0.12)',
+                        backgroundColor: 'rgba(217,134,74,0.10)',
                         borderWidth: 2.5,
                         fill: true,
                         tension: 0.4,
-                        pointRadius: 4,
+                        pointRadius: 5,
                         pointBackgroundColor: '#d9864a',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        order: 2,
                     }
                 ]
             },
@@ -524,11 +501,18 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
                     }
                 },
                 scales: {
-                    x: { grid: { display: false } },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false },
+                        ticks: { color: '#6b7280', font: { size: 11 } }
+                    },
                     y: {
                         beginAtZero: true,
                         grid: { display: false },
+                        border: { display: false },
                         ticks: {
+                            color: '#6b7280',
+                            font: { size: 11 },
                             callback: val => {
                                 if (val >= 1000000) return (val / 1000000) + 'M';
                                 if (val >= 1000) return (val / 1000) + 'K';
@@ -542,7 +526,5 @@ if (document.getElementById('recentTransactionsPaginationWrap')) {
     }
 </script>
 
-
 </body>
 </html>
-
