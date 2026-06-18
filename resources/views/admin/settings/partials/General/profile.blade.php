@@ -177,8 +177,14 @@
         <div>
             <div class="prof-field @error('phone') error @enderror" id="field-phone">
                 <label class="prof-field-label" for="prof-phone">Phone Number</label>
-<input class="prof-field-input" id="prof-phone" name="phone" type="tel" inputmode="numeric" pattern="[0-9]*"
-placeholder="Masukkan nomor telepon"
+                <input class="prof-field-input"
+                    id="prof-phone"
+                    name="phone"
+                    type="tel"
+                    inputmode="numeric"
+                    pattern="[0-9]*"
+                    value="{{ old('phone', $user->phone) }}"
+                    placeholder="Masukkan nomor telepon">
 
 
                 <span class="prof-error-msg">@error('phone'){{ $message }}@else Phone number is required. @enderror</span>

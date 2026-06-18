@@ -22,25 +22,21 @@ class AdminRevenueController extends Controller
         $lastMonthStart = $now->copy()->subMonth()->startOfMonth();
         $lastMonthEnd   = $now->copy()->subMonth()->endOfMonth();
 
-        // ── Revenue ──
-        $totalRevenue = (int) DB::table('payments')
-            ->where('status', 'settlement')
+        // ── Revenue / Cash In (samakan dengan finance-accounting: general_ledger type=In) ──
+        $totalRevenue = (int) GeneralLedger::where('type', 'In')->sum('amount');
+
+        $revenueThisWeek = (int) GeneralLedger::where('type', 'In')
+            ->whereBetween('created_at', [$weekStart, $weekEnd])
             ->sum('amount');
 
-        $revenueThisWeek = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [$weekStart, $weekEnd])
+        $revenueThisMonth = (int) GeneralLedger::where('type', 'In')
+            ->whereBetween('created_at', [$monthStart, $monthEnd])
             ->sum('amount');
 
-        $revenueThisMonth = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [$monthStart, $monthEnd])
+        $revenueLastMonth = (int) GeneralLedger::where('type', 'In')
+            ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
             ->sum('amount');
 
-        $revenueLastMonth = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [$lastMonthStart, $lastMonthEnd])
-            ->sum('amount');
 
         $growthPercent = $revenueLastMonth > 0
             ? round(($revenueThisMonth - $revenueLastMonth) / $revenueLastMonth * 100, 1)
@@ -68,72 +64,55 @@ class AdminRevenueController extends Controller
         $netProfit    = $totalRevenue - $totalExpenses;
         $profitMargin = $totalRevenue > 0 ? round($netProfit / $totalRevenue * 100) : 0;
 
-        // ── 7-day revenue bar chart ──
+        // ── Revenue Statistics (cash in) 7 hari terakhir: general_ledger type=In ──
         $revenueLabels = [];
         $revenueData   = [];
         for ($i = 6; $i >= 0; $i--) {
             $day = $today->copy()->subDays($i);
-            $revenueLabels[] = $day->format('D');
-            $revenueData[]   = (int) DB::table('payments')
-                ->where('status', 'settlement')
-                ->whereDate('paid_at', $day)
+            $revenueLabels[] = $day->format('D'); // Mon, Tue, ...
+            $revenueData[] = (int) DB::table('general_ledger')
+                ->where('type', 'In')
+                ->whereDate('created_at', $day)
                 ->sum('amount');
         }
+
         $revenueMax = max($revenueData) ?: 1;
 
-        // ── Weekly trend ──
-        $trendRevenue = $revenueData;
-        $avgRevenue   = array_sum($trendRevenue) / max(count($trendRevenue), 1);
-        $trendTarget  = array_map(fn ($v) => max($v, (int) ($avgRevenue * 1.1)), $trendRevenue);
-        $trendMax     = max(max($trendRevenue), max($trendTarget)) ?: 1;
+        // ── Financial Trend (weekly): cash in vs cash out dari general_ledger ──
+        $trendLabels  = [];
+        $trendCashIn  = [];
+        $trendCashOut = [];
 
-        // Generate SVG paths for trend chart
-        $count       = count($trendRevenue);
-        $svgWidth    = 400;
-        $svgHeight   = 160;
-        $padding     = 20;
-        $chartWidth  = $svgWidth - 2 * $padding;
-        $chartHeight = $svgHeight - 2 * $padding;
-        $maxIdx      = max($count - 1, 1);
+        for ($i = 3; $i >= 0; $i--) {
+            $weekStart = $now->copy()->subWeeks($i)->startOfWeek(Carbon::MONDAY);
+            $weekEnd   = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
 
-        $targetPts = [];
-        $revenuePts = [];
-        foreach ($trendTarget as $i => $val) {
-            $x = $padding + ($i / $maxIdx) * $chartWidth;
-            $y = $svgHeight - $padding - ($val / $trendMax) * $chartHeight;
-            $targetPts[] = round($x, 1) . ',' . round($y, 1);
-        }
-        foreach ($trendRevenue as $i => $val) {
-            $x = $padding + ($i / $maxIdx) * $chartWidth;
-            $y = $svgHeight - $padding - ($val / $trendMax) * $chartHeight;
-            $revenuePts[] = round($x, 1) . ',' . round($y, 1);
+            $trendLabels[] = 'Week ' . $weekStart->format('W');
+
+            $weekCashIn = DB::table('general_ledger')
+                ->where('type', 'In')
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->sum('amount');
+
+            $weekCashOut = DB::table('general_ledger')
+                ->where('type', 'Out')
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->sum('amount');
+
+            $trendCashIn[]  = (int) $weekCashIn;
+            $trendCashOut[] = (int) $weekCashOut;
         }
 
-        $pathTarget = '';
-        foreach ($targetPts as $i => $pt) {
-            $pathTarget .= ($i === 0 ? 'M' : 'L') . $pt;
-        }
-        $pathRevenue = '';
-        foreach ($revenuePts as $i => $pt) {
-            $pathRevenue .= ($i === 0 ? 'M' : 'L') . $pt;
-        }
 
-        $lastTarget = end($targetPts);
-        $firstTarget = reset($targetPts);
-        $pathTargetArea = $pathTarget . 'L' . $lastTarget . ',' . $svgHeight . 'L' . $firstTarget . ',' . $svgHeight . 'Z';
-
-        $lastRevenue = end($revenuePts);
-        $firstRevenue = reset($revenuePts);
-        $pathRevenueArea = $pathRevenue . 'L' . $lastRevenue . ',' . $svgHeight . 'L' . $firstRevenue . ',' . $svgHeight . 'Z';
-
-        // ── Growth metrics ──
-        $lastWeekRevenue = (int) DB::table('payments')
-            ->where('status', 'settlement')
-            ->whereBetween('paid_at', [
+        // ── Growth metrics (samakan dengan cash-in dari general_ledger) ──
+        $lastWeekRevenue = (int) DB::table('general_ledger')
+            ->where('type', 'In')
+            ->whereBetween('created_at', [
                 $weekStart->copy()->subWeek(),
                 $weekEnd->copy()->subWeek(),
             ])
             ->sum('amount');
+
 
         $dailyGrowth = $revenueThisWeek > 0 && $lastWeekRevenue > 0
             ? round(($revenueThisWeek / 7 - $lastWeekRevenue / 7) / ($lastWeekRevenue / 7) * 100, 1)
@@ -144,31 +123,29 @@ class AdminRevenueController extends Controller
             : 0;
 
         // ── Recent transactions ──
+        // Ambil data lebih banyak supaya pagination JS tidak “menghilangkan” entri ke-11 dst.
+        $pageSize = 5;
+        $maxPagesForTable = 5; // tampilkan sampai ~25 baris kandidat
+        $transactionsLimit = $pageSize * $maxPagesForTable;
+
         $transactions = GeneralLedger::orderByDesc('created_at')
-            ->limit(10)
+            ->limit($transactionsLimit)
             ->get()
             ->map(fn ($item) => [
                 'id'          => $item->trans_code,
+                'date'        => $item->created_at?->format('d-m-y') ?? null,
                 'description' => $item->description,
                 'category'    => $item->category,
-                'type'        => $item->type === 'In' ? 'Income' : 'Expense',
+                'type'        => $item->type === 'In' ? 'In' : 'Out',
                 'amount'      => (int) $item->amount,
             ]);
 
-        if ($transactions->isEmpty()) {
-            $transactions = DB::table('payments')
-                ->where('status', 'settlement')
-                ->orderByDesc('created_at')
-                ->limit(10)
-                ->get()
-                ->map(fn ($item) => [
-                    'id'          => 'PAY-' . $item->id,
-                    'description' => 'Payment for Booking #' . $item->booking_id,
-                    'category'    => 'Accommodation',
-                    'type'        => 'Income',
-                    'amount'      => (int) $item->amount,
-                ]);
-        }
+
+
+
+        // Alias supaya manage_revenue bisa disamakan dengan finance-accounting
+        $totalCashIn  = $totalRevenue;
+        $totalCashOut = $totalExpenses;
 
         return view('admin.manage_revenue', compact(
             'totalRevenue',
@@ -185,14 +162,22 @@ class AdminRevenueController extends Controller
             'revenueLabels',
             'revenueData',
             'revenueMax',
-            'pathTarget',
-            'pathRevenue',
-            'pathTargetArea',
-            'pathRevenueArea',
+
+            // chart trend (Chart.js)
+            'trendLabels',
+            'trendCashIn',
+            'trendCashOut',
+
             'dailyGrowth',
             'weeklyGrowth',
             'growthPercent',
             'transactions',
+
+
+            // finance-accounting aliases
+            'totalCashIn',
+            'totalCashOut',
+
         ));
     }
 }

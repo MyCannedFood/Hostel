@@ -75,6 +75,15 @@ class NotificationController extends Controller
             ->filter() // buang yang null (reference dihapus)
             ->values();
 
+            $unreadCount = AdminNotification::active()
+                ->where('is_read', false)
+                ->count();
+
+            return view('admin.notification', compact(
+                'notification',
+                'unreadCount'
+            ));
+
         return view('admin.notification', compact('notification'));
     }
 

@@ -1227,3 +1227,37 @@ body.guest-action-open {
     opacity: .4;
     cursor: default;
 }
+
+.notification-btn{
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: white;
+}
+
+.notification-btn .material-symbols-outlined{
+    font-size: 28px;
+}
+
+.notification-badge{
+    position: absolute;
+    top: -4px;
+    right: -6px;
+
+    width: 18px;
+    height: 18px;
+
+    border-radius: 50%;
+
+    background: #D9864A;
+    color: white;
+
+    font-size: 10px;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
