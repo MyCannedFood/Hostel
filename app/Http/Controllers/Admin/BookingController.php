@@ -210,6 +210,7 @@ class BookingController extends Controller
             $guest = Guest::create([
                 'booking_code'     => $bookingCode,
                 'status'           => 'save',
+                'booking_place'    => 'Walk-in',
                 'first_name'       => $request->first_name,
                 'last_name'        => $request->last_name,
                 'email'            => $request->email,

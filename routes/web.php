@@ -158,6 +158,7 @@ Route::post('/api/create-booking', function (Request $request) {
     $guest = Guest::create([
         'booking_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
         'status' => 'save',
+        'booking_place'    => 'Website',
         'first_name' => $request->first_name,
         'last_name' => $request->last_name,
         'email' => $request->email,
