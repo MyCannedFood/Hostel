@@ -72,14 +72,28 @@ class AdminOccupationController extends Controller
             $pct          = $totalBedsInRoom > 0 ? round($occupied / $totalBedsInRoom * 100) : 0;
 
             // Booking place breakdown from active guests
-            $guests            = $roomBookings->pluck('guest')->filter();
-            $totalGuests       = $guests->count();
-            $webCount          = $guests->where('booking_place', 'Website')->count();
-            $appCount          = $guests->where('booking_place', 'App')->count();
-            $walkinCount       = $guests->where('booking_place', 'Walk-in')->count();
-            $webPct            = $totalGuests > 0 ? round($webCount / $totalGuests * 100) : 0;
-            $appPct            = $totalGuests > 0 ? round($appCount / $totalGuests * 100) : 0;
-            $walkinPct         = $totalGuests > 0 ? round($walkinCount / $totalGuests * 100) : 0;
+            // For now: only Web is enabled.
+            // App & Walk-in will be activated later and at that time their % will be recalculated.
+            $guests      = $roomBookings->pluck('guest')->filter();
+            $totalGuests = $guests->count();
+
+            // Web-only mode: hitung Web berdasarkan booking_place.
+            // Agar kasus data “booking web” yang sudah ada tetap terakumulasi,
+            // treat selain Website sebagai App/Walk-in (nanti persentasenya dinyalakan).
+            $webCount = $guests->where('booking_place', 'Website')->count();
+
+            // Jika totalGuests tidak berubah (misal beberapa guest tanpa booking_place),
+            // persentase Web akan tetap mengikuti data yang valid.
+            $webPct = $totalGuests > 0
+                ? round(($webCount / $totalGuests) * 100)
+                : 0;
+
+
+            // Not enabled yet
+            $appPct    = 0;
+            $walkinPct = 0;
+
+
 
             // Bars: occupied/available/warning (if occupancy < 50% show warning)
             $barClass = $pct >= 60 ? 'occupied' : ($pct >= 20 ? 'warning' : 'available');

@@ -10,13 +10,7 @@ class Guest extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $guarded = [];
-
-    protected $casts = [
-        'check_in_date' => 'date',
-        'check_out_date' => 'date',
-    ];
-
+    // HAPUS $guarded, pakai $fillable saja
     protected $fillable = [
         'booking_code',
         'status',
@@ -28,7 +22,7 @@ class Guest extends Model
         'occupation',
         'country',
         'gender',
-        'booking_place',
+        'booking_place',  // ← sudah ada, tidak duplikat
         'city',
         'address',
         'id_number',
@@ -39,10 +33,11 @@ class Guest extends Model
         'check_out_date',
     ];
 
-    /**
-     * Relasi ke data Booking (One-to-Many)
-     * 1 Tamu bisa memiliki banyak riwayat pesanan/booking
-     */
+    protected $casts = [
+        'check_in_date' => 'date',
+        'check_out_date' => 'date',
+    ];
+
     public function bookings()
     {
         return $this->hasMany(Booking::class);

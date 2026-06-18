@@ -8,6 +8,7 @@ use App\Models\Booking;
 use App\Models\GeneralLedger;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\Room;
 
 class AdminDashboardController extends Controller
 {
@@ -68,13 +69,36 @@ class AdminDashboardController extends Controller
 
         $totalBeds = Bed::count();
 
-        $activeGuestIds = Guest::whereNull('check_out_date')->pluck('id');
-        $activeBookings = Booking::with('guest')->whereIn('guest_id', $activeGuestIds)
-            ->whereIn('status', ['CONFIRMED', 'PENDING'])
-            ->get();
-        $occupiedBedIds = $activeBookings->pluck('bed_id')->filter()->unique();
+        $occupiedBedIds = Booking::whereIn('status', ['CONFIRMED', 'PENDING'])
+            ->whereDate('check_in_date', '<=', $today)
+            ->where(function ($query) use ($today) {
+                $query->whereDate('check_out_date', '>=', $today)
+                    ->orWhereHas('guest', function ($guestQuery) {
+                        $guestQuery->whereNull('check_out_date');
+                    });
+            })
+            ->pluck('bed_id')
+            ->filter()
+            ->unique();
 
         $occupancyToday = $totalBeds > 0 ? round($occupiedBedIds->count() / $totalBeds * 100) : 0;
+
+        $rooms = Room::with('beds')
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->get();
+
+        $unitAvailability = $rooms->map(function ($room) use ($occupiedBedIds) {
+            $totalBeds = $room->beds->count();
+            $occupied  = $room->beds->pluck('id')->intersect($occupiedBedIds)->count();
+
+            return [
+                'name'      => $room->name,
+                'total'     => $totalBeds,
+                'occupied'  => $occupied,
+                'available' => $totalBeds - $occupied,
+            ];
+        });
 
         $weekDays = 0;
         $weekSum  = 0;
@@ -128,7 +152,7 @@ class AdminDashboardController extends Controller
         return view('admin.dashboard', compact(
             'guestStats', 'bookingStats',
             'totalRevenue', 'revenueThisWeek', 'revenueThisMonth', 'revenueGrowth',
-            'occupancyToday', 'occupancyWeek', 'occupancyMonth'
+            'occupancyToday', 'occupancyWeek', 'occupancyMonth',  'unitAvailability'
         ));
     }
 }

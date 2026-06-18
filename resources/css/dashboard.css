@@ -406,6 +406,45 @@ body.sidebar-open {
   gap: 16px;
 }
 
+.unit-slider {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+}
+.unit-slider::-webkit-scrollbar { display: none; }
+
+.unit-card {
+    scroll-snap-align: start;
+    flex: 0 0 calc((100% - 2 * 16px) / 3); /* sesuaikan 16px sama gap asli kamu */
+    min-width: 240px;
+}
+@media (max-width: 1024px) {
+    .unit-card { flex: 0 0 calc((100% - 16px) / 2); }
+}
+@media (max-width: 640px) {
+    .unit-card { flex: 0 0 85%; }
+}
+
+.unit-slider-btn {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid #d8e2d1;
+    background: #fff;
+    color: #1a3d0a;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+}
+.unit-slider-btn:hover { background: #f3f7ee; }
+.unit-slider-btn:disabled { opacity: .35; cursor: not-allowed; }
+.unit-slider-btn[hidden] { display: none; }
+
+.section-action-link {
+    color: #1a3d0a; font-weight: 600; text-decoration: none; font-size: .9rem;
+}
+.section-action-link:hover { text-decoration: underline; }
+
 @media (min-width: 768px) {
   .unit-card {
     height: auto;
