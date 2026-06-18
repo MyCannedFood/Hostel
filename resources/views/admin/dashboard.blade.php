@@ -147,78 +147,41 @@
                 <section>
                     <div class="section-header">
                         <h2 class="section-title">Unit availability Status</h2>
+
                     </div>
-          
+
                     <div class="unit-availability">
-                        <div class="unit-slider">
-                            <!-- Serene Haven -->
-                            <article class="unit-card">
-                                <div class="unit-header">
-                                    <h3 class="unit-name">Serene Haven</h3>
-                                    <span class="unit-badge">4 Beds Available</span>
-                                </div>
-                                <div class="unit-occupancy">
-                                    <div class="occupancy-header">
+                        <button type="button" class="unit-slider-btn unit-slider-prev" id="unitSliderPrev" aria-label="Previous units" {{ $unitAvailability->count() <= 3 ? 'hidden' : '' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+
+                        <div class="unit-slider" id="unitSlider">
+                            @forelse($unitAvailability as $unit)
+                                <article class="unit-card">
+                                    <div class="unit-header">
+                                        <h3 class="unit-name">{{ $unit['name'] }}</h3>
+                                        <span class="unit-badge">{{ $unit['available'] }} Beds Available</span>
+                                    </div>
+                                    <div class="unit-occupancy">
+                                        <div class="occupancy-header">
                                             <span class="occupancy-label">Room Occupancy</span>
-                                            <span class="occupancy-value">4/8 Beds Occupied</span>
+                                            <span class="occupancy-value">{{ $unit['occupied'] }}/{{ $unit['total'] }} Beds Occupied</span>
+                                        </div>
+                                        <div class="occupancy-bars">
+                                            @for ($i = 0; $i < $unit['total']; $i++)
+                                                <div class="occupancy-bar-item {{ $i < $unit['occupied'] ? 'occupied' : 'available' }}"></div>
+                                            @endfor
+                                        </div>
                                     </div>
-                                    <div class="occupancy-bars">
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                    </div>
-                                </div>
-                            </article>
-              
-                            <!-- Botanika -->
-                            <article class="unit-card">
-                                <div class="unit-header">
-                                    <h3 class="unit-name">Botanika</h3>
-                                    <span class="unit-badge">4 Beds Available</span>
-                                </div>
-                                <div class="unit-occupancy">
-                                    <div class="occupancy-header">
-                                            <span class="occupancy-label">Room Occupancy</span>
-                                            <span class="occupancy-value">2/6 Beds Occupied</span>
-                                    </div>
-                                    <div class="occupancy-bars">
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                    </div>
-                                </div>
-                            </article>
-              
-                            <!-- Heritage -->
-                            <article class="unit-card">
-                                <div class="unit-header">
-                                    <h3 class="unit-name">Heritage</h3>
-                                    <span class="unit-badge">5 Beds Available</span>
-                                </div>
-                                <div class="unit-occupancy">
-                                    <div class="occupancy-header">
-                                            <span class="occupancy-label">Room Occupancy</span>
-                                            <span class="occupancy-value">3/8 Beds Occupied</span>
-                                    </div>
-                                    <div class="occupancy-bars">
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item occupied"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                        <div class="occupancy-bar-item available"></div>
-                                    </div>
-                                </div>
-                            </article>
+                                </article>
+                            @empty
+                                <p class="unit-empty">Belum ada room yang dibuat.</p>
+                            @endforelse
                         </div>
+
+                        <button type="button" class="unit-slider-btn unit-slider-next" id="unitSliderNext" aria-label="Next units" {{ $unitAvailability->count() <= 3 ? 'hidden' : '' }}>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
                     </div>
                 </section>
 
@@ -635,6 +598,30 @@
                 }
             });
         }
+        // Unit availability slider (prev/next)
+        (function () {
+            const slider = document.getElementById('unitSlider');
+            const prevBtn = document.getElementById('unitSliderPrev');
+            const nextBtn = document.getElementById('unitSliderNext');
+            if (!slider || !prevBtn || !nextBtn) return;
+
+            function scrollByCard(direction) {
+                const card = slider.querySelector('.unit-card');
+                const cardWidth = card ? card.getBoundingClientRect().width + 16 : 280;
+                slider.scrollBy({ left: direction * cardWidth, behavior: 'smooth' });
+            }
+
+            prevBtn.addEventListener('click', () => scrollByCard(-1));
+            nextBtn.addEventListener('click', () => scrollByCard(1));
+
+            function updateButtonState() {
+                prevBtn.disabled = slider.scrollLeft <= 0;
+                nextBtn.disabled = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 1;
+            }
+            slider.addEventListener('scroll', updateButtonState);
+            window.addEventListener('resize', updateButtonState);
+            updateButtonState();
+        })();
     </script>
 </body>
 </html>
