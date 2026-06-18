@@ -210,12 +210,25 @@ Route::post('/api/confirm-booking/{id}', function ($id) {
                 \App\Models\PromoCode::where('code', $notes['promo_code'])->increment('used');
             }
         }
+
+        // 2. Catat ke General Ledger sebagai revenue (Cash In)
+        $transCode = 'TR-BK-' . $booking->id;
+        if (!\App\Models\GeneralLedger::where('trans_code', $transCode)->exists()) {
+            \App\Models\GeneralLedger::create([
+                'trans_code'   => $transCode,
+                'lpj_report_id' => null,
+                'description'  => 'Booking ' . $booking->booking_code,
+                'category'     => 'Accommodation',
+                'type'         => 'In',
+                'amount'       => (int) $booking->total_price,
+            ]);
+        }
         
-        // 2. Ambil data tamu berdasarkan guest_id
+        // 3. Ambil data tamu berdasarkan guest_id
         $guest = Guest::find($booking->guest_id);
 
         if($guest) {
-            // 3. Kirim Email Notanya!
+            // 4. Kirim Email Notanya!
             try {
                 Mail::to($guest->email)->send(new BookingReceiptMail($booking, $guest));
             } catch (\Exception $e) {
