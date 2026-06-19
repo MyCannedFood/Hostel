@@ -110,10 +110,12 @@
 
 .split-label-btn {
     border: none;
-    font-family: var(--font-serif);
+    font-family: 'EB Garamond', serif;
     cursor: pointer;
     text-align: left;
     transition: opacity 0.2s ease;
+    background: transparent;
+
 }
 
 .split-label-btn:hover {
@@ -122,7 +124,116 @@
     text-underline-offset: 4px;
 }
 
+.guest-add-form-group input,
+.guest-add-form-group select,
+.guest-add-form-group textarea {
+    background: #f7f7f2;
+    border: none;
+    border-radius: 2px;
+    padding: 10px 14px;
+    font-family: 'EB Garamond', serif;
+    font-size: 14px;
+    color: #1a3d0a;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.guest-add-form-group textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.guest-add-form-footer {
+    padding-top: 25px;
+    display: flex;
+    justify-content: flex-end;
+    /* 👈 Ini yang bikin tombol ngumpul di kanan */
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+/* Container untuk upload file */
+.admin-guest-upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+.admin-guest-upload-box {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admin-guest-upload-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #f7f7f2;
+    font-family: 'EB Garamond', serif;
+}
+
+.admin-guest-upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    height: 140px;
+    background: #f7f7f2;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.admin-guest-upload-area:hover {
+    background: #e8e8e3;
+}
+
+.admin-guest-upload-hint {
+    font-family: sans-serif;
+    font-size: 13px;
+    color: rgba(26, 61, 10, 0.5);
+}
+
+@media(max-width:600px) {
+    .admin-guest-upload-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Styling untuk icon dan teks awal */
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Styling untuk gambar yang muncul */
+.upload-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Biar gambar gak gepeng */
+    border-radius: 4px;
+}
+
+/* Tambahkan overflow hidden agar gambar yang di-cover gak meleber */
+.admin-guest-upload-area {
+    overflow: hidden;
+}
+
 /* Guest Check-in / Check-out Modal */
+/* Gunakan html bukan body untuk overflow:hidden agar position:fixed tidak terpotong */
+html.guest-action-open,
+body.guest-action-open {
+    overflow: hidden;
+}
+
 body.guest-action-open {
     overflow: hidden;
 }
@@ -312,7 +423,8 @@ body.guest-action-open {
 }
 
 .guest-action-form-scroll {
-    max-height: 100%;
+    flex: 1;
+    min-height: 0;
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -667,16 +779,12 @@ body.guest-action-open {
     border: none;
     border-radius: 4px;
     padding: 8px 16px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
     white-space: nowrap;
     min-width: 88px;
-}
-
-.admin-checkout-btn-add {
-    font-size: 30px;
     width: 170px;
     background: #D9864A;
     color: #1a3d0a;
@@ -922,17 +1030,49 @@ body.guest-action-open {
     white-space: nowrap;
 }
 
-.guest-table th:nth-child(1) { width: 12%; }
-.guest-table th:nth-child(2) { width: 14%; }
-.guest-table th:nth-child(3) { width: 10%; }
-.guest-table th:nth-child(4) { width: 6%; }
-.guest-table th:nth-child(5) { width: 7%; }
-.guest-table th:nth-child(6) { width: 10%; }
-.guest-table th:nth-child(7) { width: 8%; }
-.guest-table th:nth-child(8) { width: 9%; }
-.guest-table th:nth-child(9) { width: 10%; }
-.guest-table th:nth-child(10) { width: 10%; }
-.guest-table th:nth-child(11) { width: 4%; }
+.guest-table th:nth-child(1) {
+    width: 12%;
+}
+
+.guest-table th:nth-child(2) {
+    width: 14%;
+}
+
+.guest-table th:nth-child(3) {
+    width: 10%;
+}
+
+.guest-table th:nth-child(4) {
+    width: 6%;
+}
+
+.guest-table th:nth-child(5) {
+    width: 7%;
+}
+
+.guest-table th:nth-child(6) {
+    width: 10%;
+}
+
+.guest-table th:nth-child(7) {
+    width: 8%;
+}
+
+.guest-table th:nth-child(8) {
+    width: 9%;
+}
+
+.guest-table th:nth-child(9) {
+    width: 10%;
+}
+
+.guest-table th:nth-child(10) {
+    width: 10%;
+}
+
+.guest-table th:nth-child(11) {
+    width: 4%;
+}
 
 .guest-table td {
     padding: 10px 16px;
@@ -1228,7 +1368,7 @@ body.guest-action-open {
     cursor: default;
 }
 
-.notification-btn{
+.notification-btn {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -1237,11 +1377,11 @@ body.guest-action-open {
     color: white;
 }
 
-.notification-btn .material-symbols-outlined{
+.notification-btn .material-symbols-outlined {
     font-size: 28px;
 }
 
-.notification-badge{
+.notification-badge {
     position: absolute;
     top: -4px;
     right: -6px;

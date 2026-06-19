@@ -33,6 +33,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Returning guest',
                 'check_in_date' => $today->copy()->subDays(6),
                 'check_out_date' => $today->copy()->subDays(4),
+                'checkout_charges' => [],
             ]
         );
 
@@ -55,6 +56,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Prefers quiet room',
                 'check_in_date' => $today->copy()->subDays(2),
                 'check_out_date' => $today->copy()->subDay(),
+                'checkout_charges' => [],
             ]
         );
 
@@ -77,6 +79,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Flagged guest profile',
                 'check_in_date' => $today->copy()->subDays(10),
                 'check_out_date' => $today->copy()->subDays(8),
+                'checkout_charges' => [],
             ]
         );
 
@@ -101,6 +104,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Traveling solo for photography project',
                 'check_in_date' => $today->copy()->subDays(3),
                 'check_out_date' => $today->copy()->subDay(),
+                'checkout_charges' => [],
             ]
         );
 
@@ -123,6 +127,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Business trip',
                 'check_in_date' => $today->copy()->subDays(5),
                 'check_out_date' => $today->copy()->subDays(3),
+                'checkout_charges' => [],
             ]
         );
 
@@ -305,6 +310,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Art residency',
                 'check_in_date' => $today->copy()->subDays(7),
                 'check_out_date' => $today,
+                'checkout_charges' => [],
             ]
         );
 
@@ -327,6 +333,7 @@ class GuestSeeder extends Seeder
                 'self_description' => 'Business meeting',
                 'check_in_date' => $today->copy()->subDays(3),
                 'check_out_date' => $today,
+                'checkout_charges' => [],
             ]
         );
     }

@@ -9,6 +9,7 @@ export default defineConfig({
                 'resources/css/dashboard.css',
                 'resources/css/guest-details.css',
                 'resources/css/manage-revenue.css',
+                'resources/css/manage_guests.css',
                 'resources/css/modal-revenue.css',
                 'resources/css/finance-accounting.css',
                 'resources/css/roombed.css',
