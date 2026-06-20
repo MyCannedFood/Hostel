@@ -222,19 +222,10 @@ Route::post('/api/lock-bed', function (Request $request) {
     $lockKey = "bed_lock:{$bedId}:{$checkIn}:{$checkOut}";
     $lockData = Cache::get($lockKey);
 
-    $debug = [
-        'lockKey'  => $lockKey,
-        'lockData' => $lockData,
-        'session'  => session()->getId(),
-        'cache_driver' => config('cache.default'),
-        'cache_path'   => storage_path('framework/cache/data'),
-    ];
-
     if ($lockData && $lockData['session_id'] !== session()->getId()) {
         return response()->json([
             'success' => false,
             'message' => 'This bed was just selected by another guest. Please choose another bed.',
-            'debug'   => $debug,
         ], 409);
     }
 
@@ -243,12 +234,7 @@ Route::post('/api/lock-bed', function (Request $request) {
         'locked_at'  => now()->toDateTimeString(),
     ], now()->addMinutes(10));
 
-    $debug['after_put'] = Cache::get($lockKey);
-
-    return response()->json([
-        'success' => true,
-        'debug'   => $debug,
-    ]);
+    return response()->json(['success' => true]);
 });
 
 Route::post('/api/release-lock', function (Request $request) {

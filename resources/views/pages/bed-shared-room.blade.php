@@ -728,9 +728,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     /* ── lock helpers ── */
     async function lockBed(bedId) {
-        console.log('[LOCK] Attempting to lock bed', bedId, 'dates:', currentCheckIn, '-', currentCheckOut);
         if (!currentCheckIn || !currentCheckOut) {
-            console.error('[LOCK] Missing check_in/check_out');
             return { success: false, message: 'Missing date parameters' };
         }
         const res = await fetch('/api/lock-bed', {
@@ -746,11 +744,9 @@ document.addEventListener('DOMContentLoaded', function () {
             })
         });
         const text = await res.text();
-        console.log('[LOCK] Response', res.status, text.slice(0, 200));
         try {
             return JSON.parse(text);
         } catch (e) {
-            console.error('[LOCK] Invalid JSON response:', text.slice(0, 500));
             return { success: false, message: 'Server error' };
         }
     }
@@ -926,7 +922,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (btn.classList.contains('state-select')) {
                     const newBedId = btn.getAttribute('data-bed-id');
-                    console.log('[SELECT] Clicked bed', newBedId);
 
                     // Try to lock the new bed first (before releasing old lock)
                     let data;
