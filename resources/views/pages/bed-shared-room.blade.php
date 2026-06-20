@@ -726,18 +726,71 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    /* ── auto-select bed from URL ── */
-    if (selectedBedId) {
-        const preBtn = document.querySelector(`.bed-select-btn[data-bed-id="${selectedBedId}"]`);
-        if (preBtn && !preBtn.classList.contains('state-occupied') && !preBtn.classList.contains('state-maintenance')) {
-            preBtn.classList.replace('state-select', 'state-selected');
-            preBtn.textContent  = t(BED_BTN_TEXT.selected.en, BED_BTN_TEXT.selected.id);
-            selectedBedName     = preBtn.getAttribute('data-bed-name');
-            selectedBedPrice    = parseFloat(preBtn.getAttribute('data-bed-price'));
-        } else {
-            selectedBedId = null;
+    /* ── lock helpers ── */
+    async function lockBed(bedId) {
+        console.log('[LOCK] Attempting to lock bed', bedId, 'dates:', currentCheckIn, '-', currentCheckOut);
+        if (!currentCheckIn || !currentCheckOut) {
+            console.error('[LOCK] Missing check_in/check_out');
+            return { success: false, message: 'Missing date parameters' };
+        }
+        const res = await fetch('/api/lock-bed', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({
+                bed_id: bedId,
+                check_in: currentCheckIn,
+                check_out: currentCheckOut
+            })
+        });
+        const text = await res.text();
+        console.log('[LOCK] Response', res.status, text.slice(0, 200));
+        try {
+            return JSON.parse(text);
+        } catch (e) {
+            console.error('[LOCK] Invalid JSON response:', text.slice(0, 500));
+            return { success: false, message: 'Server error' };
         }
     }
+
+    async function releaseLock(bedId) {
+        if (!bedId || !currentCheckIn || !currentCheckOut) return;
+        await fetch('/api/release-lock', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            },
+            body: JSON.stringify({
+                bed_id: bedId,
+                check_in: currentCheckIn,
+                check_out: currentCheckOut
+            })
+        });
+    }
+
+    /* ── auto-select bed from URL + reacquire lock ── */
+    (async function() {
+        if (selectedBedId) {
+            const preBtn = document.querySelector(`.bed-select-btn[data-bed-id="${selectedBedId}"]`);
+            if (preBtn && !preBtn.classList.contains('state-occupied') && !preBtn.classList.contains('state-maintenance') && !preBtn.classList.contains('state-locked')) {
+                const data = await lockBed(selectedBedId);
+                if (data.success) {
+                    preBtn.classList.replace('state-select', 'state-selected');
+                    preBtn.textContent  = t(BED_BTN_TEXT.selected.en, BED_BTN_TEXT.selected.id);
+                    selectedBedName     = preBtn.getAttribute('data-bed-name');
+                    selectedBedPrice    = parseFloat(preBtn.getAttribute('data-bed-price'));
+                } else {
+                    selectedBedId = null;
+                }
+            } else {
+                selectedBedId = null;
+            }
+            syncLinks();
+        }
+    })();
 
     /* ── render footer ── */
     function renderFooter() {
@@ -868,20 +921,49 @@ document.addEventListener('DOMContentLoaded', function () {
 
         /* bed select buttons */
         popup.querySelectorAll('.bed-select-btn').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                if (btn.classList.contains('state-occupied') || btn.classList.contains('state-maintenance')) return;
+            btn.addEventListener('click', async function () {
+                if (btn.classList.contains('state-occupied') || btn.classList.contains('state-maintenance') || btn.classList.contains('state-locked')) return;
 
                 if (btn.classList.contains('state-select')) {
-                    document.querySelectorAll('.bed-select-btn.state-selected').forEach(b => {
-                        b.classList.replace('state-selected', 'state-select');
-                        b.textContent = t(BED_BTN_TEXT.select.en, BED_BTN_TEXT.select.id);
-                    });
+                    const newBedId = btn.getAttribute('data-bed-id');
+                    console.log('[SELECT] Clicked bed', newBedId);
+
+                    // Try to lock the new bed first (before releasing old lock)
+                    let data;
+                    try {
+                        data = await lockBed(newBedId);
+                    } catch (e) {
+                        console.error('[SELECT] lockBed threw:', e);
+                        alert('Terjadi kesalahan. Silakan coba lagi.');
+                        window.location.reload();
+                        return;
+                    }
+                    if (!data.success) {
+                        alert(data.message || t('This bed has just been taken by another guest.', 'Kasur ini baru saja dipilih tamu lain.'));
+                        window.location.reload();
+                        return;
+                    }
+
+                    // Release previous lock if any
+                    if (selectedBedId) {
+                        await releaseLock(selectedBedId);
+                        document.querySelectorAll(`.bed-select-btn[data-bed-id="${selectedBedId}"]`).forEach(b => {
+                            b.classList.replace('state-selected', 'state-select');
+                            b.textContent = t(BED_BTN_TEXT.select.en, BED_BTN_TEXT.select.id);
+                        });
+                    }
+
+                    // Select the new bed
                     btn.classList.replace('state-select', 'state-selected');
                     btn.textContent  = t(BED_BTN_TEXT.selected.en, BED_BTN_TEXT.selected.id);
-                    selectedBedId    = btn.getAttribute('data-bed-id');
+                    selectedBedId    = newBedId;
                     selectedBedName  = btn.getAttribute('data-bed-name');
                     selectedBedPrice = parseFloat(btn.getAttribute('data-bed-price'));
                 } else {
+                    // Deselecting
+                    if (selectedBedId) {
+                        await releaseLock(selectedBedId);
+                    }
                     btn.classList.replace('state-selected', 'state-select');
                     btn.textContent  = t(BED_BTN_TEXT.select.en, BED_BTN_TEXT.select.id);
                     selectedBedId    = null;
@@ -922,7 +1004,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    /* ── continue button guard + lock bed ── */
+    /* ── continue button: lock should already exist, extend + navigate ── */
     btnContinueFooter.addEventListener('click', async function (e) {
         if (!selectedBedId) {
             e.preventDefault();
@@ -934,20 +1016,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const targetUrl = btnContinueFooter.getAttribute('href');
 
         try {
-            const res = await fetch('/api/lock-bed', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
-                },
-                body: JSON.stringify({
-                    bed_id: selectedBedId,
-                    check_in: currentCheckIn,
-                    check_out: currentCheckOut
-                })
-            });
-            const data = await res.json();
-
+            const data = await lockBed(selectedBedId);
             if (data.success) {
                 window.location.href = targetUrl;
             } else {
@@ -956,10 +1025,49 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         } catch (err) {
             console.error(err);
-            // Fallback: allow navigation anyway
-            window.location.href = targetUrl;
+            window.location.reload();
         }
     });
+
+    /* ── polling: sync bed locks every 15 seconds ── */
+    async function pollBedLocks() {
+        if (!currentCheckIn || !currentCheckOut) return;
+        try {
+            const res = await fetch(`/api/bed-locks/${roomId}?check_in=${currentCheckIn}&check_out=${currentCheckOut}`);
+            const data = await res.json();
+            const lockedIds = data.locked_beds || [];
+
+            // If our currently selected bed is now locked by someone else, force reload
+            if (selectedBedId && lockedIds.includes(parseInt(selectedBedId))) {
+                alert(t('Your selected bed has just been taken by another guest. Please select another bed.', 'Kasur yang Anda pilih baru saja diambil tamu lain. Silakan pilih kasur lain.'));
+                window.location.reload();
+                return;
+            }
+
+            // Update bed button states
+            document.querySelectorAll('.bed-select-btn').forEach(btn => {
+                if (btn.classList.contains('state-occupied') || btn.classList.contains('state-maintenance')) return;
+                const bedId = parseInt(btn.getAttribute('data-bed-id'));
+                const isNowLocked = lockedIds.includes(bedId);
+
+                if (isNowLocked && btn.classList.contains('state-select')) {
+                    // Was selectable, now locked
+                    btn.classList.replace('state-select', 'state-locked');
+                    btn.disabled = true;
+                    btn.textContent = t('LOCKED', 'DIKUNCI');
+                } else if (!isNowLocked && btn.classList.contains('state-locked')) {
+                    // Was locked, now available
+                    btn.classList.replace('state-locked', 'state-select');
+                    btn.disabled = false;
+                    btn.textContent = t('SELECT', 'PILIH');
+                }
+            });
+        } catch (e) {
+            console.warn('[POLL] Failed to sync locks:', e);
+        }
+    }
+
+    setInterval(pollBedLocks, 15000);
 });
 </script>
 

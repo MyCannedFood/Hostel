@@ -222,10 +222,19 @@ Route::post('/api/lock-bed', function (Request $request) {
     $lockKey = "bed_lock:{$bedId}:{$checkIn}:{$checkOut}";
     $lockData = Cache::get($lockKey);
 
+    $debug = [
+        'lockKey'  => $lockKey,
+        'lockData' => $lockData,
+        'session'  => session()->getId(),
+        'cache_driver' => config('cache.default'),
+        'cache_path'   => storage_path('framework/cache/data'),
+    ];
+
     if ($lockData && $lockData['session_id'] !== session()->getId()) {
         return response()->json([
             'success' => false,
-            'message' => 'This bed was just selected by another guest. Please choose another bed.'
+            'message' => 'This bed was just selected by another guest. Please choose another bed.',
+            'debug'   => $debug,
         ], 409);
     }
 
@@ -234,7 +243,12 @@ Route::post('/api/lock-bed', function (Request $request) {
         'locked_at'  => now()->toDateTimeString(),
     ], now()->addMinutes(10));
 
-    return response()->json(['success' => true]);
+    $debug['after_put'] = Cache::get($lockKey);
+
+    return response()->json([
+        'success' => true,
+        'debug'   => $debug,
+    ]);
 });
 
 Route::post('/api/release-lock', function (Request $request) {
@@ -248,6 +262,29 @@ Route::post('/api/release-lock', function (Request $request) {
     }
 
     return response()->json(['success' => true]);
+});
+
+Route::get('/api/bed-locks/{room}', function ($roomId, Request $request) {
+    $checkIn = $request->query('check_in');
+    $checkOut = $request->query('check_out');
+
+    if (!$checkIn || !$checkOut) {
+        return response()->json(['locked_beds' => []]);
+    }
+
+    $room = \App\Models\Room::with('beds')->findOrFail($roomId);
+    $mySessionId = session()->getId();
+    $lockedBeds = [];
+
+    foreach ($room->beds as $bed) {
+        $lockKey = "bed_lock:{$bed->id}:{$checkIn}:{$checkOut}";
+        $lockData = Cache::get($lockKey);
+        if ($lockData && $lockData['session_id'] !== $mySessionId) {
+            $lockedBeds[] = (int) $bed->id;
+        }
+    }
+
+    return response()->json(['locked_beds' => $lockedBeds]);
 });
 
 Route::post('/api/confirm-booking/{id}', function ($id) {
