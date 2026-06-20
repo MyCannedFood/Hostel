@@ -5,6 +5,7 @@ use App\Models\Room;
 use App\Models\Guest;
 use App\Models\Booking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminArticleController;
 use App\Http\Controllers\AdminExperienceController;
@@ -152,6 +153,16 @@ Route::post('/confirm-payment/promo/remove', function (Request $request) {
 })->name('booking.promo.remove');
 
 Route::post('/api/create-booking', function (Request $request) {
+    // 0. Validasi bed lock (cegah double-booking)
+    $lockKey = "bed_lock:{$request->bed_id}:{$request->check_in}:{$request->check_out}";
+    $lockData = Cache::get($lockKey);
+    if (!$lockData || $lockData['session_id'] !== session()->getId()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Your bed selection has expired or is no longer available. Please go back and select the bed again.'
+        ], 409);
+    }
+
     // 1. Simpan Data Tamu
     $guest = Guest::create([
         'booking_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
@@ -189,11 +200,54 @@ Route::post('/api/create-booking', function (Request $request) {
         'status' => 'PENDING', 
     ]);
 
+    // Release lock setelah booking berhasil
+    Cache::forget($lockKey);
+
     return response()->json([
         'success' => true,
         'booking_code' => $booking->booking_code,
         'booking_id' => $booking->id
     ]);
+});
+
+Route::post('/api/lock-bed', function (Request $request) {
+    $bedId   = $request->bed_id;
+    $checkIn = $request->check_in;
+    $checkOut = $request->check_out;
+
+    if (!$bedId || !$checkIn || !$checkOut) {
+        return response()->json(['success' => false, 'message' => 'Missing required fields.'], 400);
+    }
+
+    $lockKey = "bed_lock:{$bedId}:{$checkIn}:{$checkOut}";
+    $lockData = Cache::get($lockKey);
+
+    if ($lockData && $lockData['session_id'] !== session()->getId()) {
+        return response()->json([
+            'success' => false,
+            'message' => 'This bed was just selected by another guest. Please choose another bed.'
+        ], 409);
+    }
+
+    Cache::put($lockKey, [
+        'session_id' => session()->getId(),
+        'locked_at'  => now()->toDateTimeString(),
+    ], now()->addMinutes(10));
+
+    return response()->json(['success' => true]);
+});
+
+Route::post('/api/release-lock', function (Request $request) {
+    $bedId   = $request->bed_id;
+    $checkIn = $request->check_in;
+    $checkOut = $request->check_out;
+
+    if ($bedId && $checkIn && $checkOut) {
+        $lockKey = "bed_lock:{$bedId}:{$checkIn}:{$checkOut}";
+        Cache::forget($lockKey);
+    }
+
+    return response()->json(['success' => true]);
 });
 
 Route::post('/api/confirm-booking/{id}', function ($id) {

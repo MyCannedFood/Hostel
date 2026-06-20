@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title data-en="Bed & Shared Room - AlaSare" data-id="Kasur & Kamar Bersama - AlaSare">Bed & Shared Room - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
     /* ── POP-UP & ADDON ─────────────────────────────────────────── */
     .custom-bed-popup { background: #FFFFFF; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); width: 320px; overflow: hidden; text-align: left; border: 1px solid #E5E5E5; }
@@ -20,6 +21,7 @@
     .bed-select-btn.state-selected    { background: #D9864A; color: #FFFFFF; cursor: pointer; }
     .bed-select-btn.state-occupied    { background: #E5E5E5; color: #7D8A74; cursor: not-allowed; }
     .bed-select-btn.state-maintenance { background: #dc3545; color: #FFFFFF; cursor: not-allowed; }
+    .bed-select-btn.state-locked      { background: #f0ad4e; color: #FFFFFF; cursor: not-allowed; }
 
     /* ── ROOMMATES ──────────────────────────────────────────────── */
     .roommates-section .section-title { font-size: 20px; color: #1A3D0A; margin-bottom: 20px; font-weight: 700; }
@@ -270,6 +272,19 @@
                 }
             }
 
+            /* ── CHECK TEMPORARY LOCKS ───────────────────────────── */
+            $lockedBeds  = [];
+            $mySessionId = session()->getId();
+            if ($checkInParam && $checkOutParam) {
+                foreach ($room->beds as $bed) {
+                    $lockKey  = "bed_lock:{$bed->id}:{$checkInParam}:{$checkOutParam}";
+                    $lockData = \Illuminate\Support\Facades\Cache::get($lockKey);
+                    if ($lockData && $lockData['session_id'] !== $mySessionId) {
+                        $lockedBeds[$bed->id] = true;
+                    }
+                }
+            }
+
             /* ── GROUP BEDS BY PIN ────────────────────────────────── */
             $groupedPoints = [];
             foreach ($room->beds as $bed) {
@@ -432,7 +447,8 @@
                     @php
                         $isAnyAvailable = false;
                         foreach($point['beds'] as $bed) {
-                            if (strtolower($bed->status) === 'available' && !isset($occupiedBeds[$bed->id])) {
+                            $isLocked = isset($lockedBeds[$bed->id]);
+                            if (strtolower($bed->status) === 'available' && !isset($occupiedBeds[$bed->id]) && !$isLocked) {
                                 $isAnyAvailable = true; break;
                             }
                         }
@@ -459,9 +475,10 @@
                                 <div style="padding:16px;">
                                     @foreach($point['beds'] as $bed)
                                         @php
-                                            $isMaintenance  = strtolower($bed->status) !== 'available';
-                                            $isBooked       = isset($occupiedBeds[$bed->id]);
-                                            $isAvailToBook  = !$isMaintenance && !$isBooked;
+                                        $isMaintenance  = strtolower($bed->status) !== 'available';
+                                        $isBooked       = isset($occupiedBeds[$bed->id]);
+                                        $isLockedByOther = isset($lockedBeds[$bed->id]);
+                                        $isAvailToBook  = !$isMaintenance && !$isBooked && !$isLockedByOther;
                                             $price          = $bed->base_price > 0 ? $bed->base_price : ($room->base_price ?? 125000);
                                             $formattedPrice = 'IDR ' . number_format($price, 0, ',', '.');
                                             $iconDir        = stripos($bed->position, 'top') !== false ? '↑' : '↓';
@@ -478,6 +495,9 @@
                                                     @elseif($isBooked)
                                                         <button type="button" class="bed-select-btn state-occupied" disabled
                                                                 data-en="OCCUPIED" data-id="TERISI">OCCUPIED</button>
+                                                    @elseif($isLockedByOther)
+                                                        <button type="button" class="bed-select-btn state-locked" disabled
+                                                                data-en="LOCKED" data-id="DIKUNCI">LOCKED</button>
                                                     @else
                                                         <button type="button"
                                                                 class="bed-select-btn state-select"
@@ -902,11 +922,42 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    /* ── continue button guard ── */
-    btnContinueFooter.addEventListener('click', function (e) {
+    /* ── continue button guard + lock bed ── */
+    btnContinueFooter.addEventListener('click', async function (e) {
         if (!selectedBedId) {
             e.preventDefault();
             alert(t(ALERTS.selectBedFirst.en, ALERTS.selectBedFirst.id));
+            return;
+        }
+
+        e.preventDefault();
+        const targetUrl = btnContinueFooter.getAttribute('href');
+
+        try {
+            const res = await fetch('/api/lock-bed', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify({
+                    bed_id: selectedBedId,
+                    check_in: currentCheckIn,
+                    check_out: currentCheckOut
+                })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                window.location.href = targetUrl;
+            } else {
+                alert(data.message || t('This bed has just been taken by another guest. Please select another bed.', 'Kasur ini baru saja dipilih tamu lain. Silakan pilih kasur lain.'));
+                window.location.reload();
+            }
+        } catch (err) {
+            console.error(err);
+            // Fallback: allow navigation anyway
+            window.location.href = targetUrl;
         }
     });
 });
