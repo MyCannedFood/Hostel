@@ -253,9 +253,10 @@ Route::post('/api/release-lock', function (Request $request) {
 Route::get('/api/bed-locks/{room}', function ($roomId, Request $request) {
     $checkIn = $request->query('check_in');
     $checkOut = $request->query('check_out');
+    $myBedId = $request->query('my_bed_id');
 
     if (!$checkIn || !$checkOut) {
-        return response()->json(['locked_beds' => []]);
+        return response()->json(['locked_beds' => [], 'my_lock_expired' => false]);
     }
 
     $room = \App\Models\Room::with('beds')->findOrFail($roomId);
@@ -270,7 +271,18 @@ Route::get('/api/bed-locks/{room}', function ($roomId, Request $request) {
         }
     }
 
-    return response()->json(['locked_beds' => $lockedBeds]);
+    $myLockExpired = false;
+    if ($myBedId) {
+        $myLockKey = "bed_lock:{$myBedId}:{$checkIn}:{$checkOut}";
+        if (!Cache::get($myLockKey)) {
+            $myLockExpired = true;
+        }
+    }
+
+    return response()->json([
+        'locked_beds' => $lockedBeds,
+        'my_lock_expired' => $myLockExpired,
+    ]);
 });
 
 Route::post('/api/confirm-booking/{id}', function ($id) {

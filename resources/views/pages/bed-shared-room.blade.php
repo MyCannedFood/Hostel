@@ -1028,9 +1028,29 @@ document.addEventListener('DOMContentLoaded', function () {
     async function pollBedLocks() {
         if (!currentCheckIn || !currentCheckOut) return;
         try {
-            const res = await fetch(`/api/bed-locks/${roomId}?check_in=${currentCheckIn}&check_out=${currentCheckOut}`);
+            const params = new URLSearchParams({
+                check_in: currentCheckIn,
+                check_out: currentCheckOut,
+            });
+            if (selectedBedId) params.set('my_bed_id', selectedBedId);
+
+            const url = `/api/bed-locks/${roomId}?${params}`;
+            console.log('[POLL] Fetching', url);
+            const res = await fetch(url);
             const data = await res.json();
+            console.log('[POLL] Data:', data);
+
             const lockedIds = data.locked_beds || [];
+
+            // If our lock expired, notify and redirect without bed_id
+            if (data.my_lock_expired && selectedBedId) {
+                alert(t('Your bed selection time has expired. Please select a bed again.', 'Waktu pemilihan kasur Anda telah habis. Silakan pilih kasur lagi.'));
+                const url = new URL(window.location.href);
+                url.searchParams.delete('bed_id');
+                url.searchParams.delete('addons');
+                window.location.href = url.toString();
+                return;
+            }
 
             // If our currently selected bed is now locked by someone else, force reload
             if (selectedBedId && lockedIds.includes(parseInt(selectedBedId))) {
@@ -1046,12 +1066,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const isNowLocked = lockedIds.includes(bedId);
 
                 if (isNowLocked && btn.classList.contains('state-select')) {
-                    // Was selectable, now locked
                     btn.classList.replace('state-select', 'state-locked');
                     btn.disabled = true;
                     btn.textContent = t('LOCKED', 'DIKUNCI');
                 } else if (!isNowLocked && btn.classList.contains('state-locked')) {
-                    // Was locked, now available
                     btn.classList.replace('state-locked', 'state-select');
                     btn.disabled = false;
                     btn.textContent = t('SELECT', 'PILIH');
