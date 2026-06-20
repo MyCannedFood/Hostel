@@ -86,24 +86,30 @@
     <div class="admin-guest-upload-grid">
         <div class="admin-guest-upload-box">
             <label class="admin-guest-upload-label" for="admin_profile_picture">Profile Picture</label>
-            <label class="admin-guest-upload-area" for="admin_profile_picture">
+            <label class="admin-guest-upload-area" for="admin_profile_picture" style="position: relative; overflow: hidden;">
                 <input type="file" id="admin_profile_picture" name="profile_picture" accept="image/*" hidden>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="1.5" aria-hidden="true">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                    <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-                <span class="admin-guest-upload-hint">Click to upload</span>
+                <div class="upload-placeholder" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="1.5" aria-hidden="true">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <span class="admin-guest-upload-hint">Click to upload</span>
+                </div>
+                <img class="upload-preview" id="admin_profile_picture_preview" src="" alt="Preview" style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
             </label>
         </div>
         <div class="admin-guest-upload-box">
             <label class="admin-guest-upload-label" for="admin_card_photo">Card Photo</label>
-            <label class="admin-guest-upload-area" for="admin_card_photo">
+            <label class="admin-guest-upload-area" for="admin_card_photo" style="position: relative; overflow: hidden;">
                 <input type="file" id="admin_card_photo" name="card_photo" accept="image/*" hidden>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="1.5" aria-hidden="true">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                    <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-                <span class="admin-guest-upload-hint">Click to upload</span>
+                <div class="upload-placeholder" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="1.5" aria-hidden="true">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                    </svg>
+                    <span class="admin-guest-upload-hint">Click to upload</span>
+                </div>
+                <img class="upload-preview" id="admin_card_photo_preview" src="" alt="Preview" style="display: none; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;">
             </label>
         </div>
     </div>

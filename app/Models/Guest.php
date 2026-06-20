@@ -10,7 +10,6 @@ class Guest extends Model
 {
     use HasFactory, SoftDeletes;
 
-    // HAPUS $guarded, pakai $fillable saja
     protected $fillable = [
         'booking_code',
         'status',
@@ -19,23 +18,35 @@ class Guest extends Model
         'email',
         'phone',
         'age',
+        'gender',
         'occupation',
         'country',
-        'gender',
-        'booking_place',  // ← sudah ada, tidak duplikat
+        'booking_place',
         'city',
         'address',
         'id_number',
         'profile_picture',
         'id_card_photo',
+        // Deposit (diisi saat check-in)
+        'deposit_amount',
+        'deposit_notes',
+        // Deskripsi tambahan
         'self_description',
+        'personal_notes',
+        // Check-in / Check-out
         'check_in_date',
         'check_out_date',
+        'duration',
+        // Checkout data
+        'checkout_charges',
+        'checkout_notes',
     ];
 
     protected $casts = [
-        'check_in_date' => 'date',
-        'check_out_date' => 'date',
+        'check_in_date'    => 'date',
+        'check_out_date'   => 'date',
+        'checkout_charges' => 'array',
+        'deposit_amount'   => 'decimal:2',
     ];
 
     public function bookings()

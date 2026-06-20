@@ -376,6 +376,10 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\AdminGuestController::class, 'store'])
         ->name('admin.manage_guests.store');
 
+    Route::post('/admin/manage-guests/checkin',
+        [\App\Http\Controllers\AdminGuestController::class, 'checkin'])
+        ->name('admin.manage_guests.checkin');
+
     Route::post('/admin/manage-guests/checkout',
         [\App\Http\Controllers\AdminGuestController::class, 'checkout'])
         ->name('admin.manage_guests.checkout');
