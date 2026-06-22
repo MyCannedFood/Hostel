@@ -597,13 +597,16 @@
                 </button>
             </div>
 
-            <!-- Step 1: Search booking -->
+            <!-- Step 1: Search Guests ID -->
             <div class="guest-action-step" id="guestActionStepSearch">
-                <label class="guest-action-label" for="guestBookingId" id="guestActionSearchLabel">Input Booking ID</label>
+                <label class="guest-action-label" for="guestBookingId" id="guestActionSearchLabel">Input Guest ID</label>
                 <div class="guest-action-search-row">
-                    <input type="text" id="guestBookingId" class="guest-action-input" placeholder="" autocomplete="off">
+                    <div class="guest-action-search-wrap">
+                        <input type="text" id="guestBookingId" class="guest-action-input" placeholder="Search booking / guest..." autocomplete="off">
+                        <ul class="admin-search-dropdown" style="display: none;"></ul>
+                    </div>
                     {{-- Dropdown for checkout mode (hidden by default) --}}
-                    <select id="guestCheckoutDropdown" class="guest-action-input" style="display:none;">
+                    <select id="guestCheckoutDropdown" class="guest-action-input" style="display:none !important;">
                         <option value="">— Pilih Reservasi —</option>
                         @foreach($checkedInBookings as $cb)
                             <option value="{{ $cb['booking_code'] }}" data-guest-code="{{ $cb['guest_code'] }}">{{ $cb['label'] }}</option>
@@ -909,15 +912,17 @@
                 guestActionModal?.classList.remove('is-form-step', 'is-checkout-step');
                 guestActionTitle?.removeAttribute('hidden');
 
-                // Toggle input vs dropdown based on current action
-                if (currentGuestAction === 'checkout') {
-                    if (guestBookingId) guestBookingId.style.display = 'none';
-                    if (guestCheckoutDropdown) { guestCheckoutDropdown.style.display = 'block'; guestCheckoutDropdown.value = ''; }
-                    if (guestActionSearchLabel) guestActionSearchLabel.textContent = 'Pilih Reservasi';
-                } else {
-                    if (guestBookingId) guestBookingId.style.display = 'block';
-                    if (guestCheckoutDropdown) guestCheckoutDropdown.style.display = 'none';
-                    if (guestActionSearchLabel) guestActionSearchLabel.textContent = 'Input Booking ID';
+                // Always use text input and hide legacy select dropdown
+                if (guestBookingId) {
+                    guestBookingId.style.display = 'block';
+                    guestBookingId.value = '';
+                    guestBookingId.placeholder = 'Search booking / guest...';
+                }
+                if (guestCheckoutDropdown) {
+                    guestCheckoutDropdown.style.display = 'none';
+                }
+                if (guestActionSearchLabel) {
+                    guestActionSearchLabel.textContent = 'Input Guest ID';
                 }
             }
 
@@ -1098,11 +1103,10 @@
                 document.body.classList.add('guest-action-open');
                 document.documentElement.classList.add('guest-action-open');
 
-                // Toggle input vs dropdown for checkout
-                if (currentGuestAction === 'checkout') {
-                    if (guestCheckoutDropdown) { guestCheckoutDropdown.value = ''; guestCheckoutDropdown.focus(); }
-                } else {
-                    if (guestBookingId) { guestBookingId.value = ''; guestBookingId.focus(); }
+                // Focus input
+                if (guestBookingId) {
+                    guestBookingId.value = '';
+                    guestBookingId.focus();
                 }
             }
 
@@ -1122,13 +1126,9 @@
             }
 
             function handleGuestActionSearch(overrideBookingId) {
-                // For checkout, use the dropdown value; for check-in, use the text input
-                const bookingId = overrideBookingId || (currentGuestAction === 'checkout' 
-                    ? guestCheckoutDropdown?.value.trim()
-                    : guestBookingId?.value.trim());
+                const bookingId = overrideBookingId || guestBookingId?.value.trim();
                 if (!bookingId) { 
-                    if (currentGuestAction === 'checkout') guestCheckoutDropdown?.focus();
-                    else guestBookingId?.focus();
+                    guestBookingId?.focus();
                     return; 
                 }
 
@@ -1274,11 +1274,134 @@
             });
 
             guestActionSearchBtn?.addEventListener('click', () => handleGuestActionSearch());
-            guestBookingId?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleGuestActionSearch(); } });
-            guestCheckoutDropdown?.addEventListener('change', function() {
-                if (this.value) handleGuestActionSearch(this.value);
-            });
             guestActionOverlay?.addEventListener('click', e => { if (e.target === guestActionOverlay) closeGuestActionModal(); });
+
+            // ── Dynamic Autocomplete Search ──
+            let debounceTimer = null;
+            const searchDropdown = document.querySelector('.admin-search-dropdown');
+            let currentSelectedIndex = -1;
+
+            function hideSearchDropdown() {
+                if (searchDropdown) {
+                    searchDropdown.style.display = 'none';
+                    searchDropdown.innerHTML = '';
+                }
+                currentSelectedIndex = -1;
+            }
+
+            function fetchDynamicBookings(keyword) {
+                const actionType = currentGuestAction; // 'checkin' or 'checkout'
+                fetch(`/admin/bookings/search-dynamic?keyword=${encodeURIComponent(keyword)}&action_type=${actionType}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!searchDropdown) return;
+                        searchDropdown.innerHTML = '';
+                        currentSelectedIndex = -1;
+
+                        if (data.length === 0) {
+                            const li = document.createElement('li');
+                            li.className = 'no-results';
+                            li.textContent = 'No records found';
+                            searchDropdown.appendChild(li);
+                        } else {
+                            data.forEach((item, index) => {
+                                const li = document.createElement('li');
+                                li.textContent = item.label;
+                                li.dataset.bookingCode = item.booking_code;
+                                li.addEventListener('click', (e) => {
+                                    e.stopPropagation();
+                                    if (guestBookingId) {
+                                        guestBookingId.value = item.booking_code;
+                                    }
+                                    hideSearchDropdown();
+                                    handleGuestActionSearch(item.booking_code);
+                                });
+                                searchDropdown.appendChild(li);
+                            });
+                        }
+                        searchDropdown.style.display = 'block';
+                    })
+                    .catch(err => {
+                        console.error('Error fetching bookings:', err);
+                    });
+            }
+
+            if (guestBookingId) {
+                guestBookingId.addEventListener('input', function() {
+                    const val = this.value.trim();
+                    clearTimeout(debounceTimer);
+                    
+                    debounceTimer = setTimeout(() => {
+                        fetchDynamicBookings(val);
+                    }, 300);
+                });
+
+                guestBookingId.addEventListener('focus', function() {
+                    fetchDynamicBookings(this.value.trim());
+                });
+
+                guestBookingId.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    fetchDynamicBookings(this.value.trim());
+                });
+
+                // Key navigation for the dropdown
+                guestBookingId.addEventListener('keydown', function(e) {
+                    if (!searchDropdown || searchDropdown.style.display === 'none') {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleGuestActionSearch();
+                        }
+                        return;
+                    }
+
+                    const items = searchDropdown.querySelectorAll('li:not(.no-results)');
+                    if (items.length === 0) {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleGuestActionSearch();
+                        }
+                        return;
+                    }
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        currentSelectedIndex = (currentSelectedIndex + 1) % items.length;
+                        highlightDropdownItem(items);
+                    } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        currentSelectedIndex = (currentSelectedIndex - 1 + items.length) % items.length;
+                        highlightDropdownItem(items);
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        if (currentSelectedIndex >= 0 && currentSelectedIndex < items.length) {
+                            items[currentSelectedIndex].click();
+                        } else {
+                            handleGuestActionSearch();
+                        }
+                    } else if (e.key === 'Escape') {
+                        hideSearchDropdown();
+                    }
+                });
+            }
+
+            function highlightDropdownItem(items) {
+                items.forEach((item, index) => {
+                    if (index === currentSelectedIndex) {
+                        item.classList.add('selected');
+                        item.scrollIntoView({ block: 'nearest' });
+                    } else {
+                        item.classList.remove('selected');
+                    }
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (guestBookingId && !guestBookingId.contains(e.target) && searchDropdown && !searchDropdown.contains(e.target)) {
+                    hideSearchDropdown();
+                }
+            });
 
             // ── Checkout charges ──────────────────────────────────────────
             const checkoutChargesList   = document.getElementById('checkoutChargesList');

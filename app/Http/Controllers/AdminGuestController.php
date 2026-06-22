@@ -330,6 +330,48 @@ class AdminGuestController extends Controller
         ]);
     }
 
+    public function searchDynamic(Request $request)
+    {
+        $keyword = $request->query('keyword');
+        $actionType = $request->query('action_type', 'checkin');
+
+        $query = Booking::with('guest');
+
+        if ($actionType === 'checkin') {
+            $query->where('checkin_status', '!=', 1);
+        } elseif ($actionType === 'checkout') {
+            $query->where('checkin_status', 1)->where('checkout_status', 0);
+        }
+
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('booking_code', 'LIKE', '%' . $keyword . '%')
+                  ->orWhereHas('guest', function ($q2) use ($keyword) {
+                      $q2->where('first_name', 'LIKE', '%' . $keyword . '%')
+                         ->orWhere('last_name', 'LIKE', '%' . $keyword . '%')
+                         ->orWhere('guest_code', 'LIKE', '%' . $keyword . '%');
+                  });
+            });
+        }
+
+        $bookings = $query->orderByDesc('id')
+            ->limit(20)
+            ->get()
+            ->map(function ($b) {
+                $g = $b->guest;
+                $name = $g ? ($g->first_name . ' ' . $g->last_name) : 'Unknown';
+                $ciDate = $b->check_in_date ? Carbon::parse($b->check_in_date)->format('d M Y') : '-';
+                $coDate = $b->check_out_date ? Carbon::parse($b->check_out_date)->format('d M Y') : '-';
+                return [
+                    'booking_code' => $b->booking_code,
+                    'guest_code'   => $g->guest_code ?? '-',
+                    'label'        => $b->booking_code . ' - ' . $name . ' (' . $ciDate . ' s/d ' . $coDate . ')',
+                ];
+            });
+
+        return response()->json($bookings);
+    }
+
     public function checkin(Request $request)
     {
         if ($request->has('deposit_amount')) {

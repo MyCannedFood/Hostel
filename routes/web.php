@@ -423,6 +423,10 @@ Route::middleware(['is_admin'])->group(function () {
         [\App\Http\Controllers\AdminGuestController::class, 'search'])
         ->name('admin.manage_guests.search');
 
+    Route::get('/admin/bookings/search-dynamic',
+        [\App\Http\Controllers\AdminGuestController::class, 'searchDynamic'])
+        ->name('admin.bookings.search_dynamic');
+
     Route::delete('/admin/manage-guests/{id}',
         [\App\Http\Controllers\AdminGuestController::class, 'destroy'])
         ->name('admin.manage_guests.destroy');
