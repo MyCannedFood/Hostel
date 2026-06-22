@@ -220,7 +220,7 @@
                             <table class="guest-table">
                                 <thead>
                                     <tr>
-                                        <th>Booking ID</th>
+                                        <th>Guest ID</th>
                                         <th>Guest Name</th>
                                         <th>Country</th>
                                         <th>Age</th>
@@ -239,9 +239,29 @@
                                             $duration = $guest->check_in_date && $guest->check_out_date
                                                 ? $guest->check_in_date->diffInDays($guest->check_out_date) . ' nights'
                                                 : ($guest->check_in_date ? 'In Progress' : '-');
+                                            $latestBooking = $guest->bookings->first();
+                                            $editUrl = $latestBooking
+                                                ? route('admin.booking.edit_popup', $latestBooking->id)
+                                                : null;
+                                            $guestData = [
+                                                'id'               => $guest->id,
+                                                'first_name'       => $guest->first_name,
+                                                'last_name'        => $guest->last_name,
+                                                'gender'           => $guest->gender,
+                                                'age'              => $guest->age,
+                                                'email'            => $guest->email,
+                                                'phone'            => $guest->phone,
+                                                'occupation'       => $guest->occupation,
+                                                'id_number'        => $guest->id_number,
+                                                'city'             => $guest->city,
+                                                'country'          => $guest->country,
+                                                'self_description' => $guest->self_description,
+                                                'profile_picture'  => $guest->profile_picture ? asset('storage/' . $guest->profile_picture) : null,
+                                                'id_card_photo'    => $guest->id_card_photo   ? asset('storage/' . $guest->id_card_photo)   : null,
+                                            ];
                                         @endphp
                                         <tr>
-                                            <td>{{ $guest->booking_code }}</td>
+                                            <td>{{ $guest->guest_code }}</td>
                                             <td>{{ $guest->first_name }} {{ $guest->last_name }}</td>
                                             <td>{{ $guest->country }}</td>
                                             <td>{{ $guest->age ?? '-' }}</td>
@@ -256,11 +276,33 @@
                                             <td>{{ $guest->check_in_date ? $guest->check_in_date->format('d M Y') : '-' }}</td>
                                             <td>{{ $guest->check_out_date ? $guest->check_out_date->format('d M Y') : '-' }}</td>
                                             <td>
-                                                <button class="btn-action btn-edit" title="Edit">✎</button>
-                                                <button class="btn-action btn-delete" title="Delete">✕</button>
+                                                <div class="guest-actions-cell">
+                                                    {{-- Edit button: buka booking iframe jika ada booking, sinon buka modal edit guest --}}
+                                                    <button class="btn-action btn-edit"
+                                                        title="{{ $editUrl ? 'Edit Reservation' : 'Edit Guest Data' }}"
+                                                        data-guest-edit-action
+                                                        @if($editUrl)
+                                                            data-edit-url="{{ $editUrl }}"
+                                                        @else
+                                                            data-edit-guest='@json($guestData)'
+                                                            data-update-url="{{ route('admin.manage_guests.update', $guest->id) }}"
+                                                        @endif
+                                                        aria-label="Edit {{ $guest->first_name }}">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                                    </button>
+                                                    <button class="btn-action btn-delete"
+                                                        title="Delete Guest"
+                                                        data-guest-delete-action
+                                                        data-guest-id="{{ $guest->id }}"
+                                                        data-guest-name="{{ $guest->first_name }} {{ $guest->last_name }}"
+                                                        aria-label="Delete guest {{ $guest->first_name }}">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     @endforeach
+
                                 </tbody>
                             </table>
                         </div>
@@ -336,7 +378,7 @@
             @endif
 
             <div class="guest-add-form-grid">
-                <input type="hidden" name="booking_code" id="guest_booking_code" value="">
+                <input type="hidden" name="guest_code" id="guest_custom_code" value="">
 
                 <div class="guest-add-form-group">
                     <label for="guest_first_name">First Name</label>
@@ -442,6 +484,106 @@
     </div>
 </div>
 
+    <!-- Edit Reservation Modal (iframe) -->
+    <div class="guest-edit-modal-overlay" id="guestEditModalOverlay" hidden aria-hidden="true">
+        <iframe class="guest-edit-modal-frame" id="guestEditModalFrame" src="" title="Edit Reservation" frameborder="0"></iframe>
+    </div>
+
+    <!-- Edit Guest Data Modal (untuk guest tanpa booking) -->
+    <div class="guest-add-overlay" id="guestDataEditOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="guestDataEditTitle">
+        <div class="guest-add-modal" id="guestDataEditModal" style="max-width:700px;">
+            <div class="guest-add-modal-header">
+                <h2 class="guest-add-modal-title" id="guestDataEditTitle">Edit Guest Data</h2>
+                <button type="button" class="guest-add-close" id="guestDataEditClose" aria-label="Close">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <form id="guestDataEditForm" enctype="multipart/form-data">
+                <input type="hidden" id="gde_guest_id" name="guest_id">
+                <input type="hidden" id="gde_update_url" name="_update_url">
+                <div class="guest-add-form-grid">
+                    <div class="guest-add-form-group">
+                        <label for="gde_first_name">First Name *</label>
+                        <input type="text" id="gde_first_name" name="first_name" placeholder="First Name" required>
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_last_name">Last Name</label>
+                        <input type="text" id="gde_last_name" name="last_name" placeholder="Last Name">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_gender">Gender</label>
+                        <select id="gde_gender" name="gender" style="background:#f7f7f2;border:none;border-radius:2px;padding:10px 14px;font-family:'EB Garamond',serif;font-size:14px;color:#1a3d0a;outline:none;width:100%;box-sizing:border-box;">
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_age">Age</label>
+                        <input type="number" id="gde_age" name="age" placeholder="Age" min="0">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_email">Email</label>
+                        <input type="email" id="gde_email" name="email" placeholder="Email">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_phone">Phone</label>
+                        <input type="text" id="gde_phone" name="phone" placeholder="Phone">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_occupation">Occupation</label>
+                        <input type="text" id="gde_occupation" name="occupation" placeholder="Occupation">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_id_number">ID Number</label>
+                        <input type="text" id="gde_id_number" name="id_number" placeholder="KTP / Passport Number">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_city">City</label>
+                        <input type="text" id="gde_city" name="city" placeholder="City">
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label for="gde_country">Country</label>
+                        <input type="text" id="gde_country" name="country" placeholder="Country">
+                    </div>
+                    <div class="guest-add-form-group guest-add-form-full">
+                        <label for="gde_self_description">Self Description</label>
+                        <textarea id="gde_self_description" name="self_description" rows="2" placeholder="Notes about this guest..." style="background:#f7f7f2;border:none;border-radius:2px;padding:10px 14px;font-family:'EB Garamond',serif;font-size:14px;color:#1a3d0a;outline:none;width:100%;box-sizing:border-box;resize:vertical;"></textarea>
+                    </div>
+
+                    {{-- Upload foto --}}
+                    <div class="guest-add-form-group">
+                        <label>Profile Picture</label>
+                        <label class="admin-guest-upload-area" for="gde_profile_picture" style="position:relative;overflow:hidden;height:120px;display:flex;align-items:center;justify-content:center;background:#f7f7f2;border-radius:4px;cursor:pointer;">
+                            <input type="file" id="gde_profile_picture" name="profile_picture" accept="image/*" hidden>
+                            <div class="gde-upload-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:6px;color:#D9864A;font-size:12px;">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                <span>Profile Photo</span>
+                            </div>
+                            <img id="gde_profile_preview" src="" alt="Preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+                        </label>
+                    </div>
+                    <div class="guest-add-form-group">
+                        <label>ID Card Photo</label>
+                        <label class="admin-guest-upload-area" for="gde_id_card_photo" style="position:relative;overflow:hidden;height:120px;display:flex;align-items:center;justify-content:center;background:#f7f7f2;border-radius:4px;cursor:pointer;">
+                            <input type="file" id="gde_id_card_photo" name="id_card_photo" accept="image/*" hidden>
+                            <div class="gde-upload-placeholder" style="display:flex;flex-direction:column;align-items:center;gap:6px;color:#D9864A;font-size:12px;">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                <span>ID Card Photo</span>
+                            </div>
+                            <img id="gde_idcard_preview" src="" alt="Preview" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="guest-add-form-footer">
+                    <button type="button" class="guest-add-btn-cancel" id="guestDataEditCancel">Cancel</button>
+                    <button type="button" class="guest-add-btn-add" id="guestDataEditSubmit">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Guest Check-in / Check-out Modal -->
     <div class="guest-action-overlay" id="guestActionOverlay" hidden>
         <div class="guest-action-modal" id="guestActionModal" role="dialog" aria-modal="true" aria-labelledby="guestActionTitle">
@@ -457,9 +599,16 @@
 
             <!-- Step 1: Search booking -->
             <div class="guest-action-step" id="guestActionStepSearch">
-                <label class="guest-action-label" for="guestBookingId">Input Booking ID</label>
+                <label class="guest-action-label" for="guestBookingId" id="guestActionSearchLabel">Input Booking ID</label>
                 <div class="guest-action-search-row">
                     <input type="text" id="guestBookingId" class="guest-action-input" placeholder="" autocomplete="off">
+                    {{-- Dropdown for checkout mode (hidden by default) --}}
+                    <select id="guestCheckoutDropdown" class="guest-action-input" style="display:none;">
+                        <option value="">— Pilih Reservasi —</option>
+                        @foreach($checkedInBookings as $cb)
+                            <option value="{{ $cb['booking_code'] }}" data-guest-code="{{ $cb['guest_code'] }}">{{ $cb['label'] }}</option>
+                        @endforeach
+                    </select>
                     <button type="button" class="guest-action-search-btn" id="guestActionSearch">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <circle cx="11" cy="11" r="8"></circle>
@@ -472,7 +621,11 @@
 
             <!-- Step 2a: Check-in form -->
             <div class="guest-action-step guest-action-step-checkin" id="guestActionStepCheckin" hidden>
-                <p class="guest-action-booking-ref" id="guestActionBookingRef">BK-2026-1042</p>
+                <div class="guest-action-booking-ref" style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+                    <span>Booking Code: <strong id="guestActionBookingRef" style="color: #D9864A;">-</strong></span>
+                    <span>|</span>
+                    <span>Guest ID: <strong id="guestActionGuestCodeRef" style="color: #D9864A;">-</strong></span>
+                </div>
                 <div class="guest-action-form-scroll">
                     <x-admin_guest_details_form />
                 </div>
@@ -643,7 +796,7 @@
 
             const guestFirstName    = document.getElementById('guest_first_name');
             const guestGender       = document.getElementById('guest_gender');
-            const guestBookingCode  = document.getElementById('guest_booking_code');
+            const guestCustomCode   = document.getElementById('guest_custom_code');
 
             function openGuestAddModal() {
                 if (!guestAddOverlay) return;
@@ -714,10 +867,10 @@
                 if (!firstName) { guestFirstName?.focus(); return; }
                 if (!gender) { guestGender?.focus(); return; }
 
-                if (guestBookingCode) {
+                if (guestCustomCode) {
                     const year = new Date().getFullYear();
                     const randomString = Date.now().toString().slice(-6);
-                    guestBookingCode.value = `BK-${year}-${randomString}`;
+                    guestCustomCode.value = `GST-${year}-${randomString}`;
                 }
                 guestAddForm?.submit();
             });
@@ -740,6 +893,8 @@
             const guestActionFormDone   = document.getElementById('guestActionFormDone');
             const guestCheckoutFormBack = document.getElementById('guestCheckoutFormBack');
             const guestCheckoutFormDone = document.getElementById('guestCheckoutFormDone');
+            const guestCheckoutDropdown = document.getElementById('guestCheckoutDropdown');
+            const guestActionSearchLabel = document.getElementById('guestActionSearchLabel');
 
             let currentGuestAction = 'checkin';
             const guestActionTitles = { checkin: 'Guest Check-in', checkout: 'Guest Check-out' };
@@ -753,6 +908,17 @@
                 if (guestActionStepCheckout) guestActionStepCheckout.style.display = 'none';
                 guestActionModal?.classList.remove('is-form-step', 'is-checkout-step');
                 guestActionTitle?.removeAttribute('hidden');
+
+                // Toggle input vs dropdown based on current action
+                if (currentGuestAction === 'checkout') {
+                    if (guestBookingId) guestBookingId.style.display = 'none';
+                    if (guestCheckoutDropdown) { guestCheckoutDropdown.style.display = 'block'; guestCheckoutDropdown.value = ''; }
+                    if (guestActionSearchLabel) guestActionSearchLabel.textContent = 'Pilih Reservasi';
+                } else {
+                    if (guestBookingId) guestBookingId.style.display = 'block';
+                    if (guestCheckoutDropdown) guestCheckoutDropdown.style.display = 'none';
+                    if (guestActionSearchLabel) guestActionSearchLabel.textContent = 'Input Booking ID';
+                }
             }
 
             const adminGuestTabs  = document.querySelectorAll('.admin-guest-tab');
@@ -783,7 +949,10 @@
 
             function showGuestActionCheckinStep(bookingId, guestData) {
                 setAdminGuestTab('id-card');
-                if (guestActionBookingRef) guestActionBookingRef.textContent = bookingId;
+                const bookingRefEl = document.getElementById('guestActionBookingRef');
+                const guestRefEl = document.getElementById('guestActionGuestCodeRef');
+                if (bookingRefEl) bookingRefEl.textContent = guestData ? (guestData.booking_code || '-') : bookingId;
+                if (guestRefEl) guestRefEl.textContent = guestData ? (guestData.guest_code || '-') : '-';
                 
                 // Isi form dengan data guest yang sudah ada
                 if (guestData) {
@@ -855,6 +1024,12 @@
                 const checkoutBookingRef = document.getElementById('checkoutBookingRef');
                 if(checkoutBookingRef) checkoutBookingRef.textContent = bookingId;
 
+                // Fill Guest Code
+                const checkoutGuestCodeEl = document.getElementById('checkoutGuestCode');
+                if(checkoutGuestCodeEl && checkoutGuestData) {
+                    checkoutGuestCodeEl.textContent = checkoutGuestData.guest_code || '—';
+                }
+
                 if (checkoutGuestData) {
                     CHECKOUT_DEPOSIT = Number(checkoutGuestData.deposit_amount) || 0;
 
@@ -922,7 +1097,13 @@
                 guestActionOverlay.classList.add('is-open');
                 document.body.classList.add('guest-action-open');
                 document.documentElement.classList.add('guest-action-open');
-                if (guestBookingId) { guestBookingId.value = ''; guestBookingId.focus(); }
+
+                // Toggle input vs dropdown for checkout
+                if (currentGuestAction === 'checkout') {
+                    if (guestCheckoutDropdown) { guestCheckoutDropdown.value = ''; guestCheckoutDropdown.focus(); }
+                } else {
+                    if (guestBookingId) { guestBookingId.value = ''; guestBookingId.focus(); }
+                }
             }
 
             function closeGuestActionModal() {
@@ -940,9 +1121,16 @@
                 showGuestActionSearchStep();
             }
 
-            function handleGuestActionSearch() {
-                const bookingId = guestBookingId?.value.trim();
-                if (!bookingId) { guestBookingId?.focus(); return; }
+            function handleGuestActionSearch(overrideBookingId) {
+                // For checkout, use the dropdown value; for check-in, use the text input
+                const bookingId = overrideBookingId || (currentGuestAction === 'checkout' 
+                    ? guestCheckoutDropdown?.value.trim()
+                    : guestBookingId?.value.trim());
+                if (!bookingId) { 
+                    if (currentGuestAction === 'checkout') guestCheckoutDropdown?.focus();
+                    else guestBookingId?.focus();
+                    return; 
+                }
 
                 const searchBtn = guestActionSearchBtn;
                 if (searchBtn) {
@@ -1057,7 +1245,7 @@
                         booking_code: bookingCode, 
                         status: status === 'blacklist' ? 'blacklist' : 'safe', 
                         checkout_notes: notes,
-                        checkout_charges: charges
+                        extra_charges: charges
                     })
                 })
                 .then(async r => {
@@ -1085,8 +1273,11 @@
                 });
             });
 
-            guestActionSearchBtn?.addEventListener('click', handleGuestActionSearch);
+            guestActionSearchBtn?.addEventListener('click', () => handleGuestActionSearch());
             guestBookingId?.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); handleGuestActionSearch(); } });
+            guestCheckoutDropdown?.addEventListener('change', function() {
+                if (this.value) handleGuestActionSearch(this.value);
+            });
             guestActionOverlay?.addEventListener('click', e => { if (e.target === guestActionOverlay) closeGuestActionModal(); });
 
             // ── Checkout charges ──────────────────────────────────────────
@@ -1291,6 +1482,285 @@
                     }
                 });
             });
+
+            // ====================================================================
+            // 4. EDIT RESERVATION (iframe modal)
+            // ====================================================================
+            const guestEditOverlay = document.getElementById('guestEditModalOverlay');
+            const guestEditFrame   = document.getElementById('guestEditModalFrame');
+
+            // Inject overlay CSS
+            (function() {
+                const s = document.createElement('style');
+                s.textContent = `
+                    .guest-edit-modal-overlay {
+                        position: fixed; inset: 0; z-index: 2000;
+                        display: flex; justify-content: center; align-items: center;
+                        padding: 20px; background: transparent;
+                        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                    }
+                    .guest-edit-modal-overlay[hidden] { display: none !important; }
+                    .guest-edit-modal-frame {
+                        width: min(100%, 1100px); height: min(90vh, 920px);
+                        border: 0; border-radius: 12px; overflow: hidden;
+                        display: block; background: transparent;
+                        box-shadow: 0 30px 60px rgba(0,0,0,0.28);
+                    }
+                `;
+                document.head.appendChild(s);
+            })();
+
+            function openGuestEditModal(url) {
+                if (!guestEditOverlay || !guestEditFrame || !url) return;
+                guestEditFrame.src = url;
+                guestEditOverlay.removeAttribute('hidden');
+                guestEditOverlay.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('modal-open');
+            }
+
+            function closeGuestEditModal() {
+                if (!guestEditOverlay || !guestEditFrame) return;
+                guestEditOverlay.setAttribute('hidden', '');
+                guestEditOverlay.setAttribute('aria-hidden', 'true');
+                guestEditFrame.src = '';
+                document.body.classList.remove('modal-open');
+            }
+
+            // Listen for postMessage from the iframe when edit is saved
+            window.addEventListener('message', function(event) {
+                if (event.origin !== window.location.origin) return;
+                if (event.data && event.data.type === 'close-reservation-modal') {
+                    closeGuestEditModal();
+                    if (event.data.success && event.data.message) {
+                        try { alert(event.data.message); } catch(e) {}
+                    }
+                    if (event.data.success) window.location.reload();
+                }
+            });
+
+            // Click backdrop to close
+            guestEditOverlay?.addEventListener('click', function(e) {
+                if (e.target === guestEditOverlay) closeGuestEditModal();
+            });
+
+            // Wire Edit buttons — dua jalur:
+            //   a) data-edit-url ada  → buka booking iframe (ada booking)
+            //   b) data-edit-guest ada → buka modal edit data guest (tidak ada booking)
+            document.querySelectorAll('[data-guest-edit-action]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const bookingUrl  = this.getAttribute('data-edit-url');
+                    const guestRaw    = this.getAttribute('data-edit-guest');
+                    const updateUrl   = this.getAttribute('data-update-url');
+
+                    if (bookingUrl) {
+                        // Ada booking → buka iframe edit reservation
+                        openGuestEditModal(bookingUrl);
+                    } else if (guestRaw) {
+                        // Tidak ada booking → buka modal edit data guest
+                        try {
+                            const guestData = JSON.parse(guestRaw);
+                            openGuestDataEditModal(guestData, updateUrl);
+                        } catch(e) {
+                            console.error('Failed to parse guest data:', e);
+                        }
+                    }
+                });
+            });
+
+            // ====================================================================
+            // 5. DELETE GUEST
+            // ====================================================================
+            const csrfTokenGuest = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+            document.querySelectorAll('[data-guest-delete-action]').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const guestId   = this.getAttribute('data-guest-id');
+                    const guestName = this.getAttribute('data-guest-name');
+                    if (!guestId) return;
+
+                    if (!confirm(`Yakin ingin menghapus guest "${guestName}" beserta semua booking terkait? Aksi ini tidak bisa dibatalkan.`)) return;
+
+                    this.disabled = true;
+                    this.innerHTML = '...';
+
+                    try {
+                        const response = await fetch(`/admin/manage-guests/${guestId}`, {
+                            method: 'DELETE',
+                            credentials: 'same-origin',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfTokenGuest,
+                                'Accept': 'application/json',
+                            },
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && data.success) {
+                            alert(data.message || 'Guest berhasil dihapus.');
+                            window.location.reload();
+                        } else {
+                            throw new Error(data.message || 'Gagal menghapus guest.');
+                        }
+                    } catch(err) {
+                        alert('Error: ' + (err.message || 'Gagal menghapus guest.'));
+                        this.disabled = false;
+                        this.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+                    }
+                });
+            });
+
+            // ====================================================================
+            // 6. EDIT GUEST DATA MODAL (untuk guest tanpa booking)
+            // ====================================================================
+            const gdeOverlay    = document.getElementById('guestDataEditOverlay');
+            const gdeForm       = document.getElementById('guestDataEditForm');
+            const gdeSubmitBtn  = document.getElementById('guestDataEditSubmit');
+            const gdeCancelBtn  = document.getElementById('guestDataEditCancel');
+            const gdeCloseBtn   = document.getElementById('guestDataEditClose');
+
+            function openGuestDataEditModal(guest, updateUrl) {
+                if (!gdeOverlay || !gdeForm) return;
+
+                // Prefill semua field
+                document.getElementById('gde_guest_id').value      = guest.id || '';
+                document.getElementById('gde_update_url').value    = updateUrl || '';
+                document.getElementById('gde_first_name').value    = guest.first_name || '';
+                document.getElementById('gde_last_name').value     = guest.last_name  || '';
+                document.getElementById('gde_age').value           = guest.age        || '';
+                document.getElementById('gde_email').value         = guest.email      || '';
+                document.getElementById('gde_phone').value         = guest.phone      || '';
+                document.getElementById('gde_occupation').value    = guest.occupation || '';
+                document.getElementById('gde_id_number').value     = guest.id_number  || '';
+                document.getElementById('gde_city').value          = guest.city       || '';
+                document.getElementById('gde_country').value       = guest.country    || '';
+                document.getElementById('gde_self_description').value = guest.self_description || '';
+
+                // Gender select
+                const genderEl = document.getElementById('gde_gender');
+                if (genderEl) genderEl.value = guest.gender || '';
+
+                // Preview foto yang sudah ada di database
+                const profilePreview = document.getElementById('gde_profile_preview');
+                const profilePlaceholder = profilePreview?.previousElementSibling;
+                if (guest.profile_picture && profilePreview) {
+                    profilePreview.src = guest.profile_picture;
+                    profilePreview.style.display = 'block';
+                    if (profilePlaceholder) profilePlaceholder.style.display = 'none';
+                } else if (profilePreview) {
+                    profilePreview.src = '';
+                    profilePreview.style.display = 'none';
+                    if (profilePlaceholder) profilePlaceholder.style.display = 'flex';
+                }
+
+                const idcardPreview = document.getElementById('gde_idcard_preview');
+                const idcardPlaceholder = idcardPreview?.previousElementSibling;
+                if (guest.id_card_photo && idcardPreview) {
+                    idcardPreview.src = guest.id_card_photo;
+                    idcardPreview.style.display = 'block';
+                    if (idcardPlaceholder) idcardPlaceholder.style.display = 'none';
+                } else if (idcardPreview) {
+                    idcardPreview.src = '';
+                    idcardPreview.style.display = 'none';
+                    if (idcardPlaceholder) idcardPlaceholder.style.display = 'flex';
+                }
+
+                // Reset file inputs
+                document.getElementById('gde_profile_picture').value = '';
+                document.getElementById('gde_id_card_photo').value   = '';
+
+                gdeOverlay.removeAttribute('hidden');
+                document.body.classList.add('modal-open');
+                document.getElementById('gde_first_name').focus();
+            }
+
+            function closeGuestDataEditModal() {
+                if (!gdeOverlay) return;
+                gdeOverlay.setAttribute('hidden', '');
+                document.body.classList.remove('modal-open');
+            }
+
+            // Close handlers
+            gdeCloseBtn?.addEventListener('click', closeGuestDataEditModal);
+            gdeCancelBtn?.addEventListener('click', closeGuestDataEditModal);
+            gdeOverlay?.addEventListener('click', e => { if (e.target === gdeOverlay) closeGuestDataEditModal(); });
+
+            // Live preview saat pilih file baru di modal edit guest
+            document.getElementById('gde_profile_picture')?.addEventListener('change', function() {
+                const preview = document.getElementById('gde_profile_preview');
+                const placeholder = preview?.previousElementSibling;
+                if (this.files && this.files[0] && preview) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        if (placeholder) placeholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            document.getElementById('gde_id_card_photo')?.addEventListener('change', function() {
+                const preview = document.getElementById('gde_idcard_preview');
+                const placeholder = preview?.previousElementSibling;
+                if (this.files && this.files[0] && preview) {
+                    const reader = new FileReader();
+                    reader.onload = e => {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                        if (placeholder) placeholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Submit AJAX
+            gdeSubmitBtn?.addEventListener('click', async function() {
+                const updateUrl = document.getElementById('gde_update_url').value;
+                if (!updateUrl) return;
+
+                const firstName = document.getElementById('gde_first_name').value.trim();
+                if (!firstName) {
+                    alert('First name wajib diisi.');
+                    document.getElementById('gde_first_name').focus();
+                    return;
+                }
+
+                gdeSubmitBtn.disabled = true;
+                gdeSubmitBtn.textContent = 'Saving...';
+
+                try {
+                    const formData = new FormData(gdeForm);
+                    // Hapus hidden fields yang tidak perlu dikirim ke controller
+                    formData.delete('guest_id');
+                    formData.delete('_update_url');
+
+                    const response = await fetch(updateUrl, {
+                        method: 'POST',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfTokenGuest,
+                            'Accept': 'application/json',
+                        },
+                        body: formData,
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        alert(data.message || 'Data guest berhasil diperbarui.');
+                        closeGuestDataEditModal();
+                        window.location.reload();
+                    } else {
+                        alert('Gagal: ' + (data.message || 'Harap periksa kembali isian form.'));
+                    }
+                } catch(err) {
+                    alert('Terjadi kesalahan jaringan: ' + (err.message || ''));
+                } finally {
+                    gdeSubmitBtn.disabled = false;
+                    gdeSubmitBtn.textContent = 'Save Changes';
+                }
+            });
+
 
             // Auto-open modal Add Guest jika ada error validasi dari Laravel
             @if ($errors->any())

@@ -55,6 +55,7 @@
         .modal-body {
             padding: 24px; overflow-y: auto;
             display: flex; flex-direction: column; gap: 24px;
+            flex: 1; min-height: 0;
         }
 
         .form-group { display: flex; flex-direction: column; gap: 8px; }
@@ -140,6 +141,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            margin-bottom: 15px;
         }
 
         .guest-search-row {
@@ -264,6 +266,58 @@
         .modal-footer { background-color: var(--bg-white); padding: 20px 24px; display: flex; justify-content: flex-end; gap: 16px; border-top: 1px solid var(--primary-dark); }
 
         @media (max-width: 768px) { .grid-2, .grid-4, .payment-grid { grid-template-columns: 1fr; } }
+
+        /* ── Tab ID Card / Deposit ─────────────────────────────── */
+
+.admin-guest-id-deposit-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.admin-guest-tab-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.admin-guest-tab,
+.admin-guest-tab:hover,
+.admin-guest-tab:focus,
+.admin-guest-tab.active,
+.admin-guest-tab[aria-selected="true"] {
+    background: #D9864A !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: none !important;
+}
+
+.admin-guest-tab-panel {
+    display: none;
+    padding-top: 16px;
+}
+
+.admin-guest-tab-panel.active {
+    display: block;
+}
+
+.admin-guest-tab-fields,
+.always-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
     </style>
 </head>
 <body>
@@ -271,7 +325,7 @@
         $guest = $booking->guest ?? null;
         $initialGuestData = $guest ? [
             'id' => $guest->id,
-            'booking_code' => $guest->booking_code,
+            'guest_code' => $guest->guest_code,
             'status' => $guest->status,
             'first_name' => $guest->first_name,
             'last_name' => $guest->last_name,
@@ -283,7 +337,11 @@
             'city' => $guest->city,
             'address' => $guest->address,
             'id_number' => $guest->id_number,
+            'profile_picture' => $guest->profile_picture,
+            'id_card_photo' => $guest->id_card_photo,
             'self_description' => $guest->self_description,
+            'deposit_amount' => $guest->deposit_amount,
+            'deposit_notes' => $guest->deposit_notes,
         ] : null;
     @endphp
     <div class="modal">
@@ -371,36 +429,73 @@
                     </div>
                 </div>
 
-                <div class="grid-2">
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div class="orange-header serif-text">ID Card / Data</div>
-                        <div class="form-group">
-                            <label class="serif-text">ID Number</label>
-                            <input type="text" name="id_number" class="form-control" placeholder="e.g. 3201xxxxxx" value="{{ $guest->id_number ?? '' }}">
-                        </div>
-                        <div class="form-group">
-                            <label class="serif-text">Profile Picture</label>
-                            <input type="file" name="profile_picture" id="profileInput" accept="image/*" hidden>
-                            <div class="upload-box" id="profileBox">
-                                <i class="fa-solid fa-camera"></i>
-                                <img class="img-preview" src="" alt="Preview">
+                {{-- ── Tab: ID Card & Deposit ─────────────────────────── --}}
+                <div class="admin-guest-id-deposit-section" style="margin-top: 15px;">
+                    <div class="admin-guest-tab-row" role="tablist" aria-label="ID Card or Deposit">
+                        <button type="button" class="admin-guest-tab active" role="tab" aria-selected="true" aria-controls="adminTabIdCard" id="adminTabBtnIdCard" data-tab="id-card">ID Card</button>
+                        <button type="button" class="admin-guest-tab" role="tab" aria-selected="false" aria-controls="adminTabDeposit" id="adminTabBtnDeposit" data-tab="deposit">Deposit</button>
+                    </div>
+
+                    {{-- Panel 1: ID Card --}}
+                    <div class="admin-guest-tab-panel active" id="adminTabIdCard" role="tabpanel" aria-labelledby="adminTabBtnIdCard">
+                        <div class="admin-guest-tab-fields">
+                            <div class="form-group">
+                                <label class="serif-text">ID Number</label>
+                                <input type="text" name="id_number" class="form-control"
+                                    placeholder="e.g. 3201xxxxxx"
+                                    value="{{ $guest->id_number ?? '' }}">
+                            </div>
+                            <div class="form-group">
+                                <label class="serif-text">Address</label>
+                                <input type="text" name="address" class="form-control"
+                                    placeholder="Address Detail"
+                                    value="{{ $guest->address ?? '' }}">
                             </div>
                         </div>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div class="orange-header serif-text">Deposit & Document</div>
-                        <div class="form-group">
-                            <label class="serif-text">Address</label>
-                            <input type="text" name="address" class="form-control" placeholder="Address Detail" value="{{ $guest->address ?? '' }}">
-                        </div>
-                        <div class="form-group">
-                            <label class="serif-text">Card Photo (KTP/Passport)</label>
-                            <input type="file" name="id_card_photo" id="cardInput" accept="image/*" hidden>
-                            <div class="upload-box" id="cardBox">
-                                <i class="fa-solid fa-camera"></i>
-                                <img class="img-preview" src="" alt="Preview">
+                    {{-- Panel 2: Deposit --}}
+                    <div class="admin-guest-tab-panel" id="adminTabDeposit" role="tabpanel" aria-labelledby="adminTabBtnDeposit">
+                        <div class="admin-guest-tab-fields">
+                            <div class="form-group">
+                                <label class="serif-text">Deposit Amount</label>
+                                <input type="text" name="deposit_amount" class="form-control"
+                                    placeholder="e.g. IDR 100.000"
+                                    value="{{ $guest->deposit_amount ?? '' }}">
                             </div>
+                            <div class="form-group">
+                                <label class="serif-text">Deposit Notes</label>
+                                <input type="text" name="deposit_notes" class="form-control"
+                                    placeholder="Optional notes"
+                                    value="{{ $guest->deposit_notes ?? '' }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Profile & KTP Upload (Always visible, outside tabs) --}}
+                <div class="always-grid-2" style="margin-top: 15px; margin-bottom: 10px;">
+                    {{-- Profile Picture --}}
+                    <div class="form-group">
+                        <label class="serif-text">Profile Picture</label>
+                        <input type="file" name="profile_picture" id="profileInput" accept="image/*" hidden>
+                        <div class="upload-box" id="profileBox">
+                            <i class="fa-solid fa-camera"></i>
+                            <img class="img-preview" id="profilePreview"
+                                src="{{ $guest && $guest->profile_picture ? asset('storage/' . $guest->profile_picture) : '' }}"
+                                alt="Profile Preview" style="{{ $guest && $guest->profile_picture ? 'display: block;' : '' }}">
+                        </div>
+                    </div>
+
+                    {{-- ID Card Photo --}}
+                    <div class="form-group">
+                        <label class="serif-text">Card Photo (KTP / Passport)</label>
+                        <input type="file" name="id_card_photo" id="cardInput" accept="image/*" hidden>
+                        <div class="upload-box" id="cardBox">
+                            <i class="fa-solid fa-camera"></i>
+                            <img class="img-preview" id="cardPreview"
+                                src="{{ $guest && $guest->id_card_photo ? asset('storage/' . $guest->id_card_photo) : '' }}"
+                                alt="ID Card Preview" style="{{ $guest && $guest->id_card_photo ? 'display: block;' : '' }}">
                         </div>
                     </div>
                 </div>
@@ -512,28 +607,57 @@
         });
 
         // === 2. Logika Upload Image & Preview ===
+        function getStorageUrl(path) {
+            if (!path) return '';
+            if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+                return path;
+            }
+            if (path.startsWith('/storage/')) {
+                return path;
+            }
+            if (path.startsWith('storage/')) {
+                return '/' + path;
+            }
+            return '/storage/' + path;
+        }
+
         function setupImagePreview(boxId, inputId) {
             const box = document.getElementById(boxId);
+            if (!box) return;
             const input = document.getElementById(inputId);
             const imgPreview = box.querySelector('.img-preview');
             const icon = box.querySelector('i');
 
-            // Saat kotak diklik, trigger input file
-            box.addEventListener('click', () => input.click());
+            if (input) {
+                // Saat kotak diklik, trigger input file
+                box.addEventListener('click', () => input.click());
 
-            // Saat file dipilih, ganti icon dengan gambar
-            input.addEventListener('change', function() {
-                const file = this.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        imgPreview.src = e.target.result;
-                        imgPreview.style.display = 'block';
-                        icon.style.display = 'none';
+                // Saat file dipilih, ganti icon dengan gambar
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            if (imgPreview) {
+                                imgPreview.src = e.target.result;
+                                imgPreview.style.display = 'block';
+                            }
+                            if (icon) icon.style.display = 'none';
+                        }
+                        reader.readAsDataURL(file);
                     }
-                    reader.readAsDataURL(file);
-                }
-            });
+                });
+            }
+
+            // Tampilkan gambar dari database jika sudah ada
+            const srcAttr = imgPreview ? imgPreview.getAttribute('src') : '';
+            if (imgPreview && srcAttr && srcAttr.trim() !== '' && (srcAttr.includes('/storage/') || srcAttr.includes('storage/'))) {
+                imgPreview.style.display = 'block';
+                if (icon) icon.style.display = 'none';
+            } else {
+                if (imgPreview) imgPreview.style.display = 'none';
+                if (icon) icon.style.display = 'block';
+            }
         }
         setupImagePreview('profileBox', 'profileInput');
         setupImagePreview('cardBox', 'cardInput');
@@ -565,11 +689,13 @@
             address: document.querySelector('input[name="address"]'),
             self_description: document.querySelector('textarea[name="self_description"]'),
             personal_notes: document.querySelector('textarea[name="personal_notes"]'),
+            deposit_amount: document.querySelector('input[name="deposit_amount"]'),
+            deposit_notes: document.querySelector('input[name="deposit_notes"]'),
         };
 
         function formatGuestLabel(guest) {
             const fullName = [guest.first_name, guest.last_name].filter(Boolean).join(' ').trim() || 'Guest';
-            const parts = [guest.booking_code, fullName].filter(Boolean);
+            const parts = [guest.guest_code, fullName].filter(Boolean);
             return parts.join(' - ');
         }
 
@@ -624,7 +750,7 @@
             if (guestSelectedName) guestSelectedName.textContent = [guest.first_name, guest.last_name].filter(Boolean).join(' ') || 'Guest';
             if (guestSelectedMeta) {
                 guestSelectedMeta.innerHTML = `
-                    <span>Booking ID: ${guest.booking_code || '-'}</span>
+                    <span>Guest ID: ${guest.guest_code || '-'}</span>
                     <span>Phone: ${guest.phone || '-'}</span>
                     <span>Email: ${guest.email || '-'}</span>
                 `;
@@ -636,7 +762,7 @@
 
             if (submitBtn) {
                 submitBtn.disabled = status === 'block';
-                submitBtn.innerText = status === 'block' ? 'Guest Blocked' : 'Create Reservation';
+                submitBtn.innerText = status === 'block' ? 'Guest Blocked' : 'Update Reservation';
             }
 
             if (guestSearchInput) {
@@ -648,6 +774,38 @@
             }
             if (guestSearchEmpty) {
                 guestSearchEmpty.hidden = true;
+            }
+
+            // Update profile picture preview
+            const profilePreview = document.getElementById('profilePreview');
+            const profileIcon = document.getElementById('profileBox')?.querySelector('i');
+            if (profilePreview) {
+                const url = getStorageUrl(guest.profile_picture);
+                if (url) {
+                    profilePreview.src = url;
+                    profilePreview.style.display = 'block';
+                    if (profileIcon) profileIcon.style.display = 'none';
+                } else {
+                    profilePreview.src = '';
+                    profilePreview.style.display = 'none';
+                    if (profileIcon) profileIcon.style.display = 'block';
+                }
+            }
+
+            // Update ID card photo preview
+            const cardPreview = document.getElementById('cardPreview');
+            const cardIcon = document.getElementById('cardBox')?.querySelector('i');
+            if (cardPreview) {
+                const url = getStorageUrl(guest.id_card_photo);
+                if (url) {
+                    cardPreview.src = url;
+                    cardPreview.style.display = 'block';
+                    if (cardIcon) cardIcon.style.display = 'none';
+                } else {
+                    cardPreview.src = '';
+                    cardPreview.style.display = 'none';
+                    if (cardIcon) cardIcon.style.display = 'block';
+                }
             }
         }
 
@@ -663,7 +821,24 @@
             }
             if (submitBtn) {
                 submitBtn.disabled = false;
-                submitBtn.innerText = 'Create Reservation';
+                submitBtn.innerText = 'Update Reservation';
+            }
+
+            // Clear image previews
+            const profilePreview = document.getElementById('profilePreview');
+            const profileIcon = document.getElementById('profileBox')?.querySelector('i');
+            if (profilePreview) {
+                profilePreview.src = '';
+                profilePreview.style.display = 'none';
+                if (profileIcon) profileIcon.style.display = 'block';
+            }
+
+            const cardPreview = document.getElementById('cardPreview');
+            const cardIcon = document.getElementById('cardBox')?.querySelector('i');
+            if (cardPreview) {
+                cardPreview.src = '';
+                cardPreview.style.display = 'none';
+                if (cardIcon) cardIcon.style.display = 'block';
             }
         }
 
@@ -677,7 +852,7 @@
 
             return existingGuests.filter((guest) => {
                 const searchable = [
-                    guest.booking_code,
+                    guest.guest_code,
                     guest.first_name,
                     guest.last_name,
                     guest.email,
@@ -842,6 +1017,33 @@
                 btnDeleteBooking.innerHTML = '<i class="fa-solid fa-trash"></i> Delete Booking';
             }
         });
+        // === TAB: ID Card / Deposit ===
+        const adminGuestTabs  = document.querySelectorAll('.admin-guest-tab');
+        const adminTabIdCard  = document.getElementById('adminTabIdCard');
+        const adminTabDeposit = document.getElementById('adminTabDeposit');
+
+        function setAdminGuestTab(tabName) {
+            const isDeposit = tabName === 'deposit';
+            adminGuestTabs.forEach(tab => {
+                const active = tab.dataset.tab === tabName;
+                tab.classList.toggle('active', active);
+                tab.setAttribute('aria-selected', String(active));
+            });
+            if (isDeposit) {
+                adminTabIdCard?.classList.remove('active');
+                adminTabDeposit?.classList.add('active');
+            } else {
+                adminTabIdCard?.classList.add('active');
+                adminTabDeposit?.classList.remove('active');
+            }
+        }
+
+        adminGuestTabs.forEach(tab => {
+            tab.addEventListener('click', function () {
+                setAdminGuestTab(this.dataset.tab);
+            });
+        });
+
     </script>
 </body>
 </html>

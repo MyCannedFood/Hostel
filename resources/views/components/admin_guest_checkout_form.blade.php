@@ -6,10 +6,14 @@
     <section class="admin-checkout-section">
         <h3 class="admin-checkout-section-title">Payment Preview</h3>
 
-        {{-- Booking Code & Rincian deposit --}}
-        <div class="admin-checkout-booking-info" style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 18.75px;">
-            <span style="font-weight: bold; color: #1a3d0a;">Booking Code</span>
-            <strong id="checkoutBookingRef" style="color: #D9864A; font-family: monospace;">—</strong>
+        {{-- Booking Code & Guest Code info --}}
+        <div class="admin-checkout-booking-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 18.75px; color: #1a3d0a;">
+            <span class="admin-checkout-info-label" style="font-weight: bold;">Booking Code</span>
+            <strong id="checkoutBookingRef" class="admin-checkout-info-value" style="color: #D9864A; font-weight: bold;">—</strong>
+        </div>
+        <div class="admin-checkout-booking-info" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; font-size: 18.75px; color: #1a3d0a;">
+            <span class="admin-checkout-info-label" style="font-weight: bold;">Guest ID</span>
+            <strong id="checkoutGuestCode" class="admin-checkout-info-value" style="color: #D9864A; font-weight: bold;">—</strong>
         </div>
 
 

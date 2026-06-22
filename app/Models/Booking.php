@@ -30,6 +30,11 @@ class Booking extends Model
         'payment_method',
         'policy_accepted',
         'status',
+        'checkin_status',
+        'actual_check_in',
+        'checkout_status',
+        'actual_check_out',
+        'extra_charges',
     ];
 
     /**
@@ -40,6 +45,7 @@ class Booking extends Model
         'check_in_date' => 'date',
         'check_out_date' => 'date',
         'policy_accepted' => 'boolean',
+        'extra_charges' => 'array',
     ];
 
     /**

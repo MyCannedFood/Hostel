@@ -565,27 +565,26 @@ body.guest-action-open {
     gap: 15px;
 }
 
-.admin-guest-tab {
-    background: #D9864A;
-    color: #fff;
+.admin-guest-tab,
+.admin-guest-tab:hover,
+.admin-guest-tab:focus,
+.admin-guest-tab.active,
+.admin-guest-tab[aria-selected="true"] {
+    background: #D9864A !important;
+    color: #FFFFFF !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+
     font-family: 'EB Garamond', serif;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     padding: 10px 16px;
-    border: none;
-    border-radius: 2px;
+    border-radius: 4px;
     cursor: pointer;
-    transition: opacity 0.2s ease;
     text-align: center;
-}
-
-.admin-guest-tab:hover {
-    opacity: 0.9;
-}
-
-.admin-guest-tab.active {
-    background: #D9864A;
-    color: #fff;
+    transition: none !important;
 }
 
 .admin-guest-tab-panel {
@@ -1400,4 +1399,66 @@ body.guest-action-open {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* ── Guest Table Action Buttons ─────────────────────────────── */
+.guest-actions-cell {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.btn-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    border: 1px solid;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, transform 0.1s;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.btn-action:active {
+    transform: scale(0.93);
+}
+
+.btn-edit {
+    background: #fff;
+    border-color: rgba(26, 61, 10, 0.35);
+    color: #1a3d0a;
+}
+
+.btn-edit:hover:not(:disabled) {
+    background: #B8D9A0;
+    border-color: #1a3d0a;
+}
+
+.btn-edit:disabled,
+.btn-edit.btn-disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.btn-delete {
+    background: #fff;
+    border-color: rgba(180, 40, 40, 0.3);
+    color: #b42828;
+}
+
+.btn-delete:hover:not(:disabled) {
+    background: rgba(180, 40, 40, 0.1);
+    border-color: #b42828;
+}
+
+.btn-delete:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+body.modal-open {
+    overflow: hidden;
 }

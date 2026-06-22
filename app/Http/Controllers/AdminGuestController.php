@@ -13,11 +13,18 @@ class AdminGuestController extends Controller
 {
     public function index()
     {
-        $guests = Guest::query()
+        $guests = Guest::with(['bookings' => function ($q) {
+                $q->orderByDesc('id')->limit(1)->select('id', 'guest_id');
+            }])
             ->orderByDesc('id')
-            ->paginate(10, ['id', 'booking_code', 'first_name', 'last_name', 'country',
-                   'gender', 'age', 'booking_place', 'status',
-                   'check_in_date', 'check_out_date']);
+            ->paginate(10, [
+                'id', 'guest_code', 'first_name', 'last_name', 'country',
+                'gender', 'age', 'booking_place', 'status',
+                'check_in_date', 'check_out_date',
+                // Kolom untuk modal edit guest
+                'email', 'phone', 'occupation', 'id_number', 'city',
+                'self_description', 'profile_picture', 'id_card_photo',
+            ]);
 
         $now   = Carbon::now();
         $today = Carbon::today();
@@ -96,12 +103,31 @@ class AdminGuestController extends Controller
             ];
         });
 
+        // --- Checked-in bookings for checkout dropdown ---
+        $checkedInBookings = Booking::with('guest')
+            ->where('checkin_status', 1)
+            ->where('checkout_status', 0)
+            ->orderByDesc('id')
+            ->get()
+            ->map(function ($b) {
+                $g = $b->guest;
+                $name = $g ? ($g->first_name . ' ' . $g->last_name) : 'Unknown';
+                $ciDate = $b->check_in_date ? $b->check_in_date->format('d M Y') : '-';
+                $coDate = $b->check_out_date ? $b->check_out_date->format('d M Y') : '-';
+                return [
+                    'booking_code' => $b->booking_code,
+                    'guest_code'   => $g->guest_code ?? '-',
+                    'label'        => $b->booking_code . ' - ' . $name . ' (' . $ciDate . ' s/d ' . $coDate . ')',
+                ];
+            });
+
         return view('admin.manage_guests', compact(
             'guests',
             'guestStats',
             'trendLabels',
             'trendData',
-            'roomsWithGuests'
+            'roomsWithGuests',
+            'checkedInBookings'
         ));
     }
 
@@ -142,12 +168,12 @@ class AdminGuestController extends Controller
             $idCardPhotoPath = $request->file('id_card_photo')->store('guests/id_cards', 'public');
         }
 
-        // 3. Ambil booking_code dari request form JS, atau generate baru kalau kosong
-        $bookingCode = $request->input('booking_code') ?? $this->generateBookingCode();
+        // 3. Ambil guest_code dari request form JS
+        $guestCode = $request->input('guest_code');
 
         // 4. Simpan semua data ke database tabel 'guests'
         Guest::create([
-            'booking_code'     => $bookingCode,
+            'guest_code'       => $guestCode,
             'status'           => 'save',
             'first_name'       => $request->input('first_name'),
             'last_name'        => $request->input('last_name'),
@@ -172,19 +198,101 @@ class AdminGuestController extends Controller
             ->with('success', 'Guest added successfully.');
     }
 
+    public function update(Request $request, $id)
+    {
+        $guest = Guest::findOrFail($id);
+
+        if ($request->has('deposit_amount')) {
+            $cleaned = preg_replace('/[^\d]/', '', $request->input('deposit_amount'));
+            $request->merge(['deposit_amount' => $cleaned !== '' ? (float) $cleaned : null]);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'first_name'       => ['required', 'string', 'max:255'],
+            'last_name'        => ['nullable', 'string', 'max:255'],
+            'gender'           => ['nullable', 'string', 'in:Male,Female'],
+            'age'              => ['nullable', 'integer', 'min:0'],
+            'email'            => ['nullable', 'email', 'max:255'],
+            'phone'            => ['nullable', 'string', 'max:50'],
+            'occupation'       => ['nullable', 'string', 'max:255'],
+            'id_number'        => ['nullable', 'string', 'max:255'],
+            'city'             => ['nullable', 'string', 'max:255'],
+            'country'          => ['nullable', 'string', 'max:255'],
+            'self_description' => ['nullable', 'string'],
+            'profile_picture'  => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'id_card_photo'    => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'deposit_amount'   => ['nullable', 'numeric', 'min:0'],
+            'deposit_notes'    => ['nullable', 'string'],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        // Handle foto upload — ganti hanya jika file baru dikirim
+        $profilePicturePath = $guest->profile_picture;
+        if ($request->hasFile('profile_picture')) {
+            if ($profilePicturePath) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($profilePicturePath);
+            }
+            $profilePicturePath = $request->file('profile_picture')->store('guests/profiles', 'public');
+        }
+
+        $idCardPhotoPath = $guest->id_card_photo;
+        if ($request->hasFile('id_card_photo')) {
+            if ($idCardPhotoPath) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($idCardPhotoPath);
+            }
+            $idCardPhotoPath = $request->file('id_card_photo')->store('guests/id_cards', 'public');
+        }
+
+        $guest->update([
+            'first_name'       => $request->input('first_name'),
+            'last_name'        => $request->input('last_name'),
+            'gender'           => $request->input('gender') ?? $guest->gender,
+            'age'              => $request->input('age'),
+            'email'            => $request->input('email'),
+            'phone'            => $request->input('phone'),
+            'occupation'       => $request->input('occupation'),
+            'id_number'        => $request->input('id_number'),
+            'city'             => $request->input('city'),
+            'country'          => $request->input('country'),
+            'self_description' => $request->input('self_description'),
+            'profile_picture'  => $profilePicturePath,
+            'id_card_photo'    => $idCardPhotoPath,
+            'deposit_amount'   => $request->input('deposit_amount'),
+            'deposit_notes'    => $request->input('deposit_notes'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil diperbarui.',
+        ]);
+    }
+
     public function search($bookingCode)
     {
-        $guest = Guest::where('booking_code', $bookingCode)->first();
+        $booking = Booking::where('booking_code', $bookingCode)->first();
+        if ($booking) {
+            $guest = $booking->guest;
+        } else {
+            $guest = Guest::where('guest_code', $bookingCode)->first();
+            if ($guest) {
+                $booking = $guest->bookings()->orderByDesc('id')->first();
+            }
+        }
 
         if (!$guest) {
-            return response()->json(['found' => false, 'message' => 'Booking ID tidak ditemukan.']);
+            return response()->json(['found' => false, 'message' => 'Booking ID atau Guest Code tidak ditemukan.']);
         }
 
         if ($guest->checkout_charges !== null) {
             return response()->json(['found' => false, 'message' => 'Tamu ini sudah checkout.']);
         }
-
-        $booking = $guest->bookings()->orderByDesc('id')->first();
 
         return response()->json([
             'found' => true,
@@ -193,6 +301,8 @@ class AdminGuestController extends Controller
                 'name'            => $guest->first_name . ' ' . $guest->last_name,
                 'country'         => $guest->country,
                 'total_price'     => (int) ($booking?->total_price ?? 0),
+                'guest_code'      => $guest->guest_code,
+                'booking_code'    => $booking?->booking_code ?? '-',
 
                 // Data lengkap untuk prefill form check-in
                 'first_name'      => $guest->first_name,
@@ -212,8 +322,10 @@ class AdminGuestController extends Controller
                 'id_card_photo'   => $guest->id_card_photo ? asset('storage/' . $guest->id_card_photo) : null,
 
                 // Status check-in
-                'already_checked_in' => !is_null($guest->check_in_date),
-                'check_in_date'   => $guest->check_in_date?->format('d M Y'),
+                'already_checked_in' => $booking ? ((int) $booking->checkin_status === 1) : !is_null($guest->check_in_date),
+                'check_in_date'   => $booking && $booking->actual_check_in 
+                                        ? Carbon::parse($booking->actual_check_in)->format('d M Y') 
+                                        : ($guest->check_in_date ? $guest->check_in_date->format('d M Y') : null),
             ]
         ]);
     }
@@ -226,7 +338,7 @@ class AdminGuestController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'booking_code'     => ['required', 'string', 'exists:guests,booking_code'],
+            'booking_code'     => ['required', 'string'],
             'first_name'       => ['required', 'string', 'max:255'],
             'last_name'        => ['nullable', 'string', 'max:255'],
             'email'            => ['nullable', 'email', 'max:255'],
@@ -253,7 +365,23 @@ class AdminGuestController extends Controller
             ], 422);
         }
 
-        $guest = Guest::where('booking_code', $request->input('booking_code'))->firstOrFail();
+        $bookingCode = $request->input('booking_code');
+        $booking = Booking::where('booking_code', $bookingCode)->first();
+        if ($booking) {
+            $guest = $booking->guest;
+        } else {
+            $guest = Guest::where('guest_code', $bookingCode)->first();
+            if ($guest) {
+                $booking = $guest->bookings()->orderByDesc('id')->first();
+            }
+        }
+
+        if (!$guest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Booking ID atau Guest Code tidak ditemukan.'
+            ], 422);
+        }
 
         // Update file uploads jika diunggah saat check-in
         $profilePicturePath = $guest->profile_picture;
@@ -263,7 +391,7 @@ class AdminGuestController extends Controller
 
         $idCardPhotoPath = $guest->id_card_photo;
         if ($request->hasFile('card_photo')) {
-            $idCardPhotoPath = $request->file('card_photo')->store('guests/id_cards', 'public');
+            $idCardPhotoPath = $request->file('id_card_photo')->store('guests/id_cards', 'public');
         }
 
         $guest->update([
@@ -285,6 +413,12 @@ class AdminGuestController extends Controller
             'id_card_photo'    => $idCardPhotoPath,
             'check_in_date'    => Carbon::today(), // Set check_in_date hari ini saat check-in
         ]);
+        if ($booking) {
+            $booking->update([
+                'checkin_status' => 1,
+                'actual_check_in' => Carbon::now(),
+            ]);
+        }
 
         return response()->json([
             'success' => true,
@@ -295,59 +429,97 @@ class AdminGuestController extends Controller
     public function checkout(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'booking_code'     => ['required', 'string', 'exists:guests,booking_code'],
+            'booking_code'     => ['required', 'string'],
             'status'           => ['required', 'in:safe,blacklist'],
-            'checkout_charges' => ['nullable', 'array'],
+            'extra_charges'    => ['nullable', 'array'],
             'checkout_notes'   => ['nullable', 'string'],
-            'duration'         => ['nullable', 'integer', 'min:0'],
         ]);
 
         if ($validator->fails()) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $validator->errors()->first(),
-                    'errors' => $validator->errors()
-                ], 422);
-            }
-            return back()->withErrors($validator)->withInput();
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first(),
+                'errors' => $validator->errors()
+            ], 422);
         }
 
-        $guest = Guest::where('booking_code', $request->input('booking_code'))->firstOrFail();
-
-        if ($guest->checkout_charges !== null) {
-            if ($request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tamu ini sudah checkout.'
-                ], 422);
+        // Cari booking, lalu guest-nya
+        $bookingCode = $request->input('booking_code');
+        $booking = Booking::where('booking_code', $bookingCode)->first();
+        if ($booking) {
+            $guest = $booking->guest;
+        } else {
+            $guest = Guest::where('guest_code', $bookingCode)->first();
+            if ($guest) {
+                $booking = $guest->bookings()->orderByDesc('id')->first();
             }
-            return back()->withErrors(['booking_code' => 'Tamu ini sudah checkout.']);
         }
 
-        // Hitung durasi jika tidak dikirim
-        $duration = $request->input('duration');
-        if (!$duration && $guest->check_in_date) {
+        if (!$guest || !$booking) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Booking tidak ditemukan.'
+            ], 422);
+        }
+
+        if ((int) $booking->checkout_status === 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Booking ini sudah checkout.'
+            ], 422);
+        }
+
+        // Hitung durasi
+        $duration = 0;
+        if ($guest->check_in_date) {
             $duration = (int) Carbon::today()->diffInDays($guest->check_in_date);
         }
 
+        // 1. Update BOOKING: checkout status, waktu, extra charges
+        $booking->update([
+            'checkout_status'  => 1,
+            'actual_check_out' => Carbon::now(),
+            'extra_charges'    => $request->input('extra_charges') ?? [],
+        ]);
+
+        // 2. Update GUEST: reset deposit, kosongkan notes, set check_out_date & status
         $guest->update([
             'check_out_date'   => Carbon::today(),
             'status'           => $request->input('status') === 'blacklist' ? 'block' : 'save',
-            'checkout_charges' => $request->input('checkout_charges') ?? [],
             'checkout_notes'   => $request->input('checkout_notes'),
             'duration'         => $duration,
+            'deposit_amount'   => 0,
+            'deposit_notes'    => null,
         ]);
 
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.',
-            ]);
+        return response()->json([
+            'success' => true,
+            'message' => 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.',
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $guest = Guest::findOrFail($id);
+
+        // Hapus semua booking yang terkait dengan guest ini
+        $guest->bookings()->delete();
+
+        // Hapus file foto jika ada
+        if ($guest->profile_picture) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($guest->profile_picture);
+        }
+        if ($guest->id_card_photo) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($guest->id_card_photo);
         }
 
-        return redirect()->route('admin.manage_guests')
-            ->with('success', 'Guest ' . $guest->first_name . ' ' . $guest->last_name . ' berhasil checkout.');
+        $guestName = $guest->first_name . ' ' . $guest->last_name;
+        $guest->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Guest ' . $guestName . ' dan semua booking terkait berhasil dihapus.',
+        ]);
     }
 
     // ---------------------------------------------------------------
@@ -420,27 +592,4 @@ class AdminGuestController extends Controller
         ];
     }
 
-    private function generateBookingCode(): string
-    {
-        $prefix = 'BK-' . Carbon::now()->format('Y') . '-';
-        $lastBookingCode = Guest::where('booking_code', 'like', $prefix . '%')
-            ->orderByDesc('booking_code')
-            ->value('booking_code');
-
-        $nextNumber = 1001;
-
-        if ($lastBookingCode) {
-            $suffix = (int) substr($lastBookingCode, -4);
-            if ($suffix >= 1001) {
-                $nextNumber = $suffix + 1;
-            }
-        }
-
-        do {
-            $bookingCode = $prefix . $nextNumber;
-            $nextNumber++;
-        } while (Guest::where('booking_code', $bookingCode)->exists());
-
-        return $bookingCode;
-    }
 }

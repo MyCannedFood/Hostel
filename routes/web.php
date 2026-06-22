@@ -165,7 +165,7 @@ Route::post('/api/create-booking', function (Request $request) {
 
     // 1. Simpan Data Tamu
     $guest = Guest::create([
-        'booking_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
+        'guest_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
         'status' => 'save',
         'booking_place'    => 'Website',
         'first_name' => $request->first_name,
@@ -187,7 +187,7 @@ Route::post('/api/create-booking', function (Request $request) {
 
     // 2. Simpan Data Booking dengan Status PENDING
     $booking = Booking::create([
-        'booking_code' => $guest->booking_code,
+        'booking_code' => $guest->guest_code,
         'guest_id' => $guest->id,
         'room_id' => $request->room_id,
         'bed_id' => $request->bed_id,
@@ -422,6 +422,15 @@ Route::middleware(['is_admin'])->group(function () {
     Route::get('/admin/manage-guests/search/{bookingCode}',
         [\App\Http\Controllers\AdminGuestController::class, 'search'])
         ->name('admin.manage_guests.search');
+
+    Route::delete('/admin/manage-guests/{id}',
+        [\App\Http\Controllers\AdminGuestController::class, 'destroy'])
+        ->name('admin.manage_guests.destroy');
+
+    Route::post('/admin/manage-guests/{id}/update',
+        [\App\Http\Controllers\AdminGuestController::class, 'update'])
+        ->name('admin.manage_guests.update');
+
 
     Route::get('/admin/manage-occupation',
         [\App\Http\Controllers\AdminOccupationController::class, 'index'])

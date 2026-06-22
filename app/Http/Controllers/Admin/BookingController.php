@@ -38,7 +38,8 @@ class BookingController extends Controller
                       $g->where('first_name', 'LIKE', "%{$search}%")
                         ->orWhere('last_name', 'LIKE', "%{$search}%")
                         ->orWhere('phone', 'LIKE', "%{$search}%")
-                        ->orWhere('email', 'LIKE', "%{$search}%");
+                        ->orWhere('email', 'LIKE', "%{$search}%")
+                        ->orWhere('guest_code', 'LIKE', "%{$search}%");
                   })
                   ->orWhereHas('room', function($room) use ($search) {
                       $room->where('name', 'LIKE', "%{$search}%");
@@ -89,7 +90,7 @@ class BookingController extends Controller
         $beds = Bed::where('is_active', true)->orderBy('name')->get();
         $guests = Guest::orderByDesc('id')->get([
             'id',
-            'booking_code',
+            'guest_code',
             'status',
             'first_name',
             'last_name',
@@ -101,6 +102,10 @@ class BookingController extends Controller
             'city',
             'address',
             'id_number',
+            'profile_picture',
+            'id_card_photo',
+            'deposit_amount',
+            'deposit_notes',
             'self_description',
         ]);
 
@@ -121,7 +126,7 @@ class BookingController extends Controller
         $beds = Bed::where('is_active', true)->orderBy('name')->get();
         $guests = Guest::orderByDesc('id')->get([
             'id',
-            'booking_code',
+            'guest_code',
             'status',
             'first_name',
             'last_name',
@@ -133,7 +138,11 @@ class BookingController extends Controller
             'city',
             'address',
             'id_number',
+            'profile_picture',
+            'id_card_photo',
             'self_description',
+            'deposit_amount',
+            'deposit_notes',
         ]);
 
         return view('admin.edit-new-reservation', compact('booking', 'rooms', 'beds', 'guests'));
@@ -144,10 +153,15 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->has('deposit_amount')) {
+            $cleaned = preg_replace('/[^\d]/', '', $request->input('deposit_amount'));
+            $request->merge(['deposit_amount' => $cleaned !== '' ? (float) $cleaned : null]);
+        }
+
         // Validasi semua field input dari form New Reservation
         $request->validate([
             // Validasi Tamu (Guests)
-            'first_name'         => 'required|string|max:255',
+            'first_name'         => 'required_without:guest_id|string|max:255',
             'last_name'          => 'nullable|string|max:255',
             'email'              => 'nullable|email|max:255',
             'phone'              => 'nullable|string|max:255',
@@ -162,6 +176,8 @@ class BookingController extends Controller
             'self_description'   => 'nullable|string',
             'guest_id'           => 'nullable|exists:guests,id',
             'guest_status'       => 'nullable|in:save,block',
+            'deposit_amount'     => 'nullable|numeric|min:0',
+            'deposit_notes'      => 'nullable|string',
 
             // Validasi Transaksi (Bookings)
             'room_id'            => 'required|exists:rooms,id',
@@ -182,51 +198,96 @@ class BookingController extends Controller
         DB::beginTransaction();
 
         try {
-            // 1. Handle File Uploads (Foto Profil & Foto KTP)
-            $profilePath = null;
-            $idCardPath = null;
-
-            if ($request->hasFile('profile_picture')) {
-                $profilePath = $request->file('profile_picture')->store('guests/profiles', 'public');
-            }
-            if ($request->hasFile('id_card_photo')) {
-                $idCardPath = $request->file('id_card_photo')->store('guests/id_cards', 'public');
-            }
+            // 2. Generate Kode Booking Unik Otomatis (Format: BK-2026-XXXX)
+            $bookingCode = $this->generateBookingCode();
 
             if ($request->filled('guest_id')) {
-                $previousGuest = Guest::findOrFail($request->guest_id);
-                if (($previousGuest->status ?? 'save') === 'block') {
+                $guest = Guest::findOrFail($request->guest_id);
+                if (($guest->status ?? 'save') === 'block') {
                     return response()->json([
                         'success' => false,
                         'message' => 'Guest ini diblokir dan tidak bisa dipakai untuk reservasi baru.',
                     ], 422);
                 }
+
+                // Handle File Uploads (Foto Profil & Foto KTP) untuk update tamu lama jika ada file baru
+                $profilePath = $guest->profile_picture;
+                $idCardPath = $guest->id_card_photo;
+
+                if ($request->hasFile('profile_picture')) {
+                    if ($profilePath) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($profilePath);
+                    }
+                    $profilePath = $request->file('profile_picture')->store('guests/profiles', 'public');
+                }
+                if ($request->hasFile('id_card_photo')) {
+                    if ($idCardPath) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($idCardPath);
+                    }
+                    $idCardPath = $request->file('id_card_photo')->store('guests/id_cards', 'public');
+                }
+
+                $guest->update([
+                    'first_name'       => $request->first_name ?? $guest->first_name,
+                    'last_name'        => $request->last_name ?? $guest->last_name,
+                    'email'            => $request->email ?? $guest->email,
+                    'phone'            => $request->phone ?? $guest->phone,
+                    'age'              => $request->age ?? $guest->age,
+                    'occupation'       => $request->occupation ?? $guest->occupation,
+                    'country'          => $request->country ?? $guest->country,
+                    'city'             => $request->city ?? $guest->city,
+                    'address'          => $request->address ?? $guest->address,
+                    'id_number'        => $request->id_number ?? $guest->id_number,
+                    'profile_picture'  => $profilePath,
+                    'id_card_photo'    => $idCardPath,
+                    'self_description' => $request->self_description ?? $guest->self_description,
+                    'check_in_date'    => $request->check_in_date ?? $guest->check_in_date,
+                    'check_out_date'   => $request->check_out_date ?? $guest->check_out_date,
+                    'deposit_amount'   => $request->deposit_amount ?? $guest->deposit_amount,
+                    'deposit_notes'    => $request->deposit_notes ?? $guest->deposit_notes,
+                ]);
+            } else {
+                // 1. Handle File Uploads (Foto Profil & Foto KTP) untuk tamu baru
+                $profilePath = null;
+                $idCardPath = null;
+
+                if ($request->hasFile('profile_picture')) {
+                    $profilePath = $request->file('profile_picture')->store('guests/profiles', 'public');
+                }
+                if ($request->hasFile('id_card_photo')) {
+                    $idCardPath = $request->file('id_card_photo')->store('guests/id_cards', 'public');
+                }
+
+                // Generate guest_code unik dengan format GST-YYYY-XXXXXX
+                $year = Carbon::now()->format('Y');
+                do {
+                    $randomDigits = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+                    $guestCode = 'GST-' . $year . '-' . $randomDigits;
+                } while (Guest::where('guest_code', $guestCode)->exists());
+
+                $guest = Guest::create([
+                    'guest_code'       => $guestCode,
+                    'status'           => 'save',
+                    'booking_place'    => 'Walk-in',
+                    'first_name'       => $request->first_name,
+                    'last_name'        => $request->last_name,
+                    'email'            => $request->email,
+                    'phone'            => $request->phone,
+                    'age'              => $request->age,
+                    'occupation'       => $request->occupation,
+                    'country'          => $request->country,
+                    'city'             => $request->city,
+                    'address'          => $request->address,
+                    'id_number'        => $request->id_number,
+                    'profile_picture'  => $profilePath,
+                    'id_card_photo'    => $idCardPath,
+                    'self_description' => $request->self_description,
+                    'check_in_date'    => $request->check_in_date,
+                    'check_out_date'   => $request->check_out_date,
+                    'deposit_amount'   => $request->deposit_amount,
+                    'deposit_notes'    => $request->deposit_notes,
+                ]);
             }
-
-            // 2. Generate Kode Booking Unik Otomatis (Format: BK-2026-XXXX)
-            $bookingCode = $this->generateBookingCode();
-
-            // 2. Simpan data Tamu sebagai snapshot per reservasi.
-            $guest = Guest::create([
-                'booking_code'     => $bookingCode,
-                'status'           => 'save',
-                'booking_place'    => 'Walk-in',
-                'first_name'       => $request->first_name,
-                'last_name'        => $request->last_name,
-                'email'            => $request->email,
-                'phone'            => $request->phone,
-                'age'              => $request->age,
-                'occupation'       => $request->occupation,
-                'country'          => $request->country,
-                'city'             => $request->city,
-                'address'          => $request->address,
-                'id_number'        => $request->id_number,
-                'profile_picture'  => $profilePath,
-                'id_card_photo'    => $idCardPath,
-                'self_description' => $request->self_description,
-                'check_in_date'    => $request->check_in_date,
-                'check_out_date'   => $request->check_out_date,
-            ]);
 
             // 3. Kalkulasi total malam & harga sewa
             $checkIn = Carbon::parse($request->check_in_date);
@@ -301,6 +362,11 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking)
     {
+        if ($request->has('deposit_amount')) {
+            $cleaned = preg_replace('/[^\d]/', '', $request->input('deposit_amount'));
+            $request->merge(['deposit_amount' => $cleaned !== '' ? (float) $cleaned : null]);
+        }
+
         $request->validate([
             'first_name'         => 'required|string|max:255',
             'last_name'          => 'nullable|string|max:255',
@@ -315,6 +381,8 @@ class BookingController extends Controller
             'profile_picture'    => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'id_card_photo'      => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'self_description'   => 'nullable|string',
+            'deposit_amount'     => 'nullable|numeric|min:0',
+            'deposit_notes'      => 'nullable|string',
             'room_id'            => 'required|exists:rooms,id',
             'bed_id'             => 'nullable|exists:beds,id',
             'check_in_date'      => 'required|date',
@@ -336,7 +404,7 @@ class BookingController extends Controller
 
             if (!$guest) {
                 $guest = Guest::create([
-                    'booking_code' => $booking->booking_code,
+                    'guest_code' => $booking->booking_code,
                     'status' => 'save',
                 ]);
                 $booking->guest_id = $guest->id;
@@ -376,6 +444,8 @@ class BookingController extends Controller
                 'self_description' => $request->self_description,
                 'check_in_date'    => $request->check_in_date,
                 'check_out_date'   => $request->check_out_date,
+                'deposit_amount'   => $request->deposit_amount,
+                'deposit_notes'    => $request->deposit_notes,
             ]);
 
             $checkIn = Carbon::parse($request->check_in_date);
@@ -491,9 +561,9 @@ class BookingController extends Controller
         $year = Carbon::now()->format('Y');
         $prefix = 'BK-' . $year . '-';
 
-        $lastGuestCode = Guest::where('booking_code', 'like', $prefix . '%')
-            ->orderByDesc('booking_code')
-            ->value('booking_code');
+        $lastGuestCode = Guest::where('guest_code', 'like', $prefix . '%')
+            ->orderByDesc('guest_code')
+            ->value('guest_code');
 
         $lastBookingCode = Booking::where('booking_code', 'like', $prefix . '%')
             ->orderByDesc('booking_code')
@@ -518,7 +588,7 @@ class BookingController extends Controller
             $bookingCode = $prefix . $nextIncrement;
             $nextIncrement++;
         } while (
-            Guest::where('booking_code', $bookingCode)->exists() ||
+            Guest::where('guest_code', $bookingCode)->exists() ||
             Booking::where('booking_code', $bookingCode)->exists()
         );
 
