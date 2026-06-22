@@ -165,7 +165,7 @@ Route::post('/api/create-booking', function (Request $request) {
 
     // 1. Simpan Data Tamu
     $guest = Guest::create([
-        'guest_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
+        'guest_code' => 'GST-' . date('Y') . '-' . str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT),
         'status' => 'save',
         'booking_place'    => 'Website',
         'first_name' => $request->first_name,
@@ -187,7 +187,7 @@ Route::post('/api/create-booking', function (Request $request) {
 
     // 2. Simpan Data Booking dengan Status PENDING
     $booking = Booking::create([
-        'booking_code' => $guest->guest_code,
+        'booking_code' => 'BK-' . date('Y') . '-' . rand(1000, 9999),
         'guest_id' => $guest->id,
         'room_id' => $request->room_id,
         'bed_id' => $request->bed_id,
