@@ -268,7 +268,7 @@ Route::post('/api/lock-bed', function (Request $request) {
     Cache::put($lockKey, [
         'session_id' => session()->getId(),
         'locked_at'  => now()->toDateTimeString(),
-    ], now()->addMinutes(10));
+    ], now()->addMinutes(30));
 
     return response()->json(['success' => true]);
 });

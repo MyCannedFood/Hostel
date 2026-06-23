@@ -253,7 +253,7 @@
 
                 foreach ($overlappingBookings as $booking) {
                     if ($booking->bed_id) {
-                        $guest   = \App\Models\Guest::where('guest_code', $booking->booking_code)->first();
+                        $guest   = $booking->guest;
                         $bedInfo = \App\Models\Bed::find($booking->bed_id);
 
                         if ($guest && $bedInfo) {
