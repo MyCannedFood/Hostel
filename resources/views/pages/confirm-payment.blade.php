@@ -81,6 +81,20 @@
     $backToGuestDetailsUrl = url('/guest-details') . '?' . $queryParams;
 @endphp
 
+@if(strtolower($paymentMethod) === 'midtrans')
+    @php
+        $mtSettings = \App\Models\PaymentSetting::instance();
+        $mtClientKey = $mtSettings->midtrans_client_key ?: config('midtrans.client_key');
+    @endphp
+    @if($mtSettings->midtrans_production || config('midtrans.is_production'))
+        <script src="https://app.midtrans.com/snap/snap.js"
+                data-client-key="{{ $mtClientKey }}"></script>
+    @else
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+                data-client-key="{{ $mtClientKey }}"></script>
+    @endif
+@endif
+
 <main class="confirm-payment-page">
     
     {{-- Booking Stepper Aktif (Bisa Diklik) --}}
@@ -682,12 +696,45 @@
                 if(data.success) {
                     createdBookingId = data.booking_id;
 
-                    paymentSummaryCard.style.display = 'none';
-                    qrisPaymentCard.style.display = 'flex';
-                    columnHeaderLabel.textContent = isId() ? 'Menunggu Pembayaran' : 'Awaiting Payment';
-                    startPaymentTimer();
-
-                    document.querySelector('.confirm-footer-wrapper').style.display = 'none';
+                    if (data.snap_token) {
+                        window.snap.pay(data.snap_token, {
+                            onSuccess: function (result) {
+                                fetch('/api/confirm-booking/' + data.booking_id, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                                    },
+                                    body: JSON.stringify({ midtrans_result: result })
+                                }).then(function (res) { return res.json(); }).then(function (confirmData) {
+                                    if (confirmData.success) {
+                                        showPaymentSuccess(data.booking_id);
+                                    }
+                                });
+                            },
+                            onPending: function (result) {
+                                console.log('Midtrans pending:', result);
+                            },
+                            onError: function (result) {
+                                alert(isId() ? 'Pembayaran gagal. Silakan coba lagi.' : 'Payment failed. Please try again.');
+                                btnPayNow.innerHTML = originalText;
+                                btnPayNow.removeAttribute('disabled');
+                            },
+                            onClose: function () {
+                                btnPayNow.innerHTML = originalText;
+                                btnPayNow.removeAttribute('disabled');
+                            }
+                        });
+                        paymentSummaryCard.style.display = 'none';
+                        columnHeaderLabel.textContent = isId() ? 'Menunggu Pembayaran' : 'Awaiting Payment';
+                        document.querySelector('.confirm-footer-wrapper').style.display = 'none';
+                    } else {
+                        paymentSummaryCard.style.display = 'none';
+                        qrisPaymentCard.style.display = 'flex';
+                        columnHeaderLabel.textContent = isId() ? 'Menunggu Pembayaran' : 'Awaiting Payment';
+                        startPaymentTimer();
+                        document.querySelector('.confirm-footer-wrapper').style.display = 'none';
+                    }
                 } else {
                     alert(isId() ? 'Gagal membuat booking. Silakan coba lagi.' : 'Failed to create booking. Please try again.');
                     btnPayNow.innerHTML = originalText;
@@ -701,6 +748,18 @@
                 btnPayNow.removeAttribute('disabled');
             }
         });
+
+        function showPaymentSuccess(bookingId) {
+            qrisPaymentCard.style.display = 'none';
+            columnHeaderLabel.textContent = isId() ? 'Pembayaran Selesai' : 'Payment Completed';
+
+            const bookingPrefix = isId() ? 'ID PEMESANAN' : 'BOOKING ID';
+            modalBookingId.textContent = bookingPrefix + ": #BK-" + new Date().getFullYear() + "-" + bookingId.toString().padStart(4, '0');
+
+            overlay.classList.add('is-active');
+            document.body.style.overflow = 'hidden';
+            clearInterval(paymentTimerInterval);
+        }
 
         // 3. I HAVE COMPLETED PAYMENT -> Konfirmasi Status Booking via AJAX
         btnPaymentCompleted.addEventListener('click', async function (e) {
@@ -726,15 +785,7 @@
                 const data = await res.json();
 
                 if(data.success) {
-                    qrisPaymentCard.style.display = 'none';
-                    columnHeaderLabel.textContent = isId() ? 'Pembayaran Selesai' : 'Payment Completed';
-
-                    const bookingPrefix = isId() ? 'ID PEMESANAN' : 'BOOKING ID';
-                    modalBookingId.textContent = bookingPrefix + ": #BK-" + new Date().getFullYear() + "-" + createdBookingId.toString().padStart(4, '0');
-
-                    overlay.classList.add('is-active');
-                    document.body.style.overflow = 'hidden';
-                    clearInterval(paymentTimerInterval);
+                    showPaymentSuccess(createdBookingId);
                 } else {
                     alert(isId() ? 'Gagal konfirmasi pembayaran.' : 'Failed to confirm payment.');
                 }

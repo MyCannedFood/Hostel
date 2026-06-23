@@ -50,8 +50,9 @@
                     </div>
                 @endif
 
+                @php $expPaymentSettings = \App\Models\PaymentSetting::instance(); $customPayments = \App\Models\PaymentMethod::active()->ordered()->get(); @endphp
                 <div style="margin-top: 32px;">
-                    {{-- QRIS --}}
+                    @if($expPaymentSettings->qris_enabled)
                     <label>
                         <input type="radio" name="payment_method" value="QRIS" class="payment-radio" checked style="display:none;">
                         <div class="payment-option active" onclick="selectPaymentOption(this)">
@@ -69,28 +70,47 @@
                             </div>
                         </div>
                     </label>
+                    @endif
 
-                    {{-- Virtual Account --}}
+                    @if($expPaymentSettings->cash_enabled)
                     <label>
-                        <input type="radio" name="payment_method" value="Virtual Account" class="payment-radio" style="display:none;">
+                        <input type="radio" name="payment_method" value="Cash" class="payment-radio" style="display:none;">
                         <div class="payment-option" onclick="selectPaymentOption(this)">
                             <div class="icon-box">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 21h18"/><path d="M3 10h18"/>
-                                    <path d="M5 10v7"/><path d="M9 10v7"/><path d="M15 10v7"/><path d="M19 10v7"/>
-                                    <path d="M12 2l-10 6h20l-10-6z"/>
+                                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                                 </svg>
                             </div>
                             <div class="option-text">
-                                <span class="option-label" data-en="BANK TRANSFER" data-id="TRANSFER BANK">{{ __('experience.bank_transfer') }}</span>
-                                <span class="option-title" data-en="VA (Virtual Account)" data-id="VA (Virtual Account)">{{ __('experience.va') }}</span>
+                                <span class="option-label" data-en="CASH" data-id="TUNAI">Cash</span>
+                                <span class="option-title">{{ __('experience.cash') ?? 'Cash' }}</span>
                             </div>
                         </div>
                     </label>
+                    @endif
 
-                    {{-- Credit Card --}}
+                    @if($expPaymentSettings->midtrans_enabled)
                     <label>
-                        <input type="radio" name="payment_method" value="Credit Card" class="payment-radio" style="display:none;">
+                        <input type="radio" name="payment_method" value="Midtrans" class="payment-radio" style="display:none;">
+                        <div class="payment-option" onclick="selectPaymentOption(this)">
+                            <div class="icon-box">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="5" width="20" height="14" rx="2"/>
+                                    <path d="M2 10h20"/>
+                                    <path d="M2 15h20"/>
+                                </svg>
+                            </div>
+                            <div class="option-text">
+                                <span class="option-label" data-en="MIDTRANS" data-id="MIDTRANS">Midtrans</span>
+                                <span class="option-title" data-en="Virtual Account / Credit Card / E-Wallet" data-id="Virtual Account / Kartu Kredit / E-Wallet">Virtual Account / Credit Card / E-Wallet</span>
+                            </div>
+                        </div>
+                    </label>
+                    @endif
+
+                    @foreach($customPayments as $cpm)
+                    <label>
+                        <input type="radio" name="payment_method" value="{{ $cpm->type }}" class="payment-radio" style="display:none;">
                         <div class="payment-option" onclick="selectPaymentOption(this)">
                             <div class="icon-box">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -99,11 +119,12 @@
                                 </svg>
                             </div>
                             <div class="option-text">
-                                <span class="option-label" data-en="DEBIT / CREDIT CARD" data-id="DEBIT / KARTU KREDIT">{{ __('experience.debit_credit_card') }}</span>
-                                <span class="option-title" data-en="Credit Card" data-id="Kartu Kredit">{{ __('experience.credit_card') }}</span>
+                                <span class="option-label">{{ $cpm->provider_name }}</span>
+                                <span class="option-title">{{ $cpm->account_number ?? $cpm->email_username ?? '' }}</span>
                             </div>
                         </div>
                     </label>
+                    @endforeach
                 </div>
 
                 {{-- Promo Code --}}

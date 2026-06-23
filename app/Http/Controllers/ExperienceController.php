@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Experience;
 use App\Models\ExperienceBooking;
 use App\Models\PromoCode;
+use App\Models\Guest;
+use App\Models\Booking;
+use App\Models\Payment;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -79,7 +83,7 @@ class ExperienceController extends Controller
     public function storePaymentMethod(Request $request)
     {
         $request->validate([
-            'payment_method' => 'required|in:QRIS,Virtual Account,Credit Card',
+            'payment_method' => 'required|string',
         ]);
 
         $booking = session('exp_booking');
@@ -95,9 +99,36 @@ class ExperienceController extends Controller
         $booking['payment_method'] = $request->payment_method;
         $booking['snap_token']     = null;
 
+        // Generate Snap token jika Midtrans
+        if ($request->payment_method === 'Midtrans') {
+            $booking['snap_token'] = $this->generateSnapToken($booking);
+        }
+
         session(['exp_booking' => $booking]);
 
         return redirect()->route('experience.payment');
+    }
+
+    protected function generateSnapToken(array $booking): ?string
+    {
+        $orderId = 'EXP-' . $booking['pending_ticket_id'] . '-' . time();
+
+        $midtrans = new MidtransService();
+        $snapToken = $midtrans->createSnapToken(
+            $orderId,
+            (int) $booking['total_amount'],
+            [
+                'first_name' => $booking['guest_name'],
+                'phone' => $booking['guest_whatsapp'],
+            ]
+        );
+
+        if ($snapToken) {
+            $booking['midtrans_order_id'] = $orderId;
+            session(['exp_booking' => $booking]);
+        }
+
+        return $snapToken;
     }
 
     /**
@@ -198,6 +229,16 @@ class ExperienceController extends Controller
             return redirect()->route('experience.success');
         }
 
+        // Jika Midtrans, validasi hasil dari Snap callback
+        if ($booking['payment_method'] === 'Midtrans' && $request->input('midtrans_result')) {
+            $midtransResult = $request->input('midtrans_result');
+            if (($midtransResult['transaction_status'] ?? '') !== 'settlement'
+                && ($midtransResult['transaction_status'] ?? '') !== 'capture') {
+                return redirect()->route('experience.payment')
+                    ->with('error', 'Pembayaran belum selesai. Silakan selesaikan pembayaran terlebih dahulu.');
+            }
+        }
+
         try {
             $expBooking = ExperienceBooking::create([
                 'experience_id'  => $booking['experience_id'],
@@ -218,10 +259,8 @@ class ExperienceController extends Controller
 
             // Increment promo used count
             if (!empty($booking['promo_code'])) {
-                // Field di promo_codes: `used`
                 PromoCode::where('code', $booking['promo_code'])->increment('used');
             }
-
 
             session(['exp_booking_confirmed_id' => $expBooking->id]);
             session()->forget('exp_booking');

@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Room; 
 use App\Models\Guest;
 use App\Models\Booking;
+use App\Models\Payment;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\Http\Controllers\AdminAuthController;
@@ -203,10 +205,44 @@ Route::post('/api/create-booking', function (Request $request) {
     // Release lock setelah booking berhasil
     Cache::forget($lockKey);
 
+    // Jika Midtrans, generate snap token & simpan Payment
+    $snapToken = null;
+    if (strtolower($request->payment_method) === 'midtrans') {
+        $orderId = 'BK-' . $booking->id . '-' . time();
+        $guest = \App\Models\Guest::find($guest->id);
+
+        $customerDetails = [
+            'first_name' => $guest->first_name ?? '',
+            'last_name'  => $guest->last_name ?? '',
+            'phone'      => $guest->phone ?? '',
+        ];
+        if (filter_var($guest->email ?? '', FILTER_VALIDATE_EMAIL)) {
+            $customerDetails['email'] = $guest->email;
+        }
+
+        $midtrans = new MidtransService();
+        $snapToken = $midtrans->createSnapToken(
+            $orderId,
+            (int) $request->grand_total,
+            $customerDetails
+        );
+
+        if ($snapToken) {
+            Payment::create([
+                'booking_id'        => $booking->id,
+                'midtrans_order_id' => $orderId,
+                'payment_method'    => $request->payment_method,
+                'amount'            => $request->grand_total,
+                'status'            => 'pending',
+            ]);
+        }
+    }
+
     return response()->json([
         'success' => true,
         'booking_code' => $booking->booking_code,
-        'booking_id' => $booking->id
+        'booking_id' => $booking->id,
+        'snap_token' => $snapToken,
     ]);
 });
 
@@ -284,6 +320,10 @@ Route::get('/api/bed-locks/{room}', function ($roomId, Request $request) {
         'my_lock_expired' => $myLockExpired,
     ]);
 });
+
+// Midtrans Webhook (tanpa CSRF karena dari Midtrans)
+Route::post('/webhook/midtrans', [App\Http\Controllers\MidtransWebhookController::class, 'handle'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 
 Route::post('/api/confirm-booking/{id}', function ($id) {
     // Ambil data booking beserta data tamunya

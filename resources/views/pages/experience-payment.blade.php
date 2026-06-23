@@ -6,19 +6,19 @@
     <title data-en="Experience Payment - AlaSare" data-id="Pembayaran Pengalaman - AlaSare">{{ __('experience.experience_payment_title') }} - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{--
-    ══════════════════════════════════════════════════════
-    MIDTRANS SNAP — Uncomment saat akun Midtrans siap
-    ══════════════════════════════════════════════════════
-    @if(config('midtrans.is_production'))
-        <script src="https://app.midtrans.com/snap/snap.js"
-                data-client-key="{{ config('midtrans.client_key') }}"></script>
-    @else
-        <script src="https://app.sandbox.midtrans.com/snap/snap.js"
-                data-client-key="{{ config('midtrans.client_key') }}"></script>
+    @if($snapToken)
+        @php
+            $mtSettings = \App\Models\PaymentSetting::instance();
+            $mtClientKey = $mtSettings->midtrans_client_key ?: config('midtrans.client_key');
+        @endphp
+        @if($mtSettings->midtrans_production || config('midtrans.is_production'))
+            <script src="https://app.midtrans.com/snap/snap.js"
+                    data-client-key="{{ $mtClientKey }}"></script>
+        @else
+            <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+                    data-client-key="{{ $mtClientKey }}"></script>
+        @endif
     @endif
-    ══════════════════════════════════════════════════════
-    --}}
 </head>
 <body class="payment-page">
 
@@ -152,11 +152,6 @@
                     {{ $booking['payment_method'] }}
                 </p>
 
-                {{--
-                ══════════════════════════════════════════════════════
-                MIDTRANS SNAP — Uncomment saat akun siap
-                ══════════════════════════════════════════════════════
-
                 @if($snapToken)
                     <button id="pay-button" class="confirm-btn" style="width:100%;margin-top:16px;">
                         Bayar Sekarang
@@ -189,40 +184,32 @@
                         });
                     </script>
                 @else
-                    <p style="color:#dc2626;font-size:13px;margin-top:8px;">
-                        Gagal memuat payment gateway. Silakan kembali dan coba lagi.
+                    {{-- ── QR Placeholder (manual payment) ── --}}
+                    <p class="scan-label" data-en="Scan to Pay" data-id="Scan untuk Bayar">{{ __('experience.scan_to_pay') }}</p>
+                    <div class="qr-wrapper">
+                        <img src="{{ $qrCodeUrl }}"
+                             alt="QR Code"
+                             class="ticket-qr-img">
+                    </div>
+                    <p style="font-size:11px;color:rgba(26,61,10,0.45);text-align:center;margin-top:4px;">
+                        <span data-en="Booking ID" data-id="ID Pemesanan">{{ __('experience.booking_id') }}</span>: {{ $booking['pending_ticket_id'] }}
                     </p>
+
+                    <div class="awaiting-timer">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        <span data-en="Awaiting Payment... " data-id="Menunggu Pembayaran... ">{{ __('experience.awaiting_payment') }}</span>
+                        <span id="countdown">14:59</span>
+                    </div>
+
+                    <form action="{{ route('experience.payment.confirm') }}" method="POST">
+                        @csrf
+                        <button type="submit" class="confirm-btn" data-en="I Have Completed Payment" data-id="Saya Sudah Membayar">{{ __('experience.i_have_paid') }}</button>
+                    </form>
                 @endif
-
-                ══════════════════════════════════════════════════════
-                --}}
-
-                {{-- ── QR Placeholder (hapus blok ini saat Midtrans aktif) ── --}}
-                <p class="scan-label" data-en="Scan to Pay" data-id="Scan untuk Bayar">{{ __('experience.scan_to_pay') }}</p>
-                <div class="qr-wrapper">
-                    <img src="{{ $qrCodeUrl }}"
-                         alt="QR Code"
-                         class="ticket-qr-img">
-                </div>
-                <p style="font-size:11px;color:rgba(26,61,10,0.45);text-align:center;margin-top:4px;">
-                    <span data-en="Booking ID" data-id="ID Pemesanan">{{ __('experience.booking_id') }}</span>: {{ $booking['pending_ticket_id'] }}
-                </p>
-
-                <div class="awaiting-timer">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                    <span data-en="Awaiting Payment... " data-id="Menunggu Pembayaran... ">{{ __('experience.awaiting_payment') }}</span>
-                    <span id="countdown">14:59</span>
-                </div>
-
-                <form action="{{ route('experience.payment.confirm') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="confirm-btn" data-en="I Have Completed Payment" data-id="Saya Sudah Membayar">{{ __('experience.i_have_paid') }}</button>
-                </form>
-                {{-- ── End QR Placeholder ── --}}
 
                 <p class="secured-note">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"

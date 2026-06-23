@@ -112,6 +112,8 @@
     $roomSelectionUrl = url('/room-selection') . '?' . $queryParams;
     $bedSelectionUrl = url('/bed-shared-room/' . ($roomIdParam ?? 1)) . '?' . $queryParams;
     $backUrl = $bedSelectionUrl;
+    $paymentSettings = \App\Models\PaymentSetting::instance();
+    $customPaymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
 @endphp
 
 <main class="guest-details-page">
@@ -335,6 +337,7 @@
         <section class="payment-section" style="background: white; padding: 32px; border-radius: 12px; border: 1px solid #E5E5E5; margin-top: 24px;">
             <h2 style="font-size: 20px; color: #1A3D0A; margin-bottom: 20px;" data-en="Payment Method" data-id="Metode Pembayaran">Payment Method</h2>
             <div class="payment-options" style="display: flex; flex-direction: column; gap: 12px;">
+                @if($paymentSettings->qris_enabled)
                 <label class="payment-option" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #E5E5E5; border-radius: 8px; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <input type="radio" name="payment_method" value="qris" {{ $guestData['payment_method'] == 'qris' ? 'checked' : '' }}>
@@ -345,38 +348,42 @@
                     </div>
                     <span class="payment-tag" style="background: #FFF3E0; color: #D9864A; padding: 4px 8px; font-size: 11px; border-radius: 4px; font-weight: bold;" data-en="Recommended" data-id="Rekomendasi">Recommended</span>
                 </label>
+                @endif
+                @if($paymentSettings->cash_enabled)
                 <label class="payment-option" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #E5E5E5; border-radius: 8px; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <input type="radio" name="payment_method" value="e-wallet" {{ $guestData['payment_method'] == 'e-wallet' ? 'checked' : '' }}>
+                        <input type="radio" name="payment_method" value="cash" {{ $guestData['payment_method'] == 'cash' ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
-                            <span data-en="E-Wallet App" data-id="Aplikasi E-Wallet">E-Wallet App</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            <span data-en="Cash" data-id="Tunai">Cash</span>
                         </div>
                     </div>
-                    <div class="payment-icons" style="font-size: 12px; color: #7D8A74;">GoPay, OVO, ShopeePay</div>
                 </label>
+                @endif
+                @if($paymentSettings->midtrans_enabled)
                 <label class="payment-option" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #E5E5E5; border-radius: 8px; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <input type="radio" name="payment_method" value="bank_transfer" {{ $guestData['payment_method'] == 'bank_transfer' ? 'checked' : '' }}>
+                        <input type="radio" name="payment_method" value="midtrans" {{ $guestData['payment_method'] == 'midtrans' ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 10V21"/><path d="M19 10V21"/><path d="M9 10V21"/><path d="M15 10V21"/><path d="M12 2L2 7l10 5 10-5-10-5z"/></svg>
-                            <span data-en="Bank Transfer" data-id="Transfer Bank">Bank Transfer</span>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M2 15h20"/></svg>
+                            <span data-en="Midtrans" data-id="Midtrans">Midtrans (VA / Card / E-Wallet)</span>
                         </div>
                     </div>
-                    <div class="payment-icons" style="font-size: 12px; color: #7D8A74;">BCA, Mandiri, BRI</div>
+                    <div class="payment-icons" style="font-size: 12px; color: #7D8A74;">BCA, Mandiri, BRI, GoPay</div>
                 </label>
+                @endif
+                @foreach($customPaymentMethods as $cpm)
                 <label class="payment-option" style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #E5E5E5; border-radius: 8px; cursor: pointer;">
                     <div style="display: flex; align-items: center; gap: 12px;">
-                        <input type="radio" name="payment_method" value="card" {{ $guestData['payment_method'] == 'card' ? 'checked' : '' }}>
+                        <input type="radio" name="payment_method" value="{{ $cpm->type }}" {{ $guestData['payment_method'] == $cpm->type ? 'checked' : '' }}>
                         <div class="payment-option-label" style="display: flex; align-items: center; gap: 8px; font-weight: bold; color: #1A3D0A;">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-                            <span data-en="Credit / Debit Card" data-id="Kartu Kredit / Debit">Credit / Debit Card</span>
+                            <span>{{ $cpm->provider_name }}</span>
                         </div>
                     </div>
-                    <div class="payment-icons">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7D8A74" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/></svg>
-                    </div>
+                    <div class="payment-icons" style="font-size: 12px; color: #7D8A74;">{{ $cpm->account_number ?? $cpm->email_username ?? '' }}</div>
                 </label>
+                @endforeach
             </div>
         </section>
 
