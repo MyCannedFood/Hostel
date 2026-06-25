@@ -79,7 +79,8 @@ class MidtransService
 
     public static function handleNotification(): object
     {
-        return \Midtrans\Transaction::notification();
+        (new self())->configure();
+        return new \Midtrans\Notification();
     }
 
     public function createAndSavePayment($booking, string $orderId, ?string $snapToken = null): Payment

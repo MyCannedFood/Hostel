@@ -29,7 +29,7 @@
 .calendar-summary-bar {
     background: #FFFFFF;
     border: 1px solid #E8EBE6;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 20px 32px;
     display: flex;
     justify-content: space-between;
@@ -86,7 +86,7 @@
 .promo-input-wrapper {
     position: relative;
     border: 1px solid #D37D4F;
-    border-radius: 6px;
+    border-radius: 2px;
     padding: 8px 12px;
     display: flex;
     align-items: center;
@@ -156,7 +156,7 @@
 
 .filter-tab {
     padding: 8px 20px;
-    border-radius: 8px;
+    border-radius: 2px;
     border: 1px solid #73796D;
     color: rgba(75, 153, 96, 0.7);
     background: #FFF;
@@ -178,10 +178,11 @@
     background: #FFF;
     border: 1px solid rgba(25, 54, 33, 0.7);
     padding: 6px 16px;
-    border-radius: 12px;
+    border-radius: 2px;
     font-size: 13px;
     color: rgba(75, 153, 96, 0.7);
     font-weight: 500;
+    margin-left: auto;
 }
 
 /* Calendar View */
@@ -265,7 +266,7 @@
     align-items: center;
     justify-content: center;
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 2px;
     cursor: pointer;
     transition: all 0.2s;
 }
@@ -319,7 +320,9 @@
 /* Legend */
 .calendar-legend {
     display: flex;
+    flex-direction: row;
     justify-content: center;
+    align-items: center;
     gap: 24px;
     margin-top: 32px;
 }
@@ -330,12 +333,15 @@
     gap: 8px;
     font-size: 12px;
     color: #888;
+    margin: 0;
 }
 
 .dot {
+    display: block;
     width: 10px;
     height: 10px;
     border-radius: 50%;
+    margin: 0;
 }
 
 .dot.available {
@@ -363,7 +369,7 @@
     color: #FFF;
     border: none;
     padding: 16px 60px;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 1px;

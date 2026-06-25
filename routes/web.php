@@ -208,7 +208,7 @@ Route::post('/api/create-booking', function (Request $request) {
     // Jika Midtrans, generate snap token & simpan Payment
     $snapToken = null;
     if (strtolower($request->payment_method) === 'midtrans') {
-        $orderId = 'BK-' . $booking->id . '-' . time();
+        $orderId = 'MID-' . $booking->booking_code;
         $guest = \App\Models\Guest::find($guest->id);
 
         $customerDetails = [
@@ -268,7 +268,7 @@ Route::post('/api/lock-bed', function (Request $request) {
     Cache::put($lockKey, [
         'session_id' => session()->getId(),
         'locked_at'  => now()->toDateTimeString(),
-    ], now()->addMinutes(30));
+    ], now()->addMinutes(10));
 
     return response()->json(['success' => true]);
 });

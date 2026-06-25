@@ -57,8 +57,17 @@ class MidtransWebhookController extends Controller
 
             if ($payment->status === 'paid' || $payment->status === 'authorized') {
                 $booking = Booking::find($payment->booking_id);
-                if ($booking && $booking->status === 'PENDING') {
-                    $booking->status = 'PAID';
+                if ($booking) {
+                    // Update status booking menjadi CONFIRMED (karena 'PAID' bukan nilai enum yang sah)
+                    if ($booking->status === 'PENDING') {
+                        $booking->status = 'CONFIRMED';
+                    }
+                    
+                    // Update metode bayar di booking dengan tipe spesifik dari Midtrans (misal: qris)
+                    if ($paymentType) {
+                        $booking->payment_method = $paymentType;
+                    }
+                    
                     $booking->save();
                 }
             }

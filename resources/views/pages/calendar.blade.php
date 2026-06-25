@@ -51,11 +51,6 @@
 
     {{-- Controls --}}
     <div class="calendar-controls">
-        <div class="filter-tabs" style="display:none;">
-            <button class="filter-tab active" data-en="All Rooms" data-id="Semua Kamar">All Rooms</button>
-            <button class="filter-tab" data-en="Female Only Dorm" data-id="Asrama Khusus Wanita">Female Only Dorm</button>
-            <button class="filter-tab" data-en="Male Only Dorm" data-id="Asrama Khusus Pria">Male Only Dorm</button>
-        </div>
         <div class="nights-indicator">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
             <span id="totalNights" data-en="0 Nights" data-id="0 Malam">0 Nights</span>
