@@ -356,14 +356,30 @@ Route::post('/api/confirm-booking/{id}', function ($id) {
         // 3. Ambil data tamu berdasarkan guest_id
         $guest = Guest::find($booking->guest_id);
 
-        if($guest) {
+        if ($guest) {
             // 4. Kirim Email Notanya!
             try {
+                if (empty($guest->email) || !filter_var($guest->email, FILTER_VALIDATE_EMAIL)) {
+                    \Log::error('Email booking receipt invalid/empty for booking_id=' . $booking->id . ', guest_id=' . $booking->guest_id);
+                    return response()->json(['success' => false, 'message' => 'Invalid guest email.']);
+                }
+
+                \Log::info('Send booking receipt email', [
+                    'to' => $guest->email,
+                    'booking_id' => $booking->id,
+                    'booking_code' => $booking->booking_code,
+                ]);
+
                 Mail::to($guest->email)->send(new BookingReceiptMail($booking, $guest));
+
+                \Log::info('Booking receipt email sent', [
+                    'to' => $guest->email,
+                    'booking_id' => $booking->id,
+                    'booking_code' => $booking->booking_code,
+                ]);
             } catch (\Exception $e) {
-                // Tangkap error jika email gagal terkirim (misal internet putus / smtp salah)
-                // Tapi biarkan transaksi tetap dianggap sukses di mata user
-                \Log::error('Email gagal dikirim ke ' . $guest->email . ' Error: ' . $e->getMessage());
+                \Log::error('Email booking receipt failed for booking_id=' . $booking->id . ', guest_email=' . ($guest->email ?? '' ) . ' Error: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Failed to send booking receipt email.']);
             }
         }
 
