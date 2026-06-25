@@ -157,9 +157,22 @@
                         @php
                             $facilityKey = trim($facility);
                             $label = $facilityLabels[$facilityKey] ?? ['en' => $facilityKey, 'id' => $facilityKey];
+
+                            // Mapping icon fasilitas — disamakan dengan halaman Rooms (rooms.blade.php)
+                            $facilityNameLower = strtolower($facilityKey);
+                            $iconFile = 'images/icon/walk-svgrepo-com.svg';
+                            if (str_contains($facilityNameLower, 'wi-fi') || str_contains($facilityNameLower, 'wifi')) {
+                                $iconFile = 'images/icon/wifi-svgrepo-com-1.svg';
+                            } elseif (str_contains($facilityNameLower, 'ac') || str_contains($facilityNameLower, 'air')) {
+                                $iconFile = 'images/icon/snow-svgrepo-com.svg';
+                            } elseif (str_contains($facilityNameLower, 'locker') || str_contains($facilityNameLower, 'lock')) {
+                                $iconFile = 'images/icon/lock-svgrepo-com.svg';
+                            } elseif (str_contains($facilityNameLower, 'en-suite bath') || str_contains($facilityNameLower, 'bath') || str_contains($facilityNameLower, 'shower')) {
+                                $iconFile = 'images/icon/shower-svgrepo-com.svg';
+                            }
                         @endphp
                         <div class="sel-feature">
-                            <svg viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                            <img src="{{ asset($iconFile) }}" alt="{{ $label['en'] }}" class="sel-feature-icon" style="width:16px;height:16px;">
                             <span data-en="{{ $label['en'] }}" data-id="{{ $label['id'] }}">{{ $label['en'] }}</span>
                         </div>
                     @endforeach

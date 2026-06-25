@@ -6,19 +6,151 @@
     <title>Guest Details - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/css/guest-details.css', 'resources/js/app.js'])
     <style>
-        /* CSS Untuk Footer Dinamis */
-        .booking-summary-footer { position: fixed; bottom: 0; left: 0; width: 100%; background: #FFFFFF; border-top: 1px solid #E5E5E5; box-shadow: 0 -4px 10px rgba(0,0,0,0.05); z-index: 999; padding: 20px; }
-        .footer-container { max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
-        .summary-table { display: flex; flex-direction: column; gap: 8px; border-bottom: 2px solid #1A3D0A; padding-bottom: 16px; }
-        .summary-row { display: flex; justify-content: space-between; font-size: 14px; color: #43493E; }
-        .summary-row .summary-label { font-weight: 600; color: #43493E; text-transform: uppercase; }
-        .summary-row.total { margin-top: 8px; }
-        .summary-row.total .summary-label, 
-        .summary-row.total .summary-price { font-weight: bold; color: #1A3D0A; font-size: 16px; text-transform: uppercase; }
-        .summary-actions { display: flex; gap: 12px; justify-content: center; }
-        .summary-actions .btn-back { background: #6CA16C; color: white; padding: 12px 24px; border-radius: 6px; font-weight: bold; text-decoration: none; font-size: 15px; text-align: center; border: none; }
-        .summary-actions .btn-pay { background: #D9864A; color: white; padding: 12px 24px; border-radius: 6px; font-weight: bold; text-decoration: none; font-size: 15px; text-align: center; border: none; cursor: pointer; }
-        body { padding-bottom: 220px; } 
+        .booking-summary-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #FFFFFF;
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            z-index: 999;
+        }
+
+        /* Handle / tab kecil yang selalu kelihatan */
+        .footer-handle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 14px 20px;
+            background: none;
+            border: none;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .footer-handle .handle-label {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1A3D0A;
+            text-transform: uppercase;
+        }
+
+        .footer-handle .handle-price {
+            font-weight: 700;
+            font-size: 16px;
+            color: #1A3D0A;
+            margin-left: auto;
+            margin-right: 8px;
+        }
+
+        .handle-arrow {
+            width: 18px;
+            height: 18px;
+            color: #1A3D0A;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .footer-handle.open .handle-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Panel yang collapse/expand -> berisi rincian + total + tombol */
+        .footer-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            /* TIDAK ada border di sini, biar garis cuma satu di bawah summary-table */
+        }
+
+        .footer-panel.open {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .footer-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Rincian (room+bed, addon, EST.TOTAL) - TANPA garis di sini */
+        .summary-table {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #43493E;
+        }
+
+        .summary-row .summary-label {
+            font-weight: 600;
+            color: #43493E;
+            text-transform: uppercase;
+        }
+
+        .summary-row.total .summary-label,
+        .summary-row.total .summary-price {
+            font-weight: bold;
+            color: #1A3D0A;
+            font-size: 16px;
+            text-transform: uppercase;
+        }
+
+        /* SATU-SATUNYA garis pembatas: di bawah EST.TOTAL, sebelum tombol */
+        .summary-divider {
+            border: none;
+            border-top: 1px solid #1A3D0A;
+            margin: 8px 0 0;
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+
+        .summary-actions .btn-back {
+            background: #6CA16C;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 15px;
+            text-align: center;
+            border: none;
+        }
+
+        .summary-actions .btn-pay {
+            background: #D9864A;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 15px;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        body { padding-bottom: 80px; }
     </style>
 </head>
 <body>
@@ -390,42 +522,57 @@
     </form>
 </main>
 
-{{-- Booking Summary Footer Dinamis --}}
-<footer class="booking-summary-footer">
-    <div class="footer-container">
-        <div class="summary-table">
-            
-            <div class="summary-row">
-                <div class="summary-label">{{ $roomName }} - {{ $bedName }}</div>
-                <div class="summary-price">IDR {{ number_format($totalBedCost, 0, ',', '.') }}</div>
-            </div>
-            
-            @foreach($addonDetails as $addon)
-                <div class="summary-row">
-                    <div class="summary-label">
-                        {{ $addon['name'] }} 
-                        @if($addon['note'])
-                            <span style="color: #A5B8A2; font-size: 10px; margin-left: 4px;">
-                                {{-- Jika teksnya dari sistem (For free), tambahkan tag translate --}}
-                                {!! $addon['note'] === '(For free)' ? '<span data-en="(For free)" data-id="(Gratis)">(For free)</span>' : $addon['note'] !!}
-                            </span>
-                        @endif
-                    </div>
-                    <div class="summary-price">
-                        {{ $addon['cost'] > 0 ? 'IDR ' . number_format($addon['cost'], 0, ',', '.') : '' }}
-                    </div>
-                </div>
-            @endforeach
-            
-            <div class="summary-row total">
-                <div class="summary-label" data-en="EST. Total" data-id="Total Est.">EST. Total</div>
-                <div class="summary-price">IDR {{ number_format($grandTotal, 0, ',', '.') }}</div>
-            </div>
-        </div>
+{{-- Booking Summary Footer Dinamis (collapsible full) --}}
+<footer class="booking-summary-footer" id="bookingFooter">
 
-        <div class="summary-actions">
-            <a href="#" class="btn-back" id="btnBackToBed" data-en="Back To Bed Selection" data-id="Kembali ke Pilihan Kasur">Back To Bed Selection</a>
-            <button type="submit" form="guestDetailsForm" class="btn-pay" data-en="Continue To Pay" data-id="Lanjut ke Pembayaran">Continue To Pay</button>
+    {{-- Handle kecil, selalu kelihatan --}}
+    <button type="button" class="footer-handle" id="footerHandle">
+        <span class="handle-label" data-en="Booking Summary" data-id="Ringkasan Pesanan">Booking Summary</span>
+        <span class="handle-price">IDR {{ number_format($grandTotal, 0, ',', '.') }}</span>
+        <svg class="handle-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+    </button>
+
+    {{-- Panel yang dibuka/tutup: rincian + total + tombol --}}
+    <div class="footer-panel" id="footerPanel">
+        <div class="footer-container">
+            <div class="summary-table">
+
+                <div class="summary-row">
+                    <div class="summary-label">{{ $roomName }} - {{ $bedName }}</div>
+                    <div class="summary-price">IDR {{ number_format($totalBedCost, 0, ',', '.') }}</div>
+                </div>
+
+                @foreach($addonDetails as $addon)
+                    <div class="summary-row">
+                        <div class="summary-label">
+                            {{ $addon['name'] }}
+                            @if($addon['note'])
+                                <span style="color: #A5B8A2; font-size: 10px; margin-left: 4px;">
+                                    {!! $addon['note'] === '(For free)' ? '<span data-en="(For free)" data-id="(Gratis)">(For free)</span>' : $addon['note'] !!}
+                                </span>
+                            @endif
+                        </div>
+                        <div class="summary-price">
+                            {{ $addon['cost'] > 0 ? 'IDR ' . number_format($addon['cost'], 0, ',', '.') : '' }}
+                        </div>
+                    </div>
+                @endforeach
+
+                <div class="summary-row total">
+                    <div class="summary-label" data-en="EST. Total" data-id="Total Est.">EST. Total</div>
+                    <div class="summary-price">IDR {{ number_format($grandTotal, 0, ',', '.') }}</div>
+                </div>
+            </div>
+
+            {{-- Garis tunggal di sini, sebelum tombol --}}
+            <hr class="summary-divider">
+
+            <div class="summary-actions">
+                <a href="#" class="btn-back" id="btnBackToBed" data-en="Back To Bed Selection" data-id="Kembali ke Pilihan Kasur">Back To Bed Selection</a>
+                <button type="submit" form="guestDetailsForm" class="btn-pay" data-en="Continue To Pay" data-id="Lanjut ke Pembayaran">Continue To Pay</button>
+            </div>
         </div>
     </div>
 </footer>
@@ -502,7 +649,6 @@
         const cb = document.getElementById('accept_policies');
         if(!cb.checked) {
             e.preventDefault();
-            // Pesan alert responsif terhadap bahasa
             const isIndo = window.AlasLang && window.AlasLang.current() === 'id';
             alert(isIndo ? 'Harap setujui Aturan Rumah & Kebijakan untuk melanjutkan.' : 'Please accept the House Rules & Policies to proceed.');
             
@@ -514,11 +660,9 @@
     });
 
     // === EXTENSION: ALAS LANG UNTUK PLACEHOLDER ===
-    // Listener ini menangkap custom event "alas:langchange" yang dikirim dari Navbar
     document.addEventListener('alas:langchange', function(e) {
         const lang = e.detail.lang;
         
-        // Loop semua elemen yang punya atribut placeholder dinamis
         document.querySelectorAll('[data-en-ph][data-id-ph]').forEach(function(el) {
             if (!el.dataset.enPhSet) {
                 el.dataset.enPhSet = el.getAttribute('data-en-ph');
@@ -528,9 +672,20 @@
         });
     });
 
-    // Agar placeholder langsung teraplikasi saat halaman pertama kali load (menyamakan dengan navbar)
+    // === FOOTER TOGGLE ===
+    document.addEventListener('DOMContentLoaded', function () {
+        const footerHandle = document.getElementById('footerHandle');
+        const footerPanel = document.getElementById('footerPanel');
+
+        if (footerHandle && footerPanel) {
+            footerHandle.addEventListener('click', function () {
+                this.classList.toggle('open');
+                footerPanel.classList.toggle('open');
+            });
+        }
+    });
+
     if(window.AlasLang) {
-        // Trigger manual event untuk inisiasi
         document.dispatchEvent(new CustomEvent('alas:langchange', { detail: { lang: window.AlasLang.current() } }));
     }
 </script>

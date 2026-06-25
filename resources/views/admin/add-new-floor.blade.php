@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
 <style>
     /* ... (CSS TETAP SAMA SEPERTI SEBELUMNYA) ... */
     :root {
@@ -109,6 +111,8 @@
         align-items: center;
         gap: 8px;
         transition: 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     .floor-modal .btn-action.outline {
@@ -146,6 +150,8 @@
         color: var(--text-muted);
         font-size: 14px;
         margin-left: auto;
+        flex-shrink: 1;
+        min-width: 0;
     }
 
     /* KANVAS MAP - Tambahan Cursor Pointer agar user tahu ini bisa diklik */
@@ -329,39 +335,144 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
     }
-    
+
     .floor-modal__footer .footer-right {
         display: flex;
         gap: 12px;
+        flex-wrap: wrap;
     }
+
+    .floor-modal__footer .footer-left {
+        justify-content: flex-start;
+    }
+
+    .floor-modal__footer .footer-right {
+        justify-content: flex-end;
+        gap: 12px;
+        flex-wrap: nowrap; /* cegah tombol loncat */
+    }
+
+    /* Standarkan tombol footer supaya rapi konsisten */
+    .floor-modal__footer .btn-action {
+        padding: 12px 18px;
+        font-size: 14px;
+        line-height: 1;
+        height: 44px; /* konsisten biar gak mengecil */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        gap: 8px;
+        box-sizing: border-box;
+        flex: 0 0 auto;
+    }
+
+    /* Icon buttons jangan mengecil */
+    .floor-modal__footer .btn-action i {
+        flex: 0 0 auto;
+        font-size: 16px;
+    }
+    
+    /* Standarkan tombol icon di card bed agar ukurannya konsisten */
     .floor-modal .bed-actions {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .floor-modal .bed-actions .icon-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+    }
+
+    .floor-modal .bed-actions .icon-btn:hover {
+        transform: scale(1.06);
+    }
+
+    /* Mengatur dimensi gambar ikon di dalam konfigurasi bed */
+    .floor-modal .bed-actions .icon-btn img {
+        width: 20px;
+        height: 20px;
+        display: block;
+        object-fit: contain;
+    }
+
+    /* ═══════════════════════════════════════════
+   FORCE FIX — Floor Modal Toolbar & Footer
+   (override paksa, anti-bentrok dengan CSS lain)
+═══════════════════════════════════════════ */
+#floorModal .map-toolbar {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
 }
 
-.floor-modal .bed-actions .icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s;
+#floorModal .map-toolbar .btn-action {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    text-overflow: initial !important;
 }
 
-.floor-modal .bed-actions .icon-btn:hover {
-    transform: scale(1.1); /* Efek sedikit membesar saat di-hover */
+#floorModal .map-toolbar .btn-action i,
+#floorModal .floor-modal__footer .btn-action i {
+    flex: 0 0 auto !important;
 }
 
-/* Mengatur dimensi gambar ikon di dalam konfigurasi bed */
-.floor-modal .bed-actions .icon-btn img {
-    width: 20px;
-    height: 20px;
-    display: block;
-    object-fit: contain;
+#floorModal .toolbar-text {
+    flex: 1 1 auto !important;
+    min-width: 120px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+#floorModal .floor-modal__footer {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+
+#floorModal .floor-modal__footer .footer-left,
+#floorModal .floor-modal__footer .footer-right {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: auto !important;
+}
+
+#floorModal .floor-modal__footer .btn-action {
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+    padding: 12px 18px !important;
+    height: 44px !important;
+    box-sizing: border-box !important;
 }
 </style>
 
@@ -378,11 +489,11 @@
                 <div class="map-toolbar">
                     <input type="file" id="uploadMapInput" accept="image/*" hidden>
                     
-                    <button class="btn-action outline" type="button" id="btnUploadImage">
+                    <button class="btn-action outline" type="button" id="btnUploadImage" style="white-space:nowrap;flex-shrink:0;width:auto;">
                         <i class="fa-solid fa-upload"></i> Upload Map Image
                     </button>
 
-                    <button class="btn-action" type="button" id="btnAddPin" disabled>
+                    <button class="btn-action" type="button" id="btnAddPin" disabled style="white-space:nowrap;flex-shrink:0;width:auto;">
                         <i class="fa-solid fa-location-dot"></i> + Add Bed Pin
                     </button>
 
@@ -454,14 +565,14 @@
             </div>
         </div>
 
-        <footer class="floor-modal__footer">
-            <div class="footer-left">
-                <button class="btn-action danger" type="button" id="btnDeleteLayout"><i class="fa-solid fa-trash"></i> Reset Layout</button>
+        <footer class="floor-modal__footer" style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">
+            <div class="footer-left" style="display:flex;flex-shrink:0;gap:12px;">
+                <button class="btn-action danger" type="button" id="btnDeleteLayout" style="white-space:nowrap;flex-shrink:0;width:auto;"><i class="fa-solid fa-trash"></i> Reset Layout</button>
             </div>
-            <div class="footer-right">
-                <button class="btn-action outline" type="button" id="btnCancel"><i class="fa-solid fa-xmark"></i> Cancel</button>
-                <button class="btn-action outline" type="button" id="btnToggleEdit"><i class="fa-solid fa-lock-open"></i> Lock/Edit</button>
-                <button class="btn-action" type="button" id="btnSaveConfig" style="font-size: 16px; padding: 10px 24px;"><i class="fa-solid fa-floppy-disk"></i> Save Floor Plan</button>
+            <div class="footer-right" style="display:flex;flex-shrink:0;gap:12px;">
+                <button class="btn-action outline" type="button" id="btnCancel" style="white-space:nowrap;flex-shrink:0;width:auto;"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                <button class="btn-action outline" type="button" id="btnToggleEdit" style="white-space:nowrap;flex-shrink:0;width:auto;"><i class="fa-solid fa-lock-open"></i> Lock/Edit</button>
+                <button class="btn-action" type="button" id="btnSaveConfig" style="white-space:nowrap;flex-shrink:0;width:auto;"><i class="fa-solid fa-floppy-disk"></i> Save Floor Plan</button>
             </div>
         </footer>
     </div>

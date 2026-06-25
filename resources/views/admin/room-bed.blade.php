@@ -1609,7 +1609,10 @@
     
     // Perbaikan: Bawa roomId ke modal map
     window.openAddNewFloor = (roomId) => {
-        const url = roomId ? `/admin/add-new-floor-popup?room_id=${roomId}` : '/admin/add-new-floor-popup';
+        const cacheBuster = `_t=${Date.now()}`;
+        const url = roomId 
+            ? `/admin/add-new-floor-popup?room_id=${roomId}&${cacheBuster}` 
+            : `/admin/add-new-floor-popup?${cacheBuster}`;
         fetchAndInjectModal(url, 'addNewFloorContainer', 'floorModal');
     };
 

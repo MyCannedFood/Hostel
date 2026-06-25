@@ -427,9 +427,22 @@
                             $fKey  = trim($facility);
                             $fEn   = $facilityMap[$fKey]['en'] ?? $fKey;
                             $fId   = $facilityMap[$fKey]['id'] ?? (trim($facilitiesId[$i] ?? $fKey));
+
+                            // Mapping icon fasilitas — disamakan dengan halaman Rooms (rooms.blade.php)
+                            $fNameLower = strtolower($fKey);
+                            $fIconFile  = 'images/icon/walk-svgrepo-com.svg';
+                            if (str_contains($fNameLower, 'wi-fi') || str_contains($fNameLower, 'wifi')) {
+                                $fIconFile = 'images/icon/wifi-svgrepo-com-1.svg';
+                            } elseif (str_contains($fNameLower, 'ac') || str_contains($fNameLower, 'air')) {
+                                $fIconFile = 'images/icon/snow-svgrepo-com.svg';
+                            } elseif (str_contains($fNameLower, 'locker') || str_contains($fNameLower, 'lock')) {
+                                $fIconFile = 'images/icon/lock-svgrepo-com.svg';
+                            } elseif (str_contains($fNameLower, 'en-suite bath') || str_contains($fNameLower, 'bath') || str_contains($fNameLower, 'shower')) {
+                                $fIconFile = 'images/icon/shower-svgrepo-com.svg';
+                            }
                         @endphp
                         <div class="feature-item">
-                            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                            <img src="{{ asset($fIconFile) }}" alt="{{ $fEn }}" class="feature-item-icon" style="width:18px;height:18px;">
                             <span data-en="{{ $fEn }}" data-id="{{ $fId }}">{{ $fEn }}</span>
                         </div>
                     @endforeach
