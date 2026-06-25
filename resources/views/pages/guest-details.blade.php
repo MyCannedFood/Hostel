@@ -34,6 +34,12 @@
             font-family: inherit;
         }
 
+        .footer-handle:focus,
+        .footer-handle:focus-visible {
+            outline: none;
+            box-shadow: none;
+        }
+
         .footer-handle .handle-label {
             font-weight: 700;
             font-size: 16px;
@@ -66,7 +72,6 @@
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease;
-            /* TIDAK ada border di sini, biar garis cuma satu di bawah summary-table */
         }
 
         .footer-panel.open {
@@ -80,27 +85,32 @@
             padding: 0 20px 20px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
         }
 
-        /* Rincian (room+bed, addon, EST.TOTAL) - TANPA garis di sini */
+        /* Rincian (room+bed, addon, EST.TOTAL) - tanpa border di tiap row */
         .summary-table {
             display: flex;
             flex-direction: column;
-            gap: 8px;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             font-size: 14px;
             color: #43493E;
+            padding: 8px 0;
+            border: none;
         }
 
         .summary-row .summary-label {
             font-weight: 600;
             color: #43493E;
             text-transform: uppercase;
+        }
+
+        .summary-row.total {
+            border: none;
         }
 
         .summary-row.total .summary-label,
@@ -111,11 +121,14 @@
             text-transform: uppercase;
         }
 
-        /* SATU-SATUNYA garis pembatas: di bawah EST.TOTAL, sebelum tombol */
+        /* SATU-SATUNYA garis: di bawah EST.TOTAL, sebelum tombol */
         .summary-divider {
-            border: none;
-            border-top: 1px solid #1A3D0A;
-            margin: 8px 0 0;
+            display: block;
+            width: 100%;
+            height: 1px;
+            background-color: #1A3D0A;
+            border: 0;
+            margin: 8px 0;
         }
 
         .summary-actions {
@@ -566,8 +579,7 @@
                 </div>
             </div>
 
-            {{-- Garis tunggal di sini, sebelum tombol --}}
-            <hr class="summary-divider">
+            <div class="summary-divider"></div>
 
             <div class="summary-actions">
                 <a href="#" class="btn-back" id="btnBackToBed" data-en="Back To Bed Selection" data-id="Kembali ke Pilihan Kasur">Back To Bed Selection</a>
