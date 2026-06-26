@@ -27,17 +27,6 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 <span><span data-en="Check-out: " data-id="Tgl Keluar: ">Check-out: </span><strong id="checkoutDate">--/--/----</strong></span>
             </div>
-            <div class="summary-item">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <select id="guestSelect" style="border: none; outline: none; background: transparent; font-weight: 600; color: inherit; font-size: 14px; cursor: pointer; max-width: 200px;">
-                    <option value="1a0c" data-en="1 Male Adult, 0 Children" data-id="1 Dewasa Pria, 0 Anak" selected>1 Male Adult, 0 Children</option>
-                    <option value="1f0c" data-en="1 Female Adult, 0 Children" data-id="1 Dewasa Wanita, 0 Anak">1 Female Adult, 0 Children</option>
-                    <option value="2a1c" data-en="2 Male Adults, 1 Child" data-id="2 Dewasa Pria, 1 Anak">2 Male Adults, 1 Child</option>
-                    <option value="2f1c" data-en="2 Female Adults, 1 Child" data-id="2 Dewasa Wanita, 1 Anak">2 Female Adults, 1 Child</option>
-                    <option value="2a2c" data-en="2 Male Adults, 2 Children" data-id="2 Dewasa Pria, 2 Anak">2 Male Adults, 2 Children</option>
-                    <option value="2f2c" data-en="2 Female Adults, 2 Children" data-id="2 Dewasa Wanita, 2 Anak">2 Female Adults, 2 Children</option>
-                </select>
-            </div>
         </div>
         
         <div class="promo-section">

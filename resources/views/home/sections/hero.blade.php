@@ -250,44 +250,6 @@
                    value="{{ date('Y-m-d', strtotime('+6 days')) }}">
         </div>
 
-        <div class="hero-booking-field" style="border-right:none;">
-            <label for="hero-guests"
-                   data-en="Guests" data-id="Tamu">Guests</label>
-            <select id="hero-guests" name="guests">
-                {{-- Teks option ditranslate via JS --}}
-                <option value="1a0c"
-                        data-en="1 Male Adult, 0 Children"
-                        data-id="1 Dewasa Pria, 0 Anak" selected>
-                    1 Male Adult, 0 Children
-                </option>
-                <option value="1f0c"
-                        data-en="1 Female Adult, 0 Children"
-                        data-id="1 Dewasa Wanita, 0 Anak">
-                    1 Female Adult, 0 Children
-                </option>
-                <option value="2a1c"
-                        data-en="2 Male Adults, 1 Child"
-                        data-id="2 Dewasa Pria, 1 Anak">
-                    2 Male Adults, 1 Child
-                </option>
-                <option value="2f1c"
-                        data-en="2 Female Adults, 1 Child"
-                        data-id="2 Dewasa Wanita, 1 Anak">
-                    2 Female Adults, 1 Child
-                </option>
-                <option value="2a2c"
-                        data-en="2 Male Adults, 2 Children"
-                        data-id="2 Dewasa Pria, 2 Anak">
-                    2 Male Adults, 2 Children
-                </option>
-                <option value="2f2c"
-                        data-en="2 Female Adults, 2 Children"
-                        data-id="2 Dewasa Wanita, 2 Anak">
-                    2 Female Adults, 2 Children
-                </option>
-            </select>
-        </div>
-
         <div class="hero-booking-btn-wrap">
             <button class="hero-booking-btn" type="button"
                     data-en="Check Availability" data-id="Cek Ketersediaan"

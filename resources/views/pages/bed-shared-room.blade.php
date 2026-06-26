@@ -190,7 +190,7 @@
             $checkInParam  = request()->query('check_in');
             $checkOutParam = request()->query('check_out');
             $nightsParam   = request()->query('nights', 0);
-            $guestsParam   = request()->query('guests', '1a0c');
+            $guestsParam   = request()->query('guests', '1f0c');
             $promoParam    = request()->query('promo', '');
             $monthParam    = request()->query('month', '');
             $bedIdParam    = request()->query('bed_id', '');
@@ -342,19 +342,6 @@
                     <input type="date" id="checkoutInput" value="{{ $checkOutParam }}" style="font-weight:600;">
                 </div>
 
-    
-
-                <div class="summary-item">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <select id="guestSelect">
-                        <option value="1a0c" {{ $guestsParam=='1a0c'?'selected':'' }} data-en="1 Male Adult, 0 Children"    data-id="1 Dewasa Pria, 0 Anak">1 Male Adult, 0 Children</option>
-                        <option value="1f0c" {{ $guestsParam=='1f0c'?'selected':'' }} data-en="1 Female Adult, 0 Children"  data-id="1 Dewasa Wanita, 0 Anak">1 Female Adult, 0 Children</option>
-                        <option value="2a1c" {{ $guestsParam=='2a1c'?'selected':'' }} data-en="2 Male Adults, 1 Child"      data-id="2 Dewasa Pria, 1 Anak">2 Male Adults, 1 Child</option>
-                        <option value="2f1c" {{ $guestsParam=='2f1c'?'selected':'' }} data-en="2 Female Adults, 1 Child"    data-id="2 Dewasa Wanita, 1 Anak">2 Female Adults, 1 Child</option>
-                        <option value="2a2c" {{ $guestsParam=='2a2c'?'selected':'' }} data-en="2 Male Adults, 2 Children"   data-id="2 Dewasa Pria, 2 Anak">2 Male Adults, 2 Children</option>
-                        <option value="2f2c" {{ $guestsParam=='2f2c'?'selected':'' }} data-en="2 Female Adults, 2 Children" data-id="2 Dewasa Wanita, 2 Anak">2 Female Adults, 2 Children</option>
-                    </select>
-                </div>
             </div>
 
             <div class="promo-section">
