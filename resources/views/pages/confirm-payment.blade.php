@@ -6,6 +6,7 @@
     <title data-en="Confirm & Payment - AlaSare" data-id="Konfirmasi & Pembayaran - AlaSare">Confirm & Payment - AlaSare</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -32,18 +33,18 @@
     // 2. Ambil data Room dan Bed dari Database
     $room = \App\Models\Room::find($roomIdParam);
     $bed = \App\Models\Bed::find($bedIdParam);
-    
+
     $roomName = $room ? $room->name : 'Unknown Room';
     $bedName = $bed ? $bed->name : 'Unknown Bed';
 
     // 3. Kalkulasi Harga Kamar
     $basePrice = $bed && $bed->base_price > 0 ? $bed->base_price : ($room->base_price ?? 125000);
     $totalBedCost = $basePrice * max(1, $nightsParam);
-    
+
     // 4. Kalkulasi Addons & Diskon Promo
     $addonIds = array_filter(explode(',', $addonsParam));
     $selectedAddons = \App\Models\Addon::whereIn('id', $addonIds)->get();
-    
+
     $checkInDayName = $checkInParam ? Carbon::parse($checkInParam)->format('l') : Carbon::now()->format('l');
 
     $addonTotal = 0;
@@ -61,13 +62,13 @@
     }
 
     $subTotal = $totalBedCost + $addonTotal;
-    
+
     // Asumsi Promo Diskon 10% jika diisi (Bisa diganti dari database promo kamu)
-    $promoDiscount = $promoParam ? ($subTotal * 0.10) : 0; 
-    
+    $promoDiscount = $promoParam ? ($subTotal * 0.10) : 0;
+
     // Asumsi Pajak & Servis 10%
     $tax = ($subTotal - $promoDiscount) * 0.10;
-    
+
     $grandTotal = ($subTotal - $promoDiscount) + $tax;
 
     // Format Tanggal Display
@@ -96,7 +97,7 @@
 @endif
 
 <main class="confirm-payment-page">
-    
+
     {{-- Booking Stepper Aktif (Bisa Diklik) --}}
     <nav class="booking-stepper">
         <a href="{{ url('/calendar') }}?{{ $queryParams }}" class="step completed" style="text-decoration:none; color:inherit;">
@@ -127,15 +128,15 @@
     </header>
 
     <div class="confirm-payment-grid">
-        
+
         {{-- Left Column: Review Booking Details --}}
         <div class="confirm-column-left">
-            
+
             <section class="confirm-card">
                 <h2 data-en="Review Booking Details" data-id="Tinjauan Detail Pemesanan">Review Booking Details</h2>
                 <div class="room-review-card">
                     <div class="room-review-image-wrapper">
-                        <img src="{{ $room && $room->photo ? asset('storage/' . $room->photo) : asset('images/default-room.png') }}" alt="{{ $roomName }}">    
+                        <img src="{{ $room && $room->photo ? asset('storage/' . $room->photo) : asset('images/default-room.png') }}" alt="{{ $roomName }}">
                         @php
                             $genderLower = strtolower($room->gender_type);
                             $badgeEn = strtoupper($room->gender_type) . ' ONLY';
@@ -145,8 +146,8 @@
                                 default  => strtoupper($room->gender_type),
                             };
                         @endphp
-                        <span class="room-review-tag" 
-                            data-en="{{ $badgeEn }}" 
+                        <span class="room-review-tag"
+                            data-en="{{ $badgeEn }}"
                             data-id="{{ $badgeId }}">
                             {{ $badgeEn }}
                         </span>
@@ -159,7 +160,7 @@
                             data-id="{{ $room ? ($room->description_id ?: $room->description) : '' }}">
                                 {{ $room ? $room->description : '' }}
                          </p>
-                        
+
                         <div class="room-review-features">
                             <div class="review-feature">
                                 <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -252,12 +253,12 @@
 
         {{-- Right Column: Payment Summary --}}
         <div class="confirm-column-right">
-            
+
             <h2 id="columnHeaderLabel" style="margin-bottom: 16px; color: #082600; font-family: var(--font-serif);" data-en="Payment Summary" data-id="Ringkasan Pembayaran">Payment Summary</h2>
-            
+
             <div class="payment-summary-card" id="paymentSummaryCard">
                 <h3 data-en="Payment Summary" data-id="Ringkasan Pembayaran">Payment Summary</h3>
-                
+
                 <div class="summary-details-list">
                     {{-- Kamar --}}
                     <div class="summary-item-row">
@@ -273,7 +274,7 @@
                         <div class="summary-item-row">
                             <div class="summary-item-label">
                                 <span>
-                                    {{ $addon['name'] }} 
+                                    {{ $addon['name'] }}
                                     @if($addon['note'])
                                         <span style="color: #6CA16C; font-size: 11px;" data-en="{{ $addon['note'] }}" data-id="{{ $addon['note'] == '(For free)' ? '(Gratis)' : $addon['note'] }}">{{ $addon['note'] }}</span>
                                     @endif
@@ -313,7 +314,7 @@
                         I confirm that the personal information provided is accurate and valid.
                     </label>
                 </div>
-                
+
                 <button class="btn-pay-now" id="btnPayNow" disabled style="opacity: 0.5; cursor: not-allowed;">
                     <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
                     <span data-en="PAY NOW" data-id="BAYAR SEKARANG">PAY NOW</span>
@@ -489,6 +490,21 @@
         const taxDisplay = document.getElementById('taxDisplay');
 
         const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // Data untuk invoice PDF (dipakai oleh tombol "Download proof of payment")
+        const invoiceData = {
+            roomName: @json($roomName),
+            bedName: @json($bedName),
+            guestName: @json(trim($guestName)),
+            guestEmail: @json($guestEmail),
+            checkIn: @json($displayCheckInModal),
+            checkOut: @json($displayCheckOutModal),
+            nights: {{ $nightsParam }},
+            paymentMethod: @json(str_replace('_', ' ', $paymentMethod)),
+            bedCost: {{ $totalBedCost }},
+            addons: @json($addonDetails),
+            promoCode: @json($promoParam),
+        };
 
         let paymentTimerInterval;
         let createdBookingId = null;
@@ -805,9 +821,152 @@
             }
         });
 
+        // ── Download Proof of Payment (Invoice PDF) ─────────────────
         document.getElementById('downloadReceipt').addEventListener('click', function() {
-            alert(isId() ? 'Tanda terima akan segera diunduh...' : 'Receipt will be downloaded shortly...');
+            if (!createdBookingId) {
+                alert(isId() ? 'ID booking belum tersedia.' : 'Booking ID not available yet.');
+                return;
+            }
+            generateInvoicePDF();
         });
+
+        function generateInvoicePDF() {
+            if (!window.jspdf) {
+                alert(isId() ? 'Gagal memuat modul PDF, coba lagi.' : 'Failed to load PDF module, please try again.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+            const pageWidth = doc.internal.pageSize.getWidth();
+
+            const subtotal = invoiceData.bedCost + invoiceData.addons.reduce((s, a) => s + a.cost, 0);
+            const discount = currentPromoDiscount || 0;
+            const tax = (subtotal - discount) * 0.10;
+            const grandTotal = (subtotal - discount) + tax;
+
+            const bookingCode = `BK-${new Date().getFullYear()}-${createdBookingId.toString().padStart(4, '0')}`;
+            const fmt = (n) => parseInt(n).toLocaleString('id-ID');
+
+            let y = 50;
+
+            // Header
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(20);
+            doc.setTextColor(8, 38, 0);
+            doc.text('AlaSare', 40, y);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(100, 100, 100);
+            doc.text('Proof of Payment / Invoice', 40, y + 16);
+
+            doc.setFontSize(10);
+            doc.text(`No: ${bookingCode}`, pageWidth - 40, y, { align: 'right' });
+            doc.text(`Date: ${new Date().toLocaleDateString('en-GB')}`, pageWidth - 40, y + 16, { align: 'right' });
+
+            y += 40;
+            doc.setDrawColor(220, 220, 220);
+            doc.line(40, y, pageWidth - 40, y);
+            y += 25;
+
+            // Guest info (kiri)
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(8, 38, 0);
+            doc.text('Guest Information', 40, y);
+            y += 16;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Name: ${invoiceData.guestName}`, 40, y); y += 14;
+            doc.text(`Email: ${invoiceData.guestEmail}`, 40, y); y += 14;
+            doc.text(`Payment Method: ${invoiceData.paymentMethod}`, 40, y);
+
+            // Stay info (kanan)
+            let y2 = y - 28;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(8, 38, 0);
+            doc.text('Stay Details', pageWidth / 2 + 10, y2);
+            y2 += 16;
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(60, 60, 60);
+            doc.text(`Room: ${invoiceData.roomName}`, pageWidth / 2 + 10, y2); y2 += 14;
+            doc.text(`Bed: ${invoiceData.bedName}`, pageWidth / 2 + 10, y2); y2 += 14;
+            doc.text(`Check-in: ${invoiceData.checkIn}`, pageWidth / 2 + 10, y2); y2 += 14;
+            doc.text(`Check-out: ${invoiceData.checkOut}`, pageWidth / 2 + 10, y2);
+
+            y = Math.max(y, y2) + 30;
+            doc.setDrawColor(220, 220, 220);
+            doc.line(40, y, pageWidth - 40, y);
+            y += 20;
+
+            // Table header
+            doc.setFillColor(8, 38, 0);
+            doc.rect(40, y - 12, pageWidth - 80, 20, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(255, 255, 255);
+            doc.text('Description', 48, y + 2);
+            doc.text('Amount (IDR)', pageWidth - 48, y + 2, { align: 'right' });
+            y += 22;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(40, 40, 40);
+            doc.text(`${invoiceData.roomName} (${invoiceData.nights} night${invoiceData.nights > 1 ? 's' : ''}) - ${invoiceData.bedName}`, 48, y);
+            doc.text(fmt(invoiceData.bedCost), pageWidth - 48, y, { align: 'right' });
+            y += 18;
+
+            invoiceData.addons.forEach((a) => {
+                doc.text(`${a.name}${a.note ? ' ' + a.note : ''}`, 48, y);
+                doc.text(fmt(a.cost), pageWidth - 48, y, { align: 'right' });
+                y += 18;
+            });
+
+            doc.setDrawColor(230, 230, 230);
+            doc.line(40, y, pageWidth - 40, y);
+            y += 16;
+
+            doc.text('Subtotal', 48, y);
+            doc.text(fmt(subtotal), pageWidth - 48, y, { align: 'right' });
+            y += 16;
+
+            if (discount > 0) {
+                doc.setTextColor(176, 48, 32);
+                doc.text(`Promo Discount (${invoiceData.promoCode || currentPromoCode})`, 48, y);
+                doc.text('- ' + fmt(discount), pageWidth - 48, y, { align: 'right' });
+                doc.setTextColor(40, 40, 40);
+                y += 16;
+            }
+
+            doc.text('Tax & Service (10%)', 48, y);
+            doc.text(fmt(tax), pageWidth - 48, y, { align: 'right' });
+            y += 20;
+
+            doc.setDrawColor(8, 38, 0);
+            doc.setLineWidth(1);
+            doc.line(40, y, pageWidth - 40, y);
+            y += 20;
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(13);
+            doc.setTextColor(8, 38, 0);
+            doc.text('TOTAL PAYMENT', 48, y);
+            doc.text('IDR ' + fmt(grandTotal), pageWidth - 48, y, { align: 'right' });
+
+            y += 50;
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(120, 120, 120);
+            doc.text(
+                'This is a computer-generated invoice and serves as valid proof of payment for your booking at AlaSare.',
+                40, y, { maxWidth: pageWidth - 80 }
+            );
+
+            doc.save(`Invoice-${bookingCode}.pdf`);
+        }
 
         function startPaymentTimer() {
             let timeLeft = 15 * 60;
@@ -829,10 +988,9 @@
             }, 1000);
         }
 
-        
+
     });
 </script>
 
 </body>
 </html>
-
