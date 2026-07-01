@@ -340,18 +340,24 @@
 
                 <div style="width: 100%; padding-bottom: 24px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
                     <div style="width: 100%; flex-direction: column; justify-content: flex-start; align-items: center; display: flex;">
-                        <div style="padding-bottom: 12px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex; width: 100%;">
-                            <div style="text-align: center; color: #C3C9BA; font-size: 14px; font-family: var(--font-body); font-weight: 500; line-height: 18px;" data-en="SCAN TO PAY" data-id="PINDAI UNTUK MEMBAYAR">SCAN TO PAY</div>
-                        </div>
-                        <div style="width: 100%; max-width: 192px; padding-bottom: 16px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex; margin: 0 auto;">
-                            <div style="width: 192px; height: 192px; padding: 12px; background: white; box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05); border-radius: 8px; border: 1px solid rgba(195, 201, 186, 0.30); flex-direction: column; justify-content: center; align-items: center; display: flex;">
-                                <img style="width: 100%; height: 100%;" src="{{ asset('images/qr.png') }}" alt="QRIS Payment Code" onerror="this.src='https://placehold.co/192?text=QRIS+CODE'" />
+
+                        {{-- QR CODE BLOCK: disembunyikan lewat JS jika payment_method = cash --}}
+                        <div id="qrCodeBlock">
+                            <div style="padding-bottom: 12px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex; width: 100%;">
+                                <div style="text-align: center; color: #C3C9BA; font-size: 14px; font-family: var(--font-body); font-weight: 500; line-height: 18px;" data-en="SCAN TO PAY" data-id="PINDAI UNTUK MEMBAYAR">SCAN TO PAY</div>
+                            </div>
+                            <div style="width: 100%; max-width: 192px; padding-bottom: 16px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex; margin: 0 auto;">
+                                <div style="width: 192px; height: 192px; padding: 12px; background: white; box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05); border-radius: 8px; border: 1px solid rgba(195, 201, 186, 0.30); flex-direction: column; justify-content: center; align-items: center; display: flex;">
+                                    <img style="width: 100%; height: 100%;" src="{{ asset('images/qr.png') }}" alt="QRIS Payment Code" onerror="this.src='https://placehold.co/192?text=QRIS+CODE'" />
+                                </div>
                             </div>
                         </div>
+
+                        {{-- Untuk cash, teks ini otomatis di-override jadi "Awaiting Confirmation..." lewat JS --}}
                         <div style="padding: 8px 16px; background: rgba(217, 134, 74, 0.10); border-radius: 4px; justify-content: center; align-items: center; gap: 8px; display: inline-flex;">
                             <div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D9864A" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
                             <div style="text-align: center; color: #D9864A; font-size: 13px; font-family: var(--font-body); font-weight: 600;">
-                                <span data-en="Awaiting Payment..." data-id="Menunggu Pembayaran...">Awaiting Payment...</span> <span id="paymentTimer">14:59</span>
+                                <span id="awaitingLabel" data-en="Awaiting Payment..." data-id="Menunggu Pembayaran...">Awaiting Payment...</span> <span id="paymentTimer">14:59</span>
                             </div>
                         </div>
                     </div>
@@ -468,10 +474,16 @@
         const btnPayNow = document.getElementById('btnPayNow');
         const paymentSummaryCard = document.getElementById('paymentSummaryCard');
         const qrisPaymentCard = document.getElementById('qrisPaymentCard');
+        const qrCodeBlock = document.getElementById('qrCodeBlock');
+        const awaitingLabel = document.getElementById('awaitingLabel');
         const btnPaymentCompleted = document.getElementById('btnPaymentCompleted');
         const overlay = document.getElementById('paymentSuccessOverlay');
         const columnHeaderLabel = document.getElementById('columnHeaderLabel');
         const modalBookingId = document.getElementById('modalBookingId');
+
+        // Payment method (lowercased) dipakai untuk cek apakah ini cash
+        const paymentMethodValue = @json(strtolower($paymentMethod));
+        const isCashPayment = paymentMethodValue === 'cash';
 
         // Promo elements
         const promoInput = document.getElementById('promoCodeInput');
@@ -747,7 +759,19 @@
                     } else {
                         paymentSummaryCard.style.display = 'none';
                         qrisPaymentCard.style.display = 'flex';
-                        columnHeaderLabel.textContent = isId() ? 'Menunggu Pembayaran' : 'Awaiting Payment';
+
+                        if (isCashPayment) {
+                            // Cash: sembunyikan blok QR code, tidak perlu generate/scan barcode
+                            if (qrCodeBlock) qrCodeBlock.style.display = 'none';
+                            if (awaitingLabel) {
+                                awaitingLabel.textContent = isId() ? 'Menunggu Konfirmasi...' : 'Awaiting Confirmation...';
+                            }
+                            columnHeaderLabel.textContent = isId() ? 'Menunggu Konfirmasi' : 'Awaiting Confirmation';
+                        } else {
+                            if (qrCodeBlock) qrCodeBlock.style.display = '';
+                            columnHeaderLabel.textContent = isId() ? 'Menunggu Pembayaran' : 'Awaiting Payment';
+                        }
+
                         startPaymentTimer();
                         document.querySelector('.confirm-footer-wrapper').style.display = 'none';
                     }

@@ -15,7 +15,7 @@ class GuestSeeder extends Seeder
         // ── Existing guests (backfill gender & booking_place) ──
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1001'],
+            ['guest_code' => 'BK-2026-1001'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Muhammad',
@@ -38,7 +38,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1002'],
+            ['guest_code' => 'BK-2026-1002'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Aditya',
@@ -61,7 +61,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1003'],
+            ['guest_code' => 'BK-2026-1003'],
             [
                 'status'        => 'block',
                 'first_name'    => 'Siti',
@@ -86,7 +86,7 @@ class GuestSeeder extends Seeder
         // ── New guests ──
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1004'],
+            ['guest_code' => 'BK-2026-1004'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Emma',
@@ -109,7 +109,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1005'],
+            ['guest_code' => 'BK-2026-1005'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Takeshi',
@@ -134,7 +134,7 @@ class GuestSeeder extends Seeder
         // ── Currently checked-in (no check_out_date) ──
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1006'],
+            ['guest_code' => 'BK-2026-1006'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Rina',
@@ -156,7 +156,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1007'],
+            ['guest_code' => 'BK-2026-1007'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Liam',
@@ -178,7 +178,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1008'],
+            ['guest_code' => 'BK-2026-1008'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Aisha',
@@ -200,7 +200,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1009'],
+            ['guest_code' => 'BK-2026-1009'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Carlos',
@@ -222,7 +222,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1010'],
+            ['guest_code' => 'BK-2026-1010'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Putu',
@@ -246,7 +246,7 @@ class GuestSeeder extends Seeder
         // ── Checked-in today for dashboard stats ──
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1011'],
+            ['guest_code' => 'BK-2026-1011'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Sarah',
@@ -268,7 +268,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1012'],
+            ['guest_code' => 'BK-2026-1012'],
             [
                 'status'        => 'save',
                 'first_name'    => 'David',
@@ -292,7 +292,7 @@ class GuestSeeder extends Seeder
         // ── Recently checked-out (today) ──
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1013'],
+            ['guest_code' => 'BK-2026-1013'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Marie',
@@ -315,7 +315,7 @@ class GuestSeeder extends Seeder
         );
 
         Guest::updateOrCreate(
-            ['booking_code' => 'BK-2026-1014'],
+            ['guest_code' => 'BK-2026-1014'],
             [
                 'status'        => 'save',
                 'first_name'    => 'Budi',

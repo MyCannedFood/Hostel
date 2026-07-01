@@ -67,7 +67,7 @@
             transform: rotate(180deg);
         }
 
-        /* Panel yang collapse/expand -> berisi rincian + total + tombol */
+        /* Panel yang collapse/expand -> HANYA berisi rincian harga (bukan tombol) */
         .footer-panel {
             max-height: 0;
             overflow: hidden;
@@ -131,11 +131,18 @@
             margin: 8px 0;
         }
 
+        /* Wrapper tombol yang SELALU terlihat, di luar footer-panel yang collapsible */
+        .footer-actions-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px 20px;
+        }
+
         .summary-actions {
             display: flex;
             gap: 12px;
             justify-content: center;
-            margin-top: 16px;
+            margin-top: 0;
         }
 
         .summary-actions .btn-back {
@@ -535,7 +542,7 @@
     </form>
 </main>
 
-{{-- Booking Summary Footer Dinamis (collapsible full) --}}
+{{-- Booking Summary Footer Dinamis (collapsible untuk rincian, tombol selalu terlihat) --}}
 <footer class="booking-summary-footer" id="bookingFooter">
 
     {{-- Handle kecil, selalu kelihatan --}}
@@ -547,7 +554,7 @@
         </svg>
     </button>
 
-    {{-- Panel yang dibuka/tutup: rincian + total + tombol --}}
+    {{-- Panel yang dibuka/tutup: HANYA rincian harga + total --}}
     <div class="footer-panel" id="footerPanel">
         <div class="footer-container">
             <div class="summary-table">
@@ -580,11 +587,14 @@
             </div>
 
             <div class="summary-divider"></div>
+        </div>
+    </div>
 
-            <div class="summary-actions">
-                <a href="#" class="btn-back" id="btnBackToBed" data-en="Back To Bed Selection" data-id="Kembali ke Pilihan Kasur">Back To Bed Selection</a>
-                <button type="submit" form="guestDetailsForm" class="btn-pay" data-en="Continue To Pay" data-id="Lanjut ke Pembayaran">Continue To Pay</button>
-            </div>
+    {{-- Wrapper tombol: SELALU terlihat, tidak ikut collapse --}}
+    <div class="footer-actions-wrapper">
+        <div class="summary-actions">
+            <a href="#" class="btn-back" id="btnBackToBed" data-en="Back To Bed Selection" data-id="Kembali ke Pilihan Kasur">Back To Bed Selection</a>
+            <button type="submit" form="guestDetailsForm" class="btn-pay" data-en="Continue To Pay" data-id="Lanjut ke Pembayaran">Continue To Pay</button>
         </div>
     </div>
 </footer>
