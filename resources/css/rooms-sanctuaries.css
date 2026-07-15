@@ -8,7 +8,7 @@
 /* Intro Banner */
 .sanctuaries-intro {
     background-color: #F6F4EB;
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 40px;
     display: flex;
     justify-content: space-between;
@@ -71,7 +71,7 @@
 .sanctuaries-stats {
     display: flex;
     background: #FFFFFF;
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 24px 40px;
     z-index: 1;
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
@@ -150,7 +150,7 @@
 
 .room-card {
     background: #FFFFFF;
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0,0,0,0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -189,7 +189,7 @@
 
 .room-tag {
     padding: 6px 12px;
-    border-radius: 20px;
+    border-radius: 2px;
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
@@ -313,19 +313,16 @@
     gap: 8px;
 }
 .icon-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: #F5F5F5;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     border: none;
-    cursor: pointer;
-    transition: background 0.2s;
+    cursor: default;
+    padding: 0;
 }
 .icon-btn:hover {
-    background: #E0E0E0;
+    background: transparent;
 }
 .icon-btn svg {
     width: 16px;
@@ -346,7 +343,7 @@
     color: #FFF;
     border: none;
     padding: 10px 20px;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.5px;

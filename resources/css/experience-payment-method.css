@@ -93,6 +93,10 @@
     flex-direction: column;
     gap: 16px;
 }
+.payment-options-col label {
+    display: block;
+    width: 100%;
+}
 .payment-option {
     background: #FFF;
     border: 1px solid #EAEAEA;

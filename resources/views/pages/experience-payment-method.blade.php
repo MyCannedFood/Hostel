@@ -62,7 +62,7 @@
                 @endif
 
                 @php $expPaymentSettings = \App\Models\PaymentSetting::instance(); $customPayments = \App\Models\PaymentMethod::active()->ordered()->get(); @endphp
-                <div style="margin-top: 32px;">
+                <div class="payment-options-col" style="margin-top: 32px;">
                     @if($expPaymentSettings->qris_enabled)
                     <label>
                         <input type="radio" name="payment_method" value="QRIS" class="payment-radio" checked style="display:none;">

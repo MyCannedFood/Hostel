@@ -108,7 +108,7 @@ body.gs-page main {
     left: 12px;
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid rgba(200, 200, 200, 0.5);
-    border-radius: 999px;
+    border-radius: 2px;
     padding: 6px 14px 6px 10px;
     font-size: 10px;
     font-family: Arial, sans-serif;

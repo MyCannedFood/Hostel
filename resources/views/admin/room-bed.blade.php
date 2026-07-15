@@ -815,7 +815,7 @@
         .promo-status-badge {
             display: inline-block;
             padding: 4px 14px;
-            border-radius: 20px;
+            border-radius: 2px;
             font-size: 12px;
             font-weight: 700;
         }
@@ -847,7 +847,7 @@
         .promo-page-btn {
             width: 30px;
             height: 30px;
-            border-radius: 6px;
+            border-radius: 2px;
             border: 1.5px solid rgba(26, 61, 10, 0.2);
             background: transparent;
             cursor: pointer;
@@ -891,7 +891,7 @@
             padding: 10px 14px;
             background: rgba(26, 61, 10, 0.04);
             border: 1px solid rgba(26, 61, 10, 0.1);
-            border-radius: 8px;
+            border-radius: 2px;
             margin-top: 2px;
         }
         .promo-status-main {
@@ -924,7 +924,7 @@
             width: 100%;
             max-width: 600px;
             background: var(--white);
-            border-radius: 8px;
+            border-radius: 2px;
             outline: 1px solid var(--dark-green);
             box-shadow: 0px 4px 24px rgba(26, 61, 10, 0.08);
             display: flex;
@@ -1112,22 +1112,22 @@
 
         .exp-btn-outline-promo {
             padding: 12px 24px;
-            border-radius: 4px;
-            border: 2px solid var(--dark-green);
-            background: transparent;
-            color: var(--dark-green);
+            border-radius: 2px;
+            border: 1px solid transparent;
+            background: var(--orange);
+            color: var(--white);
             font-family: 'DM Sans', sans-serif;
-            font-size: 14px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             white-space: nowrap;
-            transition: background 0.15s, color 0.15s;
+            transition: opacity 0.15s;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
         .exp-btn-outline-promo:hover {
-            background: rgba(26, 61, 10, 0.07);
+            opacity: 0.9;
         }
 
         .exp-card {

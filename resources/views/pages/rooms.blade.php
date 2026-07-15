@@ -14,9 +14,9 @@
 <section id="home-sanctuaries" class="sanctuaries-section">
 
     <style>
-        .filter-btn{display:flex;align-items:center;gap:8px;border:1.5px solid #2d4a3e;background:transparent;color:#2d4a3e;font-weight:500;font-size:15px;cursor:pointer;padding:10px 22px;border-radius:999px;}
+        .filter-btn{display:flex;align-items:center;gap:8px;border:1.5px solid #2d4a3e;background:transparent;color:#2d4a3e;font-weight:500;font-size:15px;cursor:pointer;padding:10px 22px;border-radius:2px;}
         .filter-btn:focus{outline:none;}
-        .filter-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #ddd;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:99;min-width:180px;overflow:hidden;}
+        .filter-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,0.10);z-index:99;min-width:180px;overflow:hidden;}
         .filter-dropdown button{display:block;width:100%;text-align:left;background:none;border:none;padding:12px 20px;font-size:14px;cursor:pointer;color:#2d4a3e;}
         .filter-dropdown button:hover{background:#f5f0eb;}
         .filter-dropdown button.active{font-weight:600;color:#D9864A;}

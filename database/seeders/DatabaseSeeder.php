@@ -17,6 +17,8 @@ class DatabaseSeeder extends Seeder
             RevenueSeeder::class,
             AddonSeeder::class,
             ExperienceSeeder::class,
+            GallerySeeder::class,
+            ArticleSeeder::class,
         ]);
     }
 }

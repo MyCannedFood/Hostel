@@ -272,7 +272,7 @@
         font-size: 0.78rem;
         font-family: 'Georgia', serif;
         padding: 6px 16px;
-        border-radius: 100px;
+        border-radius: 2px;
         z-index: 1;
         letter-spacing: 0.03em;
     }
@@ -353,7 +353,7 @@
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.12em;
-        color: #8B6914;
+        color: #d9864a;
         text-decoration: none;
         font-family: 'Georgia', serif;
         transition: color 0.2s;

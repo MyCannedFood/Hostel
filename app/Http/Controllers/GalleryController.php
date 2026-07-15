@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreGalleryRequest;
-use App\Http\Requests\UpdateGalleryRequest;
+use App\Http\Requests\UpdateGalleryPhotoRequest;
 use App\Models\Gallery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -32,7 +32,7 @@ class GalleryController extends Controller
             ->with('success', 'Foto berhasil diupload.');
     }
 
-    public function update(UpdateGalleryRequest $request, Gallery $gallery): RedirectResponse
+    public function update(UpdateGalleryPhotoRequest $request, Gallery $gallery): RedirectResponse
     {
         $data = [
             'title'            => $request->title,

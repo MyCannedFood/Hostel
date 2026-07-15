@@ -48,7 +48,7 @@
     padding: 14px 16px;
     background: #ffffff;
     border: 1.5px solid #dde3de;
-    border-radius: 12px;
+    border-radius: 8px;
     text-decoration: none;
     color: #1a3d0a;
     font-size: 14px;
@@ -77,7 +77,7 @@
 .settings-nav-icon {
     width: 36px;
     height: 36px;
-    border-radius: 8px;
+    border-radius: 2px;
     background: #f0f4ee;
     display: flex;
     align-items: center;
@@ -128,7 +128,7 @@
     align-items: center;
     gap: 6px;
     padding: 9px 18px;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
@@ -232,7 +232,7 @@
 .search-input {
     padding: 8px 12px 8px 34px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 13px;
     color: #1a3d0a;
     background: #fff;
@@ -252,7 +252,7 @@
 .filter-select {
     padding: 8px 28px 8px 12px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 13px;
     color: #3a4a38;
     background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a857f' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
@@ -273,7 +273,7 @@
     gap: 5px;
     padding: 8px 14px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     background: #fff;
     font-size: 13px;
     color: #3a4a38;
@@ -287,7 +287,7 @@
     gap: 5px;
     padding: 8px 14px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     background: #fff;
     font-size: 13px;
     color: #3a4a38;
@@ -299,7 +299,7 @@
 .data-table-wrap {
     background: #fff;
     border: 1.5px solid #dde3de;
-    border-radius: 14px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -375,7 +375,7 @@
 .badge {
     display: inline-block;
     padding: 4px 11px;
-    border-radius: 20px;
+    border-radius: 2px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.4px;
@@ -389,7 +389,7 @@
 .badge-role {
     display: inline-block;
     padding: 3px 10px;
-    border-radius: 20px;
+    border-radius: 2px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -414,7 +414,7 @@
     border: none;
     cursor: pointer;
     padding: 5px;
-    border-radius: 6px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -462,7 +462,7 @@
     padding: 16px 20px;
     background: #fffbf5;
     border: 1.5px solid #f6d28a;
-    border-radius: 12px;
+    border-radius: 8px;
     margin-top: 20px;
 }
 
@@ -499,7 +499,7 @@
 .photo-thumb {
     width: 52px;
     height: 40px;
-    border-radius: 7px;
+    border-radius: 2px;
     object-fit: cover;
     background: #e8ede8;
     display: block;
@@ -508,7 +508,7 @@
 .photo-thumb-placeholder {
     width: 52px;
     height: 40px;
-    border-radius: 7px;
+    border-radius: 2px;
     background: #e8ede8;
     display: flex;
     align-items: center;
@@ -540,7 +540,7 @@
 .page-btn {
     width: 30px;
     height: 30px;
-    border-radius: 7px;
+    border-radius: 2px;
     border: 1.5px solid #dde3de;
     background: #fff;
     font-size: 13px;
@@ -595,7 +595,7 @@
 
 .modal-box {
     background: #fff;
-    border-radius: 16px;
+    border-radius: 8px;
     width: 100%;
     max-width: 520px;
     max-height: 88vh;
@@ -629,7 +629,7 @@
     height: 30px;
     border: none;
     background: #f0f4ee;
-    border-radius: 7px;
+    border-radius: 2px;
     font-size: 16px;
     color: #7a857f;
     cursor: pointer;
@@ -646,7 +646,7 @@
 /* ── Upload Drop Zone ────────────────────────────────────── */
 .upload-zone {
     border: 2px dashed #c4d0c0;
-    border-radius: 12px;
+    border-radius: 8px;
     background: #fafcfa;
     padding: 32px 20px;
     text-align: center;
@@ -696,7 +696,7 @@
     width: 100%;
     padding: 9px 12px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 13px;
     color: #1a3d0a;
     background: #fff;
@@ -717,7 +717,7 @@
     width: 100%;
     padding: 9px 28px 9px 12px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 13px;
     color: #3a4a38;
     background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237a857f' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
@@ -736,7 +736,7 @@
     width: 100%;
     padding: 9px 12px;
     border: 1.5px solid #dde3de;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: 13px;
     color: #1a3d0a;
     background: #fff;
@@ -865,7 +865,7 @@
 .general-placeholder {
     background: #fff;
     border: 1.5px dashed #c4d0c0;
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 56px 32px;
     text-align: center;
 }
@@ -975,7 +975,7 @@
 .lp-section-list {
     background: #fff;
     border: 1.5px solid #dde3de;
-    border-radius: 14px;
+    border-radius: 8px;
     overflow: hidden;
 }
 
@@ -1003,7 +1003,7 @@
 .lp-card {
     background: #fff;
     border: 1.5px solid #dde3de;
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 28px;
     margin-bottom: 20px;
 }
@@ -1064,7 +1064,7 @@
 /* ── Image preview + controls ── */
 .lp-image-wrap {
     position: relative;
-    border-radius: 10px;
+    border-radius: 2px;
     overflow: hidden;
     background: #e8ede8;
     margin-bottom: 14px;
@@ -1090,7 +1090,7 @@
     gap: 6px;
     padding: 8px 16px;
     border: 1.5px solid #2d4a1e;
-    border-radius: 8px;
+    border-radius: 2px;
     background: #fff;
     font-size: 13px;
     font-weight: 600;
@@ -1128,7 +1128,7 @@
     padding: 14px 16px;
     background: #f6f9f5;
     border: 1px solid #c4d0c0;
-    border-radius: 10px;
+    border-radius: 8px;
     font-size: 13px;
     color: #5a6a58;
     line-height: 1.6;
@@ -1238,7 +1238,7 @@
     width: 34px;
     height: 34px;
     background: #f0f4ee;
-    border-radius: 8px;
+    border-radius: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1288,7 +1288,7 @@
 .lp-flora-thumb {
     width: 54px;
     height: 44px;
-    border-radius: 8px;
+    border-radius: 2px;
     object-fit: cover;
     background: #e8ede8;
     flex-shrink: 0;
@@ -1296,7 +1296,7 @@
 .lp-flora-thumb-placeholder {
     width: 54px;
     height: 44px;
-    border-radius: 8px;
+    border-radius: 2px;
     background: #e8ede8;
     flex-shrink: 0;
 }
@@ -1318,7 +1318,7 @@
 /* ── Card modal (Flora / other) ── */
 .lp-modal-upload-zone {
     border: 1.5px dashed #c4d0c0;
-    border-radius: 10px;
+    border-radius: 8px;
     background: #fafcfa;
     padding: 24px;
     text-align: center;
@@ -1338,7 +1338,7 @@
     padding: 7px 16px;
     background: #2d4a1e;
     color: #fff;
-    border-radius: 20px;
+    border-radius: 2px;
     font-size: 13px;
     font-weight: 600;
     border: none;

@@ -59,14 +59,9 @@ $pageUrl     = fn($p) => $baseUrl . '?page=' . $p;
                             {{ strtoupper(substr($story['name'] ?? 'G', 0, 1)) }}
                         </div>
                     @endif
-                    <span class="gs-card__badge" data-en="Verified Guest" data-id="Tamu Terverifikasi">
-                        <span class="gs-card__badge-check">
-                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V6L12 2z"/>
-                                <polyline points="9 12 11 14 15 10"/>
-                            </svg>
-                        </span>
-                        Verified Guest
+                    <span class="gs-card__badge">
+                        <img src="{{ asset('images/icon/shield.svg') }}" alt="" class="gs-card__badge-icon" style="width: 11px; height: 14px; margin-right: 6px; display: inline-block; vertical-align: middle;">
+                        <span data-en="Verified Guest" data-id="Tamu Terverifikasi">Verified Guest</span>
                     </span>
                 </div>
                 <div class="gs-card__body">

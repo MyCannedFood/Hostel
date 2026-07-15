@@ -1003,18 +1003,18 @@
 .exp-btn-outline-promo {
     padding: 12px 24px;
     border-radius: 2px;
-    border: 2px solid var(--exp-green);
-    background: transparent;
-    color: var(--exp-green);
+    border: 1px solid transparent;
+    background: var(--exp-orange);
+    color: #fff;
     font-family: 'Be Vietnam Pro', sans-serif;
-    font-size: 18.75px;
+    font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
+    transition: opacity 0.15s;
 }
 .exp-btn-outline-promo:hover {
-    background: rgba(26, 61, 10, 0.07);
+    opacity: 0.9;
 }
 
 /* Promo table cell overrides */
@@ -1056,7 +1056,7 @@
 .promo-status-badge {
     display: inline-block;
     padding: 4px 14px;
-    border-radius: 20px;
+    border-radius: 2px;
     font-size: 12px;
     font-weight: 700;
 }
