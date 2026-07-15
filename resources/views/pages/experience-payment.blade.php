@@ -22,6 +22,17 @@
 </head>
 <body class="payment-page">
 
+@php
+    $generalSettings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+    $taxIncluded = !($generalSettings['tax_included'] ?? true);
+    $govTax = $generalSettings['government_tax'] ?? 11;
+    $srvCharge = $generalSettings['service_charge'] ?? 5;
+    $totalTaxPercent = $govTax + $srvCharge;
+
+    $afterDiscount = max(0, $booking['subtotal'] - ($booking['promo_discount'] ?? 0));
+    $taxServiceVal = ($afterDiscount * $totalTaxPercent) / 100;
+@endphp
+
 @include('components.navbar')
 
 <main>
@@ -136,8 +147,14 @@
                 </div>
                 @endif
                 <div class="summary-row">
-                    <span class="summary-key" data-en="Taxes & Service (21%)" data-id="Pajak & Layanan (21%)">{{ __('experience.taxes_service') }}</span>
-                    <span class="summary-val" data-en="Included" data-id="Termasuk">{{ __('experience.included') }}</span>
+                    <span class="summary-key" data-en="Taxes & Service ({{ $totalTaxPercent }}%)" data-id="Pajak & Layanan ({{ $totalTaxPercent }}%)">
+                        {{ app()->getLocale() === 'en' ? "Taxes & Service ($totalTaxPercent%)" : "Pajak & Layanan ($totalTaxPercent%)" }}
+                    </span>
+                    @if($taxIncluded)
+                        <span class="summary-val" data-en="Included" data-id="Termasuk">{{ __('experience.included') }}</span>
+                    @else
+                        <span class="summary-val">IDR {{ number_format($taxServiceVal, 0, ',', '.') }}</span>
+                    @endif
                 </div>
             </div>
 
@@ -154,7 +171,7 @@
 
                 @if($snapToken)
                     <button id="pay-button" class="confirm-btn" style="width:100%;margin-top:16px;">
-                        Bayar Sekarang
+                        {{ __('experience.pay_now') }}
                     </button>
                     <script>
                         document.getElementById('pay-button').addEventListener('click', function () {
@@ -164,11 +181,26 @@
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
+                                            'Accept': 'application/json',
                                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                         },
                                         body: JSON.stringify({ midtrans_result: result })
-                                    }).then(() => {
-                                        window.location.href = '{{ route("experience.success") }}';
+                                    })
+                                    .then(res => {
+                                        if (!res.ok) {
+                                            return res.json().then(err => { throw new Error(err.message || 'Server error'); });
+                                        }
+                                        return res.json();
+                                    })
+                                    .then(data => {
+                                        if (data.success && data.redirect_url) {
+                                            window.location.href = data.redirect_url;
+                                        } else {
+                                            alert(data.message || 'Pembayaran terkonfirmasi namun gagal memproses tiket.');
+                                        }
+                                    })
+                                    .catch(err => {
+                                        alert('Gagal mengonfirmasi pembayaran: ' + err.message);
                                     });
                                 },
                                 onPending: function (result) {
@@ -183,8 +215,52 @@
                             });
                         });
                     </script>
+                @elseif(strtolower($booking['payment_method']) === 'cash')
+                    {{-- ── Cash Payment: Confirmation Only ── --}}
+                    <div class="cash-confirmation" style="text-align:center;padding:24px 0;">
+                        <div style="width:64px;height:64px;border-radius:50%;background:#e8f5e9;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                            </svg>
+                        </div>
+                        <h3 style="color:#1A3D0A;font-size:18px;margin-bottom:8px;" data-en="Cash Payment" data-id="Pembayaran Tunai">
+                            {{ app()->getLocale() === 'id' ? 'Pembayaran Tunai' : 'Cash Payment' }}
+                        </h3>
+                        <p style="color:#6B7C61;font-size:13px;line-height:1.6;max-width:320px;margin:0 auto 20px;" data-en="Please pay at the reception upon arrival. Present your booking ID to complete payment." data-id="Silakan bayar di resepsionis saat kedatangan. Tunjukkan ID pemesanan Anda untuk menyelesaikan pembayaran.">
+                            {{ app()->getLocale() === 'id' ? 'Silakan bayar di resepsionis saat kedatangan. Tunjukkan ID pemesanan Anda untuk menyelesaikan pembayaran.' : 'Please pay at the reception upon arrival. Present your booking ID to complete payment.' }}
+                        </p>
+
+                        <p style="font-size:11px;color:rgba(26,61,10,0.45);margin-bottom:20px;">
+                            <span data-en="Booking ID" data-id="ID Pemesanan">{{ __('experience.booking_id') }}</span>: {{ $booking['pending_ticket_id'] }}
+                        </p>
+
+                        <form action="{{ route('experience.payment.confirm') }}" method="POST" id="cashPaymentForm">
+                            @csrf
+                            <button type="submit" class="confirm-btn" id="cashConfirmBtn" disabled
+                                    style="width:100%;opacity:0.5;cursor:not-allowed;"
+                                    data-en="Confirm Booking" data-id="Konfirmasi Pemesanan">
+                                {{ app()->getLocale() === 'id' ? 'Konfirmasi Pemesanan' : 'Confirm Booking' }}
+                            </button>
+                        </form>
+
+                        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;">
+                            <input type="checkbox" id="cashConfirmCheckbox" style="width:16px;height:16px;cursor:pointer;accent-color:#1A3D0A;">
+                            <label for="cashConfirmCheckbox" style="font-size:12px;color:#6B7C61;cursor:pointer;" data-en="I confirm the data is correct" data-id="Saya konfirmasi data sudah benar">
+                                {{ app()->getLocale() === 'id' ? 'Saya konfirmasi data sudah benar' : 'I confirm the data is correct' }}
+                            </label>
+                        </div>
+
+                        <script>
+                            document.getElementById('cashConfirmCheckbox').addEventListener('change', function() {
+                                var btn = document.getElementById('cashConfirmBtn');
+                                btn.disabled = !this.checked;
+                                btn.style.opacity = this.checked ? '1' : '0.5';
+                                btn.style.cursor = this.checked ? 'pointer' : 'not-allowed';
+                            });
+                        </script>
+                    </div>
                 @else
-                    {{-- ── QR Placeholder (manual payment) ── --}}
+                    {{-- ── QR Placeholder (manual payment like QRIS) ── --}}
                     <p class="scan-label" data-en="Scan to Pay" data-id="Scan untuk Bayar">{{ __('experience.scan_to_pay') }}</p>
                     <div class="qr-wrapper">
                         <img src="{{ $qrCodeUrl }}"

@@ -54,6 +54,7 @@ return [
     'va' => 'VA (Virtual Account)',
     'debit_credit_card' => 'DEBIT / KARTU KREDIT',
     'credit_card' => 'Kartu Kredit',
+    'cash' => 'Tunai',
     'promo_or_referral' => 'KODE PROMO ATAU REFERRAL',
     'promo_placeholder' => 'Masukkan Kode Promo/Referral',
     'apply' => 'Gunakan',

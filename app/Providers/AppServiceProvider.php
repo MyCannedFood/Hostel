@@ -23,15 +23,20 @@ class AppServiceProvider extends ServiceProvider
         Booking::observe(BookingObserver::class);
         ExperienceBooking::observe(ExperienceBookingObserver::class);
 
-        if (Schema::hasTable('admin_notifications')) {
-            View::share(
-                'unreadCount',
-                AdminNotification::active()
-                    ->where('is_read', false)
-                    ->count()
-            );
-        } else {
-            View::share('unreadCount', 0);
-        }
+        // Share jumlah unread notification ke semua view secara lazy menggunakan View Composer
+        View::composer('*', function ($view) {
+            try {
+                if (\Schema::hasTable('admin_notifications')) {
+                    $unreadCount = AdminNotification::active()
+                        ->where('is_read', false)
+                        ->count();
+                } else {
+                    $unreadCount = 0;
+                }
+            } catch (\Exception $e) {
+                $unreadCount = 0;
+            }
+            $view->with('unreadCount', $unreadCount);
+        });
     }
 }

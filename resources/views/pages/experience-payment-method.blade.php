@@ -8,6 +8,17 @@
 </head>
 <body>
 
+@php
+    $generalSettings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+    $taxIncluded = !($generalSettings['tax_included'] ?? true);
+    $govTax = $generalSettings['government_tax'] ?? 11;
+    $srvCharge = $generalSettings['service_charge'] ?? 5;
+    $totalTaxPercent = $govTax + $srvCharge;
+
+    $afterDiscount = max(0, $booking['subtotal'] - ($booking['promo_discount'] ?? 0));
+    $taxServiceVal = ($afterDiscount * $totalTaxPercent) / 100;
+@endphp
+
 @include('components.navbar')
 
 <main class="payment-method-page">
@@ -206,8 +217,14 @@
                         </div>
 
                         <div class="breakdown-row">
-                            <span data-en="TAX & SERVICE (21%)" data-id="PAJAK & LAYANAN (21%)">{{ __('experience.tax_service') }}</span>
-                            <span class="val" data-en="Included" data-id="Termasuk">{{ __('experience.included') }}</span>
+                            <span data-en="TAX & SERVICE ({{ $totalTaxPercent }}%)" data-id="PAJAK & LAYANAN ({{ $totalTaxPercent }}%)">
+                                {{ app()->getLocale() === 'en' ? "TAX & SERVICE ($totalTaxPercent%)" : "PAJAK & LAYANAN ($totalTaxPercent%)" }}
+                            </span>
+                            @if($taxIncluded)
+                                <span class="val" data-en="Included" data-id="Termasuk">{{ __('experience.included') }}</span>
+                            @else
+                                <span class="val" id="taxServiceDisplay">IDR {{ number_format($taxServiceVal, 0, ',', '.') }}</span>
+                            @endif
                         </div>
                     </div>
 
@@ -255,6 +272,8 @@
         || '{{ csrf_token() }}';
 
     const subtotal = {{ $booking['subtotal'] }};
+    const taxIncluded = {{ $taxIncluded ? 'true' : 'false' }};
+    const totalTaxPercent = {{ $totalTaxPercent }};
 
     function formatIDR(amount) {
         return 'IDR ' + parseInt(amount).toLocaleString('id-ID');
@@ -300,6 +319,13 @@
             document.getElementById('promoDiscountDisplay').textContent = '- ' + formatIDR(data.discount);
             document.getElementById('summaryTotal').textContent = formatIDR(data.total_amount);
 
+            if (!taxIncluded) {
+                const afterDiscount = subtotal - data.discount;
+                const taxVal = data.total_amount - afterDiscount;
+                const taxEl = document.getElementById('taxServiceDisplay');
+                if (taxEl) taxEl.textContent = formatIDR(taxVal);
+            }
+
         } catch (e) {
             showPromoError('Something went wrong. Please try again.');
             btn.disabled = false;
@@ -329,6 +355,13 @@
             hidePromoMessages();
             document.getElementById('promoDiscountRow').style.display = 'none';
             document.getElementById('summaryTotal').textContent = formatIDR(data.total_amount || subtotal);
+
+            if (!taxIncluded) {
+                const total = data.total_amount || (subtotal + (subtotal * totalTaxPercent / 100));
+                const taxVal = total - subtotal;
+                const taxEl = document.getElementById('taxServiceDisplay');
+                if (taxEl) taxEl.textContent = formatIDR(taxVal);
+            }
 
         } catch (e) {
             btn.disabled    = false;

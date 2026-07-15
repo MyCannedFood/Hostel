@@ -82,8 +82,8 @@
 
             <div class="op-toggle-row">
                 <div class="op-toggle-info">
-                    <strong>Prices Include Tax &amp; Service</strong>
-                    <span>If active, listed room prices already include the taxes below.</span>
+                    <strong>Add Tax &amp; Service on Top of Price</strong>
+                    <span>If active, tax &amp; service will be calculated and added separately to the listed price.</span>
                 </div>
                 <label class="op-toggle">
                     <input

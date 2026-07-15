@@ -886,7 +886,7 @@ Last updated: {{ optional($experiences->first())->updated_at?->format('M d, Y â€
         if (!res.ok) {
             throw new Error(data?.message || `Server error: ${res.status}`);
         }
-        if (data?.success === false) {
+        if (data && data.success === false) {
             throw new Error(data.message || Object.values(data.errors || {}).flat().join('\n') || 'Request failed.');
         }
         return data;
@@ -1068,9 +1068,13 @@ Last updated: {{ optional($experiences->first())->updated_at?->format('M d, Y â€
             : '{{ route("admin.experience.store") }}';
 
         try {
-            const res  = await fetch(url, { method: 'POST', body: formData });
+            const res  = await fetch(url, { 
+                method: 'POST', 
+                headers: { 'Accept': 'application/json' },
+                body: formData 
+            });
             const data = await parseJsonResponse(res);
-            if (data.success) { closeExpModal(); location.reload(); }
+            if (data && data.success) { closeExpModal(); location.reload(); }
         } catch (err) {
             alert(err.message);
         }

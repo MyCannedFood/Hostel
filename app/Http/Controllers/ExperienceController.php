@@ -49,6 +49,16 @@ class ExperienceController extends Controller
 
         $totalAmount = $experience->price * $validated['guest_count'];
 
+        // Get tax & service charge settings
+        $settings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+        $taxIncluded = !($settings['tax_included'] ?? true);
+        $totalTaxPercent = ($settings['government_tax'] ?? 11) + ($settings['service_charge'] ?? 5);
+
+        $totalAmountVal = $totalAmount;
+        if (!$taxIncluded) {
+            $totalAmountVal = $totalAmount + ($totalAmount * $totalTaxPercent / 100);
+        }
+
         session([
             'exp_booking' => [
                 'experience_id'  => $experience->id,
@@ -61,7 +71,7 @@ class ExperienceController extends Controller
                 'subtotal'       => $totalAmount,
                 'promo_code'     => null,
                 'promo_discount' => 0,
-                'total_amount'   => $totalAmount,
+                'total_amount'   => $totalAmountVal,
             ],
         ]);
 
@@ -75,9 +85,38 @@ class ExperienceController extends Controller
             return redirect()->route('experience');
         }
 
+        // Recalculate total_amount to ensure it's fresh and correct
+        $settings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+        $taxIncluded = !($settings['tax_included'] ?? true);
+        $totalTaxPercent = ($settings['government_tax'] ?? 11) + ($settings['service_charge'] ?? 5);
+
+        \Log::info('Database Connection Details in web request:', [
+            'database_name' => \DB::connection()->getDatabaseName(),
+            'db_username' => config('database.connections.mysql.username'),
+            'db_database_config' => config('database.connections.mysql.database'),
+        ]);
+
+        \Log::info('Tax Settings in paymentMethod:', [
+            'tax_included' => $taxIncluded,
+            'settings_tax_included' => $settings['tax_included'] ?? 'not_set',
+            'raw_settings' => $settings,
+            'booking_subtotal' => $booking['subtotal'] ?? 0,
+            'booking_total_amount' => $booking['total_amount'] ?? 0
+        ]);
+
+        $afterDiscount = max(0, ($booking['subtotal'] ?? 0) - ($booking['promo_discount'] ?? 0));
+        $taxServiceVal = 0;
+        if (!$taxIncluded) {
+            $taxServiceVal = $afterDiscount * $totalTaxPercent / 100;
+            $booking['total_amount'] = $afterDiscount + $taxServiceVal;
+        } else {
+            $booking['total_amount'] = $afterDiscount;
+        }
+        session(['exp_booking' => $booking]);
+
         $experience = Experience::findOrFail($booking['experience_id']);
 
-        return view('pages.experience-payment-method', compact('booking', 'experience'));
+        return view('pages.experience-payment-method', compact('booking', 'experience', 'taxIncluded', 'totalTaxPercent', 'taxServiceVal'));
     }
 
     public function storePaymentMethod(Request $request)
@@ -98,6 +137,18 @@ class ExperienceController extends Controller
 
         $booking['payment_method'] = $request->payment_method;
         $booking['snap_token']     = null;
+
+        // Recalculate total_amount to ensure it's fresh and correct
+        $settings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+        $taxIncluded = !($settings['tax_included'] ?? true);
+        $totalTaxPercent = ($settings['government_tax'] ?? 11) + ($settings['service_charge'] ?? 5);
+
+        $afterDiscount = max(0, $booking['subtotal'] - ($booking['promo_discount'] ?? 0));
+        if (!$taxIncluded) {
+            $booking['total_amount'] = $afterDiscount + ($afterDiscount * $totalTaxPercent / 100);
+        } else {
+            $booking['total_amount'] = $afterDiscount;
+        }
 
         // Generate Snap token jika Midtrans
         if ($request->payment_method === 'Midtrans') {
@@ -158,10 +209,21 @@ class ExperienceController extends Controller
             return response()->json(['success' => false, 'message' => $result['message']], 422);
         }
 
+        // Get tax & service charge settings
+        $settings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+        $taxIncluded = !($settings['tax_included'] ?? true);
+        $totalTaxPercent = ($settings['government_tax'] ?? 11) + ($settings['service_charge'] ?? 5);
+
         // Simpan ke session
         $booking['promo_code']     = $promo->code;
         $booking['promo_discount'] = $result['discount'];
-        $booking['total_amount']   = max(0, $booking['subtotal'] - $result['discount']);
+
+        $afterDiscount = max(0, $booking['subtotal'] - $result['discount']);
+        if (!$taxIncluded) {
+            $booking['total_amount']   = $afterDiscount + ($afterDiscount * $totalTaxPercent / 100);
+        } else {
+            $booking['total_amount']   = $afterDiscount;
+        }
         session(['exp_booking' => $booking]);
 
         return response()->json([
@@ -185,9 +247,18 @@ class ExperienceController extends Controller
             return response()->json(['success' => false, 'message' => 'Session expired.'], 422);
         }
 
+        // Get tax & service charge settings
+        $settings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+        $taxIncluded = !($settings['tax_included'] ?? true);
+        $totalTaxPercent = ($settings['government_tax'] ?? 11) + ($settings['service_charge'] ?? 5);
+
         $booking['promo_code']     = null;
         $booking['promo_discount'] = 0;
-        $booking['total_amount']   = $booking['subtotal'];
+        if (!$taxIncluded) {
+            $booking['total_amount']   = $booking['subtotal'] + ($booking['subtotal'] * $totalTaxPercent / 100);
+        } else {
+            $booking['total_amount']   = $booking['subtotal'];
+        }
         session(['exp_booking' => $booking]);
 
         return response()->json([
@@ -203,6 +274,19 @@ class ExperienceController extends Controller
             return redirect()->route('experience.payment-method');
         }
 
+        // Recalculate total_amount to ensure it's fresh and correct
+        $settings = \App\Models\GeneralSetting::getSection('operational_policies')->data;
+        $taxIncluded = !($settings['tax_included'] ?? true);
+        $totalTaxPercent = ($settings['government_tax'] ?? 11) + ($settings['service_charge'] ?? 5);
+
+        $afterDiscount = max(0, $booking['subtotal'] - ($booking['promo_discount'] ?? 0));
+        if (!$taxIncluded) {
+            $booking['total_amount'] = $afterDiscount + ($afterDiscount * $totalTaxPercent / 100);
+        } else {
+            $booking['total_amount'] = $afterDiscount;
+        }
+        session(['exp_booking' => $booking]);
+
         $experience = Experience::findOrFail($booking['experience_id']);
 
         $qrCodeUrl = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data="
@@ -217,6 +301,9 @@ class ExperienceController extends Controller
     {
         $booking = session('exp_booking');
         if (!$booking) {
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Session expired.'], 422);
+            }
             return redirect()->route('experience');
         }
 
@@ -226,14 +313,24 @@ class ExperienceController extends Controller
         if ($existing) {
             session(['exp_booking_confirmed_id' => $existing->id]);
             session()->forget('exp_booking');
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true, 'redirect_url' => route('experience.success')]);
+            }
             return redirect()->route('experience.success');
         }
 
         // Jika Midtrans, validasi hasil dari Snap callback
         if ($booking['payment_method'] === 'Midtrans' && $request->input('midtrans_result')) {
             $midtransResult = $request->input('midtrans_result');
-            if (($midtransResult['transaction_status'] ?? '') !== 'settlement'
-                && ($midtransResult['transaction_status'] ?? '') !== 'capture') {
+            $status = $midtransResult['transaction_status'] ?? '';
+            // Di sandbox/onSuccess, status transaksinya bisa settlement, capture, atau pending
+            if ($status !== 'settlement' && $status !== 'capture' && $status !== 'pending') {
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Pembayaran belum diselesaikan. Status: ' . $status
+                    ], 422);
+                }
                 return redirect()->route('experience.payment')
                     ->with('error', 'Pembayaran belum selesai. Silakan selesaikan pembayaran terlebih dahulu.');
             }
@@ -265,10 +362,16 @@ class ExperienceController extends Controller
             session(['exp_booking_confirmed_id' => $expBooking->id]);
             session()->forget('exp_booking');
 
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true, 'redirect_url' => route('experience.success')]);
+            }
             return redirect()->route('experience.success');
 
         } catch (\Exception $e) {
             \Log::error('ExperienceBooking create failed: ' . $e->getMessage());
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Terjadi kesalahan saat menyimpan booking: ' . $e->getMessage()], 500);
+            }
             return redirect()->route('experience.payment')
                 ->with('error', 'Terjadi kesalahan saat menyimpan booking. Silakan coba lagi.');
         }

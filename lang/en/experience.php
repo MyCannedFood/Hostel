@@ -54,6 +54,7 @@ return [
     'va' => 'VA (Virtual Account)',
     'debit_credit_card' => 'DEBIT / CREDIT CARD',
     'credit_card' => 'Credit Card',
+    'cash' => 'Cash',
     'promo_or_referral' => 'PROMO OR REFERRAL CODE',
     'promo_placeholder' => 'Enter Promo/Referral Code',
     'apply' => 'Apply',

@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             BookingSeeder::class,
             RevenueSeeder::class,
             AddonSeeder::class,
+            ExperienceSeeder::class,
         ]);
     }
 }

@@ -59,6 +59,13 @@ class GeneralSettingsController extends Controller
         $setting->updated_by = auth('admin')->id();
         $setting->save();
 
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Operational policies saved.'
+            ]);
+        }
+
         return redirect()
             ->route('admin.settings', ['section' => 'general', 'sub' => 'operational-policies'])
             ->with('success', 'Operational policies saved.');
