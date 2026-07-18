@@ -255,9 +255,11 @@
 </main>
 
 <footer class="bottom-bar">
-    <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="btn-back-details" data-en="Back To Details" data-id="Kembali ke Detail">
-        {{ __('experience.back_to_details') }}
-    </a>
+    <div class="bottom-bar-container">
+        <a href="{{ route('experience.booking-detail', $booking['experience_id']) }}" class="btn-back-details" data-en="Back To Details" data-id="Kembali ke Detail">
+            {{ __('experience.back_to_details') }}
+        </a>
+    </div>
 </footer>
 
 <script>

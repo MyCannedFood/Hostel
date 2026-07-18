@@ -380,8 +380,18 @@
     backdrop-filter: blur(8px);
     border-top: 1px solid #EAEAEA;
     display: flex;
+    padding: 12px 0;
+    z-index: 10;
+}
+
+.back-bar-container {
+    max-width: 920px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
     justify-content: flex-end;
-    padding: 12px 24px;
+    padding: 0 24px;
+    box-sizing: border-box;
 }
 
 .back-btn {

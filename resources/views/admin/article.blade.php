@@ -143,7 +143,7 @@
                                             @endif
                                         </td>
                                         <td><strong>{{ $art->title }}</strong></td>
-                                        <td>{{ $art->admin->name ?? 'Admin' }}</td>
+                                        <td>{{ $art->author ?? ($art->admin->name ?? 'Admin') }}</td>
                                         <td>{{ $art->publish_at ? $art->publish_at->format('d/m/Y') : $art->created_at->format('d/m/Y') }}</td>
                                         <td><span class="article-status {{ strtolower($art->status) }}">{{ $art->status }}</span></td>
                                         <td>

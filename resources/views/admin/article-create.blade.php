@@ -129,7 +129,7 @@
                                     @php
                                         $authorName = isset($article) ? ($article->admin?->name ?? 'Admin') : (Auth::guard('admin')->user()?->name ?? 'Admin');
                                     @endphp
-                                    <input type="text" class="meta-input-element" name="author" placeholder="{{ $authorName }}" value="{{ old('author') }}">
+                                    <input type="text" class="meta-input-element" name="author" placeholder="{{ $authorName }}" value="{{ old('author', $article->author ?? '') }}">
                                 </div>
                             </div>
 
@@ -166,13 +166,19 @@
                             </div>
 
                             <div class="meta-field-group">
-                                <label class="meta-field-label">CATEGORY</label>
-                                <div class="meta-select-container">
-                                    @php $selectedCat = old('category', isset($article) ? ($article->category ?? 'Culture & Serenity') : 'Culture & Serenity'); @endphp
-                                    <select class="meta-select-element" name="category">
-                                        <option value="Culture & Serenity" {{ $selectedCat == 'Culture & Serenity' ? 'selected' : '' }}>Culture & Serenity</option>
-                                        <option value="Wellness & Nature" {{ $selectedCat == 'Wellness & Nature' ? 'selected' : '' }}>Wellness & Nature</option>
-                                        <option value="Eco & Discovery" {{ $selectedCat == 'Eco & Discovery' ? 'selected' : '' }}>Eco & Discovery</option>
+                                <label class="meta-field-label" id="categoryLabel">KATEGORI</label>
+
+                                @php
+                                    $selectedCat   = old('category',    isset($article) ? ($article->category    ?? 'Budaya & Ketenangan') : 'Budaya & Ketenangan');
+                                    $selectedCatEn = old('category_en', isset($article) ? ($article->category_en ?? 'Culture & Serenity')   : 'Culture & Serenity');
+                                @endphp
+
+                                {{-- ID dropdown --}}
+                                <div class="meta-select-container" id="categoryIdWrap">
+                                    <select class="meta-select-element" id="categoryIdSelect">
+                                        <option value="Budaya & Ketenangan" {{ $selectedCat == 'Budaya & Ketenangan' ? 'selected' : '' }}>Budaya & Ketenangan</option>
+                                        <option value="Kesehatan & Alam"    {{ $selectedCat == 'Kesehatan & Alam'    ? 'selected' : '' }}>Kesehatan & Alam</option>
+                                        <option value="Eko & Penemuan"      {{ $selectedCat == 'Eko & Penemuan'      ? 'selected' : '' }}>Eko & Penemuan</option>
                                     </select>
                                     <span class="meta-select-arrow">
                                         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -180,11 +186,43 @@
                                         </svg>
                                     </span>
                                 </div>
+
+                                {{-- EN dropdown --}}
+                                <div class="meta-select-container" id="categoryEnWrap" style="display:none;">
+                                    <select class="meta-select-element" id="categoryEnSelect">
+                                        <option value="Culture & Serenity" {{ $selectedCatEn == 'Culture & Serenity' ? 'selected' : '' }}>Culture & Serenity</option>
+                                        <option value="Wellness & Nature"  {{ $selectedCatEn == 'Wellness & Nature'  ? 'selected' : '' }}>Wellness & Nature</option>
+                                        <option value="Eco & Discovery"    {{ $selectedCatEn == 'Eco & Discovery'    ? 'selected' : '' }}>Eco & Discovery</option>
+                                    </select>
+                                    <span class="meta-select-arrow">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 12 15 18 9"/>
+                                        </svg>
+                                    </span>
+                                </div>
+
+                                {{-- Hidden inputs submitted with form --}}
+                                <input type="hidden" name="category"    id="hiddenCategoryId" value="{{ $selectedCat }}">
+                                <input type="hidden" name="category_en" id="hiddenCategoryEn" value="{{ $selectedCatEn }}">
                             </div>
                             
+
                             <div class="meta-field-group">
-                                <label class="meta-field-label">META DESCRIPTION</label>
-                                <textarea class="meta-textarea-element" name="meta_description" placeholder="A brief description of SEO...">{{ old('meta_description', isset($article) ? ($article->meta_description ?? '') : '') }}</textarea>
+                                <label class="meta-field-label" id="metaDescLabel">META DESCRIPTION (ID)</label>
+                                <textarea
+                                    class="meta-textarea-element"
+                                    id="metaDescId"
+                                    placeholder="Deskripsi singkat SEO (Bahasa Indonesia)..."
+                                >{{ old('meta_description', isset($article) ? ($article->meta_description ?? '') : '') }}</textarea>
+                                <textarea
+                                    class="meta-textarea-element"
+                                    id="metaDescEn"
+                                    placeholder="A brief SEO description (English)..."
+                                    style="display:none;"
+                                >{{ old('meta_description_en', isset($article) ? ($article->meta_description_en ?? '') : '') }}</textarea>
+                                {{-- Hidden inputs that actually get submitted --}}
+                                <input type="hidden" name="meta_description"    id="hiddenMetaId" value="{{ old('meta_description',    isset($article) ? ($article->meta_description    ?? '') : '') }}">
+                                <input type="hidden" name="meta_description_en" id="hiddenMetaEn" value="{{ old('meta_description_en', isset($article) ? ($article->meta_description_en ?? '') : '') }}">
                             </div>
                         </div>
                     </div>
@@ -299,8 +337,39 @@
     function switchLang(lang) {
         if (lang === currentLang) return;
         saveCurrentToHidden(currentLang);
+
+        // Save current meta description to hidden input
+        const metaIdVisible = document.getElementById('metaDescId');
+        const metaEnVisible = document.getElementById('metaDescEn');
+        if (currentLang === 'id') {
+            document.getElementById('hiddenMetaId').value = metaIdVisible.value;
+        } else {
+            document.getElementById('hiddenMetaEn').value = metaEnVisible.value;
+        }
+
         currentLang = lang;
         loadFromHidden(lang);
+
+        // Toggle meta description textareas
+        const isId = lang === 'id';
+        metaIdVisible.style.display = isId ? '' : 'none';
+        metaEnVisible.style.display = isId ? 'none' : '';
+        document.getElementById('metaDescLabel').textContent = isId ? 'META DESCRIPTION (ID)' : 'META DESCRIPTION (EN)';
+
+        // Load saved value into visible textarea
+        if (isId) {
+            metaIdVisible.value = document.getElementById('hiddenMetaId').value;
+        } else {
+            metaEnVisible.value = document.getElementById('hiddenMetaEn').value;
+        }
+
+        // Toggle category dropdowns
+        document.getElementById('categoryIdWrap').style.display = isId ? '' : 'none';
+        document.getElementById('categoryEnWrap').style.display = isId ? 'none' : '';
+        document.getElementById('categoryLabel').textContent = isId ? 'KATEGORI' : 'CATEGORY';
+        // Restore select value from hidden input
+        document.getElementById('categoryIdSelect').value = document.getElementById('hiddenCategoryId').value;
+        document.getElementById('categoryEnSelect').value = document.getElementById('hiddenCategoryEn').value;
 
         document.querySelectorAll('.lang-switch-btn').forEach(function(btn) {
             btn.classList.toggle('active', btn.dataset.lang === lang);
@@ -319,8 +388,10 @@
     if (existingId) {
         document.getElementById('titleInput').value = document.getElementById('hiddenTitle').value;
         quill.clipboard.dangerouslyPasteHTML(existingId);
+        setTimeout(updateImageLayout, 50); // after Quill renders the DOM
     } else if (existingEn) {
         switchLang('en');
+        setTimeout(updateImageLayout, 50);
     }
 
     // Setup lang switch buttons
@@ -343,13 +414,82 @@
     });
 
     // Save to hidden fields on text change
+    // --- Image layout: detect image paragraphs and assign layout attributes ---
+    function isImgOnlyParagraph(p) {
+        const imgs = p.querySelectorAll('img');
+        if (imgs.length === 0) return false;
+        // Strip zero-width / non-breaking chars Quill may inject
+        const text = p.textContent.replace(/[\u200B\uFEFF\u00A0]/g, '').trim();
+        return text === '';
+    }
+
+    function updateImageLayout() {
+        const editor = document.querySelector('.ql-editor');
+        const paragraphs = Array.from(editor.querySelectorAll('p'));
+
+        // Clear previous attributes
+        paragraphs.forEach(function(p) {
+            p.removeAttribute('data-img-count');
+            p.removeAttribute('data-img-group');
+            p.removeAttribute('data-img-inline');
+        });
+
+        var i = 0, groupId = 0;
+        while (i < paragraphs.length) {
+            var p = paragraphs[i];
+            if (!isImgOnlyParagraph(p)) { i++; continue; }
+
+            var imgsInP = p.querySelectorAll('img').length;
+
+            if (imgsInP > 1) {
+                // Case 1: Multiple images inside ONE paragraph (same line in editor)
+                var cols = Math.min(imgsInP, 3);
+                p.setAttribute('data-img-inline', cols);
+                p.setAttribute('data-img-group', groupId++);
+                i++;
+            } else {
+                // Case 2: Consecutive single-image paragraphs
+                var start = i;
+                while (
+                    i + 1 < paragraphs.length &&
+                    isImgOnlyParagraph(paragraphs[i + 1]) &&
+                    paragraphs[i + 1].querySelectorAll('img').length === 1
+                ) { i++; }
+                var count = Math.min(i - start + 1, 3);
+                for (var j = start; j <= i; j++) {
+                    paragraphs[j].setAttribute('data-img-count', count);
+                    paragraphs[j].setAttribute('data-img-group', groupId);
+                }
+                groupId++;
+                i++;
+            }
+        }
+    }
+
     quill.on('text-change', function() {
         const html = quill.root.innerHTML;
         document.getElementById(getContentInputId(currentLang)).value = (html === '<p><br></p>') ? '' : html;
+        updateImageLayout();
     });
 
     document.getElementById('titleInput').addEventListener('input', function() {
         document.getElementById(getTitleInputId(currentLang)).value = this.value;
+    });
+
+    // Real-time sync: visible meta description → hidden input
+    document.getElementById('metaDescId').addEventListener('input', function() {
+        document.getElementById('hiddenMetaId').value = this.value;
+    });
+    document.getElementById('metaDescEn').addEventListener('input', function() {
+        document.getElementById('hiddenMetaEn').value = this.value;
+    });
+
+    // Real-time sync: category select → hidden input
+    document.getElementById('categoryIdSelect').addEventListener('change', function() {
+        document.getElementById('hiddenCategoryId').value = this.value;
+    });
+    document.getElementById('categoryEnSelect').addEventListener('change', function() {
+        document.getElementById('hiddenCategoryEn').value = this.value;
     });
 
     // Validate on submit — sync visible fields to the right hidden fields
@@ -362,9 +502,13 @@
         if (currentLang === 'id') {
             document.getElementById('hiddenTitle').value = titleVal;
             document.getElementById('hiddenContent').value = isEmpty ? '' : html;
+            document.getElementById('hiddenMetaId').value = document.getElementById('metaDescId').value;
+            document.getElementById('hiddenCategoryId').value = document.getElementById('categoryIdSelect').value;
         } else {
             document.getElementById('hiddenTitleEn').value = titleVal;
             document.getElementById('hiddenContentEn').value = isEmpty ? '' : html;
+            document.getElementById('hiddenMetaEn').value = document.getElementById('metaDescEn').value;
+            document.getElementById('hiddenCategoryEn').value = document.getElementById('categoryEnSelect').value;
         }
 
         // Validasi: konten ID wajib

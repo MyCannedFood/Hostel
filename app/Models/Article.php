@@ -11,6 +11,7 @@ class Article extends Model
 
     protected $fillable = [
         'admin_id',
+        'author',
         'title',
         'title_en',
         'title_id',
@@ -20,8 +21,10 @@ class Article extends Model
         'thumbnail',
         'status',
         'category',
+        'category_en',
         'source',
         'meta_description',
+        'meta_description_en',
         'views_count',
         'publish_at',
     ];

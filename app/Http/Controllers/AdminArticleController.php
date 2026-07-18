@@ -41,16 +41,19 @@ class AdminArticleController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'title_en'         => 'nullable|string|max:255',
-            'content'          => 'required|string',
-            'content_en'       => 'nullable|string',
-            'category'         => 'required|string|max:255',
-            'source'           => 'nullable|string|max:255',
-            'status'           => 'required|string|in:Draft,Published',
-            'publish_at'       => 'nullable|date',
-            'meta_description' => 'nullable|string',
-            'thumbnail'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'title'               => 'required|string|max:255',
+            'title_en'            => 'nullable|string|max:255',
+            'content'             => 'required|string',
+            'content_en'          => 'nullable|string',
+            'author'              => 'nullable|string|max:255',
+            'category'            => 'required|string|max:255',
+            'category_en'         => 'nullable|string|max:255',
+            'source'              => 'nullable|string|max:255',
+            'status'              => 'required|string|in:Draft,Published',
+            'publish_at'          => 'nullable|date',
+            'meta_description'    => 'nullable|string',
+            'meta_description_en' => 'nullable|string',
+            'thumbnail'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $thumbnailPath = null;
@@ -60,17 +63,20 @@ class AdminArticleController extends Controller
         }
 
         Article::create([
-            'admin_id'         => Auth::guard('admin')->id(),
-            'title'            => $validated['title'],
-            'title_en'         => $validated['title_en'] ?? null,
-            'content'          => $validated['content'],
-            'content_en'       => $validated['content_en'] ?? null,
-            'category'         => $validated['category'],
-            'source'           => $validated['source'] ?? null,
-            'status'           => $validated['status'],
-            'publish_at'       => $validated['publish_at'] ?? now(),
-            'meta_description' => $validated['meta_description'] ?? null,
-            'thumbnail'        => $thumbnailPath,
+            'admin_id'            => Auth::guard('admin')->id(),
+            'author'              => $validated['author'] ?? null,
+            'title'               => $validated['title'],
+            'title_en'            => $validated['title_en'] ?? null,
+            'content'             => $validated['content'],
+            'content_en'          => $validated['content_en'] ?? null,
+            'category'            => $validated['category'],
+            'category_en'         => $validated['category_en'] ?? null,
+            'source'              => $validated['source'] ?? null,
+            'status'              => $validated['status'],
+            'publish_at'          => $validated['publish_at'] ?? now(),
+            'meta_description'    => $validated['meta_description'] ?? null,
+            'meta_description_en' => $validated['meta_description_en'] ?? null,
+            'thumbnail'           => $thumbnailPath,
         ]);
 
         return redirect()->route('admin.article')->with('success', 'Article created successfully!');
@@ -84,16 +90,19 @@ class AdminArticleController extends Controller
     public function update(Request $request, Article $article): RedirectResponse
     {
         $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'title_en'         => 'nullable|string|max:255',
-            'content'          => 'required|string',
-            'content_en'       => 'nullable|string',
-            'category'         => 'required|string|max:255',
-            'source'           => 'nullable|string|max:255',
-            'status'           => 'required|string|in:Draft,Published',
-            'publish_at'       => 'nullable|date',
-            'meta_description' => 'nullable|string',
-            'thumbnail'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'title'               => 'required|string|max:255',
+            'title_en'            => 'nullable|string|max:255',
+            'content'             => 'required|string',
+            'content_en'          => 'nullable|string',
+            'author'              => 'nullable|string|max:255',
+            'category'            => 'required|string|max:255',
+            'category_en'         => 'nullable|string|max:255',
+            'source'              => 'nullable|string|max:255',
+            'status'              => 'required|string|in:Draft,Published',
+            'publish_at'          => 'nullable|date',
+            'meta_description'    => 'nullable|string',
+            'meta_description_en' => 'nullable|string',
+            'thumbnail'           => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         $thumbnailPath = $article->thumbnail;
@@ -107,16 +116,19 @@ class AdminArticleController extends Controller
         }
 
         $article->update([
-            'title'            => $validated['title'],
-            'title_en'         => $validated['title_en'] ?? null,
-            'content'          => $validated['content'],
-            'content_en'       => $validated['content_en'] ?? null,
-            'category'         => $validated['category'],
-            'source'           => $validated['source'] ?? null,
-            'status'           => $validated['status'],
-            'publish_at'       => $validated['publish_at'] ?? $article->publish_at,
-            'meta_description' => $validated['meta_description'] ?? null,
-            'thumbnail'        => $thumbnailPath,
+            'title'               => $validated['title'],
+            'title_en'            => $validated['title_en'] ?? null,
+            'content'             => $validated['content'],
+            'content_en'          => $validated['content_en'] ?? null,
+            'author'              => $validated['author'] ?? null,
+            'category'            => $validated['category'],
+            'category_en'         => $validated['category_en'] ?? null,
+            'source'              => $validated['source'] ?? null,
+            'status'              => $validated['status'],
+            'publish_at'          => $validated['publish_at'] ?? $article->publish_at,
+            'meta_description'    => $validated['meta_description'] ?? null,
+            'meta_description_en' => $validated['meta_description_en'] ?? null,
+            'thumbnail'           => $thumbnailPath,
         ]);
 
         return redirect()->route('admin.article')->with('success', 'Article updated successfully!');

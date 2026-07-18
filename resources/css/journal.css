@@ -262,57 +262,81 @@
 .journal-body p {
     margin-bottom: 30px;
     opacity: 0.9;
+    text-align: justify;
 }
 
-.journal-body p:has(> img + img) {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 32px;
-}
+/* ── Image layout (mirrors admin editor) ── */
 
+/* Base: all images in body */
 .journal-body img {
-    width: 75%;
-    height: auto;
     border-radius: 6px;
     display: block;
-    margin: 20px auto;
 }
 
-.journal-body img + img,
-.journal-body img:has(+ img) {
-    width: 25%;
-    display: inline-block;
-    margin: 4px;
-    vertical-align: middle;
+/* Case 1: consecutive single-image paragraphs — 2 columns */
+.journal-body p[data-img-count="1"] {
+    display: block;
+    width: 100%;
+    margin: 12px 0 30px;
 }
 
-.journal-body p:has(> img:only-child):has(+ p:has(> img:only-child)) {
+.journal-body p[data-img-count="2"] {
     display: inline-block;
-    width: 25%;
+    width: calc(50% - 10px);
+    margin: 4px 3px 20px;
     vertical-align: top;
-    margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
-.journal-body p:has(> img:only-child) + p:has(> img:only-child) {
+.journal-body p[data-img-count="3"] {
     display: inline-block;
-    width: 25%;
+    width: calc(33.33% - 10px);
+    margin: 4px 3px 20px;
     vertical-align: top;
-    margin-bottom: 30px;
+    box-sizing: border-box;
 }
 
-.journal-body p:has(> img:only-child):has(+ p:has(> img:only-child)) img,
-.journal-body p:has(> img:only-child) + p:has(> img:only-child) img {
-    width: 50%;
-    height: auto;
+.journal-body p[data-img-count] img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
+    display: block;
+    margin: 0;
+}
+
+/* Case 2: multiple images inside ONE paragraph (flex) */
+.journal-body p[data-img-inline] {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    margin: 12px 0 30px;
+    box-sizing: border-box;
+}
+
+.journal-body p[data-img-inline] img {
+    flex: 1;
+    min-width: 0;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 6px;
     display: block;
     margin: 0;
 }
 
 @media (max-width: 768px) {
-    .journal-body p:has(> img:only-child):has(+ p:has(> img:only-child)),
-    .journal-body p:has(> img:only-child) + p:has(> img:only-child) {
+    .journal-body p[data-img-count="2"],
+    .journal-body p[data-img-count="3"] {
         display: block;
+        width: 100%;
+        margin: 8px 0;
+    }
+
+    .journal-body p[data-img-inline] {
+        flex-direction: column;
+    }
+
+    .journal-body p[data-img-inline] img {
         width: 100%;
     }
 }
@@ -321,6 +345,42 @@
 .journal-body strong, 
 .journal-body b {
     font-weight: 700 !important;
+}
+
+/* Fix list rendering for Quill content */
+.journal-body ol,
+.journal-body ul {
+    padding-left: 1.6em;
+    margin-bottom: 24px;
+    opacity: 0.9;
+}
+
+.journal-body ol {
+    list-style-type: decimal;
+}
+
+.journal-body ul {
+    list-style-type: disc;
+}
+
+/* Handle Quill-specific list outputs (Quill generates <ol> with data-list attribute) */
+.journal-body ol li[data-list="bullet"] {
+    list-style-type: disc !important;
+}
+
+.journal-body ol li[data-list="ordered"] {
+    list-style-type: decimal !important;
+}
+
+.journal-body li {
+    margin-bottom: 6px;
+    line-height: 1.8;
+    text-align: justify;
+    padding-left: 0.3em;
+}
+
+.journal-body .ql-ui {
+    display: none !important;
 }
 
 /* Fix blockquote rendering for Quill content (Quill outputs simple blockquote elements) */

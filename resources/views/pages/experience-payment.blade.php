@@ -311,7 +311,9 @@
 </main>
 
 <div class="back-bar">
-    <a href="{{ route('experience.payment-method') }}" class="back-btn" data-en="Back To Payment Method" data-id="Kembali ke Metode Pembayaran">{{ __('experience.back_to_payment_method') }}</a>
+    <div class="back-bar-container">
+        <a href="{{ route('experience.payment-method') }}" class="back-btn" data-en="Back To Payment Method" data-id="Kembali ke Metode Pembayaran">{{ __('experience.back_to_payment_method') }}</a>
+    </div>
 </div>
 
 <x-whatsapp_floating />
